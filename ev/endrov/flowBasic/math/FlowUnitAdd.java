@@ -49,11 +49,11 @@ public class FlowUnitAdd extends FlowUnitMathBinop
 		if(a instanceof Number && b instanceof Number)
 			lastOutput.put("C", NumberMath.plus((Number)a, (Number)b));
 		else if(a instanceof AnyEvImage && b instanceof Number)
-			lastOutput.put("C", new EvOpImageAddScalar((Number)b).exec1Untyped((AnyEvImage)a));
+			lastOutput.put("C", new EvOpImageAddScalar((Number)b).exec1Untyped(exec.ph,(AnyEvImage)a));
 		else if(b instanceof AnyEvImage && a instanceof Number)
-			lastOutput.put("C", new EvOpImageAddScalar((Number)a).exec1Untyped((AnyEvImage)b));
+			lastOutput.put("C", new EvOpImageAddScalar((Number)a).exec1Untyped(exec.ph, (AnyEvImage)b));
 		else if(a instanceof AnyEvImage && b instanceof AnyEvImage)
-			lastOutput.put("C", new EvOpImageAddImage().exec1Untyped((AnyEvImage)a, (AnyEvImage)b));
+			lastOutput.put("C", new EvOpImageAddImage().exec1Untyped(exec.ph, (AnyEvImage)a, (AnyEvImage)b));
 		else
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
 		}

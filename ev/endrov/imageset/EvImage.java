@@ -14,7 +14,8 @@ import java.util.WeakHashMap;
 
 import javax.imageio.ImageIO;
 
-import endrov.util.Memoize;
+import endrov.util.MemoizeX;
+import endrov.util.ProgressHandle;
 
 
 
@@ -61,7 +62,7 @@ public class EvImage
 	private WeakHashMap<EvImage, Object> shadowedBy=new WeakHashMap<EvImage, Object>(1,1.0f);
 	/** Pending lazy operations */
 	//private WeakHashMap<Memoize<?>, Object> pendingLazy=new WeakHashMap<Memoize<?>, Object>(1,1.0f);
-	private WeakHashMap<Memoize<?>, Object> pendingLazy=new WeakHashMap<Memoize<?>, Object>();
+	private WeakHashMap<MemoizeX<?>, Object> pendingLazy=new WeakHashMap<MemoizeX<?>, Object>();
 		
 	/** 
 	 * Connection to I/O. Allows lazy reading by postponing load operation. Also allows lazy generation by putting a generator as a loader.
@@ -90,9 +91,9 @@ public class EvImage
 	 * For I/O manager only: The image has been written to disk and there is an io-object set up to read it.
 	 * Hence the image need not stay in image anymore. This unlocks the memory by placing the image in the cache.
 	 */
-	public void ioIsNowOnDisk()
+	public void ioIsNowOnDisk(ProgressHandle progh)
 		{
-		cachedPixels=new SoftReference<EvPixels>(getPixels());
+		cachedPixels=new SoftReference<EvPixels>(getPixels(progh));
 		memoryPixels=null;
 		isDirty=false;
 		CacheImages.addToCache(this);
@@ -113,7 +114,7 @@ public class EvImage
 	/**
 	 * Register a lazy operation. Before this image is changed, it will be executed
 	 */
-	public void registerLazyOp(Memoize<?> op)
+	public void registerLazyOp(MemoizeX<?> op)
 		{
 		pendingLazy.put(op,null);
 		}
@@ -122,18 +123,18 @@ public class EvImage
 	/**
 	 * Make sure this is a hard copy. Always safe to call. Seldom useful, use only if you know what you are doing
 	 */
-	public void makeSureHardCopy()
+	public void makeSureHardCopy(ProgressHandle progh)
 		{
 		if(shadowedImage!=null)
-			getShadowDataInternal();
+			getShadowDataInternal(progh);
 		}
 	
 	/**
 	 * Copy data from shadowed image here. Make sure this truly is a shadowed image before calling
 	 */
-	private void getShadowDataInternal()
+	private void getShadowDataInternal(ProgressHandle progh)
 		{
-		EvPixels otherPixels=shadowedImage.getPixels();
+		EvPixels otherPixels=shadowedImage.getPixels(progh);
 		if(otherPixels!=null)
 			memoryPixels=new EvPixels(otherPixels);
 		else
@@ -148,12 +149,12 @@ public class EvImage
 	 * * Give data to all images that shadow this image
 	 * * Execute pending lazy operations
 	 */
-	private void eliminateDependencies()
+	private void eliminateDependencies(ProgressHandle progh)
 		{
 		for(EvImage evim:new LinkedList<EvImage>(shadowedBy.keySet()))
-			evim.getShadowDataInternal();
-		for(Memoize<?> op:new LinkedList<Memoize<?>>(pendingLazy.keySet()))
-			op.get();
+			evim.getShadowDataInternal(progh);
+		for(MemoizeX<?> op:new LinkedList<MemoizeX<?>>(pendingLazy.keySet()))
+			op.get(progh);
 		}
 	
 	
@@ -175,22 +176,22 @@ public class EvImage
 	/**
 	 * Precise copy of the image that contains its own data
 	 */
-	public EvImage makeHardCopy()
+	public EvImage makeHardCopy(ProgressHandle progh)
 		{
 		//This could be made potentially faster, keeping it abstract for now
 		EvImage copy=makeShadowCopy();
-		copy.getShadowDataInternal();
+		copy.getShadowDataInternal(progh);
 		return copy;
 		}
 	
 	/**
 	 * Must be called prior to making changes to mutable objects
 	 */
-	public void prepareForWrite()
+	public void prepareForWrite(ProgressHandle progh)
 		{
-		eliminateDependencies();
+		eliminateDependencies(progh);
 		if(shadowedImage!=null)
-			getShadowDataInternal();
+			getShadowDataInternal(progh);
 		}
 	
 	
@@ -242,9 +243,9 @@ public class EvImage
 	 * @deprecated use expixels?
 	 * 
 	 */
-	public BufferedImage getJavaImage()
+	public BufferedImage getJavaImage(ProgressHandle progh)
 		{
-		return getPixels().getReadOnly(EvPixelsType.AWT).getAWT();
+		return getPixels(progh).getReadOnly(EvPixelsType.AWT).getAWT();
 		}
 	
 	/**
@@ -252,7 +253,7 @@ public class EvImage
 	 * 
 	 * TODO changes to pixels should stay
 	 */
-	public EvPixels getPixels()
+	public EvPixels getPixels(ProgressHandle progh)
 		{
 		//Use in-memory image
 		if(memoryPixels!=null)
@@ -287,11 +288,11 @@ public class EvImage
 					{
 					//If this image shadows another one, use it
 					if(shadowedImage!=null)
-						return shadowedImage.getPixels();
+						return shadowedImage.getPixels(progh);
 					else
 						{
 						//Use IO to load image (might also execute operation)
-						loaded=new EvPixels(io.loadJavaImage());
+						loaded=new EvPixels(io.get(progh));
 						cachedPixels=new SoftReference<EvPixels>(loaded);
 						CacheImages.addToCache(this);
 						return loaded;
@@ -313,9 +314,9 @@ public class EvImage
 	 * 
 	 * @deprecated use getPixels
 	 */
-	public double[][] getArrayImage()
+	public double[][] getArrayImage(ProgressHandle progh)
 		{
-		return getPixels().getArrayDouble2D();
+		return getPixels(progh).getArrayDouble2D();
 		}
 	
 	/**
@@ -334,7 +335,7 @@ public class EvImage
 	 */
 	public void setImage(BufferedImage im)
 		{
-		prepareForWrite();
+		prepareForWrite(new ProgressHandle());
 		this.memoryPixels=new EvPixels(im);
 		cachedPixels.clear();
 		cachedPixels=new SoftReference<EvPixels>(null); //Really needed?
@@ -345,7 +346,7 @@ public class EvImage
 	 */
 	public void setPixelsReference(EvPixels im)
 		{
-		prepareForWrite();
+		prepareForWrite(new ProgressHandle()); //Better handling of shadowing would eliminate the need for this!
 		this.memoryPixels=im;
 		cachedPixels.clear();
 		cachedPixels=new SoftReference<EvPixels>(null); //Really needed?
@@ -358,7 +359,15 @@ public class EvImage
 	
 	public String toString()
 		{
-		return "EvImage mempxl: "+memoryPixels+" shdw:"+shadowedImage+" shdwBy#:"+shadowedBy.size();
+		return "EvImage mempxl: "+memoryPixels+" shdw:"+shadowedImage+" shdwBy#:"+shadowedBy.size()+" io "+io;
+		}
+
+	
+	public void registerMemoizeXdepends(MemoizeX<?> memoize)
+		{
+		if(io!=null)
+			memoize.dependsOn(io);
+		registerLazyOp(memoize);
 		}
 
 	}

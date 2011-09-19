@@ -35,6 +35,7 @@ import endrov.keyBinding.*;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
+import endrov.util.ProgressHandle;
 import endrov.util.SnapBackSlider;
 import endrov.util.SnapBackSlider.SnapChangeListener;
 
@@ -194,7 +195,7 @@ public class ImageWindow extends BasicWindow
 		return bi;
 		}
 	
-	public Map<String,BufferedImage> getScreenshotOriginal()
+	public Map<String,BufferedImage> getScreenshotOriginal(ProgressHandle progh)
 		{
 		HashMap<String,BufferedImage> bims=new HashMap<String, BufferedImage>(); 
 		if(!imagePanel.images.isEmpty())
@@ -202,7 +203,7 @@ public class ImageWindow extends BasicWindow
 			for(int i=0;i<channelWidget.size();i++)
 				{
 				String chname=channelWidget.get(i).getChannelName();
-				BufferedImage im=imagePanel.images.get(i).getImage().getPixels().quickReadOnlyAWT();
+				BufferedImage im=imagePanel.images.get(i).getImage().getPixels(progh).quickReadOnlyAWT();
 				bims.put(chname, im);
 				}
 			
@@ -660,16 +661,21 @@ public class ImageWindow extends BasicWindow
 				EvDecimal z=frameControl.getZ();
 				frame=ch.closestFrame(frame);
 				
-				EvStack stack=ch.getStack(frame);
+				EvStack stack=ch.getStack(new ProgressHandle(), frame);
+				
+				//System.out.println("---- got stack "+stack);
+				
 				if(stack==null)
 					pi.setImage(stack,null);
 				else
 					{
 					int closestZ=stack.closestZint(z.doubleValue());
-					System.out.println("----closest z: "+closestZ+"   depth:"+stack.getDepth());
+					//System.out.println("----closest z: "+closestZ+"   depth:"+stack.getDepth());
 					if(closestZ!=-1)
 						{
 						EvImage evim=stack.getInt(closestZ);
+						//System.out.println("--- got stack 2: "+evim+"   "+evim.getPixels(null));
+						
 						if(evim!=null)
 							pi.setImage(stack,evim);
 						else
@@ -678,7 +684,7 @@ public class ImageWindow extends BasicWindow
 							}
 						}
 					else
-						System.out.println("--For ch:"+cw.getChannelName());
+						System.out.println("--z=-1 for ch:"+cw.getChannelName());
 					}
 				imagePanel.images.add(pi);
 				}
@@ -767,7 +773,7 @@ public class ImageWindow extends BasicWindow
 			if(ch!=null)
 				{
 				EvDecimal curFrame=ch.closestFrame(frameControl.getFrame());
-				if(ch.getStack(curFrame).getDepth()>0)
+				if(ch.getStack(new ProgressHandle(), curFrame).getDepth()>0)
 					{
 					EvStack stack=ch.getStack(curFrame);
 					frameControl.setZ(new EvDecimal(stack.transformImageWorldZ(stack.getDepth()/2)));
@@ -789,8 +795,6 @@ public class ImageWindow extends BasicWindow
 					sb.append("Null slice");
 				else
 					{
-					EvPixels pixels=evim.getPixels();
-					
 					EvStack stack=im.getStack();
 					
 					Vector3d disp=stack.getDisplacement();
@@ -801,8 +805,8 @@ public class ImageWindow extends BasicWindow
 							"DX: "+disp.x + " "+
 							"DY: "+disp.y + " "+
 							"DZ: "+disp.z + " "+
-							"Width(px): "+pixels.getWidth()+" "+
-							"Height(px): "+pixels.getHeight()
+							"Width(px): "+stack.getWidth()+" "+
+							"Height(px): "+stack.getHeight()
 							);
 					sb.append("\n");
 					}

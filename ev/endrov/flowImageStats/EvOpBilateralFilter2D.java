@@ -8,6 +8,7 @@ package endrov.flowImageStats;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Local average, but only average using pixels within threshold of current pixel value. This improves edge conservation
@@ -27,12 +28,12 @@ public class EvOpBilateralFilter2D extends EvOpSlice1
 		this.threshold=threshold;
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle progh, EvPixels... p)
 		{
-		return apply(p[0],pw.intValue(), ph.intValue(), threshold.doubleValue());
+		return apply(progh, p[0],pw.intValue(), ph.intValue(), threshold.doubleValue());
 		}
 	
-	public static EvPixels apply(EvPixels in, int pw, int ph, double threshold)
+	public static EvPixels apply(ProgressHandle progh, EvPixels in, int pw, int ph, double threshold)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();

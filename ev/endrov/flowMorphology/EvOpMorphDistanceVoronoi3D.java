@@ -10,6 +10,7 @@ import java.util.*;
 import endrov.flow.EvOpStack;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Calculate distance to nearest non-zero pixel. Also keeps track of the intensity of the
@@ -35,9 +36,9 @@ public class EvOpMorphDistanceVoronoi3D extends EvOpStack
 		}
 
 	@Override
-	public EvStack[] exec(EvStack... p)
+	public EvStack[] exec(ProgressHandle ph, EvStack... p)
 		{
-		return apply(alsoDiagonal, p[0]);
+		return apply(ph, alsoDiagonal, p[0]);
 		}
 	
 	@Override
@@ -76,7 +77,7 @@ public class EvOpMorphDistanceVoronoi3D extends EvOpStack
 			}
 		}
 	
-	public static EvStack[] apply(boolean alsoDiagonal, EvStack stack)
+	public static EvStack[] apply(ProgressHandle progh, boolean alsoDiagonal, EvStack stack)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
@@ -90,9 +91,9 @@ public class EvOpMorphDistanceVoronoi3D extends EvOpStack
 		stackDist.getMetaFrom(stack);
 		stackDist.allocate(w, h, d, EvPixelsType.DOUBLE, stack);
 
-		double[][] inarr=stack.getReadOnlyArraysDouble();
-		double[][] distArr=stackDist.getOrigArraysDouble();
-		double[][] groupArr=stackGroup.getOrigArraysDouble();
+		double[][] inarr=stack.getReadOnlyArraysDouble(progh);
+		double[][] distArr=stackDist.getOrigArraysDouble(progh);
+		double[][] groupArr=stackGroup.getOrigArraysDouble(progh);
 		PriorityQueue<QEeuclidian> q=new PriorityQueue<QEeuclidian>();
 		
 		double sqrt2=Math.sqrt(2);

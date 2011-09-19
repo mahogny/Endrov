@@ -20,6 +20,7 @@ import endrov.imageset.*;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
 import endrov.modelWindow.gl.GLCamera;
@@ -106,7 +107,7 @@ public class Stack2D extends StackRendererInterface
 		}
 	
 	
-	public boolean newCreate(ProgressMeter pm, EvDecimal frame, List<StackRendererInterface.ChannelSelection> chsel2, ModelWindow w)
+	public boolean newCreate(ProgressHandle progh, ProgressMeter pm, EvDecimal frame, List<StackRendererInterface.ChannelSelection> chsel2, ModelWindow w)
 		{
 		//im cache safety issues
 		procList.clear();
@@ -130,9 +131,11 @@ public class Stack2D extends StackRendererInterface
 						final int progressChan=1000*curchannum/chsel2.size();
 						pm.set(progressSlices+progressChan);
 
+						///// TODO better interaction with progress meter
+						
 						skipcount=0;
 						EvImage evim=stack.getInt(az);
-						Tuple<TextureRenderer,OneSlice> proc=processImage(stack, evim, az, chsel);
+						Tuple<TextureRenderer,OneSlice> proc=processImage(progh, stack, evim, az, chsel);
 						procList.add(proc);
 						}
 					}
@@ -145,9 +148,9 @@ public class Stack2D extends StackRendererInterface
 	
 	
 
-	public Tuple<TextureRenderer,OneSlice> processImage(EvStack stack, EvImage evim, int az, StackRendererInterface.ChannelSelection chsel)
+	public Tuple<TextureRenderer,OneSlice> processImage(ProgressHandle progh, EvStack stack, EvImage evim, int az, StackRendererInterface.ChannelSelection chsel)
 		{
-		EvPixels p=evim.getPixels();
+		EvPixels p=evim.getPixels(progh);
 		BufferedImage bim=p.quickReadOnlyAWT();
 		OneSlice os=new OneSlice();
 		

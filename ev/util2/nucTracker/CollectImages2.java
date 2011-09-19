@@ -23,6 +23,7 @@ import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 
 public class CollectImages2
@@ -61,6 +62,8 @@ public class CollectImages2
 		
 		EvDecimal startFrame=new EvDecimal(0);
 		EvDecimal endFrame=new EvDecimal(100000000);
+		
+		ProgressHandle progh=new ProgressHandle();
 		
 		//Load all worms
 		String[] wnlist;
@@ -123,7 +126,7 @@ public class CollectImages2
 								
 								frame=ost.getChannel(channelName).closestFrame(frame);
 								//EvDecimal z=ost.getChannel(channelName).closestZ(frame, new EvDecimal(pos.z/**ost.meta.resZ*/));
-								EvStack stack=ost.getChannel(channelName).getStack(frame);
+								EvStack stack=ost.getChannel(channelName).getStack(progh, frame);
 								int closestZ=stack.closestZint(pos.z);
 								EvImage im=stack.getInt(closestZ);//ost.getChannel(channelName).getImageLoader(frame, z);
 								
@@ -141,7 +144,7 @@ public class CollectImages2
 									midy+=Math.sin(ang)*r*2;
 									}
 								
-								BufferedImage jim=im.getPixels().quickReadOnlyAWT();
+								BufferedImage jim=im.getPixels(progh).quickReadOnlyAWT();
 								BufferedImage subim=new BufferedImage(2*rr, 2*rr, jim.getType());
 								
 								int ulx=midx-rr;

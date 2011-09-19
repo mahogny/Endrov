@@ -65,7 +65,7 @@ public class FlowUnitMorphBinarize extends FlowUnitBasic
 		
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 
-		lastOutput.put("out", new EvOpMorphBinarize().exec1Untyped(a));
+		lastOutput.put("out", new EvOpMorphBinarize().exec1Untyped(exec.ph, a));
 		}
 
 	

@@ -68,7 +68,7 @@ public class FlowUnitMorphDistanceVoronoi2D extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		boolean alsoDiagonal=(Boolean)flow.getInputValue(this, exec, "alsoDiagonal");
 
-		Object[] ret=new EvOpMorphDistanceVoronoi3D(alsoDiagonal).execUntyped(a);
+		Object[] ret=new EvOpMorphDistanceVoronoi3D(alsoDiagonal).execUntyped(exec.ph, a);
 		
 		lastOutput.put("distance", ret[0]);
 		lastOutput.put("closest", ret[1]);

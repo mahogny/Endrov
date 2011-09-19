@@ -80,7 +80,7 @@ public class FlowUnitFeatureImageToLineage extends FlowUnitBasic
 		if(outputRadius==null)
 			outputRadius=1.0;
 
-		lastOutput.put("out", EvOpFeatureImageToLineage.featureChannelToLineage(chFeatures, chPriority, outputRadius, thresholdRadius));
+		lastOutput.put("out", EvOpFeatureImageToLineage.featureChannelToLineage(exec.ph, chFeatures, chPriority, outputRadius, thresholdRadius));
 		}
 
 	

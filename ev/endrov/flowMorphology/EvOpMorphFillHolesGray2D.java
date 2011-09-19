@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Fill holes in gray image. O(w h log(w h)), in practice closer to O(w h log(w+h))
@@ -22,7 +23,7 @@ import endrov.imageset.EvPixelsType;
 public class EvOpMorphFillHolesGray2D extends EvOpSlice1
 	{
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return apply(p[0]);
 		}

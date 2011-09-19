@@ -66,7 +66,7 @@ public class FlowUnitImageNoisePoisson extends FlowUnitBasic
 		AnyEvImage image=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Number lambda=(Number)flow.getInputValue(this, exec, "lambda");
 		
-		lastOutput.put("out", new EvOpImageNoisePoisson(lambda).exec1Untyped(image));
+		lastOutput.put("out", new EvOpImageNoisePoisson(lambda).exec1Untyped(exec.ph, image));
 		}
 
 	

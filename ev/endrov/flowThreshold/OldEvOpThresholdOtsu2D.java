@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import endrov.flowBasic.EvImageHistogram;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 
 /**
@@ -29,12 +30,12 @@ public class OldEvOpThresholdOtsu2D extends Threshold2D
 		super(mode);
 		}
 
-	protected double[] getThreshold(EvPixels in)
+	protected double[] getThreshold(ProgressHandle ph, EvPixels in)
 		{
-		return new double[]{OldEvOpThresholdOtsu2D.findOtsuThreshold(in)};
+		return new double[]{OldEvOpThresholdOtsu2D.findOtsuThreshold(ph, in)};
 		}
 	
-	public static double findOtsuThreshold(EvPixels in)
+	public static double findOtsuThreshold(ProgressHandle ph, EvPixels in)
 		{
 		in=in.getReadOnly(EvPixelsType.INT);
 		

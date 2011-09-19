@@ -8,6 +8,7 @@ package endrov.flow;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Slice-by-slice operation, returning a single slice
@@ -17,38 +18,30 @@ import endrov.imageset.EvStack;
  */
 public abstract class EvOpSlice1 extends EvOpGeneral //extends StackOp
 	{
-	//Could have multiple output
-	//EvPixels or EvImage?
-//	public abstract EvPixels[] exec(EvPixels... p);
-	
-
-//	public abstract EvPixels exec1(EvPixels... p); //Override can be used on this, but not the interface
-
-
-	public EvPixels[] exec(EvPixels... p)
+	public EvPixels[] exec(ProgressHandle ph, EvPixels... p)
 		{
-		return new EvPixels[]{exec1(p)};
+		return new EvPixels[]{exec1(ph,p)};
 		}
 	
-	public EvStack[] exec(EvStack... p)
+	public EvStack[] exec(ProgressHandle ph, EvStack... p)
 		{
-		return EvOpSlice.makeStackOpFromSliceOp(this).exec(p);
+		return EvOpSlice.makeStackOpFromSliceOp(this).exec(ph,p);
 		}
 	
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return exec(p)[0];
+		return exec(ph,p)[0];
 		}
 	
-	public EvChannel[] exec(EvChannel... ch)
+	public EvChannel[] exec(ProgressHandle ph, EvChannel... ch)
 		{
 		
-		return EvOpSlice.makeStackOpFromSliceOp(this).exec(ch);
+		return EvOpSlice.makeStackOpFromSliceOp(this).exec(ph,ch);
 		}
 	
-	public EvChannel exec1(EvChannel... ch)
+	public EvChannel exec1(ProgressHandle ph, EvChannel... ch)
 		{
-		return exec(ch)[0];
+		return exec(ph,ch)[0];
 		}
 	
 	public int getNumberChannels()

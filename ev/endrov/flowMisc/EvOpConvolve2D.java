@@ -8,6 +8,7 @@ package endrov.flowMisc;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 
 
@@ -37,12 +38,12 @@ public class EvOpConvolve2D extends EvOpSlice1
 		this.kcy = kcy;
 		this.kernel = kernel;
 		}
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return convolve(p[0], kernel, kcx.intValue(), kcy.intValue());
+		return convolve(ph, p[0], kernel, kcx.intValue(), kcy.intValue());
 		}
 
-	public static EvPixels convolve(EvPixels in, EvPixels kernel, int kcx, int kcy)
+	public static EvPixels convolve(ProgressHandle ph, EvPixels in, EvPixels kernel, int kcx, int kcy)
 		{
 		in=in.getReadOnly(EvPixelsType.INT);
 		kernel=kernel.getReadOnly(EvPixelsType.INT);

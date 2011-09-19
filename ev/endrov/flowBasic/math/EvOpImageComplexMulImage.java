@@ -10,6 +10,7 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 /**
@@ -19,7 +20,7 @@ import endrov.util.Tuple;
  */
 public class EvOpImageComplexMulImage extends EvOpSlice
 	{
-	public EvPixels[] exec(EvPixels... p)
+	public EvPixels[] exec(ProgressHandle ph, EvPixels... p)
 		{
 		Tuple<EvPixels,EvPixels> ret=EvOpImageComplexMulImage.times(p[0], p[1], p[2], p[3]);
 		return new EvPixels[]{ret.fst(),ret.snd()};
@@ -96,7 +97,7 @@ public class EvOpImageComplexMulImage extends EvOpSlice
 	 * 
 	 * a and b must be of type double
 	 */
-	public static void timesInPlaceDouble(EvStack aReal, EvStack aImag, EvStack bReal, EvStack bImag)
+	public static void timesInPlaceDouble(ProgressHandle progh, EvStack aReal, EvStack aImag, EvStack bReal, EvStack bImag)
 		{
 		int d=aReal.getDepth();
 		
@@ -106,7 +107,7 @@ public class EvOpImageComplexMulImage extends EvOpSlice
 		EvImage[] bImagIm=bImag.getImages();
 		
 		for(int az=0;az<d;az++)
-			timesInPlaceDouble(aRealIm[az].getPixels(), aImagIm[az].getPixels(), bRealIm[az].getPixels(), bImagIm[az].getPixels());
+			timesInPlaceDouble(aRealIm[az].getPixels(progh), aImagIm[az].getPixels(progh), bRealIm[az].getPixels(progh), bImagIm[az].getPixels(progh));
 		
 		}
 

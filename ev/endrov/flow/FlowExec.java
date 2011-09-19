@@ -13,6 +13,7 @@ import java.util.WeakHashMap;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
+import endrov.util.ProgressHandle;
 
 /**
  * To allow multiple instances of a running Flow, the state has to be separated from the flow declaration
@@ -29,6 +30,7 @@ public class FlowExec
 	
 	private EvPath currentPath;
 	
+	public ProgressHandle ph=new ProgressHandle(); //TODO connect it
 	
 	/**
 	 * Connection to outside world

@@ -76,7 +76,7 @@ public class FlowUnitCalcFRAP extends FlowUnitBasic
 		Number t1=(Number)flow.getInputValue(this, exec, "t1");
 		Number t2=(Number)flow.getInputValue(this, exec, "t2");
 		
-		EvOpCalcFRAP calc=new EvOpCalcFRAP(ch,roi,t1,t2,"foo");
+		EvOpCalcFRAP calc=new EvOpCalcFRAP(exec.ph, ch,roi,t1,t2,"foo");
 		
 		double[][] series=new double[2][calc.recoveryCurve.size()];
 		int i=0;

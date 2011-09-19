@@ -32,6 +32,7 @@ import endrov.flow.FlowType;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 /**
  * Measurements of particles - identified regions in stacks.
@@ -84,7 +85,7 @@ public class ParticleMeasure extends EvObject
 		 * Evaluate a stack, store in info. If a particle is not in the list it must be
 		 * created. All particles in the map must receive data.
 		 */
-		public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info);
+		public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info);
 		}
 
 	/**
@@ -214,27 +215,27 @@ public class ParticleMeasure extends EvObject
 	/**
 	 * Measure a stack
 	 */
-	public ParticleMeasure(EvStack stackValue, EvStack stackMask, List<String> use)
+	public ParticleMeasure(ProgressHandle progh, EvStack stackValue, EvStack stackMask, List<String> use)
 		{
 		EvChannel chValue=new EvChannel();
 		chValue.putStack(EvDecimal.ZERO, stackValue);
 		EvChannel chMask=new EvChannel();
 		chMask.putStack(EvDecimal.ZERO, stackMask);
-		prepareEvaluate(chValue, chMask, use);
+		prepareEvaluate(progh, chValue, chMask, use);
 		}
 	
 	/**
 	 * Measure one entire channel
 	 */
-	public ParticleMeasure(EvChannel chValue, EvChannel chMask, List<String> use)
+	public ParticleMeasure(ProgressHandle progh, EvChannel chValue, EvChannel chMask, List<String> use)
 		{
-		prepareEvaluate(chValue, chMask, use);
+		prepareEvaluate(progh, chValue, chMask, use);
 		}
 	
 	/**
 	 * Prepare all lazy evaluations. Measures should have been decided by this point
 	 */
-	private void prepareEvaluate(EvChannel chValue, final EvChannel chMask, List<String> use)
+	private void prepareEvaluate(final ProgressHandle progh, EvChannel chValue, final EvChannel chMask, List<String> use)
 		{
 		//Clear prior data
 		useMeasures.clear();
@@ -263,7 +264,7 @@ public class ParticleMeasure extends EvObject
 				public void calc()
 					{
 					for(String s:useMeasures)
-						measures.get(s).analyze(weakStackValue.get(), weakChMask.get().getStack(frame),weakInfo.get());
+						measures.get(s).analyze(progh, weakStackValue.get(), weakChMask.get().getStack(frame),weakInfo.get());
 					}
 				};
 			

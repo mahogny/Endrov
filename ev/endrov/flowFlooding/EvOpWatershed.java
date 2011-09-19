@@ -10,6 +10,7 @@ import java.util.*;
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 /**
@@ -31,9 +32,9 @@ public class EvOpWatershed extends EvOpStack1
 		}
 
 	@Override
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return watershed(p[0], seeds);
+		return watershed(ph, p[0], seeds);
 		}
 	
 	/**
@@ -103,7 +104,7 @@ public class EvOpWatershed extends EvOpStack1
 	
 	//TODO seeds should maybe be groups?
 	
-	public static EvStack watershed(EvStack stack, Collection<Vector3i> seeds)
+	public static EvStack watershed(ProgressHandle progh, EvStack stack, Collection<Vector3i> seeds)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
@@ -113,8 +114,8 @@ public class EvOpWatershed extends EvOpStack1
 		stackOut.getMetaFrom(stack);
 		stackOut.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		int[][] inarr=stack.getReadOnlyArraysInt();
-		int[][] outarr=stackOut.getOrigArraysInt();
+		int[][] inarr=stack.getReadOnlyArraysInt(progh);
+		int[][] outarr=stackOut.getOrigArraysInt(progh);
 		
 		//Start queue with seed pixels
 		PriorityQueue<PriPixel> q=new PriorityQueue<PriPixel>();

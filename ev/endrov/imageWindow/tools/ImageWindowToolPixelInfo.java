@@ -25,6 +25,7 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 /**
  * Get information about a pixel
@@ -78,7 +79,7 @@ public class ImageWindowToolPixelInfo implements ImageWindowTool
 				{
 				if(px<stack.getWidth() && py<stack.getHeight() && px>=0 && py>=0)
 					{
-					EvPixels pix=image.getPixels().getReadOnly(EvPixelsType.DOUBLE);
+					EvPixels pix=image.getPixels(new ProgressHandle()).getReadOnly(EvPixelsType.DOUBLE);
 					EvLog.printLog("Pixel ("+px+" "+py+") Intensity: "+pix.getArrayDouble()[pix.getPixelIndex(px, py)]);
 					}
 				else

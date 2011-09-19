@@ -48,7 +48,7 @@ public class FlowUnitLog extends FlowUnitMathUniop
 		if(a instanceof Number)
 			lastOutput.put("B", Math.log(((Number)a).doubleValue()));
 		else if(a instanceof AnyEvImage)
-			lastOutput.put("B", new EvOpImageLog().exec1Untyped((AnyEvImage)a));
+			lastOutput.put("B", new EvOpImageLog().exec1Untyped(exec.ph, (AnyEvImage)a));
 		else
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass());
 		}

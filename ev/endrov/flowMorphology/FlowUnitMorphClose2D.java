@@ -67,7 +67,7 @@ public class FlowUnitMorphClose2D extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		MorphKernel kernel=(MorphKernel)flow.getInputValue(this, exec, "kernel");
 
-		lastOutput.put("out", new EvOpMorphClose2D(kernel).exec1Untyped(a));
+		lastOutput.put("out", new EvOpMorphClose2D(kernel).exec1Untyped(exec.ph, a));
 		}
 
 	

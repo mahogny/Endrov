@@ -13,6 +13,7 @@ import javax.vecmath.Vector3d;
 
 import endrov.coordinateSystem.CoordinateSystem;
 import endrov.util.EvMathUtil;
+import endrov.util.ProgressHandle;
 
 /**
  * One stack of images. Corresponds to one frame in one channel.
@@ -424,7 +425,7 @@ public class EvStack implements AnyEvImage
 	 */
 	public int getWidth()
 		{
-		return getFirstImage().getPixels().getWidth();
+		return getFirstImage().getPixels(new ProgressHandle()).getWidth();  //TODO move width and height into stack instead. then this handle will not be needed
 		}
 	
 	/**
@@ -432,7 +433,7 @@ public class EvStack implements AnyEvImage
 	 */
 	public int getHeight()
 		{
-		return getFirstImage().getPixels().getHeight();
+		return getFirstImage().getPixels(new ProgressHandle()).getHeight();
 		}
 	
 
@@ -448,13 +449,12 @@ public class EvStack implements AnyEvImage
 	 * Get array of pixels. This will cause all layers to be loaded so it should only be used
 	 * when all pixels will be used
 	 */
-	public EvPixels[] getPixels()
+	public EvPixels[] getPixels(ProgressHandle progh)
 		{
 		EvPixels[] arr=new EvPixels[loaders.size()];
 		int i=0;
 		for(EvImage evim:loaders)
-//		for(EvImage evim:loaders.values())
-			arr[i++]=evim.getPixels();
+			arr[i++]=evim.getPixels(progh);
 		return arr;
 		}
 	
@@ -474,9 +474,9 @@ public class EvStack implements AnyEvImage
 	/**
 	 * Return the pixel arrays for every plane. Will do a read-only conversion automatically
 	 */
-	public int[][] getReadOnlyArraysInt()
+	public int[][] getReadOnlyArraysInt(ProgressHandle progh)
 		{
-		EvPixels[] parr2=getPixels();
+		EvPixels[] parr2=getPixels(progh);
 		int[][] parr=new int[parr2.length][];
 		for(int i=0;i<parr2.length;i++)
 			parr[i]=parr2[i].getReadOnly(EvPixelsType.INT).getArrayInt();
@@ -488,9 +488,9 @@ public class EvStack implements AnyEvImage
 	 * Return the pixel arrays for every plane. This is the original pixel data; meant for the
 	 * time when you write it
 	 */
-	public int[][] getOrigArraysInt()
+	public int[][] getOrigArraysInt(ProgressHandle progh)
 		{
-		EvPixels[] parr2=getPixels();
+		EvPixels[] parr2=getPixels(progh);
 		int[][] parr=new int[parr2.length][];
 		for(int i=0;i<parr2.length;i++)
 			parr[i]=parr2[i].getArrayInt();
@@ -501,9 +501,9 @@ public class EvStack implements AnyEvImage
 	 * Return the pixel arrays for every plane. This is the original pixel data; meant for the
 	 * time when you write it
 	 */
-	public double[][] getOrigArraysDouble()
+	public double[][] getOrigArraysDouble(ProgressHandle progh)
 		{
-		EvPixels[] parr2=getPixels();
+		EvPixels[] parr2=getPixels(progh);
 		double[][] parr=new double[parr2.length][];
 		for(int i=0;i<parr2.length;i++)
 			parr[i]=parr2[i].getArrayDouble();
@@ -514,9 +514,9 @@ public class EvStack implements AnyEvImage
 	/**
 	 * Return the pixel arrays for every plane. Will do a read-only conversion automatically
 	 */
-	public double[][] getReadOnlyArraysDouble()
+	public double[][] getReadOnlyArraysDouble(ProgressHandle progh)
 		{
-		EvPixels[] parr2=getPixels();
+		EvPixels[] parr2=getPixels(progh);
 		double[][] parr=new double[parr2.length][];
 		for(int i=0;i<parr2.length;i++)
 			parr[i]=parr2[i].getReadOnly(EvPixelsType.DOUBLE).getArrayDouble();
@@ -543,13 +543,14 @@ public class EvStack implements AnyEvImage
 		return (w-1)/2.0;
 		}
 	
-	
-	public void forceEvaluation()
+	//Have to improve this one
+	/*
+	public void forceEvaluation(ProgressHandle progh)
 		{
 		for(EvImage im:getImages())
-			im.getPixels();
-//			im.forceEvaluation();
+			im.getPixels(progh);
 		}
+	*/
 	
 	
 	/*

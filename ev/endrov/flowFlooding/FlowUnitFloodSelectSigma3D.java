@@ -72,7 +72,7 @@ public class FlowUnitFloodSelectSigma3D extends FlowUnitBasic
 		checkNotNull(image,pos,f);
 		
 		//TODO
-		lastOutput.put("region", new EvOpFloodSelectSigma3D(Collections.singleton(pos),f.doubleValue()).exec1Untyped(image));
+		lastOutput.put("region", new EvOpFloodSelectSigma3D(Collections.singleton(pos),f.doubleValue()).exec1Untyped(exec.ph, image));
 		}
 
 	

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Binary 2D and 3D skeletonization for Endrov. 
@@ -49,18 +50,18 @@ import endrov.imageset.EvStack;
 public class EvOpMorphSkeletonizeBinary3D extends EvOpStack1
 	{
 	@Override
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return apply(p[0]);
+		return apply(ph,p[0]);
 		}
 
 	
-	public static EvStack apply(EvStack in) 
+	public static EvStack apply(ProgressHandle ph, EvStack in) 
 		{
 		//Make sure the data fits the type. Is this really needed?
 		//Important: replaces input with a copy
-		EvStack out=new EvOpMorphBinarize().exec1(in); //Still assumes 0,1 in a few places
-		int[][] pixels=out.getReadOnlyArraysInt();
+		EvStack out=new EvOpMorphBinarize().exec1(ph,in); //Still assumes 0,1 in a few places
+		int[][] pixels=out.getReadOnlyArraysInt(ph);
 		computeThinImage(pixels, in.getWidth(), in.getHeight(), in.getDepth());
 
 		// BUG: outgetarraysint does not store new arrays in stack!!!

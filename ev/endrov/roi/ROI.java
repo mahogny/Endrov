@@ -23,6 +23,7 @@ import endrov.imageWindow.*;
 import endrov.imageset.*;
 import endrov.roi.window.WindowROI;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 /**
  * ROI (Region Of Interest), selects a region on channel X frames X x,y,z (5D)
@@ -264,7 +265,7 @@ public abstract class ROI extends EvObject
 	/**
 	 * Get iterator over ROI
 	 */
-	public abstract LineIterator getLineIterator(EvStack stack, EvImage im, String channel, EvDecimal frame, double z);
+	public abstract LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImage im, String channel, EvDecimal frame, double z);
 	
 	/**
 	 * Check if a given point (world coordinates) is in a ROI

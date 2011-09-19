@@ -28,6 +28,7 @@ import endrov.basicWindow.FrameControl;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.util.EvFileUtil;
+import endrov.util.ProgressHandle;
 
 //either send down variables or add accessors to imagewindow
 
@@ -71,7 +72,8 @@ public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListene
 			}
 		else
 			{
-			image=w.getScreenshotOriginal();
+			//TODO  allow cancel if it is too slow
+			image=w.getScreenshotOriginal(new ProgressHandle());
 			if(image==null)
 				BasicWindow.showErrorDialog("No picture to store!");
 			}

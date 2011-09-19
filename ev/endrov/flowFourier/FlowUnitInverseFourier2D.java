@@ -73,13 +73,13 @@ public class FlowUnitInverseFourier2D extends FlowUnitBasic
 		
 		if(!inImag.hasValue())
 			{
-			AnyEvImage[] outs=new EvOpFourierRealInverseFull2D(true).execUntyped(inReal);
+			AnyEvImage[] outs=new EvOpFourierRealInverseFull2D(true).execUntyped(exec.ph, inReal);
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]); //Could use half-inverse and generate special image?
 			}
 		else
 			{
-			AnyEvImage[] outs=new EvOpFourierComplexInverse2D(true).execUntyped(inReal, inImag.get());
+			AnyEvImage[] outs=new EvOpFourierComplexInverse2D(true).execUntyped(exec.ph, inReal, inImag.get());
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]);
 			}

@@ -16,7 +16,8 @@ import endrov.imageset.EvStack;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucSel;
 import endrov.util.EvDecimal;
-import endrov.util.Memoize;
+import endrov.util.MemoizeX;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 /**
@@ -64,13 +65,13 @@ public class EvOpVoroniNuc
 		}
 	
 	
-	public EvChannel exec(EvChannel ch)
+	public EvChannel exec(ProgressHandle progh, EvChannel ch)
 		{
 		EvChannel chout=new EvChannel();
 		
 		for(final EvDecimal frame:ch.getFrames())
 			{
-			EvStack oldstack=ch.getStack(frame);
+			EvStack oldstack=ch.getStack(progh, frame);
 			final EvStack newstack=new EvStack(); 
 			newstack.getMetaFrom(oldstack);
 			chout.putStack(frame, newstack);
@@ -78,10 +79,11 @@ public class EvOpVoroniNuc
 			final int w=oldstack.getWidth();
 			final int h=oldstack.getHeight();
 			
-			final Memoize<List<PointList>> interLazy=new Memoize<List<PointList>>()
+			final MemoizeX<List<PointList>> interLazy=new MemoizeX<List<PointList>>()
 				{
-				protected List<PointList> eval()
+				protected List<PointList> eval(ProgressHandle progh)
 					{
+					ProgressHandle.checkStop(progh);
 					Map<NucSel,NucLineage.NucInterp> inter=lin.getInterpNuc(frame);
 					List<PointList> list=new ArrayList<PointList>();
 					
@@ -113,9 +115,9 @@ public class EvOpVoroniNuc
 				EvImage evim=new EvImage();
 				evim.io=new EvIOImage()
 					{
-					public EvPixels loadJavaImage()
+					public EvPixels eval(ProgressHandle progh)
 						{
-						List<PointList> list=interLazy.get();
+						List<PointList> list=interLazy.get(progh);
 						EvPixels p=new EvPixels(EvPixelsType.INT, w, h);
 						int[] arr=p.getArrayInt();
 
@@ -155,6 +157,7 @@ public class EvOpVoroniNuc
 						return p;
 						}
 					};
+				evim.io.dependsOn(interLazy);
 				newstack.putInt(taz, evim);
 				}
 			

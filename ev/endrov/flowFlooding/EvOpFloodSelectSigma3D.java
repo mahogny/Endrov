@@ -12,6 +12,7 @@ import endrov.flow.EvOpStack1;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.EvMathUtil;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 /**
@@ -32,12 +33,12 @@ public class EvOpFloodSelectSigma3D extends EvOpStack1
 		}
 
 	@Override
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return fill(p[0], startv, f);
+		return fill(ph, p[0], startv, f);
 		}
 	
-	public static EvStack fill(EvStack stack, Collection<Vector3i> startv, double f)
+	public static EvStack fill(ProgressHandle progh, EvStack stack, Collection<Vector3i> startv, double f)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
@@ -47,8 +48,8 @@ public class EvOpFloodSelectSigma3D extends EvOpStack1
 		markstack.getMetaFrom(stack);
 		markstack.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		double[][] inarr=stack.getReadOnlyArraysDouble();
-		int[][] outarr=markstack.getReadOnlyArraysInt();
+		double[][] inarr=stack.getReadOnlyArraysDouble(progh);
+		int[][] outarr=markstack.getReadOnlyArraysInt(progh);
 
 		double sum=0;
 		double sum2=0;

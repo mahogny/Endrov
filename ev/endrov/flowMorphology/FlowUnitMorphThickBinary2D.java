@@ -69,7 +69,7 @@ public class FlowUnitMorphThickBinary2D extends FlowUnitBasic
 		MorphKernel kernelHit=(MorphKernel)flow.getInputValue(this, exec, "kernelHit");
 		MorphKernel kernelMiss=(MorphKernel)flow.getInputValue(this, exec, "kernelHit");
 
-		lastOutput.put("out", new EvOpBinMorphThick2D(kernelHit,kernelMiss).exec1Untyped(a));
+		lastOutput.put("out", new EvOpBinMorphThick2D(kernelHit,kernelMiss).exec1Untyped(exec.ph, a));
 		}
 
 	

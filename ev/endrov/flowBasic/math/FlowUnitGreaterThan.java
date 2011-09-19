@@ -47,11 +47,11 @@ public class FlowUnitGreaterThan extends FlowUnitMathBinop
 		if(a instanceof Number && b instanceof Number)
 			lastOutput.put("C", NumberMath.greater((Number)a, (Number)b));
 		else if(a instanceof Number && b instanceof AnyEvImage)
-			lastOutput.put("C", new EvOpScalarGreaterThanImage((Number)a).exec1Untyped((AnyEvImage)b));
+			lastOutput.put("C", new EvOpScalarGreaterThanImage((Number)a).exec1Untyped(exec.ph, (AnyEvImage)b));
 		else if(a instanceof AnyEvImage && b instanceof Number)
-			lastOutput.put("C", new EvOpImageGreaterThanScalar((Number)b).exec1Untyped((AnyEvImage)a));
+			lastOutput.put("C", new EvOpImageGreaterThanScalar((Number)b).exec1Untyped(exec.ph, (AnyEvImage)a));
 		else if(a instanceof AnyEvImage && b instanceof AnyEvImage)
-			lastOutput.put("C", new EvOpImageGreaterThanImage().exec1Untyped((AnyEvImage)a,(AnyEvImage)b));
+			lastOutput.put("C", new EvOpImageGreaterThanImage().exec1Untyped(exec.ph, (AnyEvImage)a,(AnyEvImage)b));
 		else
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
 		}

@@ -69,7 +69,7 @@ public class FlowUnitSumRect extends FlowUnitBasic
 		Number pw=(Number)flow.getInputValue(this, exec, "pw");
 		Number ph=(Number)flow.getInputValue(this, exec, "ph");
 
-		lastOutput.put("out", new EvOpAverageRect(pw,ph).exec1Untyped(a));
+		lastOutput.put("out", new EvOpAverageRect(pw,ph).exec1Untyped(exec.ph, a));
 		}
 
 	

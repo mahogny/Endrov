@@ -70,7 +70,7 @@ public class FlowUnitSumIntensityROI extends FlowUnitBasic
 		EvChannel ch=(EvChannel)flow.getInputValue(this, exec, "ch");
 		ROI roi=(ROI)flow.getInputValue(this, exec, "roi");
 		
-		EvOpSumIntensityROI calc=new EvOpSumIntensityROI(ch,roi);
+		EvOpSumIntensityROI calc=new EvOpSumIntensityROI(exec.ph, ch,roi);
 		
 		double[][] series=new double[2][calc.recoveryCurve.size()];
 		int i=0;

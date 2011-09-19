@@ -12,6 +12,7 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Projection: Average Z
@@ -24,28 +25,28 @@ public class EvOpAverageZ extends EvOpStack1
 	
 
 	@Override
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return averageZ(p[0]);
+		return averageZ(ph, p[0]);
 		}
 
 	
 	
 	
-	public static EvStack averageZ(EvStack in)
+	public static EvStack averageZ(ProgressHandle ph, EvStack in)
 		{
 		EvImage proto=in.getFirstImage();
 		
 		EvStack out=new EvStack();
 
 
-		EvPixels ptot=new EvPixels(EvPixelsType.INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
+		EvPixels ptot=new EvPixels(EvPixelsType.INT,proto.getPixels(ph).getWidth(),proto.getPixels(ph).getHeight());
 		int numZ=in.getDepth();
 		for(EvImage plane:in.getImages())
-			ptot=new EvOpImageAddImage().exec1(ptot,plane.getPixels());
+			ptot=new EvOpImageAddImage().exec1(ph,ptot,plane.getPixels(ph));
 			//ImageMath.plus(ptot, plane.getValue().getPixels());
 
-		ptot=new EvOpImageDivScalar(numZ).exec1(ptot);
+		ptot=new EvOpImageDivScalar(numZ).exec1(ph, ptot);
 		//ptot=ImageMath.div(ptot,numZ);
 		
 		EvImage imout=new EvImage();

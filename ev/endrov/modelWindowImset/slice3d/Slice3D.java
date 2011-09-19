@@ -18,6 +18,7 @@ import com.sun.opengl.util.texture.*;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
 import endrov.util.ImVector3d;
+import endrov.util.ProgressHandle;
 
 /**
  * Render one slice in 3d
@@ -72,7 +73,7 @@ public class Slice3D
 	/**
 	 * Load stack into memory. Need GL context, forced by parameter.
 	 */
-	public void build(GL gl,EvDecimal frame, Imageset im, EvChannel ch, int zplane)
+	public void build(ProgressHandle progh, GL gl,EvDecimal frame, Imageset im, EvChannel ch, int zplane)
 		{
 		if(needBuild(frame))
 			{
@@ -92,7 +93,7 @@ public class Slice3D
 				zplane=stack.getDepth();
 			worldZ=zplane*stack.resZ;
 			EvImage evim=stack.getInt(zplane);
-			EvPixels p=evim.getPixels();
+			EvPixels p=evim.getPixels(progh);
 			w=p.getWidth();
 			h=p.getHeight();
 			resX=stack.resX;

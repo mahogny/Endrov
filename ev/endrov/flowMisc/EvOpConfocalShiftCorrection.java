@@ -11,6 +11,7 @@ package endrov.flowMisc;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Correct for horizontal shift when using a confocal microscope
@@ -27,12 +28,12 @@ public class EvOpConfocalShiftCorrection extends EvOpSlice1
 		this.shift = shift;
 		}
 	
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return shift(p[0], shift);
+		return shift(ph, p[0], shift);
 		}
 	
-	public static EvPixels shift(EvPixels a, Number shift)
+	public static EvPixels shift(ProgressHandle ph, EvPixels a, Number shift)
 		{
 		int b=shift.intValue();
 		

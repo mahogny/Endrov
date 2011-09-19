@@ -8,6 +8,7 @@ package endrov.flowBasic.logic;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Turn A into boolean image ie non-zero pixels are set to 1
@@ -15,7 +16,7 @@ import endrov.imageset.EvPixelsType;
  */
 public class EvOpMakeBoolImage extends EvOpSlice1
 	{
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return not(p[0]);
 		}

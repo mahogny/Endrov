@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Fill holes in gray image. O(w h d)
@@ -23,9 +24,9 @@ import endrov.imageset.EvStack;
 public class EvOpMorphFillHolesGray3D extends EvOpStack1
 	{
 	@Override
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return apply(p[0]);
+		return apply(ph, p[0]);
 		}
 
 	private static class QE //implements Comparable<QE>
@@ -69,7 +70,7 @@ public class EvOpMorphFillHolesGray3D extends EvOpStack1
 		return v;
 		}
 	
-	public static EvStack apply(EvStack in)
+	public static EvStack apply(ProgressHandle progh, EvStack in)
 		{
 		int w=in.getWidth();
 		int h=in.getHeight();
@@ -79,8 +80,8 @@ public class EvOpMorphFillHolesGray3D extends EvOpStack1
 		out.getMetaFrom(in);
 		out.allocate(w, h, d, EvPixelsType.DOUBLE, in);
 		
-		double[][] inarr=in.getReadOnlyArraysDouble();
-		double[][] outarr=out.getReadOnlyArraysDouble();
+		double[][] inarr=in.getReadOnlyArraysDouble(progh);
+		double[][] outarr=out.getReadOnlyArraysDouble(progh);
 		
 		//Have all pixels unmarked
 		for(double[] plane:outarr)

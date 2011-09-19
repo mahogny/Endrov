@@ -7,6 +7,7 @@ package endrov.flowMorphology;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Black Tophat (aka bottomhat): BTH(image)=close(image) - image
@@ -24,9 +25,9 @@ public class EvOpMorphBlackTophat2D extends EvOpSlice1
 		}
 
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return kernel.blacktophat(p[0]);
+		return kernel.blacktophat(ph, p[0]);
 		}
 
 	

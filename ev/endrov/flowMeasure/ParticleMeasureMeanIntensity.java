@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Measure: mean intensity
@@ -20,7 +21,7 @@ public class ParticleMeasureMeanIntensity implements ParticleMeasure.MeasureProp
 	{
 	private static String propertyName="meanI";
 
-	public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
 		HashMap<Integer,Double> sum=new HashMap<Integer, Double>();
 		HashMap<Integer,Double> vol=new HashMap<Integer, Double>();
@@ -30,8 +31,8 @@ public class ParticleMeasureMeanIntensity implements ParticleMeasure.MeasureProp
 
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
-			double[] arrValue=stackValue.getInt(az).getPixels().convertToDouble(true).getArrayDouble();
-			int[] arrID=stackMask.getInt(az).getPixels().convertToInt(true).getArrayInt();
+			double[] arrValue=stackValue.getInt(az).getPixels(progh).convertToDouble(true).getArrayDouble();
+			int[] arrID=stackMask.getInt(az).getPixels(progh).convertToInt(true).getArrayInt();
 			
 			for(int i=0;i<arrValue.length;i++)
 				{

@@ -10,6 +10,7 @@ import java.util.List;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector2i;
 
 /**
@@ -30,7 +31,7 @@ public class EvOpBinMorphHitmiss2D extends EvOpSlice1
 		}
 
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return hitmiss(p[0], kernelHit, kernelMiss);
 		}

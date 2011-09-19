@@ -12,6 +12,7 @@ import java.util.TreeMap;
 
 import endrov.flowBasic.EvImageHistogram;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Maximum entropy thresholding
@@ -27,11 +28,11 @@ public class EvOpThresholdMaxEntropy2D extends Threshold2D
 		super(mode);
 		}
 	
-	public double[] getThreshold(EvPixels in)
+	public double[] getThreshold(ProgressHandle progh, EvPixels in)
 		{
-		return new double[]{findThresholdMaxEntropy(in)};
+		return new double[]{findThresholdMaxEntropy(progh, in)};
 		}
-	public static double findThresholdMaxEntropy(EvPixels in)
+	public static double findThresholdMaxEntropy(ProgressHandle progh, EvPixels in)
 		{
 		int numPixels=in.getWidth()*in.getHeight();
 		

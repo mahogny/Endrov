@@ -9,6 +9,7 @@ import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.CumSumLine;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Moving sum. Sum is taken over a circle with given radius.
@@ -24,9 +25,9 @@ public class EvOpSumCircle extends EvOpSlice1
 		this.pw = pw;
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle progh, EvPixels... p)
 		{
-		return apply(p[0], pw.intValue());
+		return apply(progh, p[0], pw.intValue());
 		}
 	
 	
@@ -51,7 +52,7 @@ public class EvOpSumCircle extends EvOpSlice1
 	 * 
 	 * Complexity O(w*h)
 	 */
-	public static EvPixels apply(EvPixels in, int iradius)
+	public static EvPixels apply(ProgressHandle progh, EvPixels in, int iradius)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();

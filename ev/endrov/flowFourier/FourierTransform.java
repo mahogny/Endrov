@@ -8,6 +8,7 @@ package endrov.flowFourier;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 /**
@@ -45,10 +46,10 @@ class FourierTransform
 	/**
 	 * Numerical libraries prefer swizzled real and complex data
 	 */
-	public static double[] swizzle3d(EvStack inRe, EvStack inIm, int w, int h, int d)
+	public static double[] swizzle3d(ProgressHandle progh, EvStack inRe, EvStack inIm, int w, int h, int d)
 		{
-		double[][] arrRe=inRe.getReadOnlyArraysDouble();
-		double[][] arrIm=inIm.getReadOnlyArraysDouble();
+		double[][] arrRe=inRe.getReadOnlyArraysDouble(progh);
+		double[][] arrIm=inIm.getReadOnlyArraysDouble(progh);
 
 		double[] swizzle=new double[w*h*d*2];
 
@@ -104,8 +105,8 @@ class FourierTransform
 		outRe.allocate(w, h, d, EvPixelsType.DOUBLE, template);
 		outIm.allocate(w, h, d, EvPixelsType.DOUBLE, template);
 		
-		EvPixels[] pRe=outRe.getPixels();
-		EvPixels[] pIm=outIm.getPixels();
+		EvPixels[] pRe=outRe.getPixels(new ProgressHandle());
+		EvPixels[] pIm=outIm.getPixels(new ProgressHandle());
 		int pos=0;
 		for(int az=0;az<d;az++)
 			{

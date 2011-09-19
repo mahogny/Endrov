@@ -69,7 +69,7 @@ public class FlowUnitConvGaussian2D extends FlowUnitBasic
 		Number sigmaX=(Number)flow.getInputValue(this, exec, "sigmaX");
 		Number sigmaY=(Number)flow.getInputValue(this, exec, "sigmaY");
 		
-		lastOutput.put("out", new EvOpConvGaussian2D(sigmaX,sigmaY).exec1Untyped(a));
+		lastOutput.put("out", new EvOpConvGaussian2D(sigmaX,sigmaY).exec1Untyped(exec.ph, a));
 		}
 
 	

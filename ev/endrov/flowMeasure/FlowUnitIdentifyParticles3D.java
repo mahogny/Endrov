@@ -107,7 +107,7 @@ public class FlowUnitIdentifyParticles3D extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 //		Boolean ignore0=(Boolean)flow.getInputValue(this, exec, "ignore0");
 
-		lastOutput.put("out", new EvOpIdentifyParticles3D(ignore0).exec1Untyped(a));
+		lastOutput.put("out", new EvOpIdentifyParticles3D(ignore0).exec1Untyped(exec.ph, a));
 		}
 
 	

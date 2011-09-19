@@ -85,7 +85,7 @@ public class FlowUnitChannelDim3D extends FlowUnitBasic
 		else if(in instanceof EvChannel)
 			{
 			EvChannel c=(EvChannel)in;
-			EvStack s=c.getFirstStack();
+			EvStack s=c.getFirstStack(exec.ph);
 			lastOutput.put("dim", new Vector3i(s.getWidth(),s.getHeight(),s.getDepth()));
 			}
 		}

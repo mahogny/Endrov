@@ -70,7 +70,7 @@ public class FlowUnitFindLocalMaximas2D extends FlowUnitBasic
 
 		Boolean b=(Boolean)flow.getInputValue(this, exec, "alsoDiagonals");
 		
-		lastOutput.put("out", new EvOpFindLocalMaximas2D(b).exec1Untyped(a));
+		lastOutput.put("out", new EvOpFindLocalMaximas2D(b).exec1Untyped(exec.ph, a));
 		}
 
 	

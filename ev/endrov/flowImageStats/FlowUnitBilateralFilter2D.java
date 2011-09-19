@@ -73,7 +73,7 @@ public class FlowUnitBilateralFilter2D extends FlowUnitBasic
 		
 		checkNotNull(a,pw,ph,threshold);
 
-		lastOutput.put("out", new EvOpBilateralFilter2D(pw,ph,threshold).exec1Untyped(a));
+		lastOutput.put("out", new EvOpBilateralFilter2D(pw,ph,threshold).exec1Untyped(exec.ph, a));
 		}
 
 	

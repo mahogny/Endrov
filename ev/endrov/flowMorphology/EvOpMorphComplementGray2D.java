@@ -9,6 +9,7 @@ import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.EvImageUtil;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Image^c, according to gray morphology i.e. maxValue-intensity[i]
@@ -21,7 +22,7 @@ import endrov.imageset.EvPixelsType;
 public class EvOpMorphComplementGray2D extends EvOpSlice1
 	{
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return complement(p[0]);
 		}

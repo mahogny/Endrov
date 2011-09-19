@@ -8,6 +8,7 @@ package endrov.flowImageStats;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Kirsch filter
@@ -19,15 +20,15 @@ import endrov.imageset.EvPixelsType;
 public class EvOpKirsch2D extends EvOpSlice1
 	{
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return apply(p[0]);
+		return apply(ph, p[0]);
 		}
 	
 	
 	
 
-	public static EvPixels apply(EvPixels in) 
+	public static EvPixels apply(ProgressHandle ph, EvPixels in) 
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();

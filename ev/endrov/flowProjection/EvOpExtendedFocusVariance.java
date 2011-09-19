@@ -11,6 +11,7 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Extended focus i.e.
@@ -22,9 +23,9 @@ public class EvOpExtendedFocusVariance extends EvOpStack1
 	{
 	
 	@Override
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return project(p[0]);
+		return project(ph, p[0]);
 		}
 
 	
@@ -36,14 +37,14 @@ public class EvOpExtendedFocusVariance extends EvOpStack1
 	 * This map can be given back separately to check the result.
 	 * 
 	 */
-	public EvStack project(EvStack in)
+	public EvStack project(ProgressHandle progh, EvStack in)
 		{
 		EvStack out=new EvStack();
 		out.getMetaFrom(in);
 		int w=in.getWidth();
 		int h=in.getHeight();
 		
-		EvPixels[] ps=in.getPixels();
+		EvPixels[] ps=in.getPixels(progh);
 		double[][] psArrs=new double[ps.length][];
 		for(int i=0;i<ps.length;i++)
 			{
@@ -55,7 +56,7 @@ public class EvOpExtendedFocusVariance extends EvOpStack1
 		int[] arrMaxIndex=maxIndex.getArrayInt();
 		
 		//Use the first slice by default
-		EvPixels maxVariance=EvOpVarianceRect.localVarianceRect(ps[0], 1, 1).convertToDouble(false);
+		EvPixels maxVariance=EvOpVarianceRect.localVarianceRect(progh, ps[0], 1, 1).convertToDouble(false);
 		EvPixels outPixels=new EvPixels(EvPixelsType.DOUBLE,w,h);
 		double[] arrOutPixels=outPixels.getArrayDouble();
 		double[] arrMaxVariance=maxVariance.getArrayDouble();
@@ -64,7 +65,7 @@ public class EvOpExtendedFocusVariance extends EvOpStack1
 		for(int j=0;j<ps.length;j++)
 			{
 			EvPixels newPixels=ps[j];
-			EvPixels newVariance=EvOpVarianceRect.localVarianceRect(newPixels, 1, 1);
+			EvPixels newVariance=EvOpVarianceRect.localVarianceRect(progh, newPixels, 1, 1);
 			double[] arrNewVariance=newVariance.getArrayDouble();
 
 			//Heuristic: keep pixels with highest local variance

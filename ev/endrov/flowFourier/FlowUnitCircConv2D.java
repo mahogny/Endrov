@@ -67,7 +67,7 @@ public class FlowUnitCircConv2D extends FlowUnitBasic
 		EvPixels kernel=(EvPixels)flow.getInputValue(this, exec, "kernel");
 		AnyEvImage image=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		
-		lastOutput.put("out", new EvOpCircConv2D(kernel).exec1Untyped(image));
+		lastOutput.put("out", new EvOpCircConv2D(kernel).exec1Untyped(exec.ph, image));
 		}
 
 	

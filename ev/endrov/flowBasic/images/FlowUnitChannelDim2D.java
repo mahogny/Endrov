@@ -22,6 +22,7 @@ import endrov.imageset.AnyEvImage;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector2i;
 
 /**
@@ -86,7 +87,7 @@ public class FlowUnitChannelDim2D extends FlowUnitBasic
 		else if(in instanceof EvChannel)
 			{
 			EvChannel c=(EvChannel)in;
-			EvStack s=c.getFirstStack();
+			EvStack s=c.getFirstStack(exec.ph);
 			lastOutput.put("dim", new Vector2i(s.getWidth(),s.getHeight()));
 			}
 		}

@@ -8,6 +8,7 @@ package endrov.flowBasic.images;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Convert pixel type to a given type
@@ -22,7 +23,7 @@ public class EvOpImageConvertPixel extends EvOpSlice1
 		this.type=type;
 		}
 	
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return EvOpImageConvertPixel.apply(p[0],type);
 		}

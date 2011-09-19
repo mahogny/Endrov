@@ -11,6 +11,7 @@ import endrov.flow.EvOpStack1;
 import endrov.flowBasic.math.EvOpImageMulScalar;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 
@@ -29,7 +30,7 @@ public class EvOpFindLocalMaximas3D extends EvOpStack1
 	/**
 	 * Find local maximas
 	 */
-	public static List<Vector3i> findMaximas(EvStack stack)
+	public static List<Vector3i> findMaximas(ProgressHandle progh, EvStack stack)
 		{
 		LinkedList<Vector3i> list=new LinkedList<Vector3i>();
 
@@ -50,7 +51,7 @@ public class EvOpFindLocalMaximas3D extends EvOpStack1
 		boolean visited[][][]=new boolean[d][h][w];
 		//TODO faster with hashset?
 		
-		double[][] inarr=stack.getReadOnlyArraysDouble();
+		double[][] inarr=stack.getReadOnlyArraysDouble(progh);
 		for(int z=1;z<d-1;z++)
 			for(int y=1;y<h-1;y++)
 				for(int x=1;x<w-1;x++)
@@ -171,26 +172,26 @@ public class EvOpFindLocalMaximas3D extends EvOpStack1
 	/**
 	 * Find local minimas. O(w h d). Could be faster by a constant factor
 	 */
-	public static List<Vector3i> findMinimas(EvStack stack)
+	public static List<Vector3i> findMinimas(ProgressHandle ph, EvStack stack)
 		{
-		return findMaximas(new EvOpImageMulScalar(-1).exec1(stack));
+		return findMaximas(ph, new EvOpImageMulScalar(-1).exec1(ph,stack));
 		}
 	
 	
 
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return apply(p[0]);
+		return apply(ph, p[0]);
 		}
 	
-	public static EvStack apply(EvStack p)
+	public static EvStack apply(ProgressHandle progh, EvStack p)
 		{
 		EvStack pout=new EvStack();
 		pout.allocate(p.getWidth(), p.getHeight(), p.getDepth(), EvPixelsType.INT, p);
 		
-		int[][] arr=pout.getOrigArraysInt();
+		int[][] arr=pout.getOrigArraysInt(progh);
 		int w=p.getWidth();
-		List<Vector3i> vlist=findMaximas(p);
+		List<Vector3i> vlist=findMaximas(progh, p);
 		for(Vector3i v:vlist)
 			arr[v.z][v.y*w+v.x]=1;
 		

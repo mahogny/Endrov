@@ -32,6 +32,7 @@ import endrov.recording.widgets.RecSettingsSlices;
 import endrov.recording.widgets.RecSettingsTimes;
 import endrov.recording.widgets.RecSettingsTimes.TimeType;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 
 /**
@@ -118,13 +119,14 @@ public class EvMultidimAcquisition extends EvAcquisition
 					EvPixels pix=camIm.getPixels()[0];
 					if(currentChannel.averaging!=1)
 						{
+						ProgressHandle ph=new ProgressHandle();
 						for(int i=1;i<currentChannel.averaging;i++)
 							{
 							camIm=cam.snap();
 							EvPixels pix2=camIm.getPixels()[0];
-							pix=new EvOpImageAddImage().exec1(pix,pix2);
+							pix=new EvOpImageAddImage().exec1(ph, pix,pix2);
 							}
-						pix=new EvOpImageDivScalar(currentChannel.averaging).exec1(pix);
+						pix=new EvOpImageDivScalar(currentChannel.averaging).exec1(ph, pix);
 						}
 					EvImage evim=new EvImage(pix);
 

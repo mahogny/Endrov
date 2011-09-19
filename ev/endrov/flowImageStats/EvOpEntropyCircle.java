@@ -10,6 +10,7 @@ import java.util.HashMap;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Moving entropy. Entropy is taken over a circle of radius r. r=0 is a single point
@@ -28,9 +29,9 @@ public class EvOpEntropyCircle extends EvOpSlice1
 		this.r = r;
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return apply(p[0],r.intValue());
+		return apply(ph, p[0],r.intValue());
 //		return new EvOpImageMulScalar(-1.0).exec1(new EvOpMovingAverage(pw,ph).exec(new EvOpImageLog().exec(p[0])));
 		
 		
@@ -50,7 +51,7 @@ public class EvOpEntropyCircle extends EvOpSlice1
 	
 	
 	
-	public static EvPixels apply(EvPixels in, int r)
+	public static EvPixels apply(ProgressHandle ph, EvPixels in, int r)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		double[] inPixels=in.getArrayDouble();

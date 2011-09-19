@@ -10,6 +10,7 @@ import java.util.Random;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Add exponential noise
@@ -28,7 +29,7 @@ public class EvOpImageNoiseExponential extends EvOpSlice1
 		}
 
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return apply(p[0], lambda);
 		}

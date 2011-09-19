@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Calculate connectivity graph. Assumes stack contains integer values, one for each region.
@@ -30,14 +31,14 @@ public class EvOpParticleConnectivity
 	 * @param stack
 	 * @return
 	 */
-	public static HashMap<Integer,Integer> exec(EvStack stack)
+	public static HashMap<Integer,Integer> exec(ProgressHandle progh, EvStack stack)
 		{
 		HashMap<Integer, Integer> map=new HashMap<Integer, Integer>();
 		
 		//Would it be faster if it was not a hashmap?
 
 		//Find relations, at least in one way
-		int[][] arrs=stack.getReadOnlyArraysInt();
+		int[][] arrs=stack.getReadOnlyArraysInt(progh);
 		int w=stack.getWidth();
 		int h=stack.getHeight();
 		for(int az=0;az<arrs.length;az++)

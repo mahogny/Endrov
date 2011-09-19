@@ -49,7 +49,7 @@ public class FlowUnitAbs extends FlowUnitMathUniop
 		if(a instanceof Number)
 			lastOutput.put("B", NumberMath.abs((Number)a));
 		else if(a instanceof AnyEvImage)
-			lastOutput.put("B", new EvOpImageAbs().exec1Untyped((AnyEvImage)a));
+			lastOutput.put("B", new EvOpImageAbs().exec1Untyped(exec.ph, (AnyEvImage)a));
 		else
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass());
 		}

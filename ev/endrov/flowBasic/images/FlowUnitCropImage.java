@@ -68,7 +68,7 @@ public class FlowUnitCropImage extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		BoxROI box=(BoxROI)flow.getInputValue(this, exec, "roi");
 		
-		lastOutput.put("out", new EvOpCropImage3D(box).exec1Untyped(a));
+		lastOutput.put("out", new EvOpCropImage3D(box).exec1Untyped(exec.ph, a));
 		}
 
 	

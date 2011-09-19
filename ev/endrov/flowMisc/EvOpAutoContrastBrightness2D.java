@@ -8,6 +8,7 @@ package endrov.flowMisc;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Automatically scale image to be within limits. Optionally inverts the image as well
@@ -23,12 +24,12 @@ public class EvOpAutoContrastBrightness2D extends EvOpSlice1
 		this.invert = invert;
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return apply(p[0], invert);
+		return apply(ph, p[0], invert);
 		}
 	
-	public static EvPixels apply(EvPixels in, boolean invert)
+	public static EvPixels apply(ProgressHandle ph, EvPixels in, boolean invert)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();

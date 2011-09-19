@@ -10,6 +10,7 @@ import java.util.List;
 import endrov.flow.FlowType;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector2i;
 
 //These operations can be made faster using RLE images
@@ -61,7 +62,7 @@ public abstract class MorphKernel
 	 * <br/>
 	 * Kernel has a specified center kcx,kcy. Outside image assumed empty. 
 	 */
-	public abstract EvPixels dilate(EvPixels in);
+	public abstract EvPixels dilate(ProgressHandle ph, EvPixels in);
 
 
 
@@ -70,25 +71,25 @@ public abstract class MorphKernel
 	 * <br/>
 	 * Kernel has a specified center kcx,kcy. Outside image assumed empty. 
 	 */
-	public abstract EvPixels erode(EvPixels in);
+	public abstract EvPixels erode(ProgressHandle ph, EvPixels in);
 
 	/**
 	 * Open: dilate, then erode
 	 */
-	public abstract EvPixels open(EvPixels in);
+	public abstract EvPixels open(ProgressHandle ph, EvPixels in);
 
 
 	/**
 	 * Close: Erode, then dilate
 	 */
-	public abstract EvPixels close(EvPixels in);
+	public abstract EvPixels close(ProgressHandle ph, EvPixels in);
 
 	/**
 	 * White Tophat: WTH(image)=image - open(image)
 	 * <br/>
 	 * Also called Tophat
 	 */
-	public abstract EvPixels whitetophat(EvPixels in);
+	public abstract EvPixels whitetophat(ProgressHandle ph, EvPixels in);
 
 
 	/**
@@ -96,23 +97,23 @@ public abstract class MorphKernel
 	 * <br/>
 	 * Also called Bottomhat
 	 */
-	public abstract EvPixels blacktophat(EvPixels in);
+	public abstract EvPixels blacktophat(ProgressHandle ph, EvPixels in);
 
 	
 	/**
 	 * Internal gradient: image-erode(image)
 	 */
-	public abstract EvPixels internalGradient(EvPixels in);
+	public abstract EvPixels internalGradient(ProgressHandle ph, EvPixels in);
 
 	/**
 	 * External gradient: dilate(image)-image
 	 */
-	public abstract EvPixels externalGradient(EvPixels in);
+	public abstract EvPixels externalGradient(ProgressHandle ph, EvPixels in);
 
 	/**
 	 * Whole gradient: dilate(image)-erode(image)
 	 */
-	public abstract EvPixels wholeGradient(EvPixels in);
+	public abstract EvPixels wholeGradient(ProgressHandle ph, EvPixels in);
 
 
 	
@@ -120,17 +121,17 @@ public abstract class MorphKernel
 	 * Hit and miss transform. Automatically detects if it should be constrained or unconstrained.
 	 * Foreground and background are by definition disjoint
 	 */
-	public abstract EvPixels hitmiss(EvPixels in);
+	public abstract EvPixels hitmiss(ProgressHandle ph, EvPixels in);
 	
 	/**
 	 * Binary hit and miss transform
 	 */
-	protected EvPixels hitmissBinary(MorphKernel kBG, EvPixels in)
+	protected EvPixels hitmissBinary(ProgressHandle ph, MorphKernel kBG, EvPixels in)
 		{
 		MorphKernel kFG=this;
 		
-		EvPixels bgE=kBG.erode(EvOpMorphComplementBinary.apply(in));
-		EvPixels fgE=kFG.erode(in);
+		EvPixels bgE=kBG.erode(ph, EvOpMorphComplementBinary.apply(in));
+		EvPixels fgE=kFG.erode(ph, in);
 
 		EvPixels out=new EvPixels(EvPixelsType.DOUBLE,in.getWidth(),in.getHeight());
 		double[] arrBGe=bgE.getReadOnly(EvPixelsType.DOUBLE).getArrayDouble();
@@ -148,12 +149,12 @@ public abstract class MorphKernel
 	 * General unconstrained hit or miss.
 	 * Unconstrained := origin is not included in fg or bg
 	 */
-	protected EvPixels hitmissUHMT(MorphKernel kBG, EvPixels in)
+	protected EvPixels hitmissUHMT(ProgressHandle ph, MorphKernel kBG, EvPixels in)
 		{
 		MorphKernel kFG=this;
 		
-		EvPixels bgD=kBG.dilate(in);
-		EvPixels fgE=kFG.erode(in);
+		EvPixels bgD=kBG.dilate(ph, in);
+		EvPixels fgE=kFG.erode(ph, in);
 
 		EvPixels out=new EvPixels(EvPixelsType.DOUBLE,in.getWidth(),in.getHeight());
 		double[] arrBGd=bgD.getReadOnly(EvPixelsType.DOUBLE).getArrayDouble();
@@ -177,15 +178,15 @@ public abstract class MorphKernel
 	 * General unconstrained hit or miss.
 	 * Constrained := origin is included in fg or bg
 	 */
-	protected EvPixels hitmissCHMT(MorphKernel kBG, EvPixels in)
+	protected EvPixels hitmissCHMT(ProgressHandle ph, MorphKernel kBG, EvPixels in)
 		{
 		in=in.convertToDouble(true);
 		MorphKernel kFG=this;
 		
-		EvPixels bgE=kBG.erode(in);
-		EvPixels bgD=kBG.dilate(in);
-		EvPixels fgE=kFG.erode(in);
-		EvPixels fgD=kFG.dilate(in);
+		EvPixels bgE=kBG.erode(ph, in);
+		EvPixels bgD=kBG.dilate(ph, in);
+		EvPixels fgE=kFG.erode(ph, in);
+		EvPixels fgD=kFG.dilate(ph, in);
 
 		EvPixels out=new EvPixels(EvPixelsType.DOUBLE,in.getWidth(),in.getHeight());
 		double[] arrBGe=bgE.getReadOnly(EvPixelsType.DOUBLE).getArrayDouble();

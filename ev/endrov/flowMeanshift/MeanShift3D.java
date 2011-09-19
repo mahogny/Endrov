@@ -23,6 +23,7 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 /**
@@ -54,7 +55,7 @@ public class MeanShift3D
 		double sigmaZ;
 		double szsz2;
 		
-		public MeanShiftPreProcess(EvStack s, double sigmaZ, int pw, int ph)
+		public MeanShiftPreProcess(ProgressHandle progh, EvStack s, double sigmaZ, int pw, int ph)
 			{
 			int w=s.getWidth();
 			int h=s.getHeight();
@@ -71,9 +72,9 @@ public class MeanShift3D
 			EvOpGeneral op=new EvOpSumRect(pw,ph);
 
 			//Pre-convolve all positions
-			momentX=op.exec1(new EvOpImageMulImage().exec1(incX, s));
-			momentY=op.exec1(new EvOpImageMulImage().exec1(incY, s));
-			moment0=op.exec1(s);
+			momentX=op.exec1(progh, new EvOpImageMulImage().exec1(progh, incX, s));
+			momentY=op.exec1(progh, new EvOpImageMulImage().exec1(progh, incY, s));
+			moment0=op.exec1(progh, s);
 			
 			//TODO ensure that the type is double already here
 			
@@ -83,7 +84,7 @@ public class MeanShift3D
 			}
 		
 		
-		public void doAll(EvStack s, int roiSX, int roiEX, int roiSY, int roiEY)
+		public void doAll(ProgressHandle progh, EvStack s, int roiSX, int roiEX, int roiSY, int roiEY)
 			{
 			int w=s.getWidth();
 			int h=s.getHeight();
@@ -102,7 +103,7 @@ public class MeanShift3D
 //			for(int ay=0;ay<h;ay++)
 	//			for(int ax=0;ax<w;ax++)
 					{
-					Vector3d pos=iterate(new Vector3d(ax,ay,0));
+					Vector3d pos=iterate(progh, new Vector3d(ax,ay,0));
 					Vector3i posi=new Vector3i((int)Math.round(pos.x),(int)Math.round(pos.y),(int)Math.round(pos.z));
 					mids.add(posi);
 //					System.out.println(posi);
@@ -151,7 +152,7 @@ public class MeanShift3D
 			}
 		
 
-		private Vector3d next(Vector3d pos)
+		private Vector3d next(ProgressHandle progh, Vector3d pos)
 			{
 			//Calculate mean at this position
 			double sumX=0;
@@ -178,9 +179,9 @@ public class MeanShift3D
 				double thisw=Math.exp(-dz*dz/szsz2);
 				//Later, can use a cut-off. should make it a lot faster. might run into convergence problems!!!
 				
-				EvPixels pX=imArr[az].getPixels().getReadOnly(EvPixelsType.DOUBLE);
-				EvPixels pY=momentY.getInt(az).getPixels().getReadOnly(EvPixelsType.DOUBLE);
-				EvPixels p0=moment0.getInt(az).getPixels().getReadOnly(EvPixelsType.DOUBLE);
+				EvPixels pX=imArr[az].getPixels(progh).getReadOnly(EvPixelsType.DOUBLE);
+				EvPixels pY=momentY.getInt(az).getPixels(progh).getReadOnly(EvPixelsType.DOUBLE);
+				EvPixels p0=moment0.getInt(az).getPixels(progh).getReadOnly(EvPixelsType.DOUBLE);
 				double[] apX=pX.getArrayDouble();
 				double[] apY=pY.getArrayDouble();
 				double[] ap0=p0.getArrayDouble();
@@ -203,7 +204,7 @@ public class MeanShift3D
 		/**
 		 * Iterate toward convergence for a position
 		 */
-		public Vector3d iterate(Vector3d pos)
+		public Vector3d iterate(ProgressHandle progh, Vector3d pos)
 			{
 			//For our purpose, not enough z-resolution to build up a table. have to track position with fraction plane precision.
 			
@@ -220,10 +221,10 @@ public class MeanShift3D
 				Vector3d pos4=new Vector3d(Math.ceil(pos.x),Math.ceil(pos.y),pos.z);
 				double dx=pos.x-Math.floor(pos.x);
 				double dy=pos.y-Math.floor(pos.y);
-				pos1=next(pos1);
-				pos2=next(pos2);
-				pos3=next(pos3);
-				pos4=next(pos4);
+				pos1=next(progh, pos1);
+				pos2=next(progh, pos2);
+				pos3=next(progh, pos3);
+				pos4=next(progh, pos4);
 				pos1.scale((1-dx)*(1-dy));
 				pos2.scale(dx*(1-dy));
 				pos3.scale((1-dx)*dy);
@@ -253,13 +254,15 @@ public class MeanShift3D
 		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 		
+		ProgressHandle progh=new ProgressHandle();
+		
 //		EvData data=EvData.loadFile(new File("testimages/smoothvariation.png"));
 		// /Volumes/TBU_main02/ost4dgood/TB2164_080118.ost/
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost/imset-im/ch-RFP/00014750/00000010.jpg"));
 		EvChannel chan=data.getIdObjectsRecursive(EvChannel.class).values().iterator().next();
 //		MeanShiftPreProcess p=new MeanShiftPreProcess(chan.getFirstStack(),1, 8, 8);
-		MeanShiftPreProcess p=new MeanShiftPreProcess(chan.getFirstStack(),1, 10, 10);
-		p.doAll(chan.getFirstStack(), 50, 230, 50, 150);
+		MeanShiftPreProcess p=new MeanShiftPreProcess(progh, chan.getFirstStack(progh),1, 10, 10);
+		p.doAll(progh, chan.getFirstStack(progh), 50, 230, 50, 150);
 		
 		System.exit(0);
 		

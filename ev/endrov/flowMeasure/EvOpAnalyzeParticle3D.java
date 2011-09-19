@@ -8,6 +8,7 @@ package endrov.flowMeasure;
 import java.util.*;
 
 import endrov.imageset.EvChannel;
+import endrov.util.ProgressHandle;
 
 /**
  * Analyze blobs in each stack over time.
@@ -35,9 +36,9 @@ public class EvOpAnalyzeParticle3D
 		}
 	
 	
-	public ParticleMeasure exec(EvChannel regions, EvChannel image)
+	public ParticleMeasure exec(ProgressHandle progh, EvChannel regions, EvChannel image)
 		{
-		ParticleMeasure data=new ParticleMeasure(image, regions, new LinkedList<String>(enabled));
+		ParticleMeasure data=new ParticleMeasure(progh, image, regions, new LinkedList<String>(enabled));
 		return data;
 		}
 	

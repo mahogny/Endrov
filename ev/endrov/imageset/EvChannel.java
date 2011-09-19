@@ -26,8 +26,9 @@ import endrov.data.EvObject;
 import endrov.ev.EvLog;
 import endrov.util.EvDecimal;
 import endrov.util.EvListUtil;
-import endrov.util.Memoize;
-import endrov.util.MemoizeImmediate;
+import endrov.util.MemoizeX;
+import endrov.util.MemoizeXImmediate;
+import endrov.util.ProgressHandle;
 
 /**
  * Images for one channel
@@ -45,7 +46,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	/****************************************************************************************/
 
 	/** Image loaders */
-	private TreeMap<EvDecimal, Memoize<EvStack>> imageLoader = new TreeMap<EvDecimal, Memoize<EvStack>>();
+	private TreeMap<EvDecimal, MemoizeX<EvStack>> imageLoader = new TreeMap<EvDecimal, MemoizeX<EvStack>>();
 	
 	
 	public EvDecimal getFirstFrame()
@@ -65,20 +66,39 @@ public class EvChannel extends EvObject implements AnyEvImage
 	
 	
 	
-	public EvStack getStack(EvDecimal frame)
+	public EvStack getStack(ProgressHandle progh, EvDecimal frame)
 		{
-		Memoize<EvStack> stack=imageLoader.get(frame);
+		MemoizeX<EvStack> stack=imageLoader.get(frame);
 		if(stack==null)
 			return null;
 		else
-			return stack.get();
+			return stack.get(progh);
+		}
+	
+	public MemoizeX<EvStack> getStackLazy(EvDecimal frame)
+		{
+		return imageLoader.get(frame);
+		}
+	
+	public EvStack getStack(EvDecimal frame)
+		{
+		MemoizeX<EvStack> stack=imageLoader.get(frame);
+		if(stack==null)
+			return null;
+		else
+			return stack.get(new ProgressHandle());
 		}
 	
 	public void putStack(EvDecimal frame, EvStack stack)
 		{
-		imageLoader.put(frame, new MemoizeImmediate<EvStack>(stack));
+		imageLoader.put(frame, new MemoizeXImmediate<EvStack>(stack));
 		}
-	
+
+	public void putStack(EvDecimal frame, MemoizeXImmediate<EvStack> stack)
+		{
+		imageLoader.put(frame, stack);
+		}
+
 	public void removeStack(EvDecimal frame)
 		{
 		imageLoader.remove(frame);
@@ -100,13 +120,13 @@ public class EvChannel extends EvObject implements AnyEvImage
 	 * Get the first stack. Convenience method; meant mainly to be used when the
 	 * channel contains a single stack
 	 */
-	public EvStack getFirstStack()
+	public EvStack getFirstStack(ProgressHandle progh)
 		{
-		Memoize<EvStack> stack=imageLoader.values().iterator().next();
+		MemoizeX<EvStack> stack=imageLoader.values().iterator().next();
 		if(stack==null)
 			return null;
 		else
-			return stack.get();
+			return stack.get(progh);
 		}
 
 
@@ -136,7 +156,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	 */
 	public EvDecimal closestFrameBefore(EvDecimal frame)
 		{
-		SortedMap<EvDecimal, Memoize<EvStack>> before = imageLoader.headMap(frame);
+		SortedMap<EvDecimal, MemoizeX<EvStack>> before = imageLoader.headMap(frame);
 		if (before.size()==0)
 			return frame;
 		else
@@ -154,7 +174,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	public EvDecimal closestFrameAfter(EvDecimal frame)
 		{
 		// Can be made faster by iterator
-		SortedMap<EvDecimal, Memoize<EvStack>> after = new TreeMap<EvDecimal, Memoize<EvStack>>(
+		SortedMap<EvDecimal, MemoizeX<EvStack>> after = new TreeMap<EvDecimal, MemoizeX<EvStack>>(
 				imageLoader.tailMap(frame));
 		after.remove(frame);
 
@@ -391,7 +411,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 		//Retrieve default stack settings
 		if(!imageLoader.isEmpty())
 			{
-			EvStack fstack=getFirstStack();
+			EvStack fstack=getFirstStack(new ProgressHandle());
 			
 			
 			vecDefaultRes=fstack.getRes();
@@ -443,8 +463,8 @@ public class EvChannel extends EvObject implements AnyEvImage
 			if(!vecDefaultRes.equals(stack.getRes()))
 				{
 				otherMeta.put("resX", ""+stack.getRes().x);
-				otherMeta.put("resX", ""+stack.getRes().y);
-				otherMeta.put("resX", ""+stack.getRes().z);
+				otherMeta.put("resY", ""+stack.getRes().y);
+				otherMeta.put("resZ", ""+stack.getRes().z);
 				}
 			else
 				{

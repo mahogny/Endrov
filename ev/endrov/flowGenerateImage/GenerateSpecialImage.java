@@ -10,6 +10,7 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Generate special images useful for calculations
@@ -28,7 +29,7 @@ public class GenerateSpecialImage
 	 * Return an image of given size: im(x,y)=x^p*y^q.
 	 * Requires p,q>=0
 	 */
-	public static EvPixels genXpYp(int w, int h, int p, int q)
+	public static EvPixels genXpYp(ProgressHandle ph, int w, int h, int p, int q)
 		{
 		EvPixels out=GenerateSpecialImage.genConstant(w, h, 1);
 		
@@ -36,13 +37,13 @@ public class GenerateSpecialImage
 			{
 			EvPixels mul=GenerateSpecialImage.genIncX(w, h);
 			for(int i=0;i<p;i++)
-				out=new EvOpImageMulImage().exec1(out, mul);
+				out=new EvOpImageMulImage().exec1(ph, out, mul);
 			}
 		if(q>0)
 			{
 			EvPixels mul=GenerateSpecialImage.genIncY(w, h);
 			for(int i=0;i<q;i++)
-				out=new EvOpImageMulImage().exec1(out, mul);
+				out=new EvOpImageMulImage().exec1(ph, out, mul);
 			}
 		return out;
 		}
@@ -169,7 +170,7 @@ public class GenerateSpecialImage
 	/**
 	 * 3D Gaussian function placed in the middle
 	 */
-	public static EvStack genGaussian3D(double sigmaX, double sigmaY, double sigmaZ, int w, int h, int d)
+	public static EvStack genGaussian3D(ProgressHandle progh, double sigmaX, double sigmaY, double sigmaZ, int w, int h, int d)
 		{
 		EvStack s=new EvStack();
 		s.setTrivialResolution();
@@ -213,11 +214,9 @@ public class GenerateSpecialImage
 				}
 			
 			s.putInt(curd, new EvImage(p));
-//			s.put(decd, new EvImage(p));
-			//curd++;
 			}
-		sum=1/sum;
-		for(EvPixels p:s.getPixels())
+		sum=1.0/sum;
+		for(EvPixels p:s.getPixels(progh))
 			{
 			double[] aPixels=p.getArrayDouble();
 			for(int i=0;i<aPixels.length;i++)

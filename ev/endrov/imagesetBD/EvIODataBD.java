@@ -13,6 +13,7 @@ import endrov.ev.EV;
 import endrov.imageset.*;
 import endrov.imagesetOST.EvIODataOST;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 
@@ -143,7 +144,7 @@ public class EvIODataBD implements EvIOData
 					final File fname=new File(f,dyeName+" - n"+EV.pad(0, 6)+".tif");
 					evim.io=new EvIOImage()
 						{
-						public EvPixels loadJavaImage()
+						public EvPixels eval(ProgressHandle progh)
 							{
 							return EvCommonImageIO.loadPixels(fname, 0);
 							}

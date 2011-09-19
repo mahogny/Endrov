@@ -10,6 +10,7 @@ import java.util.*;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 /**
@@ -54,7 +55,7 @@ public class LevelHierarchy
 	/**
 	 * Form level hierarchy. O(#level log(#level) + w h d )
 	 */
-	public LevelHierarchy(EvStack stack)
+	public LevelHierarchy(ProgressHandle progh, EvStack stack)
 		{
 		/* Take all pixels
 		 * Sort pixels
@@ -85,7 +86,7 @@ public class LevelHierarchy
 		
 		
 		
-		TreeMap<Integer, LinkedList<Vector3i>> pixels=getSortedPixelList(stack, true);
+		TreeMap<Integer, LinkedList<Vector3i>> pixels=getSortedPixelList(progh, stack, true);
 		
 		int countPixel=0;
 		
@@ -257,11 +258,11 @@ public class LevelHierarchy
 	 * 
 	 * TODO java 1.6 has .descendingMap(), which could replace reverse. 
 	 */
-	public static TreeMap<Integer, LinkedList<Vector3i>> getSortedPixelList(EvStack stack, boolean reverse)
+	public static TreeMap<Integer, LinkedList<Vector3i>> getSortedPixelList(ProgressHandle progh, EvStack stack, boolean reverse)
 		{
 		HashMap<Integer, LinkedList<Vector3i>> pixels=new HashMap<Integer, LinkedList<Vector3i>>();
 		
-		EvPixels[] parr=stack.getPixels();
+		EvPixels[] parr=stack.getPixels(progh);
 		
 		for(int z=0;z<parr.length;z++)
 			{

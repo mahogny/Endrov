@@ -89,8 +89,10 @@ public class MW
 			if(!EndrovRegistrationDialog.hasRegistered())
 				{
 				EndrovRegistrationDialog.runDialog();
-				EndrovRegistrationDialog.connectAndRegister();
+				EndrovRegistrationDialog.connectAndRegister(true);
 				}
+			else
+				EndrovRegistrationDialog.connectAndRegister(false);
 			}
 		catch (Exception e)
 			{

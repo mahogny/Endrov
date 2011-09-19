@@ -52,6 +52,7 @@ import endrov.util.EvFileUtil;
 import endrov.util.EvListUtil;
 import endrov.util.EvParallel;
 import endrov.util.EvXmlUtil;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 /**
@@ -218,7 +219,7 @@ public class CompareAll
 	/**
 	 * Coloc over XYZ
 	 */
-	public static ColocCoefficients colocXYZ(EvData dataA, EvData dataB, NucLineage coordLinA, NucLineage coordLinB, String chanNameA, String chanNameB)
+	public static ColocCoefficients colocXYZ(ProgressHandle progh, EvData dataA, EvData dataB, NucLineage coordLinA, NucLineage coordLinB, String chanNameA, String chanNameB)
 		{
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 		Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
@@ -271,8 +272,8 @@ public class CompareAll
 				continue;
 			
 			//Use closest frame in each
-			EvStack stackA=chanA.getStack(chanA.closestFrame(frameA));
-			EvStack stackB=chanB.getStack(chanB.closestFrame(frameB));
+			EvStack stackA=chanA.getStack(progh, chanA.closestFrame(frameA));
+			EvStack stackB=chanB.getStack(progh, chanB.closestFrame(frameB));
 
 			//Compare each slice. Same number of slices since it has been normalized
 			if(stackA.getDepth()!=stackB.getDepth())
@@ -280,8 +281,8 @@ public class CompareAll
 			int numz=stackA.getDepth();
 			for(int i=0;i<numz;i++)
 				{
-				EvPixels pA=stackA.getInt(i).getPixels();
-				EvPixels pB=stackB.getInt(i).getPixels();
+				EvPixels pA=stackA.getInt(i).getPixels(progh);
+				EvPixels pB=stackB.getInt(i).getPixels(progh);
 				if(pA==null || pB==null)
 					System.out.println("Null pixels at frame "+frameA+" vs "+frameB);
 				if(pA.getType()==EvPixelsType.FLOAT && pB.getType()==EvPixelsType.FLOAT)
@@ -337,7 +338,7 @@ public class CompareAll
 	 * Generate overview graph for XYZ expression. Graph size is fixed so it throws out a lot of information.
 	 * This is why this code is separate from coloc analysis
 	 */
-	public static void fancyGraphXYZ(EvData dataA, NucLineage coordLinA, File outputFile, String chanNameA) throws IOException
+	public static void fancyGraphXYZ(ProgressHandle progh, EvData dataA, NucLineage coordLinA, File outputFile, String chanNameA) throws IOException
 		{
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 		
@@ -376,7 +377,7 @@ public class CompareAll
 						
 			//Use closest frame
 			EvDecimal closestFrameA=chanA.closestFrame(frameA);
-			EvStack stackA=chanA.getStack(closestFrameA);
+			EvStack stackA=chanA.getStack(progh, closestFrameA);
 
 			System.out.println("doing frame "+closestFrameA);
 
@@ -386,7 +387,7 @@ public class CompareAll
 				System.out.println("---------------------------------------------------------------- wtf. numz "+numz+"  should be "+xyzSize+"  for frame: "+closestFrameA+"  channameA "+chanNameA);
 			for(int cz=0;cz<xyzSize;cz++)
 				{
-				EvPixels p=stackA.getInt(cz).getPixels().convertToDouble(true);
+				EvPixels p=stackA.getInt(cz).getPixels(progh).convertToDouble(true);
 				double[] inarr=p.getArrayDouble();
 				double arrmin=getMin(inarr);
 				double arrmax=getMax(inarr);
@@ -517,7 +518,7 @@ public class CompareAll
 			File outputFileXYZimageA=new File(new File(in,"data"),"expXYZ.png");
 			if(!outputFileXYZimageA.exists())
 				//fancyGraphXYZ(data, coordLineageFor(data), outputFileXYZimageA, chanName);
-				fancyGraphXYZ(data, coordLineageFor(data), outputFileXYZimageA, "XYZ");
+				fancyGraphXYZ(new ProgressHandle(), data, coordLineageFor(data), outputFileXYZimageA, "XYZ");
 			}
 		catch (IOException e1)
 			{
@@ -986,7 +987,7 @@ public class CompareAll
 								}
 
 							//Slices: XYZ
-							ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), "XYZ","XYZ");
+							ColocCoefficients coeffXYZ=colocXYZ(new ProgressHandle(), dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), "XYZ","XYZ");
 							synchronized (comparisonLock)
 								{
 								comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);   ///////////////// symmetry?

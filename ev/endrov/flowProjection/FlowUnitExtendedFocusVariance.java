@@ -54,7 +54,7 @@ public class FlowUnitExtendedFocusVariance extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
-		lastOutput.put("out", new EvOpExtendedFocusVariance().exec1Untyped(a));
+		lastOutput.put("out", new EvOpExtendedFocusVariance().exec1Untyped(exec.ph, a));
 		}
 
 

@@ -7,6 +7,7 @@ package endrov.flowProjection;
 
 import endrov.flowBasic.math.EvOpImageMaxImage;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Projection: Max Z
@@ -17,8 +18,8 @@ import endrov.imageset.EvPixels;
 public class EvOpProjectMaxZ extends EvOpProjectZ
 	{
 	@Override
-	protected EvPixels combine(EvPixels a, EvPixels b)
+	protected EvPixels combine(ProgressHandle ph, EvPixels a, EvPixels b)
 		{
-		return new EvOpImageMaxImage().exec1(a,b);
+		return new EvOpImageMaxImage().exec1(ph,a,b);
 		}
 	}

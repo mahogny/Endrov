@@ -12,6 +12,7 @@ import java.util.TreeMap;
 
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 
 /**
@@ -31,12 +32,12 @@ public class EvOpThresholdFukunaga2D extends Threshold2D
 		this.numClasses=numClasses;
 		}
 
-	protected double[] getThreshold(EvPixels in)
+	protected double[] getThreshold(ProgressHandle progh, EvPixels in)
 		{
-		return findThreshold(in, numClasses);
+		return findThreshold(progh, in, numClasses);
 		}
 	
-	public static double[] findThreshold(EvPixels in, int numClasses)
+	public static double[] findThreshold(ProgressHandle progh, EvPixels in, int numClasses)
 		{
 		
 		in=in.getReadOnly(EvPixelsType.DOUBLE);

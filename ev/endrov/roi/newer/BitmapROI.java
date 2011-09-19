@@ -21,6 +21,7 @@ import endrov.imageset.Imageset;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 /**
  * ROI based on a bitmap
@@ -43,7 +44,7 @@ public class BitmapROI extends ROI
 	public int thisValue;
 
 	@Override
-	public LineIterator getLineIterator(EvStack stack, EvImage im,
+	public LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImage im,
 			String channel, EvDecimal frame, double z)
 		{
 		// TODO Auto-generated method stub

@@ -17,6 +17,7 @@ import endrov.imageset.Imageset;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
 import endrov.modelWindow.gl.GLCamera;
 
@@ -71,7 +72,7 @@ public abstract class StackRendererInterface
 	
 	//TODO better to use stack than frame?
 	//TODO this does not work! might select a channel multiple times!!!!
-	public abstract boolean newCreate(ProgressMeter pm, EvDecimal frame, List<StackRendererInterface.ChannelSelection> chsel,ModelWindow w);
+	public abstract boolean newCreate(ProgressHandle progh, ProgressMeter pm, EvDecimal frame, List<StackRendererInterface.ChannelSelection> chsel,ModelWindow w);
 	public abstract void loadGL(GL gl);
 	public abstract void render(GL gl,List<TransparentRender> transparentRenderers, GLCamera cam,
 			boolean solidColor, boolean drawEdges, boolean mixColors);

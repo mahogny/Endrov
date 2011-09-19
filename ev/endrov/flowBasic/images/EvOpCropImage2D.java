@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 
 /**
@@ -30,7 +31,7 @@ public class EvOpCropImage2D extends EvOpSlice1
 		this.toY = toY;
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return apply(p[0]);
 		}

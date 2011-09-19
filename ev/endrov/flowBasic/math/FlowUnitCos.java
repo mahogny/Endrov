@@ -48,7 +48,7 @@ public class FlowUnitCos extends FlowUnitMathUniop
 		if(a instanceof Number)
 			lastOutput.put("B", Math.cos(((Number)a).doubleValue()));
 		else if(a instanceof AnyEvImage)
-			lastOutput.put("B", new EvOpImageCos().exec1Untyped((AnyEvImage)a));
+			lastOutput.put("B", new EvOpImageCos().exec1Untyped(exec.ph, (AnyEvImage)a));
 		else
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass());
 		}

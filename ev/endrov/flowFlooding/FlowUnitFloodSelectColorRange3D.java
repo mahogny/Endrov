@@ -71,7 +71,7 @@ public class FlowUnitFloodSelectColorRange3D extends FlowUnitBasic
 		Number rangeMinus=(Number)flow.getInputValue(this, exec, "rminus");
 		Number rangePlus=(Number)flow.getInputValue(this, exec, "rplus");
 		
-		lastOutput.put("region", new EvOpFloodSelectColorRange3D(pos,rangeMinus,rangePlus).exec1Untyped(image));
+		lastOutput.put("region", new EvOpFloodSelectColorRange3D(pos,rangeMinus,rangePlus).exec1Untyped(exec.ph, image));
 		}
 
 	

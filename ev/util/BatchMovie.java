@@ -22,6 +22,7 @@ import endrov.imageset.Imageset;
 import endrov.makeMovie.EvMovieMakerFactory;
 import endrov.makeMovie.MakeMovieThread;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 /**
  * Go through all imagesets in a directory and make movies
@@ -65,7 +66,7 @@ public class BatchMovie
 			//String quality="Default";
 			String quality="High-quality MPEG4";
 	
-	
+			ProgressHandle ph=new ProgressHandle(); 
 	
 			List<MakeMovieThread.MovieChannel> channelList=new LinkedList<MakeMovieThread.MovieChannel>();
 	
@@ -77,10 +78,10 @@ public class BatchMovie
 			//Generate max channels
 			EvChannel chGFP=(EvChannel)imset.metaObject.get("GFP");
 			if(chGFP!=null)
-				imset.metaObject.put("GFPmax", new EvOpProjectMaxZ().exec1(chGFP));
+				imset.metaObject.put("GFPmax", new EvOpProjectMaxZ().exec1(ph, chGFP));
 			EvChannel chRFP=(EvChannel)imset.metaObject.get("RFP");
 			if(chRFP!=null)
-				imset.metaObject.put("RFPmax", new EvOpProjectMaxZ().exec1(chRFP));
+				imset.metaObject.put("RFPmax", new EvOpProjectMaxZ().exec1(ph, chRFP));
 			
 
 			//Add channels that should be in the movie. Figure out best width (original width)
@@ -97,8 +98,8 @@ public class BatchMovie
 					System.out.println(name);
 					//Get original image size
 					EvChannel ch=(EvChannel)imset.metaObject.get(name);
-					EvStack stack=ch.getFirstStack();
-					EvPixels p=stack.getFirstImage().getPixels();
+					EvStack stack=ch.getFirstStack(null);
+					EvPixels p=stack.getFirstImage().getPixels(ph);
 					width=p.getWidth();
 					}
 	

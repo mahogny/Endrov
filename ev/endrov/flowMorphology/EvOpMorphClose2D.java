@@ -7,6 +7,7 @@ package endrov.flowMorphology;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Close: Erode, then dilate
@@ -25,8 +26,8 @@ public class EvOpMorphClose2D extends EvOpSlice1
 		}
 
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return kernel.close(p[0]);
+		return kernel.close(ph, p[0]);
 		}
 	}

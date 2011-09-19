@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Measure: integral intensity
@@ -20,7 +21,7 @@ public class ParticleMeasureVolume implements ParticleMeasure.MeasurePropertyTyp
 	{
 	private static String propertyName="volume";
 
-	public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
 		HashMap<Integer,Integer> vol=new HashMap<Integer, Integer>();
 		//TODO: a special map for this case could speed up plenty.
@@ -30,7 +31,7 @@ public class ParticleMeasureVolume implements ParticleMeasure.MeasurePropertyTyp
 		//Find maximas
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
-			int[] arrID=stackMask.getInt(az).getPixels().convertToInt(true).getArrayInt();
+			int[] arrID=stackMask.getInt(az).getPixels(progh).convertToInt(true).getArrayInt();
 			
 			for(int i=0;i<arrID.length;i++)
 				{

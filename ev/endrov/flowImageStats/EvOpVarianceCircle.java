@@ -10,6 +10,7 @@ import endrov.flowBasic.math.EvOpImagePowScalar;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Moving variance
@@ -25,12 +26,12 @@ public class EvOpVarianceCircle extends EvOpSlice1
 		this.pw = pw.intValue();
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return apply(p[0], pw);
+		return apply(ph, p[0], pw);
 		}
 	
-	public static EvPixels apply(EvPixels in, int iradius)
+	public static EvPixels apply(ProgressHandle ph, EvPixels in, int iradius)
 		{
 		EvPixels out;
 		try
@@ -42,9 +43,9 @@ public class EvOpVarianceCircle extends EvOpSlice1
 			out = new EvPixels(EvPixelsType.DOUBLE,w,h);
 			double[] outPixels=out.getArrayDouble();
 
-			EvPixels sum0=EvOpSumCircle.apply(GenerateSpecialImage.genConstant(w, h, 1), iradius);
-			EvPixels sum=EvOpSumCircle.apply(in, iradius);
-			EvPixels sum2=EvOpSumCircle.apply(EvOpImagePowScalar.apply(in,2),iradius);
+			EvPixels sum0=EvOpSumCircle.apply(ph, GenerateSpecialImage.genConstant(w, h, 1), iradius);
+			EvPixels sum=EvOpSumCircle.apply(ph, in, iradius);
+			EvPixels sum2=EvOpSumCircle.apply(ph, EvOpImagePowScalar.apply(ph, in,2),iradius);
 
 			double[] arrSum0=sum0.getArrayDouble();
 			double[] arrSum=sum.getArrayDouble();

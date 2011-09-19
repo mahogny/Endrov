@@ -83,7 +83,7 @@ public class FlowUnitNot extends FlowUnitBasic
 		if(a==null)
 			errNullValues(lastOutput);
 		else if(a instanceof AnyEvImage)
-			lastOutput.put("B", new EvOpNotImage().exec1Untyped((AnyEvImage)a));
+			lastOutput.put("B", new EvOpNotImage().exec1Untyped(exec.ph, (AnyEvImage)a));
 		else
 			errUnsupportedTypes(lastOutput);
 		}

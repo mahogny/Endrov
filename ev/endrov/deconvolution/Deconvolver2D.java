@@ -19,6 +19,7 @@ package endrov.deconvolution;
 import endrov.ev.EvLog;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Deconvolver 2D.
@@ -40,7 +41,7 @@ public abstract class Deconvolver2D extends EvOpSlice1
 	/**
 	 * Only one argument: the image to deconvolve
 	 */
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		EvPixels out=internalDeconvolve(p[0]);
 		return out;

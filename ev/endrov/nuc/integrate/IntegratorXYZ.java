@@ -21,6 +21,7 @@ import endrov.nuc.NucLineage;
 import endrov.nuc.NucRemapUtil;
 import endrov.nuc.integrate.IntegrateExp.Integrator;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 /**
@@ -115,6 +116,8 @@ public class IntegratorXYZ implements Integrator
 	 */
 	private void ensureIndMapCalculated(IntegrateExp integrator)
 		{
+		ProgressHandle progh=new ProgressHandle();
+		
 		EvChannel chIndexX = integrator.imset.getCreateChannel("indX");
 		EvChannel chIndexY = integrator.imset.getCreateChannel("indY");
 		EvChannel chIndexZ = integrator.imset.getCreateChannel("indZ");
@@ -140,9 +143,9 @@ public class IntegratorXYZ implements Integrator
 			
 			for(int az=0;az<integrator.stack.getDepth();az++)
 				{
-				EvPixels pX=stackIndexX.getInt(az).getPixels();
-				EvPixels pY=stackIndexX.getInt(az).getPixels();
-				EvPixels pZ=stackIndexX.getInt(az).getPixels();
+				EvPixels pX=stackIndexX.getInt(az).getPixels(progh);
+				EvPixels pY=stackIndexX.getInt(az).getPixels(progh);
+				EvPixels pZ=stackIndexX.getInt(az).getPixels(progh);
 
 				int[] lineX = pX.getArrayInt();
 				int[] lineY = pY.getArrayInt();
@@ -184,6 +187,8 @@ public class IntegratorXYZ implements Integrator
 
 	public void integrateImage(IntegrateExp integrator)
 		{
+		ProgressHandle progh=new ProgressHandle();
+		
 		ensureIndMapCalculated(integrator);
 		integrator.ensureImageLoaded();
 
@@ -191,9 +196,9 @@ public class IntegratorXYZ implements Integrator
 		EvChannel chIndexX = integrator.imset.getCreateChannel("indX");
 		EvChannel chIndexY = integrator.imset.getCreateChannel("indY");
 		EvChannel chIndexZ = integrator.imset.getCreateChannel("indZ");
-		EvPixels pX = chIndexX.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
-		EvPixels pY = chIndexY.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
-		EvPixels pZ = chIndexZ.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
+		EvPixels pX = chIndexX.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels(progh);
+		EvPixels pY = chIndexY.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels(progh);
+		EvPixels pZ = chIndexZ.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels(progh);
 
 		// Integrate this area
 		int[] lineX = pX.getArrayInt();
@@ -249,7 +254,7 @@ public class IntegratorXYZ implements Integrator
 				for(double[] vvv:vv)
 					ExpUtil.correctExposureChange(correctedExposure, e.getKey(),vvv);
 
-		
+		ProgressHandle progh=new ProgressHandle();
 		
 		//Make in range for output                                     TODO does it here even matter if exposure was corrected????
 		double sigMax = ExpUtil.getSignalMax(expMap.values());
@@ -275,10 +280,7 @@ public class IntegratorXYZ implements Integrator
 				{
 				double[][] planeExp=expMap.get(frame)[az];
 				
-				//EvImage evim = chanxyz.createImageLoader(frame, new EvDecimal(az));
-				
-				EvPixels p = stack.getInt(az).getPixels();//new EvPixels(EvPixelsType.DOUBLE, numSubDiv, numSubDiv);
-				//evim.setPixelsReference(p);
+				EvPixels p = stack.getInt(az).getPixels(progh);
 				double[] line = p.getArrayDouble();
 				for (int ay = 0; ay<numSubDiv; ay++)
 					for (int ax = 0; ax<numSubDiv; ax++)

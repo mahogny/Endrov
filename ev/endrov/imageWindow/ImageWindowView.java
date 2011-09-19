@@ -18,6 +18,7 @@ import endrov.ev.*;
 //import endrov.filterBasic.ContrastBrightnessOp;
 import endrov.imageset.*;
 import endrov.util.Matrix2d;
+import endrov.util.ProgressHandle;
 
 
 /**
@@ -206,7 +207,7 @@ public class ImageWindowView extends JPanel
 		
 		
 		
-		public BufferedImage apply(EvPixels p)
+		public BufferedImage applyIntensityTransform(EvPixels p)
 			{
 			double contrastR=contrast*color.getRedDouble();
 			double contrastG=contrast*color.getGreenDouble();
@@ -276,6 +277,7 @@ public class ImageWindowView extends JPanel
 		
 		public void setImage(EvStack stack, EvImage image)
 			{
+			System.out.println("got image "+image);
 			this.image=image;
 			this.stack=stack;
 			}
@@ -302,6 +304,8 @@ public class ImageWindowView extends JPanel
 			{
 			try
 				{
+				//System.out.println("in load image, "+image);
+				
 				if(image==null)
 					bufi=null;
 				else
@@ -309,9 +313,11 @@ public class ImageWindowView extends JPanel
 					//Load image if this has not already been done
 					if(bufi==null)
 						{
-						EvPixels p=image.getPixels();
-						//bufi=EvOpImageMapScreen.apply(p, contrast, brightness).quickReadOnlyAWT();
-						bufi=apply(p);
+						//TODO handle progress. Put this in a thread if it takes too long. or, put it there right away, postpone update of image
+						EvPixels p=image.getPixels(new ProgressHandle()); /////////////////////////////////////////// HERE FOR LONG EXECUTIONS /////////////
+						//System.out.println("------------ loaded pixels and got "+p);
+						
+						bufi=applyIntensityTransform(p);
 						}
 					}
 				}

@@ -71,7 +71,7 @@ public class FlowUnitConvGaussian3D extends FlowUnitBasic
 		Number sigmaY=(Number)flow.getInputValue(this, exec, "sigmaY");
 		Number sigmaZ=(Number)flow.getInputValue(this, exec, "sigmaZ");
 		
-		lastOutput.put("out", new EvOpConvGaussian3D(sigmaX,sigmaY,sigmaZ).exec1Untyped(a));
+		lastOutput.put("out", new EvOpConvGaussian3D(sigmaX,sigmaY,sigmaZ).exec1Untyped(exec.ph, a));
 		}
 
 	

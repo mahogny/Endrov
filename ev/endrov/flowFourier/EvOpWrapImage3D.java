@@ -8,6 +8,7 @@ package endrov.flowFourier;
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Rotate image
@@ -25,9 +26,9 @@ public class EvOpWrapImage3D extends EvOpStack1
 		this.pz = pz;
 		}
 
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return apply(p[0],intValue(px), intValue(py), intValue(pz));
+		return apply(ph, p[0],intValue(px), intValue(py), intValue(pz));
 		}
 	
 	private static Integer intValue(Number n)
@@ -41,7 +42,7 @@ public class EvOpWrapImage3D extends EvOpStack1
 	/**
 	 * Rotate image. If rotation is null, then rotate half-way
 	 */
-	public static EvStack apply(EvStack in, Integer px, Integer py, Integer pz)
+	public static EvStack apply(ProgressHandle ph, EvStack in, Integer px, Integer py, Integer pz)
 		{		
 		int d=in.getDepth();
 
@@ -58,7 +59,7 @@ public class EvOpWrapImage3D extends EvOpStack1
 		for(int az=0;az<inIm.length;az++)
 			{
 			int to=(az+thepz)%d;
-			EvImage rot2d=new EvImage(EvOpWrapImage2D.apply(inIm[az].getPixels(), px, py));
+			EvImage rot2d=new EvImage(EvOpWrapImage2D.apply(ph, inIm[az].getPixels(ph), px, py));
 			out.putInt(to, rot2d);
 			//az++;
 			}

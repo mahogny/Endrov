@@ -67,7 +67,7 @@ public class FlowUnitCircConv3D extends FlowUnitBasic
 		EvStack kernel=(EvStack)flow.getInputValue(this, exec, "kernel");
 		AnyEvImage image=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		
-		lastOutput.put("out", new EvOpCircConv3D(kernel).exec1Untyped(image));
+		lastOutput.put("out", new EvOpCircConv3D(kernel).exec1Untyped(exec.ph, image));
 		}
 
 	

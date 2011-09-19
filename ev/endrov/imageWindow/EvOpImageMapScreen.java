@@ -17,6 +17,7 @@ import java.util.Hashtable;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Map values to show on screen
@@ -34,13 +35,13 @@ public class EvOpImageMapScreen extends EvOpSlice1
 		this.contrast = contrast;
 		this.brightness = brightness;
 		}
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return apply(p[0], contrast.doubleValue(), brightness.doubleValue());
+		return apply(ph, p[0], contrast.doubleValue(), brightness.doubleValue());
 		}
 	
 
-	static EvPixels apply(EvPixels a, double contrast, double brightness)
+	static EvPixels apply(ProgressHandle ph, EvPixels a, double contrast, double brightness)
 		{
 		if(a.getType()==EvPixelsType.AWT)
 			{
