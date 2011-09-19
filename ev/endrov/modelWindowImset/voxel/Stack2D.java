@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.modelWindowImset.voxelNew;
+package endrov.modelWindowImset.voxel;
 
 import java.awt.*;
 import java.awt.image.*;
