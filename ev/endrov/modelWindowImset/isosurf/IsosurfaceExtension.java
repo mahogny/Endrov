@@ -32,6 +32,7 @@ import endrov.data.*;
 import endrov.imageset.*;
 import endrov.modelWindow.*;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 
 //optimization: load images only once for multiple layers
@@ -374,9 +375,13 @@ public class IsosurfaceExtension implements ModelWindowExtension
 								if(shouldStop()) return;
 								pm.set(az*totalPartLoading/numSlices);
 
+								ProgressHandle progh=new ProgressHandle();  //////////////////////// TODO quicker abortion of building image 
+								
 								EvImage evim=stack.getInt(az);
-								BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
+								BufferedImage bim=evim.getPixels(progh).quickReadOnlyAWT();
 
+								/////////////// TODO do not use AWT...
+								
 								//Blur the image
 								if(simpleBlur!=null)
 									{

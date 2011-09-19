@@ -7,6 +7,7 @@ package endrov.flowMorphology;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * External gradient: dilate(image)-image
@@ -24,9 +25,9 @@ public class EvOpMorphGradientExternal2D extends EvOpSlice1
 		}
 
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return kernel.externalGradient(p[0]);
+		return kernel.externalGradient(ph, p[0]);
 		}
 
 	

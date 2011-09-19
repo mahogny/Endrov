@@ -71,7 +71,7 @@ public class FlowUnitPercentileRect extends FlowUnitBasic
 		Number ph=(Number)flow.getInputValue(this, exec, "ph");
 		Number perc=(Number)flow.getInputValue(this, exec, "percentile");
 
-		lastOutput.put("out", new EvOpPercentileRect(pw,ph,perc).exec1Untyped(a));
+		lastOutput.put("out", new EvOpPercentileRect(pw,ph,perc).exec1Untyped(exec.ph, a));
 		}
 
 	

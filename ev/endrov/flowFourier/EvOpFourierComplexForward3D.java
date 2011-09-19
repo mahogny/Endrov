@@ -8,6 +8,7 @@ package endrov.flowFourier;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 import endrov.flow.EvOpStack;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 /**
@@ -19,9 +20,9 @@ import endrov.util.Tuple;
 public class EvOpFourierComplexForward3D extends EvOpStack
 	{
 	@Override
-	public EvStack[] exec(EvStack... p)
+	public EvStack[] exec(ProgressHandle ph, EvStack... p)
 		{
-		Tuple<EvStack,EvStack> out=transform(p[0], p[1]);
+		Tuple<EvStack,EvStack> out=transform(ph, p[0], p[1]);
 		return new EvStack[]{out.fst(),out.snd()};
 		}
 
@@ -30,14 +31,14 @@ public class EvOpFourierComplexForward3D extends EvOpStack
 		return 2;
 		}
 	
-	public static Tuple<EvStack,EvStack> transform(EvStack inRe, EvStack inIm)
+	public static Tuple<EvStack,EvStack> transform(ProgressHandle progh, EvStack inRe, EvStack inIm)
 		{
 		int w=inRe.getWidth();
 		int h=inRe.getHeight();
 		int d=inRe.getDepth();
 		
 		//Library requires that data is stored swizzled
-		double[] swizzle=FourierTransform.swizzle3d(inRe, inIm, w, h, d);
+		double[] swizzle=FourierTransform.swizzle3d(progh, inRe, inIm, w, h, d);
 		
 		//Transform
 		DoubleFFT_3D transform=new DoubleFFT_3D(h,w,d);

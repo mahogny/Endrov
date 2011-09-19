@@ -13,6 +13,7 @@ import endrov.flowBasic.EvImageUtil;
 import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector2i;
 
 /**
@@ -73,9 +74,9 @@ public class MorphKernelGeneralGray extends MorphKernel
 	 * <br/>
 	 * Complexity O(w*h*#kernelPixels)
 	 */
-	public EvPixels hitmiss(EvPixels in)
+	public EvPixels hitmiss(ProgressHandle ph, EvPixels in)
 		{
-		return hitmissBinary(new MorphKernelGeneralBinary(kernelPixelMissList,new LinkedList<Vector2i>()), in);
+		return hitmissBinary(ph, new MorphKernelGeneralBinary(kernelPixelMissList,new LinkedList<Vector2i>()), in);
 		}
 	
 	public List<Vector2i> getKernelPos()
@@ -92,7 +93,7 @@ public class MorphKernelGeneralGray extends MorphKernel
  * <br/>
  * Complexity O(w*h*#kernelPixels)
 	 */
-	public EvPixels dilate(EvPixels in)
+	public EvPixels dilate(ProgressHandle ph, EvPixels in)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();
@@ -135,7 +136,7 @@ public class MorphKernelGeneralGray extends MorphKernel
 	 * <br/>
 	 * Complexity O(w*h*#kernelPixels)
 	 */
-	public EvPixels erode(EvPixels in)
+	public EvPixels erode(ProgressHandle ph, EvPixels in)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();
@@ -171,9 +172,9 @@ public class MorphKernelGeneralGray extends MorphKernel
 	/**
 	 * Open: dilate, then erode
 	 */
-	public EvPixels open(EvPixels in)
+	public EvPixels open(ProgressHandle ph, EvPixels in)
 		{
-		return reflect().dilate(erode(in));
+		return reflect().dilate(ph, erode(ph, in));
 		}
 
 
@@ -182,53 +183,53 @@ public class MorphKernelGeneralGray extends MorphKernel
 	 * <br/>
 	 * P.Soille - Morphological Image Analysis, Principles and applications. 2nd edition
 	 */
-	public EvPixels close(EvPixels in)
+	public EvPixels close(ProgressHandle ph, EvPixels in)
 		{
-		return reflect().erode(dilate(in));
+		return reflect().erode(ph, dilate(ph, in));
 		}
 
 	
 	/**
 	 * White Tophat: WTH(image)=image - open(image)
 	 */
-	public EvPixels whitetophat(EvPixels in)
+	public EvPixels whitetophat(ProgressHandle ph, EvPixels in)
 		{
 		//This can be made about 50% faster by specializing the code
-		return new EvOpImageSubImage().exec1(in, open(in));
+		return new EvOpImageSubImage().exec1(ph, in, open(ph, in));
 		}
 
 	
 	/**
 	 * Black Tophat: BTH(image)=close(image) - image
 	 */
-	public EvPixels blacktophat(EvPixels in)
+	public EvPixels blacktophat(ProgressHandle ph, EvPixels in)
 		{
 		//This can be made about 50% faster by specializing the code
-		return new EvOpImageSubImage().exec1(close(in), in);
+		return new EvOpImageSubImage().exec1(ph, close(ph, in), in);
 		}
 
 	/**
 	 * Internal gradient: image-erode(image)
 	 */
-	public EvPixels internalGradient(EvPixels in)
+	public EvPixels internalGradient(ProgressHandle ph, EvPixels in)
 		{
-		return new EvOpImageSubImage().exec1(in,erode(in));
+		return new EvOpImageSubImage().exec1(ph, in,erode(ph, in));
 		}
 
 	/**
 	 * External gradient: dilate(image)-image
 	 */
-	public EvPixels externalGradient(EvPixels in)
+	public EvPixels externalGradient(ProgressHandle ph, EvPixels in)
 		{
-		return new EvOpImageSubImage().exec1(dilate(in),in);
+		return new EvOpImageSubImage().exec1(ph, dilate(ph, in),in);
 		}
 
 	/**
 	 * Whole gradient: dilate(image)-erode(image)
 	 */
-	public EvPixels wholeGradient(EvPixels in)
+	public EvPixels wholeGradient(ProgressHandle ph, EvPixels in)
 		{
-		return new EvOpImageSubImage().exec1(dilate(in),erode(in));
+		return new EvOpImageSubImage().exec1(ph, dilate(ph, in),erode(ph, in));
 		}
 
 

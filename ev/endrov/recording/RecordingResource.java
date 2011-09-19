@@ -23,6 +23,7 @@ import endrov.roi.ROI;
 import endrov.roi.LineIterator.LineRange;
 import endrov.util.EvDecimal;
 import endrov.util.EvSound;
+import endrov.util.ProgressHandle;
 
 /**
  * Resources associated with controlling microscope hardware 
@@ -176,8 +177,10 @@ public class RecordingResource
 		//TODO how to offset?
 		stack.setDisplacement(new Vector3d(stageX, stageY, 0));
 
+		ProgressHandle progh=new ProgressHandle();
+		
 		//Fill bitmap ROI
-		LineIterator it=roi.getLineIterator(stack, image, channel, frame, z);
+		LineIterator it=roi.getLineIterator(progh, stack, image, channel, frame, z);
 		while(it.next())
 			{
 			int y=it.y;

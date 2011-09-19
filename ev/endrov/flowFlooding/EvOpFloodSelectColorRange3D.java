@@ -10,6 +10,7 @@ import java.util.*;
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 /**
@@ -32,15 +33,15 @@ public class EvOpFloodSelectColorRange3D extends EvOpStack1
 
 
 	@Override
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return fill(p[0], startpos, rangeMinus, rangePlus);
+		return fill(ph, p[0], startpos, rangeMinus, rangePlus);
 		}
 	
 	/**
 	 * If range==null then it is set to 0
 	 */
-	public static EvStack fill(EvStack stack, Vector3i startpos, Number rangeMinus, Number rangePlus)
+	public static EvStack fill(ProgressHandle progh, EvStack stack, Vector3i startpos, Number rangeMinus, Number rangePlus)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
@@ -57,8 +58,8 @@ public class EvOpFloodSelectColorRange3D extends EvOpStack1
 		markstack.getMetaFrom(stack);
 		markstack.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		double[][] inarr=stack.getReadOnlyArraysDouble();
-		int[][] outarr=markstack.getReadOnlyArraysInt();
+		double[][] inarr=stack.getReadOnlyArraysDouble(progh);
+		int[][] outarr=markstack.getReadOnlyArraysInt(progh);
 		
 		LinkedList<Vector3i> q=new LinkedList<Vector3i>();
 		q.add(new Vector3i(startpos.x,startpos.y,startpos.z));

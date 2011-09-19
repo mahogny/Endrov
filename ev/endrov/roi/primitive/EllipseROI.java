@@ -16,6 +16,7 @@ import endrov.data.EvObject;
 import endrov.imageset.*;
 import endrov.roi.*;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 /**
  * Ellipse, flat
@@ -195,13 +196,13 @@ public class EllipseROI extends ROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(EvStack stack, EvImage im, final String channel, final EvDecimal frame, final double z)
+	public LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImage im, final String channel, final EvDecimal frame, final double z)
 		{
 		if(imageInRange(channel, frame, z))
 			{
 			//Initial boundary: cover entire image
 			ThisLineIterator it=new ThisLineIterator();
-			EvPixels p=im.getPixels();
+			EvPixels p=im.getPixels(progh);
 			it.maxX=p.getWidth();
 			it.maxY=p.getHeight();
 //			it.maxX=im.getJavaImage().getWidth();

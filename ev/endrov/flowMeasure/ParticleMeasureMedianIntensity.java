@@ -12,6 +12,7 @@ import java.util.Set;
 
 import endrov.imageset.EvStack;
 import endrov.util.EvListUtil;
+import endrov.util.ProgressHandle;
 
 /**
  * Measure: modal intensity
@@ -23,7 +24,7 @@ public class ParticleMeasureMedianIntensity implements ParticleMeasure.MeasurePr
 	private static String propertyName="medianI";
 	
 	
-	public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
 		HashMap<Integer,ArrayList<Double>> entryList=new HashMap<Integer, ArrayList<Double>>();
 		//TODO: a special map for this case could speed up plenty.
@@ -33,8 +34,8 @@ public class ParticleMeasureMedianIntensity implements ParticleMeasure.MeasurePr
 		//Find entries
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
-			double[] arrValue=stackValue.getInt(az).getPixels().convertToDouble(true).getArrayDouble();
-			int[] arrID=stackMask.getInt(az).getPixels().convertToInt(true).getArrayInt();
+			double[] arrValue=stackValue.getInt(az).getPixels(progh).convertToDouble(true).getArrayDouble();
+			int[] arrID=stackMask.getInt(az).getPixels(progh).convertToInt(true).getArrayInt();
 			
 			for(int i=0;i<arrValue.length;i++)
 				{

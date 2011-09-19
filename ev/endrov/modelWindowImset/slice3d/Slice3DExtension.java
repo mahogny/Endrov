@@ -24,6 +24,7 @@ import endrov.data.*;
 import endrov.imageset.*;
 import endrov.modelWindow.*;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 
 /**
@@ -112,7 +113,7 @@ public class Slice3DExtension implements ModelWindowExtension
 		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
 			for(ToolIsolayer ti:isolayers)
-				ti.render(gl);
+				ti.render(new ProgressHandle(), gl);   //TODO           this is the wrong place for this!!!!!! must able to abort
 			}
 		
 
@@ -184,7 +185,7 @@ public class Slice3DExtension implements ModelWindowExtension
 			/**
 			 * Render according to these controls. Create surfaces as needed.
 			 */
-			public void render(GL gl)
+			public void render(ProgressHandle progh, GL gl)
 				{
 				chanCombo.updateList();
 				
@@ -205,7 +206,7 @@ public class Slice3DExtension implements ModelWindowExtension
 
 					//Create surface if it wasn't there before
 					if(slice.needBuild(cframe))
-						slice.build(gl, cframe, im, ch, zplane);
+						slice.build(progh, gl, cframe, im, ch, zplane);
 					
 					//Finally render
 					slice.render(gl,colorCombo.getColor(), zProject.isSelected());

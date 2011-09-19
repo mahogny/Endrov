@@ -22,6 +22,7 @@ import endrov.modelWindow.ModelWindow.ProgressMeter;
 import endrov.modelWindow.gl.GLCamera;
 import endrov.modelWindow.gl.GLShader;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 
@@ -125,7 +126,7 @@ public class Stack3D extends StackRendererInterface
 		}
 	
 	
-	public boolean newCreate(ProgressMeter pm, EvDecimal frame, List<StackRendererInterface.ChannelSelection> chsel2,ModelWindow w)
+	public boolean newCreate(ProgressHandle progh, ProgressMeter pm, EvDecimal frame, List<StackRendererInterface.ChannelSelection> chsel2,ModelWindow w)
 		{
 		//im. cache safety issues
 		Collection<StackRendererInterface.ChannelSelection> channels=chsel2;
@@ -156,7 +157,7 @@ public class Stack3D extends StackRendererInterface
 						
 						//Get image for this plane
 						EvImage evim=stack.getInt(az);
-						EvPixels p=evim.getPixels();
+						EvPixels p=evim.getPixels(progh);
 						BufferedImage bim=p.quickReadOnlyAWT();
 
 						//Set up slice if not done yet

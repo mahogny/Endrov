@@ -124,7 +124,7 @@ public class EndrovRegistrationDialog extends JDialog implements ActionListener
 	/**
 	 * Connect and send information. This will not stall the software in case of a bad connection
 	 */
-	public static void connectAndRegister()
+	public static void connectAndRegister(final boolean firstTime)
 		{
 		new Thread()
 			{
@@ -142,7 +142,7 @@ public class EndrovRegistrationDialog extends JDialog implements ActionListener
 							}
 	
 					HttpClient client = new HttpClient();
-					PostMethod method = new PostMethod( "http://www.areta.org/~endrov/registerEndrov.php" );
+					PostMethod method = new PostMethod( "http://www.endrov.net/registerEndrov.php" );
 	
 					method.addParameter( "javaversion", System.getProperty("java.specification.version") );
 					method.addParameter( "arch", System.getProperty("os.arch").toLowerCase() );
@@ -152,6 +152,7 @@ public class EndrovRegistrationDialog extends JDialog implements ActionListener
 					method.addParameter( "name", name );
 					method.addParameter( "institution", institution );
 					method.addParameter( "email", email);
+					method.addParameter( "firsttime", ""+firstTime);
 	
 					//Could also do "uname -a" when applicable
 	
@@ -163,6 +164,7 @@ public class EndrovRegistrationDialog extends JDialog implements ActionListener
 						method.releaseConnection();
 						//System.out.println( contents );
 						}
+					System.out.println("Sent user registration");
 					}
 				catch( Exception e ) 
 					{
@@ -202,7 +204,7 @@ public class EndrovRegistrationDialog extends JDialog implements ActionListener
 	public static void main(String[] args)
 		{
 		EndrovRegistrationDialog.runDialog();
-		connectAndRegister();
+		connectAndRegister(true);
 		}
 	
 	}

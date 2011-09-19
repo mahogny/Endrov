@@ -8,6 +8,7 @@ package endrov.flowMorphology;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Turn all non-zero intensities to 1, 0 to 0
@@ -16,7 +17,7 @@ import endrov.imageset.EvPixelsType;
 public class EvOpMorphBinarize extends EvOpSlice1
 	{
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return complement(p[0]);
 		}

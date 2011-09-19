@@ -48,7 +48,7 @@ public class FlowUnitPow extends FlowUnitMathBinop
 		if(a instanceof Number && b instanceof Number)
 			lastOutput.put("C", NumberMath.pow((Number)a, (Number)b));
 		else if(a instanceof AnyEvImage && b instanceof Number)
-			lastOutput.put("C", new EvOpImagePowScalar((Number)b).exec1Untyped((AnyEvImage)a));/*
+			lastOutput.put("C", new EvOpImagePowScalar((Number)b).exec1Untyped(exec.ph, (AnyEvImage)a));/*
 		else if(b instanceof AnyEvImage && a instanceof Number)
 			lastOutput.put("C", new EvOpImagePowScalar((Number)a).exec1Untyped((AnyEvImage)b));
 		else if(a instanceof AnyEvImage && b instanceof AnyEvImage)

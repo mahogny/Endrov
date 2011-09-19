@@ -24,6 +24,7 @@ import endrov.imageWindow.ImageWindow;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.util.EvSwingUtil;
+import endrov.util.ProgressHandle;
 
 import org.jdom.*;
 
@@ -243,7 +244,7 @@ public class MakeMovieWindowNew extends BasicWindow implements ActionListener
 
 
 		@Override
-		public EvPixels exec1(EvPixels... parr)
+		public EvPixels exec1(ProgressHandle ph, EvPixels... parr)
 			{
 			EvPixels p=parr[0];
 			
@@ -284,6 +285,8 @@ public class MakeMovieWindowNew extends BasicWindow implements ActionListener
 	 */
 	public static void createDialogFromImageWindows()
 		{
+		ProgressHandle ph=new ProgressHandle();
+		
 		Map<Integer, ImageWindow> imwindows=new TreeMap<Integer, ImageWindow>();
 		List<MakeMovieThread.MovieChannel> channelNames=new ArrayList<MakeMovieThread.MovieChannel>();
 		EvData data=null;
@@ -292,9 +295,7 @@ public class MakeMovieWindowNew extends BasicWindow implements ActionListener
 				imwindows.put(w.windowInstance, (ImageWindow)w);
 
 		for(ImageWindow w:imwindows.values())
-		//for(BasicWindow w:BasicWindow.windowManager.getAllWindows())
 			{
-//			ImageWindow imw=(ImageWindow)w;
 			data=w.getSelectedData();
 			for(ImageWindow.ChannelWidget chw:w.getChannels())
 				{
@@ -302,7 +303,7 @@ public class MakeMovieWindowNew extends BasicWindow implements ActionListener
 				EvChannel ch=chw.getChannel();
 				if(ch==null)
 					continue;
-				ch=new SpecialOpContrastBrightness(chw.getContrast(),chw.getBrightness(),chw.getColor()).exec1(ch);
+				ch=new SpecialOpContrastBrightness(chw.getContrast(),chw.getBrightness(),chw.getColor()).exec1(ph, ch);
 				
 				//Add channel to list
 				channelNames.add(new MakeMovieThread.MovieChannel(chw.getChannelName(), ch, "", w.getZ()));

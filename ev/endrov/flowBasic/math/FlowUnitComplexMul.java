@@ -56,7 +56,7 @@ public class FlowUnitComplexMul extends FlowUnitMathBinCompexOp
 		else */if(aReal instanceof AnyEvImage && aImag instanceof AnyEvImage
 				&& bReal instanceof AnyEvImage && bImag instanceof AnyEvImage)
 			{
-			AnyEvImage[] ret=new EvOpImageComplexMulImage().execUntyped(
+			AnyEvImage[] ret=new EvOpImageComplexMulImage().execUntyped(exec.ph, 
 					(AnyEvImage)aReal,(AnyEvImage)aImag,(AnyEvImage)bReal,(AnyEvImage)bImag);
 			lastOutput.put("Creal", ret[0]);
 			lastOutput.put("Cimag", ret[1]);

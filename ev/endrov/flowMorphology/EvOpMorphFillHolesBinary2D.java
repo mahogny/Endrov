@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 /**
@@ -21,7 +22,7 @@ import endrov.util.Vector3i;
 public class EvOpMorphFillHolesBinary2D extends EvOpSlice1
 	{
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return apply(p[0]);
 		}

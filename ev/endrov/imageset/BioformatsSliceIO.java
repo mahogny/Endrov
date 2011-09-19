@@ -6,6 +6,7 @@
 package endrov.imageset;
 
 
+import endrov.util.ProgressHandle;
 import loci.common.DataTools;
 import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
@@ -13,7 +14,7 @@ import loci.formats.IFormatReader;
 /**
  * Image I/O
  */
-public class BioformatsSliceIO implements EvIOImage
+public class BioformatsSliceIO extends EvIOImage
 	{
 	private int id;
 	private IFormatReader imageReader;
@@ -32,7 +33,7 @@ public class BioformatsSliceIO implements EvIOImage
 	/**
 	 * Load the image
 	 */
-	public EvPixels loadJavaImage()
+	public EvPixels eval(ProgressHandle progh)
 		{
 		try
 			{

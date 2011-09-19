@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Measure: surface area (pixels open in any of 6 directions)
@@ -22,7 +23,7 @@ public class ParticleMeasurePerimeter implements ParticleMeasure.MeasureProperty
 
 	
 	
-	public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
 		//TODO should thickness be taken into account? world or pixel coordinates?
 		
@@ -32,7 +33,7 @@ public class ParticleMeasurePerimeter implements ParticleMeasure.MeasureProperty
 		//also: only accept integer IDs? this would speed up hashing and indexing.
 		//can be made even faster as a non-hash
 		
-		int[][] arrIDs=stackMask.getReadOnlyArraysInt();
+		int[][] arrIDs=stackMask.getReadOnlyArraysInt(progh);
 
 		//int d=arrIDs.length;
 		for(int az=0;az<stackValue.getDepth();az++)

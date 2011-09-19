@@ -32,6 +32,7 @@ import endrov.modelWindow.ModelWindow.ProgressMeter;
 import endrov.modelWindowImset.voxelNew.StackRendererInterface.ChanProp;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
+import endrov.util.ProgressHandle;
 import endrov.util.SnapBackSlider;
 
 //for now does not update if image updated. would need a data update CB but
@@ -326,7 +327,8 @@ public class VoxelExtension implements ModelWindowExtension
 						public void run()
 							{
 							pm.set(0);
-							if(loadingStackRenderer.newCreate(pm, getFrame(), chsel, w))
+							ProgressHandle progh=new ProgressHandle(); //TODO expose to the user!
+							if(loadingStackRenderer.newCreate(progh, pm, getFrame(), chsel, w))
 								loadingStackRenderer.newisReady=true;
 							pm.done();
 							}

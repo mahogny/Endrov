@@ -20,6 +20,7 @@ import loci.formats.ImageReader;
 import loci.formats.ImageWriter;
 import endrov.ev.EvLog;
 import endrov.util.EvFileUtil;
+import endrov.util.ProgressHandle;
 
 /**
  * Fast image I/O using whatever libraries are available
@@ -77,7 +78,7 @@ public class EvCommonImageIO
 			ImageReader reader=new ImageReader();
 			reader.setId(file.getAbsolutePath());
 			int id=z==null?0:z;
-			return new BioformatsSliceIO(reader,id,file, true).loadJavaImage();
+			return new BioformatsSliceIO(reader,id,file, true).get(new ProgressHandle());
 
 			
 			

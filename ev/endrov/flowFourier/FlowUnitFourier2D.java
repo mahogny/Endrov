@@ -71,13 +71,13 @@ public class FlowUnitFourier2D extends FlowUnitBasic
 		
 		if(!inImag.hasValue())
 			{
-			AnyEvImage[] outs=new EvOpFourierRealForwardFull2D().execUntyped(inReal);
+			AnyEvImage[] outs=new EvOpFourierRealForwardFull2D().execUntyped(exec.ph, inReal);
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]);
 			}
 		else
 			{
-			AnyEvImage[] outs=new EvOpFourierComplexForward2D().execUntyped(inReal, inImag.get());
+			AnyEvImage[] outs=new EvOpFourierComplexForward2D().execUntyped(exec.ph, inReal, inImag.get());
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]);
 			}

@@ -25,6 +25,7 @@ import endrov.imageset.BioformatsSliceIO;
 import endrov.imageset.EvPixels;
 import endrov.util.EvImageIOUtils;
 import endrov.util.EvXmlUtil;
+import endrov.util.ProgressHandle;
 
 
 
@@ -475,7 +476,7 @@ public class OSTdaemon extends Thread
 		LinkedList<BufferedImage> list=new LinkedList<BufferedImage>();
 		for(int id=0;id<count;id++)
 			{
-			EvPixels pixels=new BioformatsSliceIO(imageReader,id,filename, false).loadJavaImage();
+			EvPixels pixels=new BioformatsSliceIO(imageReader,id,filename, false).get(new ProgressHandle());
 			BufferedImage i=pixels.quickReadOnlyAWT();
 //			BufferedImage i=imageReader.openImage(id);
 			int w=i.getWidth();

@@ -10,6 +10,7 @@ import java.util.*;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 
@@ -38,7 +39,7 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 	/**
 	 * Find local maximas
 	 */
-	public static List<Vector3i> findMaximas(EvPixels p, int z, boolean alsoDiagonals)
+	public static List<Vector3i> findMaximas(ProgressHandle ph, EvPixels p, int z, boolean alsoDiagonals)
 		{
 		LinkedList<Vector3i> list=new LinkedList<Vector3i>();
 
@@ -164,18 +165,18 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 
 
 	
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return apply(p[0]);
+		return apply(ph, p[0]);
 		}
 	
-	public EvPixels apply(EvPixels p)
+	public EvPixels apply(ProgressHandle ph, EvPixels p)
 		{
 		EvPixels pout=new EvPixels(EvPixelsType.INT,p.getWidth(),p.getHeight());
 		int[] arr=pout.getArrayInt();
 		int w=p.getWidth();
 		
-		for(Vector3i v:findMaximas(p, 0, alsoDiagonals))
+		for(Vector3i v:findMaximas(ph, p, 0, alsoDiagonals))
 			arr[v.y*w+v.x]=1;
 		
 		return pout;

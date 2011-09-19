@@ -70,7 +70,7 @@ public class FlowUnitWrapImage2D extends FlowUnitBasic
 		Number rotx=(Number)flow.getInputValue(this, exec, "rotx", Number.class, true);
 		Number roty=(Number)flow.getInputValue(this, exec, "roty", Number.class, true);
 
-		lastOutput.put("out", new EvOpWrapImage2D(rotx,roty).exec1Untyped(a));
+		lastOutput.put("out", new EvOpWrapImage2D(rotx,roty).exec1Untyped(exec.ph, a));
 		}
 
 	

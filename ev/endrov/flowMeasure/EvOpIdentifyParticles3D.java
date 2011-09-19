@@ -10,6 +10,7 @@ import java.util.*;
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 
@@ -45,12 +46,12 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 		}
 
 	
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return apply(p[0], ignore0);
+		return apply(ph, p[0], ignore0);
 		}
 	
-	public static EvStack apply(EvStack stack, boolean ignore0)
+	public static EvStack apply(ProgressHandle ph, EvStack stack, boolean ignore0)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
@@ -58,14 +59,14 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 		
 		EvStack out=new EvStack();
 		out.allocate(w, h, d, EvPixelsType.INT, stack);
-		int[][] mark=out.getOrigArraysInt();
+		int[][] mark=out.getOrigArraysInt(ph);
 		
 		//Keep track of pixels included so far
 		boolean visited[][][]=new boolean[d][h][w];
 		
 		int markid=1;
 		
-		double[][] inarr=stack.getReadOnlyArraysDouble();
+		double[][] inarr=stack.getReadOnlyArraysDouble(ph);
 		LinkedList<Vector3i> eqVal=new LinkedList<Vector3i>();
 		for(int z=0;z<d;z++)
 			for(int y=0;y<h;y++)

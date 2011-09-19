@@ -9,13 +9,14 @@ import java.io.File;
 import endrov.imageset.EvIOImage;
 import endrov.imageset.EvCommonImageIO;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Read single-slice image into memory
  * @author Johan Henriksson
  *
  */
-public class BasicSliceIO implements EvIOImage
+public class BasicSliceIO extends EvIOImage
 	{
 	private File file;
 	private Integer z=null;
@@ -30,7 +31,7 @@ public class BasicSliceIO implements EvIOImage
 		this.z=z;
 		}
 	
-	public EvPixels loadJavaImage()
+	public EvPixels eval(ProgressHandle progh)
 		{
 		return EvCommonImageIO.loadPixels(file, z);
 		}

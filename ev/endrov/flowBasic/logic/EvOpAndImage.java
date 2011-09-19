@@ -8,6 +8,7 @@ package endrov.flowBasic.logic;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * a AND b
@@ -15,7 +16,7 @@ import endrov.imageset.EvPixelsType;
  */
 public class EvOpAndImage extends EvOpSlice1
 	{
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return and(p[0], p[1]);
 		}

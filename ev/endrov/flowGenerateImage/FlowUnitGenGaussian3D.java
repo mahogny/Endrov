@@ -73,7 +73,7 @@ public class FlowUnitGenGaussian3D extends FlowUnitBasic
 		Vector3i dim=(Vector3i)flow.getInputValue(this, exec, "dim");
 
 
-		lastOutput.put("out", GenerateSpecialImage.genGaussian3D(sigmaX.doubleValue(), sigmaY.doubleValue(), sigmaZ.doubleValue(),
+		lastOutput.put("out", GenerateSpecialImage.genGaussian3D(exec.ph,sigmaX.doubleValue(), sigmaY.doubleValue(), sigmaZ.doubleValue(),
 				dim.x,dim.y,dim.z));
 		}
 

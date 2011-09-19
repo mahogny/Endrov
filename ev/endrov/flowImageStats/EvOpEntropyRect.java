@@ -10,6 +10,7 @@ import java.util.HashMap;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Moving entropy. Entropy is taken over an area of size (2pw+1)x(2ph+1).
@@ -29,9 +30,9 @@ public class EvOpEntropyRect extends EvOpSlice1
 		this.ph = ph;
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle progh, EvPixels... p)
 		{
-		return apply(p[0],pw.intValue(),ph.intValue());
+		return apply(progh, p[0],pw.intValue(),ph.intValue());
 //		return new EvOpImageMulScalar(-1.0).exec1(new EvOpMovingAverage(pw,ph).exec(new EvOpImageLog().exec(p[0])));
 		
 		
@@ -51,7 +52,7 @@ public class EvOpEntropyRect extends EvOpSlice1
 	
 	
 	
-	public static EvPixels apply(EvPixels in, int pw, int ph)
+	public static EvPixels apply(ProgressHandle progh, EvPixels in, int pw, int ph)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		double[] inPixels=in.getArrayDouble();

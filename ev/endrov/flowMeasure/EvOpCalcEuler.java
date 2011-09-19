@@ -8,6 +8,7 @@ package endrov.flowMeasure;
  */
 
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 
 /**
@@ -61,10 +62,10 @@ public class EvOpCalcEuler
 	 * Calculate euler characteristic for the only object.
 	 * TODO Modify code to do this for a given object, or do it for all objects?
 	 */
-	public static void apply(EvStack in)
+	public static void apply(ProgressHandle progh, EvStack in)
 		{
 		//Make sure values are in the right format directly, less overhead
-		double[][] stack=in.getReadOnlyArraysDouble();
+		double[][] stack=in.getReadOnlyArraysDouble(progh);
 		int width=in.getWidth();
 		int height=in.getHeight();
 		int depth=in.getDepth();

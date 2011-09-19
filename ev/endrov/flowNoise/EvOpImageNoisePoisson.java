@@ -11,6 +11,7 @@ import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.util.EvMathUtil;
+import endrov.util.ProgressHandle;
 
 /**
  * Add poisson noise
@@ -29,7 +30,7 @@ public class EvOpImageNoisePoisson extends EvOpSlice1
 		}
 
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return apply(p[0], lambda);
 		}

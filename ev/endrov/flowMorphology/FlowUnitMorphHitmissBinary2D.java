@@ -69,7 +69,7 @@ public class FlowUnitMorphHitmissBinary2D extends FlowUnitBasic
 		MorphKernel kernelHit=(MorphKernel)flow.getInputValue(this, exec, "kernelHit");
 		MorphKernel kernelMiss=(MorphKernel)flow.getInputValue(this, exec, "kernelHit");
 
-		lastOutput.put("out", new EvOpBinMorphHitmiss2D(kernelHit,kernelMiss).exec1Untyped(a));
+		lastOutput.put("out", new EvOpBinMorphHitmiss2D(kernelHit,kernelMiss).exec1Untyped(exec.ph, a));
 		}
 
 	

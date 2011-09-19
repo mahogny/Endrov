@@ -8,6 +8,7 @@ package endrov.flowFourier;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 import endrov.flow.EvOpStack;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 /**
@@ -21,9 +22,9 @@ import endrov.util.Tuple;
 public class EvOpFourierRealForwardFull3D extends EvOpStack
 	{
 	@Override
-	public EvStack[] exec(EvStack... p)
+	public EvStack[] exec(ProgressHandle ph, EvStack... p)
 		{
-		Tuple<EvStack,EvStack> out=transform(p[0]);
+		Tuple<EvStack,EvStack> out=transform(ph, p[0]);
 		return new EvStack[]{out.fst(),out.snd()};
 		}
 
@@ -32,7 +33,7 @@ public class EvOpFourierRealForwardFull3D extends EvOpStack
 		return 2;
 		}
 	
-	public static Tuple<EvStack,EvStack> transform(EvStack inRe)
+	public static Tuple<EvStack,EvStack> transform(ProgressHandle progh, EvStack inRe)
 		{
 		int w=inRe.getWidth();
 		int h=inRe.getHeight();
@@ -43,7 +44,7 @@ public class EvOpFourierRealForwardFull3D extends EvOpStack
 		stackMeta.getMetaFrom(inRe);
 
 		//Change memory layout
-		double[][] arr=inRe.getReadOnlyArraysDouble();
+		double[][] arr=inRe.getReadOnlyArraysDouble(progh);
 		double[] swizzle=new double[w*h*d*2];
 		for(int az=0;az<d;az++)
 			System.arraycopy(arr[az],0,swizzle, w*h*az,w*h);

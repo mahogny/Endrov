@@ -18,6 +18,7 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.util.EvFileUtil;
+import endrov.util.ProgressHandle;
 
 public class Signal 
 	{
@@ -27,13 +28,15 @@ public class Signal
 		if(data==null)
 			System.out.println("No such file");
 		EvChannel im=data.getIdObjectsRecursive(EvChannel.class).values().iterator().next();
-		EvImage evim=im.getFirstStack().getFirstImage();
-		EvPixels pixels=evim.getPixels().getReadOnly(EvPixelsType.DOUBLE);
+		EvImage evim=im.getFirstStack(new ProgressHandle()).getFirstImage();
+		EvPixels pixels=evim.getPixels(new ProgressHandle()).getReadOnly(EvPixelsType.DOUBLE);
 		return pixels;
 		}
 	
 	public static void doDirectory(String basedir, String basename)
 		{
+		ProgressHandle progh=new ProgressHandle();
+		
 		try
 			{
 			StringBuffer sb=new StringBuffer();
@@ -54,7 +57,7 @@ public class Signal
 				EvPixels pixelsSig=getTheImage(EvData.loadFile(sigf));
 				double[] psig=pixelsSig.getArrayDouble();
 				
-				double dicThreshold=EvOpThresholdFukunaga2D.findThreshold(pixelsDic,2)[0];
+				double dicThreshold=EvOpThresholdFukunaga2D.findThreshold(progh, pixelsDic,2)[0];
 
 				int count=0;
 				double sum=0;

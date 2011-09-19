@@ -10,6 +10,7 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.util.EvListUtil;
 import endrov.util.EvMathUtil;
+import endrov.util.ProgressHandle;
 
 /**
  * Compute percentile for a local square area around every pixel. Percentile should be within [0,1],
@@ -32,13 +33,13 @@ public class EvOpPercentileRect extends EvOpSlice1
 		this.percentile = percentile;
 		}
 	
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle progh, EvPixels... p)
 		{
-		return apply(p[0], pw.intValue(), ph.intValue(), percentile.doubleValue());
+		return apply(progh, p[0], pw.intValue(), ph.intValue(), percentile.doubleValue());
 		}
 	
 	
-	public static EvPixels apply(EvPixels in, int pw, int ph, double percentile)
+	public static EvPixels apply(ProgressHandle progh, EvPixels in, int pw, int ph, double percentile)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();

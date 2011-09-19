@@ -12,6 +12,7 @@ import javax.swing.JComponent;
 import endrov.data.EvContainer;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 /**
  * General interface to automatic lineaging algorithm. 
@@ -74,7 +75,7 @@ public interface LineagingAlgorithm
 	/**
 	 * Run algorithm
 	 */
-	public void run(LineageSession listener);
+	public void run(ProgressHandle ph, LineageSession listener);
 	
 	
 	public void dataChangedEvent();

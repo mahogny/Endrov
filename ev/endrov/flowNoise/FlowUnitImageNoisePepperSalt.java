@@ -68,7 +68,7 @@ public class FlowUnitImageNoisePepperSalt extends FlowUnitBasic
 		Number pSalt=(Number)flow.getInputValue(this, exec, "P[salt]");
 		Number pPepper=(Number)flow.getInputValue(this, exec, "P[pepper]");
 		
-		lastOutput.put("out", new EvOpImageNoisePepperSalt(pPepper, pSalt).exec1Untyped(image));
+		lastOutput.put("out", new EvOpImageNoisePepperSalt(pPepper, pSalt).exec1Untyped(exec.ph, image));
 		}
 
 	

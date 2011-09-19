@@ -42,7 +42,7 @@ public class EvIODataOST implements EvIOData
 	 *                               Slice I/O class                                                      *
 	 *****************************************************************************************************/
 
-	private static class SliceIO implements EvIOImage
+	private static class SliceIO extends EvIOImage
 		{
 		public File f;
 		public EvIODataOST ost;
@@ -53,12 +53,12 @@ public class EvIODataOST implements EvIOData
 			this.f=f;
 			}
 
-		public EvPixels loadJavaImage()
+		public EvPixels eval(ProgressHandle progh)
 			{
 			//This overloading is important during the save stage.
 			//with some recoding it would be possible to remove it
 			if(oldio!=null)
-				return oldio.loadJavaImage();
+				return oldio.get(progh);
 			else
 				{
 				return EvCommonImageIO.loadJavaImage(f, null);
@@ -398,7 +398,7 @@ public class EvIODataOST implements EvIOData
 							for(Map.Entry<EvDecimal, HashMap<Integer,File>> fe:ime.getValue().diskImageLoader33.entrySet())
 								for(Map.Entry<Integer, File> se:fe.getValue().entrySet())
 									{
-									EvStack stack=ch.getStack(fe.getKey());
+									EvStack stack=ch.getStack(new ProgressHandle(), fe.getKey());  //TODO show status at least
 									if(stack!=null)
 										{
 										//Check this slice
@@ -439,7 +439,7 @@ public class EvIODataOST implements EvIOData
 //					for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
 					for(EvDecimal feFrame:ch.getFrames())
 						{
-						EvStack stack=ch.getStack(feFrame);
+						EvStack stack=ch.getStack(new ProgressHandle(), feFrame);  //TODO show progress at least
 						for(int az=0;az<stack.getDepth();az++)
 						//for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
 							if(stack.hasInt(az))  //TODO should not be needed
@@ -549,7 +549,7 @@ public class EvIODataOST implements EvIOData
 						toRead.remove(io.f);
 						for(EvImage ci:needToRead)
 							{
-							ci.setMemoryImage(ci.getPixels());
+							ci.setMemoryImage(ci.getPixels(new ProgressHandle()));
 //							if(EV.debugMode)
 							System.out.println("reading image. need write soon "+ci+" (for "+io.f+")");
 							toWrite.addFirst(ci);
@@ -570,13 +570,11 @@ public class EvIODataOST implements EvIOData
 					//Write image to disk. It might turn out in the last minute that the file format
 					//does not work because of non-8 bits; then change
 					File fToWrite=io.f;
-					fToWrite=EvCommonImageIO.saveImage(evim.getPixels(), io.f, imCompression.get(evim));
+					fToWrite=EvCommonImageIO.saveImage(evim.getPixels(new ProgressHandle()), io.f, imCompression.get(evim));
 					io.f=fToWrite;
 					
 					//Mark image as on disk, safe to unload
-					evim.ioIsNowOnDisk();
-//					evim.isDirty=false;
-	//				private SoftReference<EvPixels> cachedPixels=new SoftReference<EvPixels>(null);
+					evim.ioIsNowOnDisk(new ProgressHandle());
 					
 					//Make sure to not delete this file
 					toDelete.remove(io.f);
@@ -630,7 +628,7 @@ public class EvIODataOST implements EvIOData
 					//Delete slices
 					for(Map.Entry<EvDecimal, HashMap<Integer,File>> framee:blob.diskImageLoader33.entrySet())
 						{
-						EvStack stack=ch.getStack(framee.getKey());
+						EvStack stack=ch.getStack(new ProgressHandle(), framee.getKey());
 						//framee.getValue().keySet().removeAll(stack.keySet());
 						for(int az=0;az<stack.getDepth();az++)
 							framee.getValue().remove(az);
@@ -655,7 +653,7 @@ public class EvIODataOST implements EvIOData
 				//for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
 				for(EvDecimal feFrame:ch.getFrames())
 					{
-					EvStack feStack=ch.getStack(feFrame);
+					EvStack feStack=ch.getStack(new ProgressHandle(), feFrame);
 					HashMap<Integer,File> loaderSlices=new HashMap<Integer, File>();
 					loaderFrames.put(feFrame,loaderSlices);
 					//for(Map.Entry<Integer, EvImage> ie:fe.getValue().entrySet())

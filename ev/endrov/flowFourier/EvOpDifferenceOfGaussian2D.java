@@ -9,6 +9,7 @@ import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Difference of gaussian 2D
@@ -24,12 +25,12 @@ public class EvOpDifferenceOfGaussian2D extends EvOpSlice1
 		this.sigma = sigma;
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return apply(p[0], sigma.doubleValue());
+		return apply(ph,p[0], sigma.doubleValue());
 		}
 	
-	public static EvPixels apply(EvPixels p, double sigma)
+	public static EvPixels apply(ProgressHandle ph, EvPixels p, double sigma)
 		{
 		//stackHis=new EvOpImageConvertPixel(EvPixelsType.DOUBLE).exec1(stackHis);
 		int whis=p.getWidth();
@@ -37,7 +38,7 @@ public class EvOpDifferenceOfGaussian2D extends EvOpSlice1
 		EvPixels kernel1=GenerateSpecialImage.genGaussian2D(sigma, sigma, whis, hhis);
 		EvPixels kernel2=GenerateSpecialImage.genGaussian2D(sigma*2, sigma*2, whis, hhis);
 		EvPixels kernelDOG=EvOpImageSubImage.minus(kernel1, kernel2);
-		return EvOpCircConv2D.apply(kernelDOG,p);
+		return EvOpCircConv2D.apply(ph,kernelDOG,p);
 		}
 	
 	

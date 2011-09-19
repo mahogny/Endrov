@@ -7,6 +7,7 @@ package endrov.flowMorphology;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Internal gradient: image-erode(image)
@@ -24,9 +25,9 @@ public class EvOpMorphGradientInternal2D extends EvOpSlice1
 		}
 
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return kernel.internalGradient(p[0]);
+		return kernel.internalGradient(ph, p[0]);
 		}
 
 	

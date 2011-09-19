@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 /**
@@ -21,12 +22,12 @@ import endrov.util.Vector3i;
 public class EvOpMorphFillHolesBinary3D extends EvOpStack1
 	{
 	@Override
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return apply(p[0]);
+		return apply(ph,p[0]);
 		}
 
-	public static EvStack apply(EvStack stack)
+	public static EvStack apply(ProgressHandle progh, EvStack stack)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
@@ -36,8 +37,8 @@ public class EvOpMorphFillHolesBinary3D extends EvOpStack1
 		markstack.getMetaFrom(stack);
 		markstack.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		int[][] inarr=stack.getReadOnlyArraysInt();
-		int[][] markarr=markstack.getReadOnlyArraysInt();
+		int[][] inarr=stack.getReadOnlyArraysInt(progh);
+		int[][] markarr=markstack.getReadOnlyArraysInt(progh);
 		
 		//Move along border and mark all open pixels as starting point
 		LinkedList<Vector3i> q=new LinkedList<Vector3i>();

@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.vecmath.Vector3d;
 
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Measure: centroid (pure geometry, no intensity)
@@ -22,7 +23,7 @@ public class ParticleMeasureCentroid implements ParticleMeasure.MeasurePropertyT
 	{
 	private static String propertyName="centroid";
 
-	public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
 		//TODO should thickness be taken into account? world or pixel coordinates?
 		
@@ -35,7 +36,7 @@ public class ParticleMeasureCentroid implements ParticleMeasure.MeasurePropertyT
 
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
-			int[] arrID=stackMask.getInt(az).getPixels().convertToInt(true).getArrayInt();
+			int[] arrID=stackMask.getInt(az).getPixels(progh).convertToInt(true).getArrayInt();
 			
 			int w=stackValue.getWidth();
 			int h=stackValue.getHeight();

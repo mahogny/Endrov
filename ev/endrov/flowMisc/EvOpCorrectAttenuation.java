@@ -15,6 +15,7 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.EvMathUtil;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 /**
@@ -24,16 +25,16 @@ import endrov.util.Tuple;
  */
 public class EvOpCorrectAttenuation extends EvOpStack1
 	{
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return apply(p[0]);
+		return apply(ph, p[0]);
 		}
 	
-	public static EvStack apply(EvStack in)
+	public static EvStack apply(ProgressHandle ph, EvStack in)
 		{		
 		int w=in.getWidth();
 		int h=in.getHeight();
-		EvPixels[] p=in.getPixels();
+		EvPixels[] p=in.getPixels(ph);
 		double[] avg=new double[p.length];
 		List<Double> zList=new LinkedList<Double>();
 		List<Double> intensityList=new LinkedList<Double>();

@@ -15,6 +15,7 @@ import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.flowImageStats.EvOpSumRect;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector2i;
 
 /**
@@ -40,7 +41,7 @@ public class MeanShift2D
 		EvPixels momentY;
 		EvPixels moment0;
 
-		public MeanShiftPreProcess(EvPixels s,int pw, int ph)
+		public MeanShiftPreProcess(ProgressHandle progh, EvPixels s,int pw, int ph)
 			{
 			int w=s.getWidth();
 			int h=s.getHeight();
@@ -55,9 +56,9 @@ public class MeanShift2D
 			EvOpGeneral op=new EvOpSumRect(pw,ph);
 
 			//Pre-convolve all positions
-			momentX=op.exec1(new EvOpImageMulImage().exec1(incX, s));
-			momentY=op.exec1(new EvOpImageMulImage().exec1(incY, s));
-			moment0=op.exec1(s);
+			momentX=op.exec1(progh, new EvOpImageMulImage().exec1(progh, incX, s));
+			momentY=op.exec1(progh, new EvOpImageMulImage().exec1(progh, incY, s));
+			moment0=op.exec1(progh, s);
 			
 			//TODO ensure that the type is double already here
 			

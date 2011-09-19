@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Measure: sum (integral) of intensity
@@ -20,7 +21,7 @@ public class ParticleMeasureSumIntensity implements ParticleMeasure.MeasurePrope
 	{
 	private static String propertyName="sumI";
 
-	public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
 		HashMap<Integer,Double> sum=new HashMap<Integer, Double>();
 		//TODO: a special map for this case could speed up plenty.
@@ -29,8 +30,8 @@ public class ParticleMeasureSumIntensity implements ParticleMeasure.MeasurePrope
 
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
-			double[] arrValue=stackValue.getInt(az).getPixels().convertToDouble(true).getArrayDouble();
-			int[] arrID=stackMask.getInt(az).getPixels().convertToInt(true).getArrayInt();
+			double[] arrValue=stackValue.getInt(az).getPixels(progh).convertToDouble(true).getArrayDouble();
+			int[] arrID=stackMask.getInt(az).getPixels(progh).convertToInt(true).getArrayInt();
 			
 			for(int i=0;i<arrValue.length;i++)
 				{

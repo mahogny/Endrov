@@ -68,7 +68,7 @@ public class FlowUnitThresholdFukunaga2D extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Integer numClasses=(Integer)flow.getInputValue(this, exec, "numClasses");
 		
-		AnyEvImage out=new EvOpThresholdFukunaga2D(numClasses).exec1Untyped(a);
+		AnyEvImage out=new EvOpThresholdFukunaga2D(numClasses).exec1Untyped(exec.ph, a);
 		lastOutput.put("out", out);
 		}
 

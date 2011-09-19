@@ -68,7 +68,7 @@ public class FlowUnitThresholdQuantize2D extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Integer numLevels=(Integer)flow.getInputValue(this, exec, "numLevels");
 		
-		AnyEvImage out=new EvOpQuantize2D(numLevels).exec1Untyped(a);
+		AnyEvImage out=new EvOpQuantize2D(numLevels).exec1Untyped(exec.ph, a);
 		lastOutput.put("out", out);
 		}
 

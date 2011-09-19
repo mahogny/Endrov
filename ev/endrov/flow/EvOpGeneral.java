@@ -9,6 +9,7 @@ import endrov.imageset.AnyEvImage;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * General image processing operation. Programmers are normally not meant to implement this
@@ -23,45 +24,45 @@ public abstract class EvOpGeneral
 	/**
 	 * Apply given several image planes, returns one or more image planes depending on operation
 	 */
-	public abstract EvPixels[] exec(EvPixels... p);
+	public abstract EvPixels[] exec(ProgressHandle ph, EvPixels... p);
 		
 	/**
 	 * Apply given several image planes, returns only the first image plane
 	 */
-	public abstract EvPixels exec1(EvPixels... p);
+	public abstract EvPixels exec1(ProgressHandle ph, EvPixels... p);
 	
 	/**
 	 * Apply given several stacks, returns one or more stacks depending on operation
 	 */
-	public abstract EvStack[] exec(EvStack... p);
+	public abstract EvStack[] exec(ProgressHandle ph, EvStack... p);
 	
 	/**
 	 * Apply given several stacks, returns only the first stack
 	 */
-	public abstract EvStack exec1(EvStack... p);
+	public abstract EvStack exec1(ProgressHandle ph, EvStack... p);
 
 	/**
 	 * Apply given several channels, returns one or more channels depending on operation
 	 */
-	public abstract EvChannel[] exec(EvChannel... ch);
+	public abstract EvChannel[] exec(ProgressHandle ph, EvChannel... ch);
 	
 	/**
 	 * Apply given several channels, returns only the first channel
 	 */
-	public abstract EvChannel exec1(EvChannel... ch);
+	public abstract EvChannel exec1(ProgressHandle ph, EvChannel... ch);
 	
 	/**
 	 * Execute operation on any level. Figure out level by the type
 	 */
-	public AnyEvImage exec1Untyped(AnyEvImage... ch)
+	public AnyEvImage exec1Untyped(ProgressHandle ph, AnyEvImage... ch)
 		{
-		return execUntyped(ch)[0];
+		return execUntyped(ph,ch)[0];
 		}
 	
 	/**
 	 * Execute operation on any level. Figure out level by the type
 	 */
-	public AnyEvImage[] execUntyped(AnyEvImage... ch)
+	public AnyEvImage[] execUntyped(ProgressHandle ph, AnyEvImage... ch)
 		{
 		AnyEvImage fst=ch[0];
 		if(fst instanceof EvPixels)
@@ -69,14 +70,14 @@ public abstract class EvOpGeneral
 			EvPixels[] arr=new EvPixels[ch.length];
 			for(int i=0;i<ch.length;i++)
 				arr[i]=(EvPixels)ch[i];
-			return exec(arr);
+			return exec(ph,arr);
 			}
 		else if(fst instanceof EvStack)
 			{
 			EvStack[] arr=new EvStack[ch.length];
 			for(int i=0;i<ch.length;i++)
 				arr[i]=(EvStack)ch[i];
-			return exec(arr);
+			return exec(ph,arr);
 			}
 		else if(fst instanceof EvChannel)
 			{
@@ -84,7 +85,7 @@ public abstract class EvOpGeneral
 			EvChannel[] arr=new EvChannel[ch.length];
 			for(int i=0;i<ch.length;i++)
 				arr[i]=(EvChannel)ch[i];
-			return exec(arr);
+			return exec(ph,arr);
 			}
 		else
 			{

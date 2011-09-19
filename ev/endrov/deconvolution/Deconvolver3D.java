@@ -20,6 +20,7 @@ import endrov.ev.EvLog;
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Deconvolver 2D.
@@ -44,7 +45,7 @@ public abstract class Deconvolver3D extends EvOpStack1
   /**
    * The only argument is the image to deconvolve
    */
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
 		EvStack imB=p[0];
 		

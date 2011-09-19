@@ -8,6 +8,7 @@ package endrov.flowFourier;
 import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.math.EvOpImageComplexMulImage;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Circular convolution
@@ -26,19 +27,19 @@ public class EvOpCircConv2D extends EvOpSlice1
 
 
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return apply(kernel,p[0]);
+		return apply(ph,kernel,p[0]);
 		}
 
 	
-	public static EvPixels apply(EvPixels ima, EvPixels imb)
+	public static EvPixels apply(ProgressHandle ph, EvPixels ima, EvPixels imb)
 		{
-		ima=new EvOpWrapImage2D(null,null).exec1(ima);
+		ima=new EvOpWrapImage2D(null,null).exec1(ph, ima);
 		
-		EvPixels[] ckernel=new EvOpFourierRealForwardFull2D().exec(ima);
-		EvPixels[] cin=new EvOpFourierRealForwardFull2D().exec(imb);
-		EvPixels[] mul=new EvOpImageComplexMulImage().exec(ckernel[0],ckernel[1],cin[0],cin[1]);
+		EvPixels[] ckernel=new EvOpFourierRealForwardFull2D().exec(ph,ima);
+		EvPixels[] cin=new EvOpFourierRealForwardFull2D().exec(ph,imb);
+		EvPixels[] mul=new EvOpImageComplexMulImage().exec(ph, ckernel[0],ckernel[1],cin[0],cin[1]);
 		
 		return EvOpFourierComplexInverse2D.transform(mul[0], mul[1],true).fst();
 		}

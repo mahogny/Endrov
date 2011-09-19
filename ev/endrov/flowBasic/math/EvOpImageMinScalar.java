@@ -8,6 +8,7 @@ package endrov.flowBasic.math;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * min(A,b)
@@ -21,7 +22,7 @@ public class EvOpImageMinScalar extends EvOpSlice1
 		this.b = b;
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return apply(p[0],b);
 		}

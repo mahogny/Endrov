@@ -91,7 +91,7 @@ public class FlowUnitMeasureParticle extends FlowUnitBasic
 		Object regions=flow.getInputValue(this, exec, "regions");
 		Object values=flow.getInputValue(this, exec, "values");
 
-		lastOutput.put("out", op.exec((EvChannel)regions,(EvChannel)values));
+		lastOutput.put("out", op.exec(exec.ph, (EvChannel)regions,(EvChannel)values));
 		}
 	
 

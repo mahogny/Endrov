@@ -5,6 +5,8 @@
  */
 package endrov.imageset;
 
+import endrov.util.MemoizeX;
+
 
 /**
  * I/O functions connected to a particular image
@@ -12,7 +14,6 @@ package endrov.imageset;
  * @author Johan Henriksson
  *
  */
-public interface EvIOImage
+public abstract class EvIOImage extends MemoizeX<EvPixels>
 	{
-	public EvPixels loadJavaImage();
 	}

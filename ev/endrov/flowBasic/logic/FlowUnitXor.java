@@ -49,7 +49,7 @@ public class FlowUnitXor extends FlowUnitLogicBinop
 		if(a instanceof Boolean && b instanceof Boolean)
 			lastOutput.put("C", (Boolean)a ^ (Boolean)b);
 		else if(a instanceof AnyEvImage && b instanceof AnyEvImage)
-			lastOutput.put("C", new EvOpXorImage().exec1Untyped((AnyEvImage)a, (AnyEvImage)b));
+			lastOutput.put("C", new EvOpXorImage().exec1Untyped(exec.ph, (AnyEvImage)a, (AnyEvImage)b));
 		else
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
 		}

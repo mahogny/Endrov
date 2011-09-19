@@ -14,6 +14,7 @@ import endrov.imageset.EvStack;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 /**
  * Calculate values from a FRAP experiment
@@ -27,7 +28,7 @@ public class EvOpCalcFRAP
 	public TreeMap<Double,Double> recoveryCurve=new TreeMap<Double, Double>();
 
 	
-	public EvOpCalcFRAP(EvChannel ch, ROI roi, Number before, Number after, String channelName)
+	public EvOpCalcFRAP(ProgressHandle progh, EvChannel ch, ROI roi, Number before, Number after, String channelName)
 		{
 		TreeMap<Double,Double> startOfCurve=new TreeMap<Double, Double>();
 		TreeMap<Double,Double> endOfCurve=new TreeMap<Double, Double>();
@@ -38,14 +39,14 @@ public class EvOpCalcFRAP
 		for(EvDecimal f:ch.getFrames())
 			if(f.doubleValue()<=before.doubleValue())
 				{
-				double sum=levelFromStack(ch.getStack(f), roi, channelName, f);
+				double sum=levelFromStack(progh, ch.getStack(progh, f), roi, channelName, f);
 				initialConcentration+=sum;
 				framesBeforeCount++;
 				startOfCurve.put(f.doubleValue(), sum);
 				}
 			else if(f.doubleValue()>after.doubleValue())
 				{
-				double sum=levelFromStack(ch.getStack(f), roi, channelName, f);
+				double sum=levelFromStack(progh, ch.getStack(progh, f), roi, channelName, f);
 				endOfCurve.put(f.doubleValue(), sum);
 				}
 		initialConcentration/=framesBeforeCount;
@@ -91,7 +92,7 @@ public class EvOpCalcFRAP
 	/**
 	 * Get the value from one stack
 	 */
-	private static double levelFromStack(EvStack in, ROI roi, String channel, EvDecimal frame)
+	private static double levelFromStack(ProgressHandle progh, EvStack in, ROI roi, String channel, EvDecimal frame)
 		{
 		double sum=0;
 		for(int z=0;z<in.getDepth();z++)
@@ -100,10 +101,10 @@ public class EvOpCalcFRAP
 
 			//System.out.println("doing z "+z+"  "+zpos+"   --  "+frame+"   ch:"+channel);
 			EvImage evim=in.getInt(z);
-			LineIterator it=roi.getLineIterator(in, evim, channel, frame, in.transformImageWorldZ(z));
+			LineIterator it=roi.getLineIterator(progh, in, evim, channel, frame, in.transformImageWorldZ(z));
 			while(it.next())
 				{
-				double[] arr=evim.getPixels().convertToDouble(true).getArrayDouble();
+				double[] arr=evim.getPixels(progh).convertToDouble(true).getArrayDouble();
 				int w=in.getWidth();
 				for(LineIterator.LineRange range:it.ranges)
 					for(int i=it.y*w+range.start;i<it.y*w+range.end;i++)

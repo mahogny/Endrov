@@ -69,7 +69,7 @@ public class IntegrateExp
 		{
 		if (pixels==null)
 			{
-			pixels = im.getPixels().getReadOnly(EvPixelsType.INT);
+			pixels = im.getPixels(new ProgressHandle()).getReadOnly(EvPixelsType.INT);
 			pixelsLine = pixels.getArrayInt();
 			}
 		}

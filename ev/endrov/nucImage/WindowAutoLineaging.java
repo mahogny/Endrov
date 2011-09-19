@@ -27,6 +27,7 @@ import endrov.nuc.NucLineage;
 import endrov.nucImage.LineagingAlgorithm.LineageAlgorithmDef;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
+import endrov.util.ProgressHandle;
 
 /**
  * Window letting user control an algorithm for automatic lineaging
@@ -126,13 +127,14 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 	private class SteppingThread extends Thread
 		{
 		private boolean toStop=false;
+		ProgressHandle ph=new ProgressHandle(); //TODO connect this
 		public void run()
 			{
 			System.out.println("===start thread===");
 			try
 				{
 				do
-					getCurrentAlgo().run(WindowAutoLineaging.this);
+					getCurrentAlgo().run(ph, WindowAutoLineaging.this);
 //				currentAlgo.run(this);
 //					step();
 					while(!toStop);

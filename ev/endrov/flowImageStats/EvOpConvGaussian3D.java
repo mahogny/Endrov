@@ -12,6 +12,7 @@ import endrov.flowFourier.EvOpFourierRealForwardFull3D;
 import endrov.flowFourier.EvOpWrapImage3D;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 /**
@@ -30,12 +31,12 @@ public class EvOpConvGaussian3D extends EvOpStack1
 		this.sigmaZ = sigmaZ;
 		}
 
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return apply(p[0],sigmaX.doubleValue(),sigmaY.doubleValue(),sigmaZ.doubleValue());
+		return apply(ph, p[0],sigmaX.doubleValue(),sigmaY.doubleValue(),sigmaZ.doubleValue());
 		}
 	
-	public static EvStack apply(EvStack in, double sigmaX, double sigmaY, double sigmaZ)
+	public static EvStack apply(ProgressHandle ph, EvStack in, double sigmaX, double sigmaY, double sigmaZ)
 		{
 		int w=in.getWidth();
 		int h=in.getHeight();
@@ -87,19 +88,19 @@ public class EvOpConvGaussian3D extends EvOpStack1
 */		
 		
 		System.out.println("Generating kernel");
-		EvStack kernel=GenerateSpecialImage.genGaussian3D(sigmaX, sigmaY, sigmaZ, w, h, d);
+		EvStack kernel=GenerateSpecialImage.genGaussian3D(ph, sigmaX, sigmaY, sigmaZ, w, h, d);
 		System.gc();
 		
 		System.out.println("Rotating");
-		kernel=EvOpWrapImage3D.apply(kernel, null,null, null); //old kernel is collected here
+		kernel=EvOpWrapImage3D.apply(ph, kernel, null,null, null); //old kernel is collected here
 		System.gc();
 		
 		System.out.println("fft kernel");
-		Tuple<EvStack,EvStack> ckernel=EvOpFourierRealForwardFull3D.transform(kernel);
+		Tuple<EvStack,EvStack> ckernel=EvOpFourierRealForwardFull3D.transform(ph, kernel);
 		System.gc();
 		
 		System.out.println("fft im");
-		Tuple<EvStack,EvStack> cin=EvOpFourierRealForwardFull3D.transform(in);
+		Tuple<EvStack,EvStack> cin=EvOpFourierRealForwardFull3D.transform(ph, in);
 		System.gc();
 	
 		/*
@@ -109,8 +110,8 @@ public class EvOpConvGaussian3D extends EvOpStack1
 		return EvOpFourierComplexInverse3D.transform(mul[0], mul[1],true).fst();
 */
 		System.out.println("mul");
-		EvOpImageComplexMulImage.timesInPlaceDouble(cin.fst(),cin.snd(),ckernel.fst(),ckernel.snd());
+		EvOpImageComplexMulImage.timesInPlaceDouble(ph, cin.fst(),cin.snd(),ckernel.fst(),ckernel.snd());
 		System.gc();
-		return EvOpFourierComplexInverse3D.transform(cin.fst(),cin.snd(),true).fst();
+		return EvOpFourierComplexInverse3D.transform(ph, cin.fst(),cin.snd(),true).fst();
 		}
 	}

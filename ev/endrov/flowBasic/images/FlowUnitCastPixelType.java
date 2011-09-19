@@ -66,7 +66,7 @@ public class FlowUnitCastPixelType extends FlowUnitBasic
 		
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		
-		lastOutput.put("out", new EvOpImageConvertPixel(EvPixelsType.AWT).exec1Untyped(a));
+		lastOutput.put("out", new EvOpImageConvertPixel(EvPixelsType.AWT).exec1Untyped(exec.ph, a));
 		}
 
 	

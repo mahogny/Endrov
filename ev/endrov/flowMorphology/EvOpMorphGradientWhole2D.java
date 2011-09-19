@@ -7,6 +7,7 @@ package endrov.flowMorphology;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Whole gradient: dilate(image)-erode(image)
@@ -24,9 +25,9 @@ public class EvOpMorphGradientWhole2D extends EvOpSlice1
 		}
 
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return kernel.wholeGradient(p[0]);
+		return kernel.wholeGradient(ph, p[0]);
 		}
 
 	

@@ -9,6 +9,7 @@ import endrov.flow.EvOpStack1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Downsample image. This will change the number of pixels but not the size of the total image.
@@ -28,7 +29,7 @@ public class EvOpDownsampleIntegral extends EvOpStack1
 		this.scaleY = scaleY;
 		}
 
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
 		return apply(p[0], scaleX, scaleY);
 		}

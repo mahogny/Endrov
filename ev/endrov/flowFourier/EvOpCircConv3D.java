@@ -8,6 +8,7 @@ package endrov.flowFourier;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Circular convolution
@@ -24,20 +25,20 @@ public class EvOpCircConv3D extends EvOpStack1
 		}
 
 
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return apply(kernel,p[0]);
+		return apply(ph, kernel,p[0]);
 		}
 	
 	
-	private static double[] forward(DoubleFFT_3D transform, EvStack ima)
+	private static double[] forward(ProgressHandle progh, DoubleFFT_3D transform, EvStack ima)
 		{
 		int w=ima.getWidth();
 		int h=ima.getHeight();
 		int d=ima.getDepth();
 
 		//Change memory layout
-		double[][] arr=ima.getReadOnlyArraysDouble();
+		double[][] arr=ima.getReadOnlyArraysDouble(progh);
 		double[] swizzle=new double[w*h*d*2];
 		for(int az=0;az<d;az++)
 			System.arraycopy(arr[az],0,swizzle, w*h*az,w*h);
@@ -49,7 +50,7 @@ public class EvOpCircConv3D extends EvOpStack1
 		return swizzle;
 		}
 	
-	public static EvStack apply(EvStack kernel, EvStack imb)
+	public static EvStack apply(ProgressHandle ph, EvStack kernel, EvStack imb)
 		{
 		int w=kernel.getWidth();
 		int h=kernel.getHeight();
@@ -61,9 +62,9 @@ public class EvOpCircConv3D extends EvOpStack1
 		stackMeta.getMetaFrom(imb);
 		
 		//Into fourier space
-		kernel=new EvOpWrapImage3D(null,null,null).exec1(kernel);
-		double[] arrayA=forward(transform,kernel);
-		double[] arrayB=forward(transform,imb);
+		kernel=new EvOpWrapImage3D(null,null,null).exec1(ph, kernel);
+		double[] arrayA=forward(ph, transform,kernel);
+		double[] arrayB=forward(ph, transform,imb);
 		
 		//Complex multiplication
 		for(int i=0;i<arrayA.length;i+=2)

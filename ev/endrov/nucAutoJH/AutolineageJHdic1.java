@@ -483,7 +483,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 		/**
 		 * To use the his-algorithm, emulate his image using transformed DIC
 		 */
-		public EvStack convertDICtoHisFluo(EvStack stackDIC)
+		public EvStack convertDICtoHisFluo(ProgressHandle ph, EvStack stackDIC)
 			{
 			/*
 			int varianceRadius=30;
@@ -491,7 +491,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 			return new EvOpAutoContrastBrightness2D(true).exec1(new endrov.flowImageStats.EvOpVarianceRect(varianceRadius,varianceRadius).exec1(stackDIC));
 			*/
 			
-			return new EvOpImageAbs().exec1(new EvOpDifferenceOfGaussian2D(1.5).exec1(stackDIC));
+			return new EvOpImageAbs().exec1(ph, new EvOpDifferenceOfGaussian2D(1.5).exec1(ph, stackDIC));
 			
 			
 			}
@@ -504,7 +504,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 		 * difference of gaussian (Rickert wavelet approximation). Candidates has to be
 		 * within the shell.
 		 */
-		public List<Candidate> findCandidatesDoG(EvStack stackHis, Shell shell, double sigmaHis1)
+		public List<Candidate> findCandidatesDoG(ProgressHandle ph, EvStack stackHis, Shell shell, double sigmaHis1)
 			{
 			System.out.println("cur sigma "+sigmaHis1);
 			
@@ -518,9 +518,9 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 			if(isStopping()) return new LinkedList<Candidate>();
 			EvPixels kernelDOG=EvOpImageSubImage.minus(kernel1, kernel2);
 			if(isStopping()) return new LinkedList<Candidate>();
-			EvStack stackHisDog=new EvOpCircConv2D(kernelDOG).exec1(stackHis);
+			EvStack stackHisDog=new EvOpCircConv2D(kernelDOG).exec1(ph, stackHis);
 			if(isStopping()) return new LinkedList<Candidate>();
-			List<Vector3i> maximas=EvOpFindLocalMaximas3D.findMaximas(stackHisDog);
+			List<Vector3i> maximas=EvOpFindLocalMaximas3D.findMaximas(ph, stackHisDog);
 			System.out.println("Initial candidates: "+maximas.size());
 			
 			
@@ -537,7 +537,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 					//double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
 //					double bestSigma=Multiscale.findFeatureScale2(stackHis.getInt(v.z).getPixels(), 
 //							v.x, v.y, 0.3, sigmaHis1*1.25, 8, 3);
-					double bestSigma=Multiscale.findFeatureScale2(stackHis.getInt(v.z).getPixels(), 
+					double bestSigma=Multiscale.findFeatureScale2(stackHis.getInt(v.z).getPixels(ph), 
 							v.x, v.y, 0.3, sigmaHis1*1.25, 8, 2); //because it's expensive for large sigma!
 
 					System.out.println("Best fit sigma: "+bestSigma);
@@ -545,7 +545,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 					
 					//DoG or original image?
 //				DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHisDog.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
-				DoubleEigenvalueDecomposition eig=LocalMomentum.applyCircle(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma*2, v.x, v.y);
+				DoubleEigenvalueDecomposition eig=LocalMomentum.applyCircle(stackHis.getPixels(ph)[(int)Math.round(v.z)], bestSigma*2, v.x, v.y);
 				//originally *3 for circle
 					
 	
@@ -566,7 +566,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 					cand.bestSigma=bestSigma;
 					cand.eigval=eigvalv;
 					cand.eigvec=eigvecv;
-					cand.intensity=Multiscale.convolveGaussPoint2D(stackHis.getInt(v.z).getPixels(), 
+					cand.intensity=Multiscale.convolveGaussPoint2D(stackHis.getInt(v.z).getPixels(ph), 
 							bestSigma, bestSigma, onev.x,onev.y); 
 					//Found bug! the random intensities explained
 					candlist.add(cand);
@@ -1077,7 +1077,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 		/**
 		 * Lineage one frame
 		 */
-		public void run(LineageSession session)
+		public void run(final ProgressHandle ph, LineageSession session)
 			{
 			EvDecimal frame=session.getStartFrame();
 			NucLineage lin=session.getLineage();
@@ -1088,7 +1088,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 			if(channelHis!=null && shell!=null && lin !=null)
 				{
 				//Start from this frame (if it exists) or the first frame after
-				if(channelHis.getStack(frame)==null)
+				if(channelHis.getStack(ph, frame)==null)
 					frame=channelHis.closestFrameAfter(frame);
 
 				//Check if there is a keyframe before this one
@@ -1098,7 +1098,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 				
 				System.out.println("cur frame "+frame);
 				
-				final EvStack stackHis=channelHis.getStack(frame);
+				final EvStack stackHis=channelHis.getStack(ph, frame);
 				//resXY=stackHis.resX;
 
 				//Read parameters from the GUI
@@ -1138,7 +1138,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 				
 				
 				//Convert DIC image into fluorescence-like image
-				EvStack stackIntensity=convertDICtoHisFluo(stackHis);
+				EvStack stackIntensity=convertDICtoHisFluo(ph, stackHis);
 				
 
 				
@@ -1155,7 +1155,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 								{
 								if(isStopping()) 
 									return new LinkedList<Candidate>();
-								return findCandidatesDoG(finalStackHis, shell, in);
+								return findCandidatesDoG(ph, finalStackHis, shell, in);
 								}
 							}))
 					candlist.addAll(list);

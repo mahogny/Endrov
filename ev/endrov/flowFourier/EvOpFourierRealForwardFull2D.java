@@ -9,6 +9,7 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import endrov.flow.EvOpSlice;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 /**
@@ -22,7 +23,7 @@ import endrov.util.Tuple;
 public class EvOpFourierRealForwardFull2D extends EvOpSlice
 	{
 	@Override
-	public EvPixels[] exec(EvPixels... p)
+	public EvPixels[] exec(ProgressHandle ph, EvPixels... p)
 		{
 		Tuple<EvPixels,EvPixels> out=transform(p[0]);
 		return new EvPixels[]{out.fst(),out.snd()};

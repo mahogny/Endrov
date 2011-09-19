@@ -13,7 +13,8 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.roi.primitive.BoxROI;
-import endrov.util.Memoize;
+import endrov.util.MemoizeX;
+import endrov.util.ProgressHandle;
 
 
 /**
@@ -39,7 +40,7 @@ public class EvOpCropImage3D extends EvOpStack1
 		this.roi=roi;
 		}
 	
-	public EvStack exec1(EvStack... p)
+	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
 		return apply(p[0]);
 		}
@@ -101,9 +102,6 @@ public class EvOpCropImage3D extends EvOpStack1
 		//Remove all loaders, since the number of slices can be different
 		stackOut.clearStack();
 		
-//		System.out.println("-------------- crop 3d ------------ "+fromX+"  "+toX+"   "+fromY+"  "+toY+"    "+fromZ+"   "+toZ);
-		
-		
 		Vector3d disp=stack.getDisplacement();
 		Vector3d res=stack.getRes();
 		disp.add(new Vector3d(
@@ -115,19 +113,17 @@ public class EvOpCropImage3D extends EvOpStack1
 		
 		//Crop images
 		for(int az=fromZ;az<toZ;az++)
-			//if(stack.hasInt(az))  //TODO should not be needed
 			{
 			EvImage newim=new EvImage();
-			final int inZ=az; 
-			final Memoize<EvPixels> m=new Memoize<EvPixels>(){
-				protected EvPixels eval()
+			final int inZ=az;
+			newim.io=new EvIOImage()
+				{
+				protected EvPixels eval(ProgressHandle ph)
 					{
-//					System.out.println("---------- crop eval "+inZ);
-					return new EvOpCropImage2D(fromX, toX, fromY, toY).exec1(stack.getInt(inZ).getPixels());
+					return new EvOpCropImage2D(fromX, toX, fromY, toY).exec1(ph, stack.getInt(inZ).getPixels(ph));
 					}
 				};
-			newim.io=new EvIOImage(){public EvPixels loadJavaImage(){return m.get();}};
-			newim.registerLazyOp(m);
+			newim.registerLazyOp(newim.io); //TODO
 			int outZindex=az-fromZ;
 			stackOut.putInt(outZindex, newim);
 			}

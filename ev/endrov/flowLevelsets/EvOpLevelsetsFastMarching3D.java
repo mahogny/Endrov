@@ -14,6 +14,7 @@ import org.jgrapht.util.FibonacciHeapNode;
 import endrov.flow.EvOpStack;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 import endrov.util.Vector3i;
 
@@ -34,12 +35,12 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 
 
 	@Override
-	public EvStack[] exec(EvStack... s)
+	public EvStack[] exec(ProgressHandle ph, EvStack... s)
 		{
 		EvStack speed=s[0];
 		EvStack mask=s[1];
-		Tuple<EvStack, Vector3i[][]> ret=runLevelset(speed,mask);
-		return new EvStack[]{ret.fst(),collectIntensities(mask,ret.snd())};
+		Tuple<EvStack, Vector3i[][]> ret=runLevelset(ph,speed,mask);
+		return new EvStack[]{ret.fst(),collectIntensities(ph,mask,ret.snd())};
 		}
 
 	@Override
@@ -52,15 +53,15 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 	/**
 	 * Get intensity of origin
 	 */
-	public static EvStack collectIntensities(EvStack s, Vector3i[][] origin)
+	public static EvStack collectIntensities(ProgressHandle progh, EvStack s, Vector3i[][] origin)
 		{
-		double[][] inArr=s.getReadOnlyArraysDouble();
+		double[][] inArr=s.getReadOnlyArraysDouble(progh);
 		int w=s.getWidth();
 		int h=s.getHeight();
 		int d=s.getDepth();
 		EvStack out=new EvStack();
 		out.allocate(w, h, d, EvPixelsType.DOUBLE, s);
-		double[][] outArr=out.getOrigArraysDouble();
+		double[][] outArr=out.getOrigArraysDouble(progh);
 		
 		for(int z=0;z<d;z++)
 			for(int y=0;y<h;y++)
@@ -82,18 +83,18 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 	 * @param stackStartPoints Non-zero pixels are start points
 	 */
 	@SuppressWarnings("unchecked")
-	public static Tuple<EvStack, Vector3i[][]> runLevelset(EvStack stackSpeed, EvStack stackStartPoints)
+	public static Tuple<EvStack, Vector3i[][]> runLevelset(ProgressHandle progh, EvStack stackSpeed, EvStack stackStartPoints)
 		{
 		int width=stackSpeed.getWidth();
 		int height=stackSpeed.getHeight();
 		int depth=stackSpeed.getDepth();
 
-		double[][] startPointArray=stackStartPoints.getReadOnlyArraysDouble();
-		double[][] W=stackSpeed.getReadOnlyArraysDouble();
+		double[][] startPointArray=stackStartPoints.getReadOnlyArraysDouble(progh);
+		double[][] W=stackSpeed.getReadOnlyArraysDouble(progh);
 		
 		EvStack stackDist=new EvStack();
 		stackDist.allocate(width, height, depth, EvPixelsType.DOUBLE, stackSpeed);
-		double[][] Ddistance=stackDist.getOrigArraysDouble();
+		double[][] Ddistance=stackDist.getOrigArraysDouble(progh);
 		
 		byte[][] Sstate=new byte[depth][width*height]; //State of point
 		Vector3i[][] Qorigin=new Vector3i[depth][width*height];

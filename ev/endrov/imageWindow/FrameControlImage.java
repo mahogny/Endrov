@@ -22,6 +22,7 @@ import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
 import endrov.util.EvMathUtil;
 import endrov.util.EvSwingUtil;
+import endrov.util.ProgressHandle;
 
 
 
@@ -394,7 +395,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		EvChannel ch=getImageset().getChannel(channel);
 		if(ch!=null)
 			{
-			EvStack stack=ch.getStack(getFrame());
+			EvStack stack=ch.getStack(new ProgressHandle(), getFrame());
 			if(stack!=null)
 				{
 				double nextZ=Math.round(stack.transformWorldImageZ(getZ().doubleValue())-1);
@@ -421,7 +422,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		EvChannel ch=getImageset().getChannel(channel);
 		if(ch!=null)
 			{
-			EvStack stack=ch.getStack(getFrame());
+			EvStack stack=ch.getStack(new ProgressHandle(), getFrame());
 			if(stack!=null)
 				{
 				double nextZ=Math.round(stack.transformWorldImageZ(getZ().doubleValue())+1);
@@ -458,7 +459,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		if(ch!=null)
 			{
 			frame=ch.closestFrame(frame);
-			EvStack stack=ch.getStack(frame);
+			EvStack stack=ch.getStack(new ProgressHandle(), frame);
 			if(stack!=null)
 				{
 				double curz=Math.round(stack.transformWorldImageZ(z.doubleValue()));
@@ -493,7 +494,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			{
 			EvChannel ch=getImageset().getChannel(channel);
 			frame=ch.closestFrame(frame);
-			EvStack stack=ch.getStack(frame);
+			EvStack stack=ch.getStack(new ProgressHandle(), frame);
 			
 			slicenum=new EvDecimal(stack.transformImageWorldZ(
 			EvMathUtil.clamp(Math.round(stack.transformWorldImageZ(z.doubleValue())), 0, stack.getDepth()-1)

@@ -12,6 +12,7 @@ import endrov.ev.*;
 import endrov.flowProjection.EvOpProjectMaxZ;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 
 /**
@@ -23,6 +24,8 @@ public final class CalcThread extends BatchThread
 	
 	private final int startFrame, endFrame;
 	private final String channel;
+	
+	public ProgressHandle ph=new ProgressHandle(); //TODO connect handle
 	
 	public CalcThread(Imageset rec, int startFrame, int endFrame, String channel)
 		{
@@ -88,8 +91,8 @@ public final class CalcThread extends BatchThread
 						return;
 						}
 					
-					EvStack s=chfrom.getStack(curframe);
-					EvStack max=new EvOpProjectMaxZ().project(s);
+					EvStack s=chfrom.getStack(ph, curframe);
+					EvStack max=new EvOpProjectMaxZ().project(ph, s);
 					
 					//Pick out only one slice - in case we resave to disk
 					/*EvStack maxOneLayer=new EvStack();

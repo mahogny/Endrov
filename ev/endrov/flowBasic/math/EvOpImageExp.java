@@ -8,6 +8,7 @@ package endrov.flowBasic.math;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * exp(A)
@@ -16,7 +17,7 @@ import endrov.imageset.EvPixelsType;
  */
 public class EvOpImageExp extends EvOpSlice1
 	{
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
 		return EvOpImageExp.apply(p[0]);
 		}

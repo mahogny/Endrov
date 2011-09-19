@@ -8,6 +8,7 @@ package endrov.flowMorphology;
 import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Thin(image)=image-hitmiss(image). 
@@ -28,14 +29,14 @@ public class EvOpBinMorphThin2D extends EvOpSlice1
 		}
 
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return thin(p[0], kernelHit, kernelMiss);
+		return thin(ph, p[0], kernelHit, kernelMiss);
 		}
 	
-	public static EvPixels thin(EvPixels in, MorphKernel kernelHit, MorphKernel kernelMiss)
+	public static EvPixels thin(ProgressHandle ph, EvPixels in, MorphKernel kernelHit, MorphKernel kernelMiss)
 		{
-		return new EvOpImageSubImage().exec1(in, EvOpBinMorphHitmiss2D.hitmiss(in,kernelHit,kernelMiss));
+		return new EvOpImageSubImage().exec1(ph, in, EvOpBinMorphHitmiss2D.hitmiss(in,kernelHit,kernelMiss));
 		
 		//could be made a lot faster for repeated application by keeping a front-set. Either way, probably want to return if there is more to do?
 		

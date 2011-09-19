@@ -8,6 +8,7 @@ package endrov.flowMorphology;
 import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Thick(image)=image+hitmiss(image). 
@@ -30,14 +31,14 @@ public class EvOpBinMorphThick2D extends EvOpSlice1
 
 
 	@Override
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return thick(p[0], kernelHit, kernelMiss);
+		return thick(ph, p[0], kernelHit, kernelMiss);
 		}
 	
 
-	public static EvPixels thick(EvPixels in, MorphKernel kernelHit, MorphKernel kernelMiss)
+	public static EvPixels thick(ProgressHandle ph, EvPixels in, MorphKernel kernelHit, MorphKernel kernelMiss)
 		{
-		return new EvOpImageSubImage().exec1(in, EvOpBinMorphHitmiss2D.hitmiss(in,kernelHit,kernelMiss));
+		return new EvOpImageSubImage().exec1(ph, in, EvOpBinMorphHitmiss2D.hitmiss(in,kernelHit,kernelMiss));
 		}
 	}

@@ -65,7 +65,7 @@ public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Number b=(Number)flow.getInputValue(this, exec, "shift");
-		lastOutput.put("out", new EvOpConfocalShiftCorrection(b).exec1Untyped(a));
+		lastOutput.put("out", new EvOpConfocalShiftCorrection(b).exec1Untyped(exec.ph, a));
 		}
 
 	

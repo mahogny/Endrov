@@ -9,6 +9,7 @@ import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.CumSumArea;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Moving sum. Sum is taken over an area of size (2pw+1)x(2ph+1). r=0 hence corresponds
@@ -26,9 +27,9 @@ public class EvOpSumRect extends EvOpSlice1
 		this.ph = ph;
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle progh, EvPixels... p)
 		{
-		return movingSumRect(p[0], pw.intValue(), ph.intValue());
+		return movingSumRect(progh, p[0], pw.intValue(), ph.intValue());
 		}
 	
 	
@@ -53,7 +54,7 @@ public class EvOpSumRect extends EvOpSlice1
 	 * 
 	 * Complexity O(w*h)
 	 */
-	public static EvPixels movingSumRect(EvPixels in, int pw, int ph)
+	public static EvPixels movingSumRect(ProgressHandle progh, EvPixels in, int pw, int ph)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();

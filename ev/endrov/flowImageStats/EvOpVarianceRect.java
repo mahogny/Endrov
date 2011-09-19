@@ -9,6 +9,7 @@ import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.CumSumArea;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Moving variance
@@ -25,12 +26,12 @@ public class EvOpVarianceRect extends EvOpSlice1
 		this.ph = ph.intValue();
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle progh, EvPixels... p)
 		{
-		return localVarianceRect(p[0], pw, ph);
+		return localVarianceRect(progh, p[0], pw, ph);
 		}
 	
-	public static EvPixels localVarianceRect(EvPixels in, int pw, int ph)
+	public static EvPixels localVarianceRect(ProgressHandle progh, EvPixels in, int pw, int ph)
 		{
 		if(in.getType()==EvPixelsType.INT)
 			{

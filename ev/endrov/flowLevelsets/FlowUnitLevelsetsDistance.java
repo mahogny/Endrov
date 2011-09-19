@@ -68,7 +68,7 @@ public class FlowUnitLevelsetsDistance extends FlowUnitBasic
 		AnyEvImage speed=(AnyEvImage)flow.getInputValue(this, exec, "speed");
 		AnyEvImage origin=(AnyEvImage)flow.getInputValue(this, exec, "origin");
 
-		Object[] ret=new EvOpLevelsetsFastMarching3D().execUntyped(speed,origin);
+		Object[] ret=new EvOpLevelsetsFastMarching3D().execUntyped(exec.ph, speed,origin);
 		
 		lastOutput.put("distance", ret[0]);
 		lastOutput.put("voronoi", ret[1]);

@@ -32,6 +32,7 @@ import endrov.deconvolution.iterative.IterativeEnums.PaddingType;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Common methods for 3D iterative deblurring. Some code is from Bob Dougherty's Iterative
@@ -71,7 +72,7 @@ public class DoubleCommon3D {
                 futures[j] = ConcurrencyUtils.submit(new Runnable() {
                     public void run() {
                         for (int s = startslice; s < stopslice; s++) {
-                            EvPixels ip = stack.getPixels()[s]; //getProcessor(s + 1);  //TODO investigate +1
+                            EvPixels ip = stack.getPixels(new ProgressHandle())[s]; //getProcessor(s + 1);  //TODO investigate +1
                             DoubleCommon2D.assignPixelsToMatrix(X.viewSlice(s), ip);
                         }
                     }
@@ -80,7 +81,7 @@ public class DoubleCommon3D {
             ConcurrencyUtils.waitForCompletion(futures);
         } else {
             for (int s = 0; s < slices; s++) {
-            		EvPixels ip = stack.getPixels()[s+1];
+            		EvPixels ip = stack.getPixels(new ProgressHandle())[s+1];
                 //ImageProcessor ip = stack.getProcessor(s + 1);
                 DoubleCommon2D.assignPixelsToMatrix(X.viewSlice(s), ip);
             }

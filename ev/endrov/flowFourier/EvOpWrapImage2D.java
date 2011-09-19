@@ -8,6 +8,7 @@ package endrov.flowFourier;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Rotate image
@@ -24,9 +25,9 @@ public class EvOpWrapImage2D extends EvOpSlice1
 		this.roty = roty;
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
 		{
-		return apply(p[0],intValue(rotx), intValue(roty));
+		return apply(ph, p[0],intValue(rotx), intValue(roty));
 		}
 	
 	private static Integer intValue(Number n)
@@ -40,7 +41,7 @@ public class EvOpWrapImage2D extends EvOpSlice1
 	/**
 	 * Rotate image. If rotation is null, then rotate half-way
 	 */
-	public static EvPixels apply(EvPixels in, Integer px2, Integer py2)
+	public static EvPixels apply(ProgressHandle ph, EvPixels in, Integer px2, Integer py2)
 		{
 		int w=in.getWidth();
 		int h=in.getHeight();

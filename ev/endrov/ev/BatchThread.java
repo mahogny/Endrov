@@ -7,10 +7,13 @@ package endrov.ev;
 
 import java.util.*;
 
+import endrov.util.ProgressHandle;
+
 public abstract class BatchThread extends Thread
 	{
 	private Vector<BatchListener> listeners=new Vector<BatchListener>();
 	public boolean die=false;
+	public ProgressHandle progh=new ProgressHandle(); //TODO  also get rid of die - not needed
 	
 	public void addBatchListener(BatchListener b)
 		{

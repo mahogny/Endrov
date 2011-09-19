@@ -66,7 +66,7 @@ public class FlowUnitDoG2D extends FlowUnitBasic
 		AnyEvImage in=(AnyEvImage)flow.getInputValue(this, exec, "in");
 		Number sigma=(Number)flow.getInputValue(this, exec, "sigma");
 		
-		lastOutput.put("out", new EvOpDifferenceOfGaussian2D(sigma).exec1Untyped(in));
+		lastOutput.put("out", new EvOpDifferenceOfGaussian2D(sigma).exec1Untyped(exec.ph, in));
 		}
 
 	

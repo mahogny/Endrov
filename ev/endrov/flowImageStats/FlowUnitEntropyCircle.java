@@ -67,7 +67,7 @@ public class FlowUnitEntropyCircle extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Number r=(Number)flow.getInputValue(this, exec, "r");
 		
-		lastOutput.put("out", new EvOpEntropyCircle(r).exec1Untyped(a));
+		lastOutput.put("out", new EvOpEntropyCircle(r).exec1Untyped(exec.ph, a));
 		}
 
 	

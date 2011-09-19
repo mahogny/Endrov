@@ -11,6 +11,7 @@ import java.awt.image.WritableRaster;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.WeakHashMap;
 
 
 /**
@@ -47,6 +48,9 @@ import java.util.HashSet;
  */
 public class EvPixels implements AnyEvImage
 	{
+	private static WeakHashMap<EvPixels, Object> allEvPixels=new WeakHashMap<EvPixels, Object>();
+	
+	
 	/*
 	 * +- are the same for signed/unsigned. / is by all means not. * might give sensible results, one claims it won't, one claims it does.
 	 * 
@@ -174,7 +178,12 @@ public class EvPixels implements AnyEvImage
 			return awt.getWidth()*awt.getHeight(); //Approx
 		return 0;
 		}
-	
+
+	private void createdNew()
+		{
+		allEvPixels.put(this,null);
+		System.out.println("------------- now #evpixel in memory: "+allEvPixels.size());
+		}
 	
 	/**
 	 * Constructing an empty pixelset, shouldn't really be possible outside
@@ -182,6 +191,7 @@ public class EvPixels implements AnyEvImage
 	private EvPixels()
 		{
 		count(1);
+		createdNew();
 		}
 
 	/**
@@ -191,7 +201,8 @@ public class EvPixels implements AnyEvImage
 		{
 		count(1);
 		setPixels(p);
-		
+		createdNew();
+
 		/*
 		 * 
 		 *  TODO does not work on mac, new in 1.6
@@ -217,6 +228,7 @@ public class EvPixels implements AnyEvImage
 	public EvPixels(BufferedImage awt)
 		{
 		count(1);
+		createdNew();
 		setPixels(awt);
 		}
 	
@@ -227,6 +239,7 @@ public class EvPixels implements AnyEvImage
 	public EvPixels(EvPixelsType type, int w, int h)
 		{
 		count(1);
+		createdNew();
 		allocate(type,w,h);
 		}
 	

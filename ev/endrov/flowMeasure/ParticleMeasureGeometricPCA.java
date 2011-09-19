@@ -16,6 +16,7 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 
 import endrov.imageset.EvStack;
 import endrov.util.EvMathUtil;
+import endrov.util.ProgressHandle;
 
 /**
  * Measure: Geometric PCA
@@ -43,7 +44,7 @@ public class ParticleMeasureGeometricPCA implements ParticleMeasure.MeasurePrope
 		public int count=0;
 		}
 	
-	public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
 		//TODO should thickness be taken into account? world or pixel coordinates?
 		
@@ -55,7 +56,7 @@ public class ParticleMeasureGeometricPCA implements ParticleMeasure.MeasurePrope
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
 			//double[] arrValue=stackValue.getInt(az).getPixels().convertToDouble(true).getArrayDouble();
-			int[] arrID=stackMask.getInt(az).getPixels().convertToInt(true).getArrayInt();
+			int[] arrID=stackMask.getInt(az).getPixels(progh).convertToInt(true).getArrayInt();
 			
 			int w=stackValue.getWidth();
 			int h=stackValue.getHeight();

@@ -67,7 +67,7 @@ public class FlowUnitAutoContrastBrightness2D extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Boolean invert=(Boolean)flow.getInputValue(this, exec, "invert");
 
-		lastOutput.put("out", new EvOpAutoContrastBrightness2D(invert).exec1Untyped(a));
+		lastOutput.put("out", new EvOpAutoContrastBrightness2D(invert).exec1Untyped(exec.ph, a));
 		}
 
 	

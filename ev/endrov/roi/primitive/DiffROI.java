@@ -15,6 +15,7 @@ import endrov.data.EvObject;
 import endrov.imageset.*;
 import endrov.roi.*;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 
 
@@ -235,16 +236,16 @@ public class DiffROI extends CompoundROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(EvStack stack, EvImage im, final String channel, final EvDecimal frame, final double z)
+	public LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImage im, final String channel, final EvDecimal frame, final double z)
 		{
 		Collection<ROI> subRoi=getSubRoi();
 		if(imageInRange(channel, frame, z) && !subRoi.isEmpty())
 			{
 			Iterator<ROI> it=subRoi.iterator();
-			LineIterator li=it.next().getLineIterator(stack, im, channel, frame, z);
+			LineIterator li=it.next().getLineIterator(progh, stack, im, channel, frame, z);
 			while(it.hasNext())
 			for(int i=1;i<subRoi.size();i++)
-				li=new ThisLineIterator(im, it.next().getLineIterator(stack, im, channel, frame, z), li, channel, frame, z);
+				li=new ThisLineIterator(im, it.next().getLineIterator(progh, stack, im, channel, frame, z), li, channel, frame, z);
 			return li;
 			}
 		else

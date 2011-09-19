@@ -72,7 +72,7 @@ public class FlowUnitWrapImage3D extends FlowUnitBasic
 		Number roty=(Number)flow.getInputValue(this, exec, "roty", Number.class, true);
 		Number rotz=(Number)flow.getInputValue(this, exec, "rotz", Number.class, true);
 
-		lastOutput.put("out", new EvOpWrapImage3D(rotx,roty,rotz).exec1Untyped(a));
+		lastOutput.put("out", new EvOpWrapImage3D(rotx,roty,rotz).exec1Untyped(exec.ph, a));
 		}
 
 	

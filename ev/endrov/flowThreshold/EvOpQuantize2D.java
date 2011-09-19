@@ -4,6 +4,7 @@ package endrov.flowThreshold;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.util.ProgressHandle;
 
 /**
  * Reduce the number of colors by quantizing them to a given number of levels. Some algorithms are O(numberOfColors)
@@ -21,7 +22,7 @@ public class EvOpQuantize2D extends EvOpSlice1
 		this.numLevels = numLevels;
 		}
 
-	public EvPixels exec1(EvPixels... p)
+	public EvPixels exec1(ProgressHandle progh, EvPixels... p)
 		{
 		EvPixels in=p[0];
 		

@@ -8,6 +8,7 @@ package endrov.flowThreshold;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.util.EvListUtil;
+import endrov.util.ProgressHandle;
 
 /**
  * Threshold given as percentile
@@ -23,11 +24,11 @@ public class EvOpThresholdPercentile2D extends Threshold2D
 		this.perc = perc;
 		}
 	
-	public double[] getThreshold(EvPixels in)
+	public double[] getThreshold(ProgressHandle progh, EvPixels in)
 		{
-		return new double[]{findThreshold(in, perc)};
+		return new double[]{findThreshold(progh, in, perc)};
 		}
-	public static double findThreshold(EvPixels in, double perc)
+	public static double findThreshold(ProgressHandle progh, EvPixels in, double perc)
 		{
 		double[] arr=in.getReadOnly(EvPixelsType.DOUBLE).getArrayDouble();
 		return EvListUtil.findPercentileDouble(arr, perc);

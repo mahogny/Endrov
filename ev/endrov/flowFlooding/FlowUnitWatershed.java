@@ -70,7 +70,7 @@ public class FlowUnitWatershed extends FlowUnitBasic
 		checkNotNull(image,pos);
 		
 		//TODO
-		lastOutput.put("region", new EvOpWatershed(Collections.singleton(pos)).exec1Untyped(image));
+		lastOutput.put("region", new EvOpWatershed(Collections.singleton(pos)).exec1Untyped(exec.ph, image));
 		}
 
 	

@@ -116,9 +116,7 @@ public final class MakeMovieThread extends BatchThread
 						}
 					else
 						{
-						//EvStack stack=ch.imageLoader.get(frame);
-						//imload=cName.fs.applyReturnImage(stack, imload);
-						BufferedImage ji=imload.getPixels().quickReadOnlyAWT();
+						BufferedImage ji=imload.getPixels(progh).quickReadOnlyAWT();
 						if(ji==null)
 							{
 							batchError("Failure: Could not collect EvPixels for ch:"+movieChan.name+" f:"+frame+" z:"+tz);

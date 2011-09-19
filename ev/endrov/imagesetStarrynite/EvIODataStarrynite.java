@@ -17,6 +17,7 @@ import endrov.imagesetBasic.BasicSliceIO;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
+import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 
@@ -171,7 +172,7 @@ public class EvIODataStarrynite implements EvIOData
 					
 					EvDecimal time=frame2time(Integer.parseInt(sFrame));
 					
-					EvStack s=ch.getStack(time);//ch.getCreateStack(time);
+					EvStack s=ch.getStack(new ProgressHandle(), time);//ch.getCreateStack(time);
 					if(s==null)
 						ch.putStack(time, s=new EvStack());
 					

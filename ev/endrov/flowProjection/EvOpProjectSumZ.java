@@ -7,6 +7,7 @@ package endrov.flowProjection;
 
 import endrov.flowBasic.math.EvOpImageAddImage;
 import endrov.imageset.EvPixels;
+import endrov.util.ProgressHandle;
 
 /**
  * Projection: Sum Z
@@ -17,9 +18,9 @@ import endrov.imageset.EvPixels;
 public class EvOpProjectSumZ extends EvOpProjectZ
 	{
 	@Override
-	protected EvPixels combine(EvPixels a, EvPixels b)
+	protected EvPixels combine(ProgressHandle ph, EvPixels a, EvPixels b)
 		{
-		return new EvOpImageAddImage().exec1(a,b);
+		return new EvOpImageAddImage().exec1(ph, a,b);
 		}
 
 

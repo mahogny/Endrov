@@ -15,6 +15,7 @@ import endrov.data.*;
 import endrov.imageset.*;
 import endrov.roi.*;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 
 
 
@@ -202,7 +203,7 @@ public class BoxROI extends ROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(EvStack stack, EvImage im, final String channel, final EvDecimal frame, final double z)
+	public LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImage im, final String channel, final EvDecimal frame, final double z)
 		{
 		if(imageInRange(channel, frame, z))
 			{
@@ -210,7 +211,7 @@ public class BoxROI extends ROI
 			RectLineIterator it=new RectLineIterator();
 			it.startX=0;
 			it.y=0;
-			EvPixels p=im.getPixels();
+			EvPixels p=im.getPixels(progh);
 			it.endX=p.getWidth();
 			it.endY=p.getHeight();
 			/*
