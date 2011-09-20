@@ -7,7 +7,7 @@ import java.util.PriorityQueue;
 
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
@@ -54,9 +54,9 @@ public class EvOpFeatureImageToLineage
 	 * @param thresholdRadius
 	 * @return
 	 */
-	public static NucLineage featureChannelToLineage(ProgressHandle progh, EvChannel chFeatures, EvChannel chPriority, double outputRadius, double thresholdRadius)
+	public static Lineage featureChannelToLineage(ProgressHandle progh, EvChannel chFeatures, EvChannel chPriority, double outputRadius, double thresholdRadius)
 		{
-		NucLineage lin=new NucLineage();
+		Lineage lin=new Lineage();
 		for(EvDecimal frame:chFeatures.getFrames())
 			{
 			System.out.println("Getting feature stack");
@@ -129,8 +129,8 @@ public class EvOpFeatureImageToLineage
 			int nucId=0;
 			for(Vector3i v:acceptedPoints)
 				{
-				NucLineage.Nuc nuc=lin.getCreateNuc(":"+nucId);
-				NucLineage.NucPos p=new NucLineage.NucPos();//.pos.get(frame);
+				Lineage.Particle nuc=lin.getCreateParticle(":"+nucId);
+				Lineage.ParticlePos p=new Lineage.ParticlePos();//.pos.get(frame);
 				p.x=v.x*resX;
 				p.y=v.y*resY;
 				p.z=v.z*resZ;

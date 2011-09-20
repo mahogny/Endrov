@@ -16,15 +16,15 @@ import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.imageset.EvChannel;
 import endrov.imageset.Imageset;
-import endrov.nuc.NucLineage;
-import endrov.nuc.NucRemapUtil;
-import endrov.nuc.integrate.IntegrateExp;
-import endrov.nuc.integrate.IntegratorCellClosest;
-import endrov.nuc.integrate.IntegratorSliceAP;
-import endrov.nuc.integrate.IntegratorSliceDV;
-import endrov.nuc.integrate.IntegratorSliceLR;
-import endrov.nuc.integrate.IntegratorXYZ;
-import endrov.nuc.integrate.IntegrateExp.Integrator;
+import endrov.particle.Lineage;
+import endrov.particle.expression.IntegrateExp;
+import endrov.particle.expression.IntegratorCellClosest;
+import endrov.particle.expression.IntegratorSliceAP;
+import endrov.particle.expression.IntegratorSliceDV;
+import endrov.particle.expression.IntegratorSliceLR;
+import endrov.particle.expression.IntegratorXYZ;
+import endrov.particle.expression.IntegrateExp.Integrator;
+import endrov.particle.util.LineageMergeUtil;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 import endrov.util.Tuple;
@@ -49,7 +49,7 @@ public class IntegrateAllExp
 		if (toInclude)
 			{
 			boolean hasShell = !data.getIdObjectsRecursive(EvChannel.class).isEmpty();
-			boolean hasLineage = !data.getIdObjectsRecursive(NucLineage.class)
+			boolean hasLineage = !data.getIdObjectsRecursive(Lineage.class)
 					.isEmpty();
 			System.out.println("Include: "+f+"    "+(hasShell ? "shell" : "")+"    "
 					+(hasLineage ? "lineage" : ""));
@@ -186,7 +186,7 @@ public class IntegrateAllExp
 					{
 					//Just superimpose the model, normalized!
 					
-					NucLineage newlin=NucRemapUtil.mapModelToRec(IntegrateExp.refLin, IntegrateAllExp.loadModel());
+					Lineage newlin=LineageMergeUtil.mapModelToRec(IntegrateExp.refLin, IntegrateAllExp.loadModel());
 					
 					//Imageset imset=data.getIdObjectsRecursive(Imageset.class).values().iterator().next();
 					imset.metaObject.put("estcell", newlin);
@@ -220,20 +220,20 @@ public class IntegrateAllExp
 	
 			// Wrap up, store in OST
 			// Use common correction factors for exposure
-			NucLineage getLinAP=intAP.done(integrator, null);
+			Lineage getLinAP=intAP.done(integrator, null);
 			imset.metaObject.put(newLinNameAP, getLinAP);
 						
-			NucLineage getLinT=intT.done(integrator, intAP.correctedExposure);
+			Lineage getLinT=intT.done(integrator, intAP.correctedExposure);
 			imset.metaObject.put(newLinNameT, getLinT);
 			
 			if(intDV!=null)
 				{
-				NucLineage getLin=intDV.done(integrator, intAP.correctedExposure);
+				Lineage getLin=intDV.done(integrator, intAP.correctedExposure);
 				imset.metaObject.put(newLinNameDV, getLin);
 				}
 			if(intLR!=null)
 				{
-				NucLineage getLin=intLR.done(integrator, intAP.correctedExposure);
+				Lineage getLin=intLR.done(integrator, intAP.correctedExposure);
 				imset.metaObject.put(newLinNameLR, getLin);
 				}
 			if (intXYZ!=null)
@@ -302,10 +302,10 @@ public class IntegrateAllExp
 		return "DV"+numSubDiv+"-"+channelName;
 		}
 
-	public static NucLineage getRefLin(EvData data)
+	public static Lineage getRefLin(EvData data)
 		{
-		Map<EvPath, NucLineage> lins = data.getIdObjectsRecursive(NucLineage.class);
-		for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
+		Map<EvPath, Lineage> lins = data.getIdObjectsRecursive(Lineage.class);
+		for (Map.Entry<EvPath, Lineage> e : lins.entrySet())
 			if (!e.getKey().getLeafName().startsWith("AP") && !e.getKey().getLeafName().startsWith("LR") && !e.getKey().getLeafName().startsWith("DV") && !e.getKey().getLeafName().startsWith("estcell"))
 				{
 				System.out.println("found lineage "+e.getKey());
@@ -383,10 +383,10 @@ public class IntegrateAllExp
 		System.exit(0);
 		}
 
-	public static NucLineage loadModel()
+	public static Lineage loadModel()
 		{
 		EvData stdcelegans=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/celegans2008.2.ost"));
-		NucLineage stdlin=stdcelegans.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
+		Lineage stdlin=stdcelegans.getIdObjectsRecursive(Lineage.class).values().iterator().next();
 		return stdlin;
 		}
 	

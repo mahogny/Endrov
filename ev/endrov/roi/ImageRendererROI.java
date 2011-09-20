@@ -48,7 +48,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 
 
 	/**
-	 * Render nuclei
+	 * Render ROI
 	 */
 	public void draw(Graphics g)
 		{

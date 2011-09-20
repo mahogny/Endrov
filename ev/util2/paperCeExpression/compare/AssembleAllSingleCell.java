@@ -20,9 +20,9 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.frameTime.FrameTime;
-import endrov.nuc.NucExp;
-import endrov.nuc.NucLineage;
-import endrov.nuc.NucRemapUtil;
+import endrov.particle.LineageExp;
+import endrov.particle.Lineage;
+import endrov.particle.util.LineageMergeUtil;
 import endrov.util.EvDecimal;
 
 /**
@@ -34,10 +34,10 @@ public class AssembleAllSingleCell
 	{
 	public final static File cachedValuesFileT=new File(CompareAll.outputBaseDir,"comparisonSS.xml");
 
-	public static NucLineage getSingleCellLin(EvData data)
+	public static Lineage getSingleCellLin(EvData data)
 		{
-		Map<EvPath, NucLineage> lins = data.getIdObjectsRecursive(NucLineage.class);
-		for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
+		Map<EvPath, Lineage> lins = data.getIdObjectsRecursive(Lineage.class);
+		for (Map.Entry<EvPath, Lineage> e : lins.entrySet())
 			if (e.getKey().getLeafName().startsWith("estcell"))
 				{
 				System.out.println("found lineage "+e.getKey());
@@ -46,10 +46,10 @@ public class AssembleAllSingleCell
 		return null;
 		}
 
-	public static NucLineage getInLinT(EvData data)
+	public static Lineage getInLinT(EvData data)
 		{
-		Map<EvPath, NucLineage> lins = data.getIdObjectsRecursive(NucLineage.class);
-		for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
+		Map<EvPath, Lineage> lins = data.getIdObjectsRecursive(Lineage.class);
+		for (Map.Entry<EvPath, Lineage> e : lins.entrySet())
 			if (e.getKey().getLeafName().startsWith("AP1-GFP"))
 				{
 				System.out.println("found lineage "+e.getKey());
@@ -59,10 +59,10 @@ public class AssembleAllSingleCell
 		}
 
 	
-	public static NucLineage getInLinAPT(EvData data)
+	public static Lineage getInLinAPT(EvData data)
 		{
-		Map<EvPath, NucLineage> lins = data.getIdObjectsRecursive(NucLineage.class);
-		for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
+		Map<EvPath, Lineage> lins = data.getIdObjectsRecursive(Lineage.class);
+		for (Map.Entry<EvPath, Lineage> e : lins.entrySet())
 			if (e.getKey().getLeafName().startsWith("AP20-GFP"))
 				{
 				System.out.println("found lineage "+e.getKey());
@@ -78,7 +78,7 @@ public class AssembleAllSingleCell
 		}
 	
 	
-	public static void assembleAPT(String label, NucLineage aptLin, NucLineage recSingleCell, NucLineage refLin, NucLineage outLin, File in, String totExpName)
+	public static void assembleAPT(String label, Lineage aptLin, Lineage recSingleCell, Lineage refLin, Lineage outLin, File in, String totExpName)
 		{
 		if(aptLin==null)
 			{
@@ -92,16 +92,16 @@ public class AssembleAllSingleCell
 		String recExpName=CompareAll.expName;
 		
 		//For all nuclei
-		for(Map.Entry<String, NucLineage.Nuc> recNucE:aptLin.nuc.entrySet())
+		for(Map.Entry<String, Lineage.Particle> recNucE:aptLin.particle.entrySet())
 			{
-			NucLineage.Nuc recNuc=recNucE.getValue();
-			NucLineage.Nuc outNuc=outLin.getCreateNuc(/*label+" "+*/recNucE.getKey());
+			Lineage.Particle recNuc=recNucE.getValue();
+			Lineage.Particle outNuc=outLin.getCreateParticle(/*label+" "+*/recNucE.getKey());
 			
-			NucExp totExp=outNuc.getCreateExp(totExpName);
+			LineageExp totExp=outNuc.getCreateExp(totExpName);
 			totExp.level.clear(); //Not needed at the moment since it is assembled "de novo"
 
 			//Transfer levels. Remap time
-			NucExp recExp=recNuc.exp.get(recExpName);
+			LineageExp recExp=recNuc.exp.get(recExpName);
 			if(recExp!=null)
 				for(Map.Entry<EvDecimal, Double> e:recExp.level.entrySet())
 					{
@@ -152,10 +152,10 @@ public class AssembleAllSingleCell
 		System.out.println("Number of annotated strains: "+datas.size());
 
 		EvData totalData=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/celegans2008.2.ost"));
-		final NucLineage totLinSingleCell=totalData.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
+		final Lineage totLinSingleCell=totalData.getIdObjectsRecursive(Lineage.class).values().iterator().next();
 
-		NucLineage totLinAPT=new NucLineage();
-		NucLineage totLinT=new NucLineage();
+		Lineage totLinAPT=new Lineage();
+		Lineage totLinT=new Lineage();
 		
 		for(File in:datas)
 			{
@@ -163,18 +163,18 @@ public class AssembleAllSingleCell
 			if(CompareAll.ensureCalculated(in))
 				{
 				EvData dataFile=EvData.loadFile(in);
-				NucLineage inLinSingleCell=getSingleCellLin(dataFile);
+				Lineage inLinSingleCell=getSingleCellLin(dataFile);
 
 				String toExpName=PaperCeExpressionUtil.getGeneName(in)+"_"+in.getName();
 				//Do if not done: do single-cell
 				if(inLinSingleCell!=null)
-					NucRemapUtil.mapExpression(inLinSingleCell, totLinSingleCell, CompareAll.expName, toExpName);
+					LineageMergeUtil.mapExpression(inLinSingleCell, totLinSingleCell, CompareAll.expName, toExpName);
 				else
 					System.out.println("Not done!!!!!!           "+in);
 				
 				//Do the rest
-				NucLineage inLinAPT=getInLinAPT(dataFile);
-				NucLineage inLinT=getInLinT(dataFile);
+				Lineage inLinAPT=getInLinAPT(dataFile);
+				Lineage inLinT=getInLinT(dataFile);
 				assembleAPT("apt", inLinAPT, inLinSingleCell, totLinSingleCell, totLinAPT, in, toExpName);
 				assembleAPT("t", inLinT, inLinSingleCell, totLinSingleCell, totLinT, in, toExpName);
 				}

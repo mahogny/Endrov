@@ -18,8 +18,8 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.nuc.NucExp;
-import endrov.nuc.NucLineage;
+import endrov.particle.LineageExp;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvListUtil;
 import endrov.util.EvParallel;
@@ -52,7 +52,7 @@ public class CompareAssembledSingleCell
 		System.out.println("Number of annotated strains: "+datas.size());
 
 		EvData totalData=EvData.loadFile(new File("/Volumes/TBU_main06/summary.ost"));
-		final NucLineage totLin=totalData.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
+		final Lineage totLin=totalData.getIdObjectsRecursive(Lineage.class).values().iterator().next();
 		
 		final Map<Tuple<File,File>, ColocCoefficients> comparisonSS;
 		comparisonSS=CompareAll.loadCache(datas, CompareAll.cachedValuesFileSS);
@@ -74,15 +74,15 @@ public class CompareAssembledSingleCell
 			String expB=AssembleAllSingleCell.getExpName(inb);
 			
 			ColocCoefficients coeff=new ColocCoefficients();
-			for(NucLineage.Nuc nuc:totLin.nuc.values())
+			for(Lineage.Particle nuc:totLin.particle.values())
 				if(!nuc.pos.isEmpty())
 				{
 				EvDecimal endtime=nuc.getLastFrame();
 				if(endtime==null)
 					endtime=nuc.pos.lastKey();
 				
-				NucExp expLevelA=nuc.exp.get(expA);
-				NucExp expLevelB=nuc.exp.get(expB);
+				LineageExp expLevelA=nuc.exp.get(expA);
+				LineageExp expLevelB=nuc.exp.get(expB);
 				if(expLevelA!=null && expLevelB!=null && !expLevelA.level.isEmpty() && !expLevelB.level.isEmpty())
 					for(EvDecimal time=nuc.getFirstFrame();time.less(endtime);time=time.add(dt))
 						{

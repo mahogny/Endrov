@@ -75,7 +75,7 @@ public class GeneralToolDragCreateROI implements GeneralTool
 		{
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
-			//Start making a nucleus
+			//Start making a ROI
 			active=true;
 			setRendererROI(roi);
 			Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
@@ -87,7 +87,7 @@ public class GeneralToolDragCreateROI implements GeneralTool
 			}
 		else if(SwingUtilities.isRightMouseButton(e))
 			{
-			//Cancel making nucleus
+			//Cancel making ROI
 			active=false;
 			setRendererROI(null);
 			w.updateImagePanel();

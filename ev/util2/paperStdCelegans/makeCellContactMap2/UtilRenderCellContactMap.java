@@ -10,8 +10,8 @@ import java.util.*;
 
 import endrov.data.EvData;
 import endrov.ev.*;
-import endrov.neighmap.NeighMap;
-import endrov.neighmap.RenderNeighmap;
+import endrov.particleContactMap.neighmap.NeighMap;
+import endrov.particleContactMap.neighmap.RenderNeighmap;
 
 
 /**

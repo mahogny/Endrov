@@ -16,7 +16,7 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvXmlUtil;
 
@@ -35,7 +35,7 @@ public class WBlineageToOST
 		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 		
-		NucLineage lin=new NucLineage();
+		Lineage lin=new Lineage();
 		
 		
 		try
@@ -48,7 +48,7 @@ public class WBlineageToOST
 				Element eCell=(Element)rootc;
 				String cellName=eCell.getAttributeValue("value");
 
-				NucLineage.Nuc nuc=lin.new Nuc();
+				Lineage.Particle nuc=lin.new Particle();
 				
 				
 				//Parent and children
@@ -139,33 +139,33 @@ public class WBlineageToOST
 					{
 					if(nuc.parent==null)
 						System.out.println("no parent for "+cellName);
-					lin.nuc.put(cellName, nuc);
+					lin.particle.put(cellName, nuc);
 					}
 				}
 			
 			
 			
-			for(Map.Entry<String, NucLineage.Nuc> e:lin.nuc.entrySet())
+			for(Map.Entry<String, Lineage.Particle> e:lin.particle.entrySet())
 				{
-				NucLineage.Nuc nuc=e.getValue();
+				Lineage.Particle nuc=e.getValue();
 				for(String cname:nuc.child)
 					{
 					//System.out.println(e.getKey()+":"+cname);
-					lin.nuc.get(cname).parent=e.getKey();
+					lin.particle.get(cname).parent=e.getKey();
 					}
 				if(nuc.parent!=null)
-					lin.nuc.get(nuc.parent).child.add(e.getKey());
+					lin.particle.get(nuc.parent).child.add(e.getKey());
 				}
 			
 		
 			HashSet<String> toRemove=new HashSet<String>();
 
-			for(Map.Entry<String, NucLineage.Nuc> e:lin.nuc.entrySet())
+			for(Map.Entry<String, Lineage.Particle> e:lin.particle.entrySet())
 				{
-				NucLineage.Nuc nuc=e.getValue();
+				Lineage.Particle nuc=e.getValue();
 				if(nuc.parent==null && nuc.child.isEmpty())
 					System.out.println("No parent/child for "+e.getKey());
-				if(!lin.nuc.containsKey(nuc.parent) && nuc.child.isEmpty())
+				if(!lin.particle.containsKey(nuc.parent) && nuc.child.isEmpty())
 					System.out.println("!!!!missing parent");
 				
 				//temp: do the easy ones
@@ -175,11 +175,11 @@ public class WBlineageToOST
 			
 			for(String nucName:toRemove)
 				{
-				NucLineage.Nuc nuc=lin.nuc.get(nucName);
+				Lineage.Particle nuc=lin.particle.get(nucName);
 				if(nuc.parent!=null)
-					lin.nuc.get(nuc.parent).child.remove(nucName);
+					lin.particle.get(nuc.parent).child.remove(nucName);
 				}
-			lin.nuc.keySet().removeAll(toRemove);
+			lin.particle.keySet().removeAll(toRemove);
 			
 			
 			/*

@@ -33,7 +33,7 @@ public class ImageAnnotImageRenderer implements ImageWindowRenderer
 	
 
 	/**
-	 * Render nuclei
+	 * Render annotation
 	 */
 	public void draw(Graphics g)
 		{
@@ -45,7 +45,7 @@ public class ImageAnnotImageRenderer implements ImageWindowRenderer
 			//Coordinate transformation
 			Vector2d so=w.transformPointW2S(new Vector2d(ann.pos.x,ann.pos.y));
 
-			//Draw the nucleus
+			//Draw the text
 			g.setColor(Color.RED);
 			g.drawOval((int)(so.x-5),(int)(so.y-5),(int)(2*5),(int)(2*5));
 			g.drawString(ann.text, (int)so.x-g.getFontMetrics().stringWidth(ann.text)/2, (int)so.y-2);

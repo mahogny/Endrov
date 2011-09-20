@@ -13,7 +13,7 @@ import java.util.Map;
 
 import endrov.data.EvData;
 import endrov.ev.EvLog;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 
 /**
@@ -74,20 +74,20 @@ public class NucQuickExtractCoordinates
 			throw new RuntimeException("Not saved as OST");
 
 		//For all lineages (assuming there is only one)
-		for(NucLineage lin:data.getIdObjectsRecursive(NucLineage.class).values())
+		for(Lineage lin:data.getIdObjectsRecursive(Lineage.class).values())
 			{
 			File f=new File(ddir,"quickLin.txt");
 			EvLog.printLog(f.toString());
 			PrintWriter pw=new PrintWriter(new FileWriter(f));
 			
 			//For every cell
-			for(String nucName:lin.nuc.keySet())
+			for(String nucName:lin.particle.keySet())
 				{
 				//For every time point
-				for(Map.Entry<EvDecimal, NucLineage.NucPos> e:lin.nuc.get(nucName).pos.entrySet())
+				for(Map.Entry<EvDecimal, Lineage.ParticlePos> e:lin.particle.get(nucName).pos.entrySet())
 					{
 					//Print coordinate
-					NucLineage.NucPos pos=e.getValue();
+					Lineage.ParticlePos pos=e.getValue();
 					pw.println(nucName+"\t"+e.getKey()+"\t"+pos.x+"\t"+pos.y+"\t"+pos.z+"\t"+pos.r);
 					}
 				}

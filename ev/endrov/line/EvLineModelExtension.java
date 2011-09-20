@@ -91,40 +91,31 @@ public class EvLineModelExtension implements ModelWindowExtension
 			{
 			GL2 gl=glin.getGL2();
 			for(EvLine ia:getAnnot())
-				renderOne(gl, ia);
+				{
+				//Save world coordinate
+				gl.glPushMatrix();
+				
+				gl.glColor3d(0, 1.0, 0);
+				if(ia.pos.size()>1)
+					{
+					EvDecimal curFrame=w.getFrame();
+					
+					//TODO bad bd comparison. double
+					if(ia.pos.get(0).frame.equals(curFrame) && ia.pos.size()>1)
+						{
+						gl.glBegin(GL.GL_LINE_STRIP);
+						for(int i=0;i<ia.pos.size();i++)
+							gl.glVertex3d(ia.pos.get(i).v.x,ia.pos.get(i).v.y,ia.pos.get(i).v.z);
+						gl.glEnd();
+						}
+					}
+				
+				//Go back to world coordinates
+				gl.glPopMatrix();
+				}
 			}
 
 
-		
-		/**
-		 * Render label of one nucleus
-		 */
-		private void renderOne(GL2 gl, EvLine ia)
-			{
-			//Save world coordinate
-			gl.glPushMatrix();
-
-			
-			gl.glColor3d(0, 1.0, 0);
-			if(ia.pos.size()>1)
-				{
-				EvDecimal curFrame=w.getFrame();
-				
-				//TODO bad bd comparison. double
-				if(ia.pos.get(0).frame.equals(curFrame) && ia.pos.size()>1)
-					{
-					gl.glBegin(GL.GL_LINE_STRIP);
-					for(int i=0;i<ia.pos.size();i++)
-						gl.glVertex3d(ia.pos.get(i).v.x,ia.pos.get(i).v.y,ia.pos.get(i).v.z);
-					gl.glEnd();
-					}
-				}
-			
-			
-			//Go back to world coordinates
-			gl.glPopMatrix();
-			}	
-		
 
 		
 		/**

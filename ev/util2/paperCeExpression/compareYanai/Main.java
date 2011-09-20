@@ -18,7 +18,7 @@ import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
 import endrov.frameTime.FrameTime;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 
@@ -147,23 +147,23 @@ public class Main
 				
 
 				EvData linfile=EvData.loadFile(new File("/Volumes/TBU_main06/summary2.ost"));
-				NucLineage lin=(NucLineage)linfile.getChild("t");
-				NucLineage totLinSingleCell=(NucLineage)linfile.getChild("lin");
+				Lineage lin=(Lineage)linfile.getChild("t");
+				Lineage totLinSingleCell=(Lineage)linfile.getChild("lin");
 				
 //				EvData totalData=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/celegans2008.2.ost"));
 				//final NucLineage totLinSingleCell=linfile.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
 //				FrameTime ftRef=CompareAll.buildFrametime(totLinSingleCell);
 				
 				
-				double t4s=totLinSingleCell.nuc.get("ABa").pos.firstKey().doubleValue();
-				double t4e=totLinSingleCell.nuc.get("ABa").pos.lastKey().doubleValue();
-				double t28s=totLinSingleCell.nuc.get("ABarpp").pos.firstKey().doubleValue();
-				double t28e=totLinSingleCell.nuc.get("ABarpp").pos.lastKey().doubleValue();
-				double t55s=totLinSingleCell.nuc.get("ABarppp").pos.firstKey().doubleValue();
-				double t55e=totLinSingleCell.nuc.get("ABarppp").pos.lastKey().doubleValue();
-				double t95s=totLinSingleCell.nuc.get("ABarpppp").pos.firstKey().doubleValue();
-				double t95e=totLinSingleCell.nuc.get("ABarpppp").pos.lastKey().doubleValue();
-				double t190s=totLinSingleCell.nuc.get("ABarppppp").pos.firstKey().doubleValue();
+				double t4s=totLinSingleCell.particle.get("ABa").pos.firstKey().doubleValue();
+				double t4e=totLinSingleCell.particle.get("ABa").pos.lastKey().doubleValue();
+				double t28s=totLinSingleCell.particle.get("ABarpp").pos.firstKey().doubleValue();
+				double t28e=totLinSingleCell.particle.get("ABarpp").pos.lastKey().doubleValue();
+				double t55s=totLinSingleCell.particle.get("ABarppp").pos.firstKey().doubleValue();
+				double t55e=totLinSingleCell.particle.get("ABarppp").pos.lastKey().doubleValue();
+				double t95s=totLinSingleCell.particle.get("ABarpppp").pos.firstKey().doubleValue();
+				double t95e=totLinSingleCell.particle.get("ABarpppp").pos.lastKey().doubleValue();
+				double t190s=totLinSingleCell.particle.get("ABarppppp").pos.firstKey().doubleValue();
 				double t190e=t190s + (t95e-t95s);
 
 				/*
@@ -173,7 +173,7 @@ public class Main
 				StringBuffer outFile=new StringBuffer();
 				StringBuffer outFileBootstrap=new StringBuffer();
 				
-				NucLineage.Nuc nuc=lin.nuc.get("_slice0");
+				Lineage.Particle nuc=lin.particle.get("_slice0");
 				for(String expName:nuc.exp.keySet())
 					{
 					int pos=expName.indexOf("_");

@@ -11,7 +11,7 @@ import java.util.*;
 
 import endrov.data.*;
 import endrov.ev.*;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 
 
@@ -80,16 +80,16 @@ public class FixSchnabel
 		//new EvIODataXML("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords.ost/rmd.ostxml");
 
 		
-		NucLineage reflin=ref.getObjects(NucLineage.class).iterator().next();
-		NucLineage lin=ost.getObjects(NucLineage.class).iterator().next();
+		Lineage reflin=ref.getObjects(Lineage.class).iterator().next();
+		Lineage lin=ost.getObjects(Lineage.class).iterator().next();
 
-		for(Map.Entry<String, NucLineage.Nuc> entry:lin.nuc.entrySet())
+		for(Map.Entry<String, Lineage.Particle> entry:lin.particle.entrySet())
 			{
-			NucLineage.Nuc refnuc=reflin.nuc.get(entry.getKey());
+			Lineage.Particle refnuc=reflin.particle.get(entry.getKey());
 			if(refnuc!=null)
 				{
 				double avr=0;
-				for(NucLineage.NucPos pos:refnuc.pos.values())
+				for(Lineage.ParticlePos pos:refnuc.pos.values())
 					avr+=pos.r;
 /*				if(refnuc.pos.size()==0)
 					avr=1;
@@ -97,10 +97,10 @@ public class FixSchnabel
 					avr/=refnuc.pos.size();
 					avr*=7.46;//25;
 					
-				Map<EvDecimal, NucLineage.NucPos> newpos=new HashMap<EvDecimal, NucLineage.NucPos>(entry.getValue().pos);
+				Map<EvDecimal, Lineage.ParticlePos> newpos=new HashMap<EvDecimal, Lineage.ParticlePos>(entry.getValue().pos);
 				entry.getValue().pos.clear();	
 				
-				for(Map.Entry<EvDecimal, NucLineage.NucPos> ne:newpos.entrySet())
+				for(Map.Entry<EvDecimal, Lineage.ParticlePos> ne:newpos.entrySet())
 					{
 					ne.getValue().r=avr;
 					entry.getValue().pos.put(interpol(ne.getKey()),ne.getValue());

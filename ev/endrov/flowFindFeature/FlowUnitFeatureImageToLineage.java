@@ -20,7 +20,7 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.EvChannel;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 
 /**
  * Flow unit: Find local maximas
@@ -62,7 +62,7 @@ public class FlowUnitFeatureImageToLineage extends FlowUnitBasic
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("out", new FlowType(NucLineage.class)); 
+		types.put("out", new FlowType(Lineage.class)); 
 		}
 	
 	/** Execute algorithm */

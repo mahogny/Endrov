@@ -19,7 +19,7 @@ import endrov.ev.*;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 
@@ -29,13 +29,13 @@ public class CollectImages
 	
 	public static boolean doTrue=false;
 
-	public static NucLineage getLin(EvContainer ost)
+	public static Lineage getLin(EvContainer ost)
 		{
 		for(EvObject evob:ost.metaObject.values())
 			{
-			if(evob instanceof NucLineage)
+			if(evob instanceof Lineage)
 				{
-				NucLineage lin=(NucLineage)evob;
+				Lineage lin=(Lineage)evob;
 				return lin;
 				}
 			}
@@ -103,20 +103,20 @@ public class CollectImages
 			//For all lineages
 			for(Imageset ost:worms)
 				{
-				NucLineage lin=getLin(ost);
+				Lineage lin=getLin(ost);
 				
 				//For all nuc
-				for(Map.Entry<String, NucLineage.Nuc> e2:lin.nuc.entrySet())
+				for(Map.Entry<String, Lineage.Particle> e2:lin.particle.entrySet())
 					{
-					NucLineage.Nuc nuc=e2.getValue();
+					Lineage.Particle nuc=e2.getValue();
 					String n=e2.getKey();
 					if(!(n.startsWith(":") || n.startsWith("shell") || n.equals("ant") || n.equals("post") || n.equals("venc") || n.equals("P") || n.indexOf('?')>=0 || n.indexOf('_')>=0 || n.equals("2ftail") || n.equals("germline")))
-						for(Map.Entry<EvDecimal, NucLineage.NucPos> e:nuc.pos.entrySet())
+						for(Map.Entry<EvDecimal, Lineage.ParticlePos> e:nuc.pos.entrySet())
 							{
 							EvDecimal frame=e.getKey();
 							if(frame.greaterEqual(startFrame) && frame.lessEqual(endFrame))
 								{
-								NucLineage.NucPos pos=e.getValue();
+								Lineage.ParticlePos pos=e.getValue();
 								
 								frame=ost.getChannel(channelName).closestFrame(frame);
 								//EvDecimal z=ost.getChannel(channelName).closestZ(frame, new EvDecimal(pos.z/**ost.meta.resZ*/));

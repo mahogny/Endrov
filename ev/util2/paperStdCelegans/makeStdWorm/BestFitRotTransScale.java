@@ -8,7 +8,7 @@ package util2.paperStdCelegans.makeStdWorm;
 import java.util.*;
 import javax.vecmath.*;
 
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 import static java.lang.Math.*;
 
 
@@ -19,9 +19,9 @@ import static java.lang.Math.*;
  */
 public class BestFitRotTransScale
 	{
-	public Map<NucLineage,LinInfo> lininfo=new HashMap<NucLineage, LinInfo>();
+	public Map<Lineage,LinInfo> lininfo=new HashMap<Lineage, LinInfo>();
 	public List<LinPair> pair=new LinkedList<LinPair>();
-	public NucLineage refLin;
+	public Lineage refLin;
 	
 	
 	
@@ -132,7 +132,7 @@ public class BestFitRotTransScale
 	public static class LinPair
 		{
 		public Set<String> commonNuc=new HashSet<String>();		
-		public NucLineage goalLin, newLin;
+		public Lineage goalLin, newLin;
 		
 		
 		/**
@@ -210,11 +210,11 @@ public class BestFitRotTransScale
 	/**
 	 * Add one lineage to fit
 	 */
-	public void addLineage(NucLineage lin)
+	public void addLineage(Lineage lin)
 		{
 		if(!lininfo.containsKey(lin))
 			{
-			for(NucLineage lin2:lininfo.keySet())
+			for(Lineage lin2:lininfo.keySet())
 				{
 				LinPair p=new LinPair();
 				p.goalLin=lin;

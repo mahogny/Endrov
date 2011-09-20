@@ -13,12 +13,12 @@ import endrov.data.EvPath;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
-import endrov.nuc.NucLineage;
-import endrov.nuc.NucRemapUtil;
-import endrov.nuc.NucSel;
-import endrov.nuc.NucVoronoi;
-import endrov.nuc.NucLineage.NucInterp;
-import endrov.nuc.ccm.MakeCellContactMap;
+import endrov.particle.Lineage;
+import endrov.particle.LineageSelParticle;
+import endrov.particle.Lineage.InterpolatedParticle;
+import endrov.particle.util.LineageMergeUtil;
+import endrov.particle.util.LineageVoronoi;
+import endrov.particle.util.MakeParticleContactMap;
 import endrov.util.EvDecimal;
 
 /**
@@ -35,10 +35,10 @@ import endrov.util.EvDecimal;
 public class TestSingleCellPrecision
 	{
 
-	public static NucLineage getManualAnnot(EvData data)
+	public static Lineage getManualAnnot(EvData data)
 		{
-		Map<EvPath, NucLineage> lins = data.getIdObjectsRecursive(NucLineage.class);
-		for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
+		Map<EvPath, Lineage> lins = data.getIdObjectsRecursive(Lineage.class);
+		for (Map.Entry<EvPath, Lineage> e : lins.entrySet())
 			if (e.getKey().getLeafName().startsWith("1") || e.getKey().getLeafName().startsWith("2"))
 				{
 				System.out.println("found lineage "+e.getKey());
@@ -56,16 +56,16 @@ public class TestSingleCellPrecision
 		//EvData data=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/AH142_070827.ost"));
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/N2_071114.ost"));
 		//EvData data=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/TB2142_071129.ost"));
-		NucLineage refLin=getManualAnnot(data);
+		Lineage refLin=getManualAnnot(data);
 		
 		
-		NucLineage approxLin=NucRemapUtil.mapModelToRec(refLin, IntegrateAllExp.loadModel());
+		Lineage approxLin=LineageMergeUtil.mapModelToRec(refLin, IntegrateAllExp.loadModel());
 		
 		EvDecimal firstFrame=refLin.firstFrameOfLineage().fst();
 		EvDecimal lastFrame=refLin.lastFrameOfLineage().fst();
 		for(EvDecimal curFrame=firstFrame;curFrame.less(lastFrame);curFrame=curFrame.add(new EvDecimal(20)))
 			{
-			Map<NucSel, NucInterp> allInterpRef=refLin.getInterpNuc(curFrame);
+			Map<LineageSelParticle, InterpolatedParticle> allInterpRef=refLin.interpolateParticles(curFrame);
 			//Map<NucSel, NucInterp> allInterpApprox=approxLin.getInterpNuc(curFrame);
 			
 			int countNuc=0;
@@ -74,19 +74,19 @@ public class TestSingleCellPrecision
 			
 			
 			
-			for(NucSel sel:allInterpRef.keySet())
+			for(LineageSelParticle sel:allInterpRef.keySet())
 				{
-				NucInterp interpRef=allInterpRef.get(sel);
-				NucLineage.Nuc nucRef=sel.getNuc();
+				InterpolatedParticle interpRef=allInterpRef.get(sel);
+				Lineage.Particle nucRef=sel.getNuc();
 				if(interpRef.isVisible())
 					if(!nucRef.child.isEmpty() || nucRef.pos.lastKey().lessEqual(curFrame))
 						{
-						NucLineage.Nuc nucApprox=approxLin.nuc.get(sel.snd());
+						Lineage.Particle nucApprox=approxLin.particle.get(sel.snd());
 						if(nucApprox!=null)
 							{
 
 
-							NucInterp interpApprox=nucApprox.interpolatePos(curFrame);
+							InterpolatedParticle interpApprox=nucApprox.interpolatePos(curFrame);
 							if(interpApprox!=null && interpApprox.isVisible())
 								{
 								
@@ -120,19 +120,19 @@ public class TestSingleCellPrecision
 			try
 				{
 				int countAllLength=0;
-				NucVoronoi vor=MakeCellContactMap.calcneighOneFrame(approxLin.nuc.keySet(), allInterpRef, false);
+				LineageVoronoi vor=MakeParticleContactMap.calcneighOneFrame(approxLin.particle.keySet(), allInterpRef, false);
 				//int numCell=vor.nucnames.size();
 				for(int i=0;i<vor.nucnames.size();i++)
-					if(approxLin.nuc.containsKey(vor.nucnames.get(i)))
+					if(approxLin.particle.containsKey(vor.nucnames.get(i)))
 						{
-						NucLineage.NucInterp iA=approxLin.nuc.get(vor.nucnames.get(i)).interpolatePos(curFrame);
+						Lineage.InterpolatedParticle iA=approxLin.particle.get(vor.nucnames.get(i)).interpolatePos(curFrame);
 						if(iA!=null)
 							{
 							Vector3d va=iA.pos.getPosCopy();
 							for(int j:vor.vneigh.dneigh.get(i))
-								if(approxLin.nuc.containsKey(vor.nucnames.get(j)))
+								if(approxLin.particle.containsKey(vor.nucnames.get(j)))
 									{
-									NucLineage.NucInterp iB=approxLin.nuc.get(vor.nucnames.get(j)).interpolatePos(curFrame);
+									Lineage.InterpolatedParticle iB=approxLin.particle.get(vor.nucnames.get(j)).interpolatePos(curFrame);
 									if(iB!=null)
 										{
 										Vector3d vb=iB.pos.getPosCopy();

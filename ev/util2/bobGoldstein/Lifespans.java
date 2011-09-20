@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import endrov.data.EvData;
 import endrov.ev.EV;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 
@@ -25,15 +25,15 @@ public class Lifespans
 			System.out.println("here");
 			EvData data=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/celegans2008.2.ost"));
 			
-			NucLineage lin=data.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
+			Lineage lin=data.getIdObjectsRecursive(Lineage.class).values().iterator().next();
 			
 			
 			StringBuffer outputBuffer=new StringBuffer();
 			outputBuffer.append("CELL NAME\tDIV TIME\n");
 			
-			for(String nucName:lin.nuc.keySet())
+			for(String nucName:lin.particle.keySet())
 				{
-				NucLineage.Nuc nuc=lin.nuc.get(nucName);
+				Lineage.Particle nuc=lin.particle.get(nucName);
 
 				if(!nuc.pos.isEmpty())
 					{

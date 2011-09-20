@@ -51,14 +51,13 @@ public class EvLineImageRenderer implements ImageWindowRenderer
 		}
 	
 	/**
-	 * Render nuclei
+	 * Render line
 	 */
 	public void draw(Graphics g)
 		{
 		EvDecimal curFrame=w.getFrame();
 		for(EvLine ann:getVisible())
 			{
-			//Draw the nucleus
 			g.setColor(Color.GREEN);
 			if(ann.pos.size()>0 && ann.pos.get(0).frame.equals(curFrame))
 				{
