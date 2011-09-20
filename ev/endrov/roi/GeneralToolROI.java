@@ -18,7 +18,7 @@ import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
 /**
- * Make nuclei by dragging an area. Also move nuclei.
+ * Make and edit ROI
  *
  * @author Johan Henriksson
  */
@@ -48,7 +48,6 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 		
 		for(Map.Entry<String,ROI> sr:w.getRootObject().getIdObjects(ROI.class).entrySet())
 			{
-//			System.out.println("testing "+sr.getKey());
 			if(sr.getValue().pointInRange(channel, frame, v.x, v.y, z))
 				return new Tuple<String, ROI>(sr.getKey(),sr.getValue());
 			}

@@ -18,8 +18,8 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
-import endrov.nuc.NucExp;
-import endrov.nuc.NucLineage;
+import endrov.particle.LineageExp;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 
 /**
@@ -53,10 +53,10 @@ public class TravelDist
 	/**
 	 * Set end frame of all cells without children to last frame. This stops them from occuring in interpolations.
 	 */
-	public static void endAllCells(NucLineage lin)
+	public static void endAllCells(Lineage lin)
 		{
 		//End all nuc without children for clarity
-		for(NucLineage.Nuc nuc:lin.nuc.values())
+		for(Lineage.Particle nuc:lin.particle.values())
 			if(nuc.child.isEmpty() && !nuc.pos.isEmpty())
 				nuc.overrideEnd=nuc.pos.lastKey();
 		}
@@ -66,10 +66,10 @@ public class TravelDist
 	 * Set end frame of all cells without children to last frame. This stops them from occuring in interpolations.
 	 * Matlab edition
 	 */
-	public void endAllCellsMatlab(NucLineage lin)
+	public void endAllCellsMatlab(Lineage lin)
 		{
 		//End all nuc without children for clarity
-		for(NucLineage.Nuc nuc:lin.nuc.values())
+		for(Lineage.Particle nuc:lin.particle.values())
 			if(nuc.child.isEmpty() && !nuc.pos.isEmpty())
 				nuc.overrideEnd=nuc.pos.lastKey();
 		}
@@ -98,9 +98,9 @@ public class TravelDist
 		//Load lineage
 		//EvData ost=new EvIODataXML(linname+"/rmd.ostxml");
 		EvData ost=EvData.loadFile(new File(linname));
-		NucLineage lin=null;
-		for(NucLineage evob:ost.getIdObjectsRecursive(NucLineage.class).values())
-			if(evob.nuc.size()>10)
+		Lineage lin=null;
+		for(Lineage evob:ost.getIdObjectsRecursive(Lineage.class).values())
+			if(evob.particle.size()>10)
 				lin=evob;
 			else
 				System.out.println("hmmm");
@@ -134,10 +134,10 @@ public class TravelDist
 	
 	
 			//For all nuclei
-			for(Map.Entry<String, NucLineage.Nuc> e:lin.nuc.entrySet())
+			for(Map.Entry<String, Lineage.Particle> e:lin.particle.entrySet())
 				{
 				String nucName=e.getKey();
-				NucLineage.Nuc nuc=e.getValue();
+				Lineage.Particle nuc=e.getValue();
 				if(!nuc.pos.isEmpty() && nuc.child.size()==2) //Only consider cells with children
 					{
 					int c=3;
@@ -147,8 +147,8 @@ public class TravelDist
 		
 					if(start.less(end))
 						{
-						NucLineage.NucInterp interStart=nuc.interpolatePos(start);
-						NucLineage.NucInterp interEnd=nuc.interpolatePos(end);
+						Lineage.InterpolatedParticle interStart=nuc.interpolatePos(start);
+						Lineage.InterpolatedParticle interEnd=nuc.interpolatePos(end);
 						if(interStart==null || interEnd==null)
 							System.out.println(nucName+" "+interStart+ " "+interEnd+" "+start+" "+end+" "+nuc.overrideEnd);
 						else
@@ -164,7 +164,7 @@ public class TravelDist
 							int childCount=0;
 							for(String cname:nuc.child)
 								{
-								NucLineage.Nuc child=lin.nuc.get(cname);
+								Lineage.Particle child=lin.particle.get(cname);
 								if(!child.pos.isEmpty())
 									{
 									Vector3d vc=child.pos.get(child.pos.firstKey()).getPosCopy();
@@ -186,7 +186,7 @@ public class TravelDist
 							Vector3d last=interStart.pos.getPosCopy();
 			
 							double fractalDist=0;
-							for(Map.Entry<EvDecimal, NucLineage.NucPos> ee:nuc.pos.entrySet())
+							for(Map.Entry<EvDecimal, Lineage.ParticlePos> ee:nuc.pos.entrySet())
 								if(ee.getKey().greater(start) && ee.getKey().less(end))
 									{
 									last.sub(ee.getValue().getPosCopy());
@@ -199,7 +199,7 @@ public class TravelDist
 			
 							
 							double relDev=0;
-							NucExp ediv=nuc.exp.get("divDev");
+							LineageExp ediv=nuc.exp.get("divDev");
 							if(ediv!=null)
 								relDev=ediv.level.get(EvDecimal.ZERO)/nuc.getLastFrame().subtract(nuc.getFirstFrame()).doubleValue();
 							

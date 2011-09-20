@@ -13,7 +13,7 @@ import endrov.data.EvPath;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 
 /**
@@ -47,13 +47,13 @@ public class FixOSTendframe
 		{
 		EvData data=EvData.loadFile(f);
 		boolean change=false;
-		for(Map.Entry<EvPath,NucLineage> e:data.getIdObjectsRecursive(NucLineage.class).entrySet())
+		for(Map.Entry<EvPath,Lineage> e:data.getIdObjectsRecursive(Lineage.class).entrySet())
 			{
-			NucLineage lin=e.getValue();
+			Lineage lin=e.getValue();
 			if(!e.getKey().getLeafName().startsWith("AP"))
-				for(String nucname:lin.nuc.keySet())
+				for(String nucname:lin.particle.keySet())
 					{
-					NucLineage.Nuc nuc=lin.nuc.get(nucname);
+					Lineage.Particle nuc=lin.particle.get(nucname);
 					
 					if(nuc.overrideEnd!=null && nuc.overrideEnd.less(new EvDecimal("10000")))
 						{

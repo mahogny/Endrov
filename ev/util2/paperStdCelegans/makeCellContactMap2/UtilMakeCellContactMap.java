@@ -15,9 +15,9 @@ import util2.ConnectImserv;
 import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.imageset.Imageset;
-import endrov.neighmap.NeighMap;
-import endrov.nuc.NucLineage;
-import endrov.nuc.ccm.MakeCellContactMap;
+import endrov.particle.Lineage;
+import endrov.particle.util.MakeParticleContactMap;
+import endrov.particleContactMap.neighmap.NeighMap;
 import endrov.util.*;
 
 //stdcelegans vs celegans2008.2?
@@ -147,7 +147,7 @@ public class UtilMakeCellContactMap
 			//TODO make a getDataKeysWithTrash, exclude by default?
 			System.out.println("Loading imsets");
 			
-			TreeMap<String, NucLineage> lins=new TreeMap<String, NucLineage>();
+			TreeMap<String, Lineage> lins=new TreeMap<String, Lineage>();
 			
 			for(String s:new String[]{"1.ost","2.ost"})
 				{
@@ -155,25 +155,25 @@ public class UtilMakeCellContactMap
 				EvData data=EvData.loadFile(new File(s));
 				Imageset im=data.getObjects(Imageset.class).iterator().next();
 				
-				lins.put(data.getMetadataName(), im.getObjects(NucLineage.class).iterator().next());
+				lins.put(data.getMetadataName(), im.getObjects(Lineage.class).iterator().next());
 				}
-			NucLineage reflin=EvData.loadFile(new File("celegans2008.2.ost")).getObjects(NucLineage.class).iterator().next();
+			Lineage reflin=EvData.loadFile(new File("celegans2008.2.ost")).getObjects(Lineage.class).iterator().next();
 			//////////
 
-			final TreeSet<String> nucNames=new TreeSet<String>(reflin.nuc.keySet());
+			final TreeSet<String> nucNames=new TreeSet<String>(reflin.particle.keySet());
 
 			//Calc neigh
-			Map<NucLineage,NeighMap> nmaps=EvParallel.map(lins, new EvParallel.FuncAB<Tuple<String,NucLineage>, Tuple<NucLineage,NeighMap>>(){
-			public Tuple<NucLineage,NeighMap> func(Tuple<String,NucLineage> in)
+			Map<Lineage,NeighMap> nmaps=EvParallel.map(lins, new EvParallel.FuncAB<Tuple<String,Lineage>, Tuple<Lineage,NeighMap>>(){
+			public Tuple<Lineage,NeighMap> func(Tuple<String,Lineage> in)
 				{
-				NeighMap nm=MakeCellContactMap.calculateCellMap(in.snd(), nucNames, null, null, new EvDecimal(60));
-				return new Tuple<NucLineage, NeighMap>(in.snd(), nm);
+				NeighMap nm=MakeParticleContactMap.calculateCellMap(in.snd(), nucNames, null, null, new EvDecimal(60));
+				return new Tuple<Lineage, NeighMap>(in.snd(), nm);
 				}
 			});
 
 			//Save neighmaps
 			EvData dataOut=new EvData();
-			for(Map.Entry<String, NucLineage> e:lins.entrySet())
+			for(Map.Entry<String, Lineage> e:lins.entrySet())
 				dataOut.metaObject.put(e.getKey(), nmaps.get(e.getValue()));
 			dataOut.saveDataAs(new File("/Volumes/TBU_main03/userdata/newcellcontactsmap.ost"));
 			

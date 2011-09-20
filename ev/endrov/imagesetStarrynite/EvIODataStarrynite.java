@@ -14,7 +14,7 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.imageset.*;
 import endrov.imagesetBasic.BasicSliceIO;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 import endrov.util.ProgressHandle;
@@ -81,7 +81,7 @@ public class EvIODataStarrynite implements EvIOData
 		d.metaObject.clear();
 		Imageset im=new Imageset();
 		d.metaObject.put("im", im);
-		NucLineage lin=new NucLineage();
+		Lineage lin=new Lineage();
 		im.metaObject.put("1", lin);
 		
 		
@@ -191,7 +191,7 @@ public class EvIODataStarrynite implements EvIOData
 	/**
 	 * Read lineage
 	 */
-	private void readNuclei(NucLineage lin) throws IOException
+	private void readNuclei(Lineage lin) throws IOException
 		{
 		File fNuclei=new File(basedir,"nuclei");
 		
@@ -234,24 +234,24 @@ public class EvIODataStarrynite implements EvIOData
 
 
 				//Get this nuc
-				NucLineage.Nuc nuc;
+				Lineage.Particle nuc;
 				String thisName=indexNuc.get(iIndex);
 				if(thisName==null)
 					{
-					thisName=lin.getUniqueNucName();
-					nuc=lin.getCreateNuc(thisName);
+					thisName=lin.getUniqueParticleName();
+					nuc=lin.getCreateParticle(thisName);
 					}
 				else
-					nuc=lin.nuc.get(thisName);
+					nuc=lin.particle.get(thisName);
 
 				//Naming
 				if(thisName.startsWith(":") && !sIdentity.equals("nill"))
 					{
-					if(lin.nuc.containsKey(sIdentity))
+					if(lin.particle.containsKey(sIdentity))
 						System.out.println("Name collision "+sIdentity);
 					else
 						{
-						lin.renameNucleus(thisName, sIdentity);
+						lin.renameParticles(thisName, sIdentity);
 						thisName=sIdentity;
 						}
 					}
@@ -260,10 +260,10 @@ public class EvIODataStarrynite implements EvIOData
 				if(iSucc2!=-1)
 					{
 					//Split
-					String name1=lin.getUniqueNucName();
-					NucLineage.Nuc nuc1=lin.getCreateNuc(name1);
-					String name2=lin.getUniqueNucName();
-					NucLineage.Nuc nuc2=lin.getCreateNuc(name2);
+					String name1=lin.getUniqueParticleName();
+					Lineage.Particle nuc1=lin.getCreateParticle(name1);
+					String name2=lin.getUniqueParticleName();
+					Lineage.Particle nuc2=lin.getCreateParticle(name2);
 					nuc.child.add(name1);
 					nuc.child.add(name2);
 					nuc1.parent=thisName;
@@ -277,7 +277,7 @@ public class EvIODataStarrynite implements EvIOData
 				
 				//Position
 				EvDecimal frame=frame2time(curi);
-				NucLineage.NucPos pos=nuc.getCreatePos(frame);
+				Lineage.ParticlePos pos=nuc.getCreatePos(frame);
 				pos.x=Double.parseDouble(sX)*xy_res;
 				pos.y=Double.parseDouble(sY)*xy_res;
 				pos.z=Double.parseDouble(sZ)*z_res; // image/Image3D.java    z uses getZPixRes, xy does not

@@ -13,8 +13,8 @@ import java.util.StringTokenizer;
 
 import endrov.data.EvData;
 import endrov.ev.EvLog;
-import endrov.nuc.NucLineage;
-import endrov.nuc.NucLineage.NucPos;
+import endrov.particle.Lineage;
+import endrov.particle.Lineage.ParticlePos;
 import endrov.util.EvDecimal;
 
 /**
@@ -76,7 +76,7 @@ public class NucQuickImportCoordinates
 		
 		
 		//For all lineages (assuming there is only one)
-		for(NucLineage lin:data.getIdObjectsRecursive(NucLineage.class).values())
+		for(Lineage lin:data.getIdObjectsRecursive(Lineage.class).values())
 			{
 			File f=new File(ddir,"quickLin.txt");
 			EvLog.printLog(f.toString());
@@ -89,12 +89,12 @@ public class NucQuickImportCoordinates
 				
 				String nucName=stok.nextToken();
 				EvDecimal time=new EvDecimal(stok.nextToken());
-				NucPos pos=new NucPos();
+				ParticlePos pos=new ParticlePos();
 				pos.x=Double.parseDouble(stok.nextToken());
 				pos.y=Double.parseDouble(stok.nextToken());
 				pos.z=Double.parseDouble(stok.nextToken());
 				pos.r=Double.parseDouble(stok.nextToken());
-				NucLineage.Nuc nuc=lin.getCreateNuc(nucName);
+				Lineage.Particle nuc=lin.getCreateParticle(nucName);
 				nuc.pos.put(time, pos);
 				}
 			}

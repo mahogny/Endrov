@@ -11,17 +11,12 @@ import javax.swing.*;
 import endrov.imageWindow.*;
 
 /**
- * Make nuclei by dragging an area. Also move nuclei.
+ * Make and edit ROI
  *
  * @author Johan Henriksson
  */
 public class ImageWindowToolROI extends GeneralToolROI implements ImageWindowTool
 	{
-	/*
-	private boolean active=false;
-	private ROI currentROI=null;
-	private String currentHandle=null;
-*/
 	private final ImageWindow w;
 		
 	public ImageWindowToolROI(ImageWindow w)

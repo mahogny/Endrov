@@ -100,7 +100,7 @@ public class ImageAnnotModelExtension implements ModelWindowExtension
 
 		
 		/**
-		 * Render label of one nucleus
+		 * Render one annotation
 		 */
 		
 		private void renderOne(GL2 gl, ImageAnnot ia,List<TransparentRender> transparentRenderers)

@@ -45,8 +45,8 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
-import endrov.nuc.NucExp;
-import endrov.nuc.NucLineage;
+import endrov.particle.LineageExp;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 import endrov.util.EvListUtil;
@@ -84,38 +84,38 @@ public class CompareAll
 	/**
 	 * Normalize time between recordings
 	 */
-	public static FrameTime buildFrametime(NucLineage coordLin)
+	public static FrameTime buildFrametime(Lineage coordLin)
 		{
 		//Fit model time using a few markers
 		//Times must be relative to a sane time, such that if e.g. venc is missing, linear interpolation still makes sense
 		FrameTime ft=new FrameTime();
 		//System.out.println("has nucs: "+coordLin.nuc.keySet());
 		
-		NucLineage.Nuc nucABa=coordLin.nuc.get("ABa");
+		Lineage.Particle nucABa=coordLin.particle.get("ABa");
 		if(nucABa!=null)
 			ft.add(nucABa.pos.firstKey(), new EvDecimal("0").multiply(imageMaxTime));
 		else
 			{
 			//Best possible replacement, almost same time
-			NucLineage.Nuc nucEMS=coordLin.nuc.get("EMS");
+			Lineage.Particle nucEMS=coordLin.particle.get("EMS");
 			if(nucEMS!=null)
 				ft.add(nucEMS.pos.firstKey(), new EvDecimal("0").multiply(imageMaxTime));
 			
 			}
 
-		NucLineage.Nuc nucGast=coordLin.nuc.get("gast"); //Gastrulation
+		Lineage.Particle nucGast=coordLin.particle.get("gast"); //Gastrulation
 		if(nucGast!=null)
 			ft.add(nucGast.pos.firstKey(), new EvDecimal("0.1").multiply(imageMaxTime));
 
-		NucLineage.Nuc nucVenc=coordLin.nuc.get("venc"); //Ventral enclosure
+		Lineage.Particle nucVenc=coordLin.particle.get("venc"); //Ventral enclosure
 		if(nucVenc!=null)
 			ft.add(nucVenc.pos.firstKey(), new EvDecimal("0.43").multiply(imageMaxTime));
 
-		NucLineage.Nuc nuc2ft=coordLin.nuc.get("2ftail"); //2-fold tail
+		Lineage.Particle nuc2ft=coordLin.particle.get("2ftail"); //2-fold tail
 		if(nuc2ft!=null)
 			ft.add(nuc2ft.pos.firstKey(), new EvDecimal("0.54").multiply(imageMaxTime));
 
-		NucLineage.Nuc nucMSppapp=coordLin.nuc.get("MSppapp"); //MSppapp
+		Lineage.Particle nucMSppapp=coordLin.particle.get("MSppapp"); //MSppapp
 		if(nucMSppapp!=null)
 			ft.add(nucMSppapp.pos.firstKey(), new EvDecimal("0.27").multiply(imageMaxTime));
 
@@ -141,13 +141,13 @@ public class CompareAll
 	/**
 	 * Coloc calculation requires two images that can overlap. Generate these from the AP or T lineage
 	 */
-	public static double[][] apToArray(EvData data, String newLinName, String expName, NucLineage coordLin)
+	public static double[][] apToArray(EvData data, String newLinName, String expName, Lineage coordLin)
 		{
 		Imageset imset = data.getObjects(Imageset.class).get(0);
-		NucLineage lin = null;
+		Lineage lin = null;
 
 		//Find lineage
-		for(Map.Entry<EvPath, NucLineage> e:imset.getIdObjectsRecursive(NucLineage.class).entrySet())
+		for(Map.Entry<EvPath, Lineage> e:imset.getIdObjectsRecursive(Lineage.class).entrySet())
 			{
 			if(e.getKey().getLeafName().equals(newLinName))
 				{
@@ -160,7 +160,7 @@ public class CompareAll
 		
 		//Autodetect number of subdivisions
 		int numSubDiv=0;
-		for(String nn:lin.nuc.keySet())
+		for(String nn:lin.particle.keySet())
 			if(nn.startsWith("_slice"))
 				{
 				int curnum=Integer.parseInt(nn.substring("_slice".length()));
@@ -171,8 +171,8 @@ public class CompareAll
 		
 		double[][] image=new double[imageMaxTime][];//[numSubDiv];
 		
-		NucLineage.Nuc refNuc=lin.nuc.get("_slice0");
-		NucExp expressionPattern=refNuc.exp.get(expName);
+		Lineage.Particle refNuc=lin.particle.get("_slice0");
+		LineageExp expressionPattern=refNuc.exp.get(expName);
 		if(expressionPattern==null)
 			return image;
 		
@@ -193,8 +193,8 @@ public class CompareAll
 			image[time]=new double[numSubDiv];
 			for (int i = 0; i<numSubDiv; i++)
 				{
-				NucLineage.Nuc nuc = lin.nuc.get("_slice"+i);
-				NucExp nexp = nuc.exp.get(expName);
+				Lineage.Particle nuc = lin.particle.get("_slice"+i);
+				LineageExp nexp = nuc.exp.get(expName);
 				Double level = nexp.level.get(frame);
 				for(int y=lastTime;y<time+1;y++)
 					image[time][i]=level;
@@ -219,7 +219,7 @@ public class CompareAll
 	/**
 	 * Coloc over XYZ
 	 */
-	public static ColocCoefficients colocXYZ(ProgressHandle progh, EvData dataA, EvData dataB, NucLineage coordLinA, NucLineage coordLinB, String chanNameA, String chanNameB)
+	public static ColocCoefficients colocXYZ(ProgressHandle progh, EvData dataA, EvData dataB, Lineage coordLinA, Lineage coordLinB, String chanNameA, String chanNameB)
 		{
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 		Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
@@ -338,7 +338,7 @@ public class CompareAll
 	 * Generate overview graph for XYZ expression. Graph size is fixed so it throws out a lot of information.
 	 * This is why this code is separate from coloc analysis
 	 */
-	public static void fancyGraphXYZ(ProgressHandle progh, EvData dataA, NucLineage coordLinA, File outputFile, String chanNameA) throws IOException
+	public static void fancyGraphXYZ(ProgressHandle progh, EvData dataA, Lineage coordLinA, File outputFile, String chanNameA) throws IOException
 		{
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 		
@@ -571,11 +571,11 @@ public class CompareAll
 		}
 	
 	
-	public static NucLineage coordLineageFor(EvContainer data)
+	public static Lineage coordLineageFor(EvContainer data)
 		{
-		NucLineage lin=null;
+		Lineage lin=null;
 		//Find lineage
-		for(Map.Entry<EvPath, NucLineage> e:data.getIdObjectsRecursive(NucLineage.class).entrySet())
+		for(Map.Entry<EvPath, Lineage> e:data.getIdObjectsRecursive(Lineage.class).entrySet())
 			if(!e.getKey().getLeafName().startsWith("AP"))
 				{
 				if(e.getValue()==null)
@@ -584,7 +584,7 @@ public class CompareAll
 				}
 //				lin=e.getValue();
 		if(lin!=null)
-			System.out.println("no lineage. got: "+data.getIdObjectsRecursive(NucLineage.class).keySet());
+			System.out.println("no lineage. got: "+data.getIdObjectsRecursive(Lineage.class).keySet());
 		return lin;
 		}
 	

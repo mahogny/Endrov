@@ -73,7 +73,7 @@ public class CEviewer
 			EV.setHasStartedUp();
 			if(BasicWindow.getWindowList().size()==0)
 				{
-				new endrov.nucLineageWindow.LineageWindow();
+				new endrov.lineageWindow.LineageWindow();
 				new ModelWindow();
 				}
 			EvData.registerOpenedData(EvData.loadFile(new File("angler.ost")));

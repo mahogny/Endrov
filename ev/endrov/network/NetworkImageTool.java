@@ -25,7 +25,7 @@ import endrov.util.EvDecimal;
 import endrov.util.Vector3i;
 
 /**
- * Make nuclei by dragging an area. Also move nuclei.
+ * Make and edit networks
  *
  * @author Johan Henriksson
  */
@@ -281,100 +281,18 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 		}
 
 	
-	/*
-	private void startModifying(NucSel sel)
-		{
-	
-		r.modifyingNucSel=sel;
-		r.modifiedNuc=sel.getNuc().clone();
-		r.hasReallyModified=false;
-		
-		}*/
+
 	
 	public void keyPressed(KeyEvent e)
 		{
-		/*
-		EvDecimal curFrame=w.getFrame();
-		NucLineage lin=NucCommonUI.currentHover.fst();
-
-		if(lin!=null && (KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e) || KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e)))
-			{
-			//Translate or change radius
-			if(r.modifyingNucSel==null && NucCommonUI.currentHover!=NucCommonUI.emptyHover && r.interpNuc.containsKey(NucCommonUI.currentHover))
-				startModifying(NucCommonUI.currentHover);
-			}
-		else if(r.modifyingNucSel!=null)
-			{
 		
-			if(lin!=null && KeyBinding.get(NucLineage.KEY_DIVIDENUC).typed(e))
-				{
-				//Divide nucleus
-				NucLineage.Nuc n=NucCommonUI.currentHover.getNuc();
-				if(n!=null && r.interpNuc.containsKey(NucCommonUI.currentHover))
-					NucCommonUI.actionDivideNuc(lin,NucCommonUI.currentHover.snd(), curFrame);
-				}
-			else if(KeyBinding.get(NucLineage.KEY_SETZ).typed(e))
-				{
-				//Bring nucleus to this Z
-				Set<NucSel> sels=NucCommonUI.getSelectedOrHoveredNuclei();
-				if(sels.size()==1)
-					{
-					NucSel useNuc=sels.iterator().next();
-					actionBringToZ(useNuc);
-					}
-				}
-			else if(lin!=null && KeyBinding.get(NucLineage.KEY_SETEND).typed(e))
-				{
-				//Set end frame of nucleus
-				NucLineage.Nuc n=lin.nuc.get(NucCommonUI.currentHover.snd());
-				if(n!=null)
-					NucCommonUI.actionSetEndFrame(Collections.singleton(NucCommonUI.currentHover), curFrame);
-				}
-			else if(lin!=null && KeyBinding.get(NucLineage.KEY_SETSTART).typed(e))
-				{
-				//Set end frame of nucleus
-				NucLineage.Nuc n=lin.nuc.get(NucCommonUI.currentHover.snd());
-				if(n!=null)
-					NucCommonUI.actionSetStartFrame(Collections.singleton(NucCommonUI.currentHover), curFrame);
-				}
-			
-			else if(lin!=null && KeyBinding.get(NucLineage.KEY_SETPARENT).typed(e))
-				{
-				//Create parent-children relation
-				NucCommonUI.actionAssocParent();
-				}
-			
-			}
-		*/
 		}
 
-	/*
-	private void actionBringToZ(NucSel useNuc)
-		{
-		EvDecimal curFrame=w.getFrame();
-		NucLineage.NucPos pos=NucCommonUI.getOrInterpolatePosCopy(useNuc.fst(), useNuc.snd(), curFrame);
-		if(pos!=null)
-			{
-			pos.z=w.getZ().doubleValue();
-			new UndoOpNucleiEditKeyframe("Bring "+useNuc.snd()+" to z",useNuc.fst(), useNuc.snd(), curFrame, pos).execute();
-			}
-		}
-*/
+
 	
 	public void paintComponent(Graphics g)
 		{
-		/*
-		if(isMakingNucleus)
-			{
-			g.setColor(Color.RED);
-			double midx=(x2+x1)/2;
-			double midy=(y2+y1)/2;
-			double r=Math.sqrt((x1-midx)*(x1-midx)+(y1-midy)*(y1-midy));
-			Vector2d omid=w.transformPointW2S(new Vector2d(midx,midy));
-			double or=w.scaleW2s(r);
-			g.drawOval((int)(omid.x-or),(int)(omid.y-or),(int)(or*2),(int)(or*2));
-			}
-			*/
+
 		}
 	
 	public void keyReleased(KeyEvent e)
@@ -383,12 +301,6 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 
 	public void mouseExited(MouseEvent e)
 		{
-		/*
-		//Stop editing here!
-		if(r.modifyingNucSel!=null)
-			r.commitModifyingNuc();
-		BasicWindow.updateWindows();
-		*/
 		}
 
 	

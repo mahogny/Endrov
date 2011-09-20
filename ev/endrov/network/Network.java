@@ -32,7 +32,7 @@ public class Network extends EvObject
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	
-	private static final String metaType="nuclineage";
+	private static final String metaType="network";
 
 	
 	public static Set<String> suggestTypes=new TreeSet<String>(Arrays.asList(
@@ -138,16 +138,6 @@ public class Network extends EvObject
 	static
 		{
 		EvData.supportedMetadataFormats.put(metaType,Network.class);
-		/*
-		try
-			{
-			cellGroups.importXML(EvFileUtil.getFileFromURL(NucLineage.class.getResource("cellgroups.cgrp")));
-			}
-		catch (IOException e)
-			{
-			e.printStackTrace();
-			}
-			*/
 		}
 
 	@Override

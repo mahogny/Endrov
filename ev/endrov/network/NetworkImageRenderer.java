@@ -22,7 +22,7 @@ import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 /**
- * Image window renderer of nuclei
+ * Image window renderer of network
  * @author Johan Henriksson
  *
  */
@@ -52,12 +52,10 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 
 	
 	/**
-	 * Render nuclei
+	 * Render
 	 */
 	public void draw(Graphics g)
 		{
-		
-	
 		EvDecimal currentFrame=w.getFrame();
 		
 		for(Network network:getVisibleObjects())
@@ -66,9 +64,7 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 			
 			if(nf!=null)
 				{
-				//double screenZ=w.getZ().doubleValue();
-				
-				
+
 				///////// Render all points
 				g.setColor(Color.red);
 				for(Network.Point p:nf.points.values())

@@ -9,8 +9,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import javax.vecmath.Vector3d;
 
-import endrov.nuc.*;
-import endrov.nuc.NucLineage.NucPos;
+import endrov.particle.*;
+import endrov.particle.Lineage.ParticlePos;
 import endrov.util.EvDecimal;
 
 
@@ -91,7 +91,7 @@ public class NucStats
 		public EvDecimal lifeStart;
 		public EvDecimal lifeEnd;
 		public String parent;
-		public Map<EvDecimal, List<NucLineage.NucPos>> derivedPos=new TreeMap<EvDecimal, List<NucLineage.NucPos>>();
+		public Map<EvDecimal, List<Lineage.ParticlePos>> derivedPos=new TreeMap<EvDecimal, List<Lineage.ParticlePos>>();
 		
 		//Used in BestFitLength
 		public Vector3d curpos=null;
@@ -318,13 +318,13 @@ public class NucStats
 	/**
 	 * Set up tree in XML
 	 */
-	public NucLineage generateXMLtree()
+	public Lineage generateXMLtree()
 		{
-		NucLineage lin=new NucLineage();
+		Lineage lin=new Lineage();
 		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
-			lin.getCreateNuc(e.getKey());
+			lin.getCreateParticle(e.getKey());
 		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
-			if(e.getValue().parent!=null && lin.nuc.get(e.getKey()).parent==null)
+			if(e.getValue().parent!=null && lin.particle.get(e.getKey()).parent==null)
 				{
 //				System.out.println("PC: "+e.getValue().parent+" -> "+e.getKey());
 				lin.createParentChild(e.getValue().parent, e.getKey());
@@ -335,7 +335,7 @@ public class NucStats
 	/**
 	 * Initalize coordinates before running iteration for one frame
 	 */
-	public void prepareCoord(NucLineage lin, EvDecimal frame)
+	public void prepareCoord(Lineage lin, EvDecimal frame)
 		{
 		//Inititalize coords
 		//Children get coords from parents with some perturbation
@@ -359,7 +359,7 @@ public class NucStats
 	/**
 	 * Put coords into XML data
 	 */
-	public void writeCoord(NucLineage lin, EvDecimal frame)
+	public void writeCoord(Lineage lin, EvDecimal frame)
 		{
 		
 		//TODO: save even when there is no neighbour?
@@ -367,8 +367,8 @@ public class NucStats
 		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
 			if(e.getValue().curpos!=null && e.getValue().existAt(frame) /*&& !e.getValue().neigh.isEmpty()*/)
 				{
-				NucLineage.Nuc nuc=lin.nuc.get(e.getKey());
-				NucPos pos=nuc.getCreatePos(frame);
+				Lineage.Particle nuc=lin.particle.get(e.getKey());
+				ParticlePos pos=nuc.getCreatePos(frame);
 				
 				NucStatsOne one=e.getValue();
 				pos.x=one.curpos.x;
@@ -393,7 +393,7 @@ public class NucStats
 				
 				if(one.curposAvg[0].getCount()>1)
 					{
-					NucExp expVarR=nuc.getCreateExp("posMeanDevR");
+					LineageExp expVarR=nuc.getCreateExp("posMeanDevR");
 //					double var=one.curposAvg[0].getVar()+one.curposAvg[1].getVar()+one.curposAvg[2].getVar();
 					//Cannot add up!?
 					expVarR.level.put(frame, Math.sqrt(one.raverror));
@@ -408,7 +408,7 @@ public class NucStats
 						divstat.count(i.doubleValue());
 					if(divstat.count>1)
 						{
-						NucExp expVarDiv=nuc.getCreateExp("divDev");
+						LineageExp expVarDiv=nuc.getCreateExp("divDev");
 						expVarDiv.level.put(EvDecimal.ZERO, Math.sqrt(divstat.getVar())/Math.sqrt(divstat.count));
 						}
 					}

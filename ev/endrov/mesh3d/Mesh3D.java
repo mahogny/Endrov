@@ -15,7 +15,7 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.modelWindow.gl.GLMaterial;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 
 /**
  * 3D meshes
@@ -240,7 +240,7 @@ public class Mesh3D extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedMetadataFormats.put(metaType,NucLineage.class);
+		EvData.supportedMetadataFormats.put(metaType,Lineage.class);
 		
 		}
 

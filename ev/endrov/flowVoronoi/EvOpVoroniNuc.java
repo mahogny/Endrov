@@ -13,24 +13,24 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
-import endrov.nuc.NucLineage;
-import endrov.nuc.NucSel;
+import endrov.particle.Lineage;
+import endrov.particle.LineageSelParticle;
 import endrov.util.EvDecimal;
 import endrov.util.MemoizeX;
 import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
 /**
- * Calculate Voronoi regions from nuclei - assign points to closest nucleus 
+ * Calculate Voronoi regions from particles - assign points to closest particles 
  * 
  * @author Johan Henriksson
  *
  */
 public class EvOpVoroniNuc
 	{
-	private NucLineage lin;
+	private Lineage lin;
 	
-	public EvOpVoroniNuc(NucLineage lin)
+	public EvOpVoroniNuc(Lineage lin)
 		{
 		this.lin=lin;
 		}
@@ -42,9 +42,9 @@ public class EvOpVoroniNuc
 		Map<String, Integer> mapTo=new HashMap<String, Integer>();
 		Map<Integer, String> mapFrom=new HashMap<Integer, String>();
 		
-		Map<NucSel,NucLineage.NucInterp> i=lin.getInterpNuc(frame);
+		Map<LineageSelParticle,Lineage.InterpolatedParticle> i=lin.interpolateParticles(frame);
 		int count=1;
-		for(Map.Entry<NucSel,NucLineage.NucInterp> e:i.entrySet())
+		for(Map.Entry<LineageSelParticle,Lineage.InterpolatedParticle> e:i.entrySet())
 			{
 			if(e.getValue().isVisible())
 				{
@@ -84,15 +84,15 @@ public class EvOpVoroniNuc
 				protected List<PointList> eval(ProgressHandle progh)
 					{
 					ProgressHandle.checkStop(progh);
-					Map<NucSel,NucLineage.NucInterp> inter=lin.getInterpNuc(frame);
+					Map<LineageSelParticle,Lineage.InterpolatedParticle> inter=lin.interpolateParticles(frame);
 					List<PointList> list=new ArrayList<PointList>();
 					
 					int count=1;
-					for(Map.Entry<NucSel,NucLineage.NucInterp> e:inter.entrySet())
+					for(Map.Entry<LineageSelParticle,Lineage.InterpolatedParticle> e:inter.entrySet())
 						{
 						if(e.getValue().isVisible())
 							{
-							NucLineage.NucPos pos=e.getValue().pos;
+							Lineage.ParticlePos pos=e.getValue().pos;
 							
 							PointList c=new PointList();
 							c.x=pos.x;

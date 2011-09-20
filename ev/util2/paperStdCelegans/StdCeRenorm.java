@@ -14,7 +14,7 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.frameTime.FrameTime;
-import endrov.nuc.NucLineage;
+import endrov.particle.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvMathUtil;
 import endrov.util.Tuple;
@@ -45,7 +45,7 @@ public class StdCeRenorm
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost"));
 		//EvData data=EvData.loadFile(new File("/Volumes3/TBU_main03/ost4dgood/AnglerUnixCoords.ost"));
 //		EvData data=EvData.loadFile(new File("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords_no_AP_radius.ost"));
-		NucLineage lin=data.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
+		Lineage lin=data.getIdObjectsRecursive(Lineage.class).values().iterator().next();
 		
 
 		
@@ -72,7 +72,7 @@ public class StdCeRenorm
 
 		
 		for(String n:cell)
-			frame.add(lin.nuc.get(n).pos.firstKey().doubleValue());
+			frame.add(lin.particle.get(n).pos.firstKey().doubleValue());
 		
 //		for(int i=0;i<min.size();i++)
 //			System.out.println(min.get(i)+"\t"+frame.get(i));

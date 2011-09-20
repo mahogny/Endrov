@@ -52,56 +52,7 @@ public class NetworkModelExtension implements ModelWindowExtension
 		public JCheckBoxMenuItem miRenderPoints=new JCheckBoxMenuItem("Render points");
 		
 
-		//For modifying nuclei
-		//private NucLineage.Nuc currentOrigNuc=null;
-		//private NucSel currentModifying=null;
-		//private boolean hasReallyModified=false;
-		/*private ModState modifyingState=null;
 		
-		private enum ModState
-			{
-			Dragging, Resizing
-			}*/
-		
-		/**
-		 * Currently modified nucleus is finalized. Commit changes.
-		 * 
-		 * Only for dragging at the moment
-		 */
-		public void commitModifyingNuc()
-			{
-			/*
-			//Only commit if something has changed
-			if(hasReallyModified)
-				{
-				hasReallyModified=false;
-				final NucLineage lin=currentModifying.fst();
-				final String name=currentModifying.snd();
-				final NucLineage.Nuc currentNuc=currentModifying.getNuc().clone();
-				final NucLineage.Nuc lastNuc=currentOrigNuc; 
-		
-				new UndoOpBasic("Modify keyframe for "+currentModifying.snd())
-					{
-					public void redo()
-						{
-						lin.nuc.put(name, currentNuc);
-						BasicWindow.updateWindows();
-						}
-		
-					public void undo()
-						{
-						lin.nuc.put(name, lastNuc);
-						BasicWindow.updateWindows();
-						}
-					}.execute();
-				}
-
-			hasReallyModified=false;
-			currentModifying=null;
-			currentOrigNuc=null;
-			modifyingState=null;
-			*/
-			}
 		
 		private void setTraceColor(EvColor c)
 			{
@@ -116,9 +67,6 @@ public class NetworkModelExtension implements ModelWindowExtension
 
 			
 			JMenu mTraceColor=new JMenu("Set trace color");
-			//JMenuItem miColorSame=new JMenuItem("Same color as nucleus");
-			//mTraceColor.add(miColorSame);
-			//miColorSame.addActionListener(new ActionListener(){public void actionPerformed(ActionEvent e){setTraceColor(null);}});
 			EvColor.addColorMenuEntries(mTraceColor, new ColorMenuListener(){
 				public void setColor(EvColor c){setTraceColor(c);}
 			});
@@ -196,57 +144,7 @@ public class NetworkModelExtension implements ModelWindowExtension
 			{
 			}
 		
-		/**
-		 * Render movement trace of nuc
-		 */
-		/*
-		private void renderTrace(GL2 gl, NucLineage.Nuc nuc, boolean simple, Color col)
-			{
-			if(!nuc.pos.isEmpty())
-				{
-				gl.glLineWidth(traceWidth);
-				
-				Color thisTraceColor=getTraceColor(nuc);
-				float colR=(float)thisTraceColor.getRed()/255.0f;
-				float colG=(float)thisTraceColor.getGreen()/255.0f;
-				float colB=(float)thisTraceColor.getBlue()/255.0f;
-				gl.glColor3d(colR,colG,colB);
-//				gl.glColor3d(1, 1, 1);
-				if(simple)
-					{
-					gl.glBegin(GL2.GL_LINE_STRIP);
-					EvDecimal f1=nuc.pos.firstKey();
-					EvDecimal f2=nuc.pos.lastKey();
-					NucLineage.NucPos pos1=nuc.pos.get(f1);
-					NucLineage.NucPos pos2=nuc.pos.get(f2);
-					Vector3d v=new Vector3d(pos2.x-pos1.x,pos2.y-pos1.y,pos2.z-pos1.z);
-					double len=v.length();
-					v.scale((len-w.view.getArrowLength())/len);
-					//v.normalize();
-					gl.glVertex3d(pos1.x,pos1.y,pos1.z);
-//					gl.glVertex3d(pos2.x,pos2.y,pos2.z);
-					gl.glVertex3d(pos1.x+v.x,pos1.y+v.y,pos1.z+v.z);
-					gl.glEnd();
-					
-					Vector3d direction=pos2.getPosCopy();
-					direction.sub(pos1.getPosCopy());
-		      gl.glEnable(GL2.GL_LIGHTING);
-					w.view.renderArrowHead(gl, pos2.getPosCopy(), direction, colR, colG, colB);
-		      gl.glDisable(GL2.GL_LIGHTING);
-					}
-				else
-					{
-					gl.glBegin(GL2.GL_LINE_STRIP);
-					//Vector3d last=null, secondLast=null;
-					for(NucLineage.NucPos pos:nuc.pos.values())
-						{
-						gl.glVertex3d(pos.x,pos.y,pos.z);
-						}
-					gl.glEnd();
-					}
-				}
-			}
-			*/
+		
 		
 		
 		public Color getTraceColor()
@@ -421,24 +319,10 @@ public class NetworkModelExtension implements ModelWindowExtension
 		/** Called when hover test starts */
 		public void hoverInit(int pixelid)
 			{
-			//Update hover
-			//lastHover=NucCommonUI.currentHover;
-			//NucCommonUI.currentHover=NucCommonUI.emptyHover;
 			}
 		/** Called when hovered */
 		public void hover(int pixelid)
 			{
-			/*
-			NucCommonUI.currentHover=selectColorMap.get(pixelid);
-			//System.out.println("New hover: "+NucCommonUI.currentHover);
-			//System.out.println("Last hover: "+lastHover);
-			//Propagate hover. Avoid infinite recursion.
-			if(!NucCommonUI.currentHover.equals(lastHover))
-				{
-				System.out.println("nuc rerend");
-				BasicWindow.updateWindows(w);
-				}
-				*/
 			}
 
 		/**

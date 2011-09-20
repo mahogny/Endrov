@@ -68,7 +68,7 @@ public class AppletGUI extends JApplet
 			
 			EvWindowManagerApplet manager=new EvWindowManagerApplet(2,applet==null);
 			BasicWindow.windowManager=manager;
-			new endrov.nucLineageWindow.LineageWindow();
+			new endrov.lineageWindow.LineageWindow();
 			new ModelWindow();
 			
 			//Set display settings
