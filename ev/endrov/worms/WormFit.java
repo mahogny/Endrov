@@ -10,12 +10,23 @@ import javax.vecmath.Vector2d;
 import org.jdom.Element;
 
 import endrov.data.EvContainer;
+import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.network.Network;
 import endrov.util.EvDecimal;
 
 public class WormFit extends EvObject
 	{
 
+	/******************************************************************************************************
+	 *                               Static                                                               *
+	 *****************************************************************************************************/
+	
+	private static final String metaType="wormfit";
+
+	
+	
+	
 	public static class WormFrame
 		{
 		
@@ -23,6 +34,12 @@ public class WormFit extends EvObject
 		public List<Double> thickness=new ArrayList<Double>();
 		
 		}
+	
+	
+	/******************************************************************************************************
+	 *                               Instance                                                             *
+	 *****************************************************************************************************/
+
 	
 	public TreeMap<EvDecimal, WormFrame> frames=new TreeMap<EvDecimal, WormFit.WormFrame>();
 	
@@ -53,8 +70,6 @@ public class WormFit extends EvObject
 	@Override
 	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
-		// TODO Auto-generated method stub
-		
 		}
 
 	@Override
@@ -64,4 +79,13 @@ public class WormFit extends EvObject
 		return null;
 		}
 
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,Network.class);
+		}
 	}

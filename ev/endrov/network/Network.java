@@ -130,15 +130,7 @@ public class Network extends EvObject
 		}
 
 	
-	
-	/******************************************************************************************************
-	 * Plugin declaration
-	 *****************************************************************************************************/
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,Network.class);
-		}
+
 
 	@Override
 	public void buildMetamenu(JMenu menu, EvContainer parentObject)
@@ -171,5 +163,14 @@ public class Network extends EvObject
 		// TODO Auto-generated method stub
 		return null;
 		}
+
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,Network.class);
+		}
 	}

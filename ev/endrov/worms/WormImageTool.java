@@ -127,17 +127,9 @@ public class WormImageTool implements ImageWindowTool, ActionListener
 						WormFit wfit=editingObject.get();
 						if(wfit!=null)
 							{
-							WormFit.WormFrame nf=wfit.frames.get(frame);
-							if(nf==null)
-								wfit.frames.put(frame,nf=new WormFit.WormFrame());
-							
-							//////TODO
-							
+							WormAlgo.run(wfit, frame, w.getSelectedChannel());
 							BasicWindow.updateWindows();
-							
 							}
-						
-						
 						}
 				});
 			
