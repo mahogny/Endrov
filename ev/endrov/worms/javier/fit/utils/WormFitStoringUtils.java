@@ -1,4 +1,4 @@
-package endrov.worms.fit.utils;
+package endrov.worms.javier.fit.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,9 +10,10 @@ import java.util.Iterator;
 import java.util.Scanner;
 
 import javax.vecmath.Vector3d;
-import endrov.worms.WormPixelMatcher;
-import endrov.worms.WormShape;
-import endrov.worms.skeleton.WormClusterSkeleton;
+
+import endrov.worms.javier.WormPixelMatcher;
+import endrov.worms.javier.WormShape;
+import endrov.worms.javier.skeleton.WormClusterSkeleton;
 
 public class WormFitStoringUtils
 	{

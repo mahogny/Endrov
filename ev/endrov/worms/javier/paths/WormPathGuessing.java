@@ -1,4 +1,4 @@
-package endrov.worms.paths;
+package endrov.worms.javier.paths;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,11 +8,11 @@ import java.util.Queue;
 
 import endrov.imageset.EvPixels;
 import endrov.util.Vector2i;
-import endrov.worms.WormPixelMatcher;
-import endrov.worms.skeleton.NotWormException;
-import endrov.worms.skeleton.SkeletonUtils;
-import endrov.worms.skeleton.WormClusterSkeleton;
-import endrov.worms.skeleton.WormSkeleton;
+import endrov.worms.javier.WormPixelMatcher;
+import endrov.worms.javier.skeleton.NotWormException;
+import endrov.worms.javier.skeleton.SkeletonUtils;
+import endrov.worms.javier.skeleton.WormClusterSkeleton;
+import endrov.worms.javier.skeleton.WormSkeleton;
 
 /**
  * Set of tools for heuristical guessing of most likely worm paths

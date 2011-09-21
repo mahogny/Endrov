@@ -1,12 +1,12 @@
-package endrov.worms.skeleton;
+package endrov.worms.javier.skeleton;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import endrov.imageset.EvPixels;
 import endrov.skeletonization.Thinning;
 import endrov.util.Vector2i;
-import endrov.worms.WormPixelMatcher;
-import endrov.worms.paths.WormPathTracking;
+import endrov.worms.javier.WormPixelMatcher;
+import endrov.worms.javier.paths.WormPathTracking;
 
 /**
  * Abstract definition for a morphological skeleton based on distance

@@ -1,4 +1,4 @@
-package endrov.worms;
+package endrov.worms.javier;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -1,10 +1,10 @@
-package endrov.worms.skeleton;
+package endrov.worms.javier.skeleton;
 
 import java.util.ArrayList;
 import endrov.imageset.EvPixels;
 import endrov.util.Vector2i;
-import endrov.worms.WormPixelMatcher;
-import endrov.worms.skeleton.NotWormException;
+import endrov.worms.javier.WormPixelMatcher;
+import endrov.worms.javier.skeleton.NotWormException;
 
 /**
  * Class representing a 1 worm skeleton, conformed by its base points, and

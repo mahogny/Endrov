@@ -1,4 +1,4 @@
-package endrov.worms.skeleton;
+package endrov.worms.javier.skeleton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import endrov.imageset.EvPixels;
 import endrov.util.Vector2i;
-import endrov.worms.WormPixelMatcher;
+import endrov.worms.javier.WormPixelMatcher;
 
 /**
  * Class defining a morphological skeleton of a worm cluster
@@ -207,7 +207,7 @@ public final class WormClusterSkeleton extends Skeleton
 	 * cluster following the directional neighbors starting from the given base
 	 * points.
 	 */
-	public ArrayList<ArrayList<Integer>> getAppWormPaths()
+	private ArrayList<ArrayList<Integer>> getAppWormPaths()
 		{
 		ArrayList<Integer> baseCopy = new ArrayList<Integer>(basePoints);
 		Iterator<Integer> bIt = baseCopy.iterator();
@@ -323,7 +323,7 @@ public final class WormClusterSkeleton extends Skeleton
 
 		Iterator<WormSkeleton> wIt = wormList.iterator();
 		ArrayList<Integer> lengthList = new ArrayList<Integer>();
-		int newLen;
+		
 		while (wIt.hasNext())
 			{
 			lengthList.add(wIt.next().getSkPoints().size());

@@ -1,9 +1,9 @@
-package endrov.worms.fit;
+package endrov.worms.javier.fit;
 
 import java.util.ArrayList;
 
 import endrov.util.Vector2i;
-import endrov.worms.WormDescriptor;
+import endrov.worms.javier.WormDescriptor;
 
 /**
  * Minimization method based on finding the best individual in the neighborhood until

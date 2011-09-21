@@ -1,4 +1,4 @@
-package endrov.worms.fit;
+package endrov.worms.javier.fit;
 
 import java.util.ArrayList;
 
@@ -11,15 +11,15 @@ import endrov.imageset.EvPixels;
 import javax.vecmath.Vector3d;
 
 import endrov.util.curves.EvCardinalSpline;
-import endrov.worms.WormDescriptor;
-import endrov.worms.WormPixelMatcher;
-import endrov.worms.WormProfile;
-import endrov.worms.WormShape;
-import endrov.worms.paths.WormPathGuessing;
-import endrov.worms.skeleton.NotWormException;
-import endrov.worms.skeleton.SkeletonTransform;
-import endrov.worms.skeleton.WormClusterSkeleton;
-import endrov.worms.skeleton.WormSkeleton;
+import endrov.worms.javier.WormDescriptor;
+import endrov.worms.javier.WormPixelMatcher;
+import endrov.worms.javier.WormProfile;
+import endrov.worms.javier.WormShape;
+import endrov.worms.javier.paths.WormPathGuessing;
+import endrov.worms.javier.skeleton.NotWormException;
+import endrov.worms.javier.skeleton.SkeletonTransform;
+import endrov.worms.javier.skeleton.WormClusterSkeleton;
+import endrov.worms.javier.skeleton.WormSkeleton;
 
 /**
  * Class defining a series of methods to fit the shape of worms 
@@ -86,12 +86,6 @@ public class WormShapeFitting
 
 		// Calculate all possible paths (currently unable to improve speed)
 
-		// skList = new ArrayList<WormSkeleton>();
-		/*
-		 * ArrayList<WormSkeleton> allList = WormPathGuessing.wormsFromPaths(
-		 * inputImage, dtArray, wpm,
-		 * WormPathTracking.getAllPaths(wc,wormLength,true));
-		 */
 		ArrayList<WormSkeleton> allList = new ArrayList<WormSkeleton>();
 		Hashtable<Integer, ArrayList<WormSkeleton>> allPathDic = WormShapeFitting
 				.buildPathDictionary(allList);
@@ -137,7 +131,6 @@ public class WormShapeFitting
 		while (wit.hasNext())
 			{
 			// Optimize WormSkeleton shape
-			// System.out.println();
 			count += 1;
 			WormSkeleton ws = wit.next();
 			result = skeletonMatchingOpt(optMethod, ws, wprof, dtArray, wpm,
@@ -147,7 +140,6 @@ public class WormShapeFitting
 			}
 
 		return matchDic;
-		// return matchedShapes;
 		};
 
 	/**
@@ -273,6 +265,7 @@ public class WormShapeFitting
 		cs = WormDescriptor.getShapeSpline(ws, 0.5, 0.09);
 		if (cs!=null)
 			{
+			//TODO = wtf?
 			int[] profPts = ws.getPixelMatcher().pointListToPixel(
 					EvCardinalSpline.getCardinalPoints(cs, wprof.thickness.length));
 			}
@@ -285,15 +278,11 @@ public class WormShapeFitting
 		// System.out.print("  --> Building Descriptor");
 		WormDescriptor wd = new WormDescriptor(wprof, ws, dtArray,
 				wprof.thickness.length, 8.0);
-		// System.out.println(": Succesfully built");
-		// System.out.print("  --> Matching shape: Best Neighbor Optimization");
 		optValue[0] = optMethod.run(wd);
-		// System.out.println(": Match succesfully found");
 
 		// If rasterization fails then it will be null
 		rastShape = wd.fitAndRasterizeWorm();
 
-		// System.out.println("  -->Worm succesfully rasterized");
 		return rastShape;
 
 		}

@@ -1,4 +1,4 @@
-package endrov.worms.paths;
+package endrov.worms.javier.paths;
 
 import java.util.ArrayList;
 

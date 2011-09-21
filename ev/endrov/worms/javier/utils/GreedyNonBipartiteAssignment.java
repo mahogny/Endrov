@@ -1,4 +1,4 @@
-package endrov.worms.utils;
+package endrov.worms.javier.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,23 +6,23 @@ import java.util.Iterator;
 
 import endrov.util.Vector2i;
 
-public class greedyNonBipartiteAssignment
+public class GreedyNonBipartiteAssignment
 	{
 
-	private static class cmpVector implements Comparable<cmpVector>
+	private static class CmpVector implements Comparable<CmpVector>
 		{
 		double value;
 		int index;
 
-		private cmpVector(double value, int index)
+		private CmpVector(double value, int index)
 			{
 			this.value = value;
 			this.index = index;
 			}
 
-		public int compareTo(cmpVector o)
+		public int compareTo(CmpVector o)
 			{
-			return ((Double) value).compareTo((Double) o.value);
+			return Double.compare(value, o.value);
 			}
 
 		public String toString()
@@ -47,22 +47,15 @@ public class greedyNonBipartiteAssignment
 		ArrayList<Vector2i> best = new ArrayList<Vector2i>();
 		ArrayList<Integer> generalRowList = new ArrayList<Integer>();
 		for (int r = 0; r<matchMatrix.length-1; r++)
-			{
 			generalRowList.add(r);
-			}
 		for (int row = 0; row<matchMatrix.length-1; row++)
 			{
 
 			double[][] matchCopy = new double[matchMatrix.length][matchMatrix[0].length];
 			for (int r = 0; r<matchMatrix.length; r++)
-				{
 				for (int j = r+1; j<matchMatrix[0].length; j++)
-					{
 					matchCopy[r][j] = matchMatrix[r][j];
-					}
-				}
 
-			// ArrayList<Vector2i> res = turningProcessing(matchCopy, row);
 			ArrayList<Integer> rowList = new ArrayList<Integer>(generalRowList);
 			ArrayList<Vector2i> res = inteligentTurning(matchCopy, row, rowList);
 			if (res.size()>best.size())
@@ -72,9 +65,7 @@ public class greedyNonBipartiteAssignment
 			else if (res.size()==best.size())
 				{
 				if (totalCost(best, matchMatrix)>totalCost(res, matchMatrix))
-					{
 					best = res;
-					}
 				}
 			}
 		return best;
@@ -94,6 +85,7 @@ public class greedyNonBipartiteAssignment
 		return totalCost;
 		}
 
+	//TODO never used
 	private static ArrayList<Vector2i> turningProcessing(double[][] matchMatrix,
 			int row)
 		{
@@ -138,7 +130,7 @@ public class greedyNonBipartiteAssignment
 	private static int getNextRow(double[][] matchMatrix,
 			ArrayList<Integer> remainingList)
 		{
-		ArrayList<cmpVector> listMins = new ArrayList<cmpVector>();
+		ArrayList<CmpVector> listMins = new ArrayList<CmpVector>();
 
 		for (int row : remainingList)
 			{
@@ -156,7 +148,7 @@ public class greedyNonBipartiteAssignment
 					}
 				}
 			if (minIndex!=-1)
-				listMins.add(new cmpVector(min, row));
+				listMins.add(new CmpVector(min, row));
 			}
 		Collections.sort(listMins);
 		if (!listMins.isEmpty())
@@ -182,19 +174,13 @@ public class greedyNonBipartiteAssignment
 			{
 			// update columns
 			for (int r = 0; r<matchMatrix.length; r++)
-				{
 				matchMatrix[r][minIndex] = -1;
-				}
 			// update whole row for selected column
 			for (int c = 0; c<matchMatrix[0].length; c++)
-				{
 				matchMatrix[minIndex][c] = -1;
-				}
 			// update the column of the selected row
 			for (int r = 0; r<matchMatrix.length; r++)
-				{
 				matchMatrix[r][row] = -1;
-				}
 
 			// row/col
 			return new Vector2i(row, minIndex);
@@ -207,9 +193,7 @@ public class greedyNonBipartiteAssignment
 		for (int i = 0; i<matchMatrix.length; i++)
 			{
 			for (int j = 0; j<matchMatrix[0].length; j++)
-				{
 				System.out.print(matchMatrix[i][j]+" ");
-				}
 			System.out.println();
 			}
 		}

@@ -1,10 +1,10 @@
-package endrov.worms.fit;
+package endrov.worms.javier.fit;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import endrov.util.Vector2i;
-import endrov.worms.WormDescriptor;
+import endrov.worms.javier.WormDescriptor;
 
 /**
  * Abstract definition of optimization methods for
@@ -18,10 +18,6 @@ public abstract class WormShapeOptimization
 
 	public abstract double run(WormDescriptor wd);
 
-	public WormShapeOptimization()
-		{
-		}
-
 	/**
 	 * Calculates the cost of the objective function for a given worm profile
 	 * rasterization. Objective Function is: The sum of the rasterized pixels that
@@ -31,20 +27,17 @@ public abstract class WormShapeOptimization
 		{
 		if (rastShape==null)
 			return Double.MAX_VALUE;
-		double background = 0;
-		double foreground = 0;
+		int background = 0;
+		int foreground = 0;
 		Iterator<Integer> it = rastShape.iterator();
 		while (it.hasNext())
 			{
 			if (dtArray[it.next()]==0)
 				background++;
 			else
-				{
 				foreground++;
-				}
 			}
-		// return background;
-		return (background/(foreground+background));
+		return (double)background/(double)(foreground+background);
 		}
 
 	public static void getNeighborhood(int[] wormAngles, WormDescriptor wd,
@@ -87,7 +80,6 @@ public abstract class WormShapeOptimization
 				}
 			}
 
-		// int nCount=0;
 		for (int i = 1; i<wormAngles.length-1; i++, nCount++)
 			{
 			if ((wormAngles[i]+2)<=wd.angleNorthLine[i].length-1)

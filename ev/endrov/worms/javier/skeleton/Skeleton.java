@@ -1,4 +1,4 @@
-package endrov.worms.skeleton;
+package endrov.worms.javier.skeleton;
 
 import endrov.imageset.EvPixels;
 
@@ -7,7 +7,7 @@ import endrov.imageset.EvPixels;
  * @author Javier Fernandez
  *
  */
-public abstract class Skeleton
+public class Skeleton
 	{
 	public EvPixels image;
 	public int[] dt; // distance transformation of image

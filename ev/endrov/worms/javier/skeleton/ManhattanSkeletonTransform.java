@@ -1,25 +1,28 @@
-package endrov.worms.skeleton;
+package endrov.worms.javier.skeleton;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import endrov.util.Vector2i;
+
 /**
- * Tools for skeleton manipulation based on Euclidean Distance Transform
+ * Tools for skeleton manipulation based on Manhattan Distance Transform
  * 
  * @author Javier Fernandez
  *
  */
-public final class EuclideanSkeletonTransform extends SkeletonTransform
+public class ManhattanSkeletonTransform extends SkeletonTransform
 	{
-
 	@Override
-	/**
-	 * This method uses getCircularNeighbors implemented in SkeletonTransform
-	 */
-	int[] getNeighbors(int position, int w)
+	public int[] getNeighbors(int position, int w)
 		{
-		return SkeletonUtils.getCircularNeighbors(position, w);
+		int neighbors[] = new int[4];
+		neighbors[0] = position-w; // Up
+		neighbors[1] = position+1; // Right
+		neighbors[2] = position+w; // Down
+		neighbors[3] = position-1; // Left
+
+		return neighbors;
 		}
 
 	public ArrayList<Vector2i> getDirectionalNeighbors(int[] imageArray, int w,
@@ -134,23 +137,15 @@ public final class EuclideanSkeletonTransform extends SkeletonTransform
 		}
 
 	/**
-	 * True if the positions p1 and p2 are both true in the boolean array 'array'
-	 */
-	public boolean bothTrue(boolean[] array, int p1, int p2)
-		{
-		if (p1<0||p2<0)
-			return false;
-		return (array[p1]&&array[p2]);
-		}
-
-	/**
 	 * Checks whether pixel is a connected pixel in skeleton. A connected pixel is
 	 * such that exists two neighbors of the pixel that connect in any direction.
 	 * This is diagonal connection or vertical/horizontal connection.
 	 */
 	public boolean nonConnectedPixel(boolean[] skeleton, int w, int pixel)
 		{
-		int neighbors[] = getNeighbors(pixel, w);
+
+		EuclideanSkeletonTransform euclideanSk = new EuclideanSkeletonTransform();
+		int neighbors[] = euclideanSk.getNeighbors(pixel, w); // Obtain 8 neighbors
 		int length = neighbors.length;
 		for (int i = 0; i<4; i++)
 			{
@@ -199,10 +194,22 @@ public final class EuclideanSkeletonTransform extends SkeletonTransform
 					if (p2<length&&p2>=0&&bothTrue(skeleton, neighbors[i], neighbors[p2]))
 						return false;// up
 					p2 = 6;
-					if (p2<length&&p2>=0&&bothTrue(skeleton, neighbors[i], neighbors[p2]))// down
-						break;
+					if (p2<length&&p2>=0&&bothTrue(skeleton, neighbors[i], neighbors[p2]))
+						return false;// down
+					break;
 				}
 			}
 		return true;
 		}
+
+	/**
+	 * True if the positions p1 and p2 are both true in the boolean array 'array'
+	 */
+	public boolean bothTrue(boolean[] array, int p1, int p2)
+		{
+		if (p1<0||p2<0)
+			return false;
+		return (array[p1]&&array[p2]);
+		}
+
 	}
