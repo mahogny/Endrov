@@ -9,8 +9,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import javax.vecmath.Vector3d;
 
-import endrov.particle.*;
-import endrov.particle.Lineage.ParticlePos;
+import endrov.lineage.*;
+import endrov.lineage.Lineage.ParticlePos;
 import endrov.util.EvDecimal;
 
 
@@ -324,9 +324,8 @@ public class NucStats
 		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
 			lin.getCreateParticle(e.getKey());
 		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
-			if(e.getValue().parent!=null && lin.particle.get(e.getKey()).parent==null)
+			if(e.getValue().parent!=null && lin.particle.get(e.getKey()).parents.isEmpty())
 				{
-//				System.out.println("PC: "+e.getValue().parent+" -> "+e.getKey());
 				lin.createParentChild(e.getValue().parent, e.getKey());
 				}
 		return lin;

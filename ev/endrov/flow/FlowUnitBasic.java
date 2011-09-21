@@ -54,7 +54,7 @@ public abstract class FlowUnitBasic extends FlowUnit
 		ImageIcon ico=getIcon();
 
 		//Height by default should be at least to cover in/out pins
-		int cnt=EvMathUtil.maxAll(
+		int cnt=EvMathUtil.maxAllint(
 				1,
 				getTypesInCount(flow),
 				getTypesOutCount(flow)

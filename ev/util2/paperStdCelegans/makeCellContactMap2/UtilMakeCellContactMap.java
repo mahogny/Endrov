@@ -15,8 +15,8 @@ import util2.ConnectImserv;
 import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.imageset.Imageset;
-import endrov.particle.Lineage;
-import endrov.particle.util.MakeParticleContactMap;
+import endrov.lineage.Lineage;
+import endrov.lineage.util.MakeParticleContactMap;
 import endrov.particleContactMap.neighmap.NeighMap;
 import endrov.util.*;
 

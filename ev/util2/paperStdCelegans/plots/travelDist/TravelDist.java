@@ -18,8 +18,8 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
-import endrov.particle.LineageExp;
-import endrov.particle.Lineage;
+import endrov.lineage.Lineage;
+import endrov.lineage.LineageExp;
 import endrov.util.EvDecimal;
 
 /**

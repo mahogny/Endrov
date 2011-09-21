@@ -7,7 +7,7 @@ import java.util.PriorityQueue;
 
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
-import endrov.particle.Lineage;
+import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;

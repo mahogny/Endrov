@@ -13,7 +13,7 @@ import java.util.Map;
 
 import endrov.data.EvData;
 import endrov.ev.EvLog;
-import endrov.particle.Lineage;
+import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 
 /**

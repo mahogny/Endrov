@@ -326,7 +326,7 @@ public class EvMathUtil
 	/**
 	 * Get the maximum of a list
 	 */
-	public static int maxAll(int... v)
+	public static int maxAllint(int... v)
 		{
 		int r=v[0];
 		for(int i=1;i<v.length;i++)
@@ -347,6 +347,19 @@ public class EvMathUtil
 		return r;
 		}
 
+	/**
+	 * Get the maximum of a list
+	 */
+	public static double maxAll(double... v)
+		{
+		double r=v[0];
+		for(int i=1;i<v.length;i++)
+			if(v[i]>r)
+				r=v[i];
+		return r;
+		}
+	
+	
 	/**
 	 * Get the minimum of a list
 	 */

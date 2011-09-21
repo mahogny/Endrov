@@ -10,7 +10,7 @@ import java.util.Vector;
 import javax.swing.JComponent;
 
 import endrov.data.EvContainer;
-import endrov.particle.Lineage;
+import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 

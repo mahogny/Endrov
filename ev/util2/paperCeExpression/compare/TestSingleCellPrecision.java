@@ -13,12 +13,12 @@ import endrov.data.EvPath;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
-import endrov.particle.Lineage;
-import endrov.particle.LineageSelParticle;
-import endrov.particle.Lineage.InterpolatedParticle;
-import endrov.particle.util.LineageMergeUtil;
-import endrov.particle.util.LineageVoronoi;
-import endrov.particle.util.MakeParticleContactMap;
+import endrov.lineage.Lineage;
+import endrov.lineage.LineageSelParticle;
+import endrov.lineage.Lineage.InterpolatedParticle;
+import endrov.lineage.util.LineageMergeUtil;
+import endrov.lineage.util.LineageVoronoi;
+import endrov.lineage.util.MakeParticleContactMap;
 import endrov.util.EvDecimal;
 
 /**
@@ -77,7 +77,7 @@ public class TestSingleCellPrecision
 			for(LineageSelParticle sel:allInterpRef.keySet())
 				{
 				InterpolatedParticle interpRef=allInterpRef.get(sel);
-				Lineage.Particle nucRef=sel.getNuc();
+				Lineage.Particle nucRef=sel.getParticle();
 				if(interpRef.isVisible())
 					if(!nucRef.child.isEmpty() || nucRef.pos.lastKey().lessEqual(curFrame))
 						{

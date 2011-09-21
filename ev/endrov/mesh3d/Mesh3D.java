@@ -14,8 +14,8 @@ import org.jdom.Element;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.lineage.Lineage;
 import endrov.modelWindow.gl.GLMaterial;
-import endrov.particle.Lineage;
 
 /**
  * 3D meshes

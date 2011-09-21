@@ -20,7 +20,7 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.EvChannel;
-import endrov.particle.Lineage;
+import endrov.lineage.Lineage;
 
 /**
  * Flow unit: Find local maximas

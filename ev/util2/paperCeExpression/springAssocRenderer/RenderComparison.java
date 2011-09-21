@@ -18,7 +18,7 @@ import util2.paperCeExpression.compare.CompareAll;
 
 
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.particle.expression.ExpUtil;
+import endrov.lineage.expression.ExpUtil;
 import endrov.springGraph.Graph;
 import endrov.springGraph.GraphPanel;
 import endrov.springGraph.SimpleGraphRenderer;

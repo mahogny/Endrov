@@ -19,9 +19,9 @@ import org.jdom.*;
 import endrov.basicWindow.*;
 import endrov.data.*;
 import endrov.ev.*;
+import endrov.lineage.*;
 import endrov.lineageWindow.LineageView.ClickRegion;
 import endrov.lineageWindow.LineageView.ClickRegionName;
-import endrov.particle.*;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.EvUtilRegexp;
@@ -524,14 +524,24 @@ public class LineageWindow extends BasicWindow
 				{
 				public void actionPerformed(ActionEvent e)
 					{
-					Lineage lin=getLineage();
+					final Lineage lin=getLineage();
+					final String partName=kf.nuc;
+					final EvDecimal frame=kf.frame;
 					if(lin!=null)
 						{
-						Lineage.Particle nuc=lin.particle.get(kf.nuc);
-						nuc.pos.remove(kf.frame);
-						if(nuc.pos.isEmpty())
-							lin.removeParticle(kf.nuc);
-						BasicWindow.updateWindows();
+						new UndoOpLineageReplaceSomeParticle("Delete particle keyframe")
+							{
+							public void redo()
+								{
+								keep(lin, partName);
+								
+								Lineage.Particle particle=lin.particle.get(partName);
+								particle.pos.remove(frame);
+								if(particle.pos.isEmpty())
+									lin.removeParticle(partName);
+								BasicWindow.updateWindows();
+								}
+							}.execute();
 						}
 					}
 				});
@@ -540,28 +550,50 @@ public class LineageWindow extends BasicWindow
 				{
 				public void actionPerformed(ActionEvent e)
 					{
-					Lineage lin=getLineage();
+					final Lineage lin=getLineage();
+					final String oldName=kf.nuc;
+					final EvDecimal frame=kf.frame;
 					if(lin!=null)
 						{
-						Lineage.Particle nuc=lin.particle.get(kf.nuc);
-						
-						if(!nuc.pos.tailMap(kf.frame).isEmpty())
+						new UndoOpLineageReplaceSomeParticle("Split particle")
 							{
-							String newname=lin.getUniqueParticleName();
-							Lineage.Particle newnuc=lin.getCreateParticle(newname);
-							newnuc.pos.putAll(nuc.pos.tailMap(kf.frame));
-							for(EvDecimal key:newnuc.pos.keySet())
-								nuc.pos.remove(key);
-							
-							newnuc.child.addAll(nuc.child);
-							nuc.child.clear();
-							for(String cn:newnuc.child)
-								lin.particle.get(cn).parent=newname;
-							
-							newnuc.parent=kf.nuc;
-							nuc.child.add(newname);
-							BasicWindow.updateWindows();
-							}
+							public void redo()
+								{
+								Lineage.Particle oldParticle=lin.particle.get(oldName);
+								if(!oldParticle.pos.tailMap(frame).isEmpty())
+									{
+									//Store undo op
+									String newName=lin.getUniqueParticleName();
+									
+									keep(lin, oldName);
+									keep(lin, newName);
+									for(String cname:oldParticle.child)
+										keep(lin, cname);
+									
+									
+									//Create a new particle and put the keyframes *after* this point in it, then keep the rest in the old particle
+									Lineage.Particle newParticle=lin.getCreateParticle(newName);
+									newParticle.pos.putAll(oldParticle.pos.tailMap(kf.frame));
+									oldParticle.pos.keySet().removeAll(newParticle.pos.keySet());
+
+									//Move all children into the new nuc. Update parents
+									newParticle.child.addAll(oldParticle.child);
+									oldParticle.child.clear();
+									for(String cn:newParticle.child)
+										{
+										lin.particle.get(cn).parents.remove(oldName);
+										lin.particle.get(cn).parents.add(newName);
+										}
+
+									//Connect old and new nuc
+									newParticle.parents.add(oldName);
+									oldParticle.child.add(newName);
+									BasicWindow.updateWindows();
+									}
+								}
+							}.execute();
+						
+						
 						}
 					}
 				});
@@ -620,47 +652,12 @@ public class LineageWindow extends BasicWindow
 			miCreateEmptyChild.addActionListener(new ActionListener()
 				{
 				public void actionPerformed(ActionEvent e)
-					{
-					String cname=JOptionPane.showInputDialog("Name of child");
-					if(cname!=null)
-						{
-						if(getLineage().particle.containsKey(cname))
-							showErrorDialog("Name already taken");
-						else
-							{
-							getLineage().particle.get(nucName).child.add(cname);
-							getLineage().getCreateParticle(cname).parent=nucName;
-							BasicWindow.updateWindows();
-							}
-						}
-					}
+					{LineageCommonUI.actionCreateEmptyChild(getLineage(), nucName);}
 				});
 			miCreateAP.addActionListener(new ActionListener()
 				{
 				public void actionPerformed(ActionEvent e)
-					{
-					String nameA=nucName+"a";
-					String nameP=nucName+"p";
-					if(!getLineage().particle.containsKey(nameA) && !getLineage().particle.containsKey(nameP))
-						{
-						getLineage().particle.get(nucName).child.add(nameA);
-						getLineage().getCreateParticle(nameA).parent=nucName;
-						getLineage().particle.get(nucName).child.add(nameP);
-						getLineage().getCreateParticle(nameP).parent=nucName;
-						BasicWindow.updateWindows();
-						
-						String sFrame=JOptionPane.showInputDialog("Start frame or nothing for none");
-						if(sFrame!=null)
-							{
-							EvDecimal frame=FrameControl.parseTime(sFrame);
-							getLineage().particle.get(nameA).overrideStart=frame;
-							getLineage().particle.get(nameP).overrideStart=frame;
-							BasicWindow.updateWindows();
-							}
-						}
-					else
-						showErrorDialog("One child already exist");
-					}
+					{LineageCommonUI.actionCreateAP(getLineage(), nucName);}
 				});
 			
 			

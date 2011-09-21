@@ -16,7 +16,7 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
-import endrov.particle.Lineage;
+import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvXmlUtil;
 
@@ -71,17 +71,8 @@ public class WBlineageToOST
 					}
 				Element eParent=eLineage.getChild("Parent");
 				if(eParent!=null)
-					nuc.parent=eParent.getAttributeValue("value");
-				
-				/*
-				boolean isPrimed=false;
-				for(String s:new String[]{"P2'","P3'","P4'","Z2"})
-					if(nuc.child.contains(s))
-						isPrimed=true;
-				if(isPrimed)
-					cellName+="'";*/
+					nuc.parents.add(eParent.getAttributeValue("value"));
 					
-				
 				Element eDiv=eCell.getChild("Embryo_division_time");
 				if(eDiv!=null)
 					{
@@ -127,17 +118,17 @@ public class WBlineageToOST
 				
 				//TODO nuc. start. fate?
 				
-				if(nuc.parent!=null && nuc.parent.equals(""))
-					System.out.println("sdöjdföjlsdfjölfdsjökfsdjökldgsöljksdg");
+				//if(nuc.parent!=null && nuc.parent.equals(""))
+					//System.out.println("sdöjdföjlsdfjölfdsjökfsdjökldgsöljksdg");
 				//Element eData=eCell.getChild("Data");
 				
-				if(nuc.parent==null && nuc.child.isEmpty())
+				if(nuc.parents.isEmpty() && nuc.child.isEmpty())
 					{
 					
 					}
 				else
 					{
-					if(nuc.parent==null)
+					if(nuc.parents.isEmpty())
 						System.out.println("no parent for "+cellName);
 					lin.particle.put(cellName, nuc);
 					}
@@ -150,11 +141,10 @@ public class WBlineageToOST
 				Lineage.Particle nuc=e.getValue();
 				for(String cname:nuc.child)
 					{
-					//System.out.println(e.getKey()+":"+cname);
-					lin.particle.get(cname).parent=e.getKey();
+					lin.particle.get(cname).parents.add(e.getKey());
 					}
-				if(nuc.parent!=null)
-					lin.particle.get(nuc.parent).child.add(e.getKey());
+				if(!nuc.parents.isEmpty())
+					lin.particle.get(nucParent(nuc)).child.add(e.getKey());
 				}
 			
 		
@@ -163,9 +153,9 @@ public class WBlineageToOST
 			for(Map.Entry<String, Lineage.Particle> e:lin.particle.entrySet())
 				{
 				Lineage.Particle nuc=e.getValue();
-				if(nuc.parent==null && nuc.child.isEmpty())
+				if(nuc.parents.isEmpty() && nuc.child.isEmpty())
 					System.out.println("No parent/child for "+e.getKey());
-				if(!lin.particle.containsKey(nuc.parent) && nuc.child.isEmpty())
+				if(!lin.particle.containsKey(nucParent(nuc)) && nuc.child.isEmpty())
 					System.out.println("!!!!missing parent");
 				
 				//temp: do the easy ones
@@ -176,18 +166,11 @@ public class WBlineageToOST
 			for(String nucName:toRemove)
 				{
 				Lineage.Particle nuc=lin.particle.get(nucName);
-				if(nuc.parent!=null)
-					lin.particle.get(nuc.parent).child.remove(nucName);
+				if(!nuc.parents.isEmpty())
+					lin.particle.get(nucParent(nuc)).child.remove(nucName);
 				}
 			lin.particle.keySet().removeAll(toRemove);
 			
-			
-			/*
-				{
-				NucLineage.Nuc nuc=lin.nuc.get("Z4.appaapapp");
-				System.out.println(">>>"+nuc.parent+"   "+nuc.child);
-				}
-				*/
 			
 			EvData data=new EvData();
 			data.metaObject.put("lin", lin);
@@ -199,5 +182,13 @@ public class WBlineageToOST
 			e.printStackTrace();
 			}
 		System.exit(0);
+		}
+	
+	private static String nucParent(Lineage.Particle p)
+		{
+		if(p.parents.size()==1)
+			return p.parents.iterator().next();
+		else
+			return null;
 		}
 	}

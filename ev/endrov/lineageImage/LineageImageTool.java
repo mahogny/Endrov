@@ -21,11 +21,11 @@ import endrov.data.EvContainer;
 import endrov.data.EvSelection;
 import endrov.imageWindow.*;
 import endrov.keyBinding.KeyBinding;
-import endrov.particle.LineageCommonUI;
-import endrov.particle.Lineage;
-import endrov.particle.LineageSelParticle;
-import endrov.particle.UndoOpLineageEditParticleKeyframe;
-import endrov.particle.UndoOpLineageReplaceSomeParticle;
+import endrov.lineage.Lineage;
+import endrov.lineage.LineageCommonUI;
+import endrov.lineage.LineageSelParticle;
+import endrov.lineage.UndoOpLineageEditParticleKeyframe;
+import endrov.lineage.UndoOpLineageReplaceSomeParticle;
 import endrov.util.EvDecimal;
 
 /**
@@ -79,7 +79,7 @@ public class LineageImageTool implements ImageWindowTool, ActionListener
 					{
 					final LineageSelParticle theSel=sel.iterator().next();
 					final EvDecimal frame=w.getFrame();
-					String currentEventName=theSel.getNuc().events.get(frame);
+					String currentEventName=theSel.getParticle().events.get(frame);
 					if(currentEventName==null)
 						currentEventName="";
 					final String answer=JOptionPane.showInputDialog(null, "Event name", currentEventName);
@@ -91,9 +91,9 @@ public class LineageImageTool implements ImageWindowTool, ActionListener
 								{
 								keep(theSel.fst(), theSel.snd());
 								if(answer.equals(""))
-									theSel.getNuc().events.remove(frame);
+									theSel.getParticle().events.remove(frame);
 								else
-									theSel.getNuc().events.put(frame, answer);
+									theSel.getParticle().events.put(frame, answer);
 								BasicWindow.updateWindows();
 								}
 							}.execute();
@@ -331,7 +331,7 @@ public class LineageImageTool implements ImageWindowTool, ActionListener
 	private void startModifying(LineageSelParticle sel)
 		{
 		r.modifyingParticleSelected=sel;
-		r.modifiedParticle=sel.getNuc().clone();
+		r.modifiedParticle=sel.getParticle().clone();
 		r.hasReallyModified=false;
 		}
 	
@@ -352,7 +352,7 @@ public class LineageImageTool implements ImageWindowTool, ActionListener
 			if(lin!=null && KeyBinding.get(Lineage.KEY_DIVIDENUC).typed(e))
 				{
 				//Divide particle
-				Lineage.Particle n=LineageCommonUI.currentHover.getNuc();
+				Lineage.Particle n=LineageCommonUI.currentHover.getParticle();
 				if(n!=null && r.interpParticle.containsKey(LineageCommonUI.currentHover))
 					LineageCommonUI.actionDivideParticle(lin,LineageCommonUI.currentHover.snd(), curFrame);
 				}

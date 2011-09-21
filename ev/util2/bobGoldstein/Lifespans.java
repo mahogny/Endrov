@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import endrov.data.EvData;
 import endrov.ev.EV;
-import endrov.particle.Lineage;
+import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 

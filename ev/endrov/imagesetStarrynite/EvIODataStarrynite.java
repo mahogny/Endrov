@@ -14,7 +14,7 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.imageset.*;
 import endrov.imagesetBasic.BasicSliceIO;
-import endrov.particle.Lineage;
+import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 import endrov.util.ProgressHandle;
@@ -266,8 +266,8 @@ public class EvIODataStarrynite implements EvIOData
 					Lineage.Particle nuc2=lin.getCreateParticle(name2);
 					nuc.child.add(name1);
 					nuc.child.add(name2);
-					nuc1.parent=thisName;
-					nuc2.parent=thisName;
+					nuc1.parents.add(thisName);
+					nuc2.parents.add(thisName);
 					nextIndexNuc.put(iSucc1, name1);
 					nextIndexNuc.put(iSucc2, name2);					
 					}

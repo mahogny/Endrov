@@ -16,9 +16,10 @@ import javax.vecmath.Vector2d;
 
 import endrov.basicWindow.*;
 import endrov.data.EvSelection;
+import endrov.lineage.*;
 import endrov.lineageWindow.HierarchicalPainter.Camera;
-import endrov.particle.*;
 import endrov.util.EvDecimal;
+import endrov.util.EvMathUtil;
 import endrov.util.Tuple;
 
 
@@ -386,7 +387,7 @@ public class LineageView extends JPanel
 			LineageSelParticle sel=selectedParticles.iterator().next();
 			if(sel.fst()==currentLin)
 				{
-				Lineage.Particle nuc=sel.getNuc();
+				Lineage.Particle nuc=sel.getParticle();
 				EvDecimal frame=nuc.getLastFrame();
 				v.add(new Vector2d(frame.doubleValue(),linstat.getParticleState(sel.snd()).centerY));
 				cnt++;
@@ -521,7 +522,7 @@ public class LineageView extends JPanel
 		SortedSet<String> list=new TreeSet<String>();
 		if(lin!=null)
 			for(String nucName:lin.particle.keySet())
-				if(lin.particle.get(nucName).parent==null)
+				if(lin.particle.get(nucName).parents.isEmpty())
 					list.add(nucName);
 		return list;
 		}
@@ -632,11 +633,13 @@ public class LineageView extends JPanel
 	 */
 	private void layoutAllTrees(Lineage lin, LineageState linstate, HierarchicalPainter hpainter, int width, int height)
 		{
+		Set<String> alreadyLayout=new HashSet<String>();
+		
 		double displacement=0;
 		for(String nucName:getRootParticles(getLineage()))
 			{
 			HierarchicalPainter.DrawNode dnode=new HierarchicalPainter.DrawNodeContainer();
-			displacement=layoutTreeRecursive(lin, nucName,linstate, displacement,dnode);
+			displacement=layoutTreeRecursive(lin, null, nucName,linstate, displacement,dnode, alreadyLayout,dnode);
 			hpainter.topNodes.add(dnode);
 			}
 		}
@@ -644,326 +647,368 @@ public class LineageView extends JPanel
 	/**
 	 * Prepare rendering of a tree branch
 	 */
-	private double layoutTreeRecursive(Lineage lin, final String nucName, final LineageState linstate, 
-			double displacement, HierarchicalPainter.DrawNode parentDrawNode)
-		{		
-		final ParticleState thisInternal=linstate.getParticleState(nucName);
-		final Lineage.Particle nuc=lin.particle.get(nucName);
-
-		HierarchicalPainter.DrawNodeContainer thisDrawNode=new HierarchicalPainter.DrawNodeContainer();
-
-		double y1=displacement;
-		
-		//Total width of children. 0 if none expanded
-		double curChildOffset=displacement;
-		
-		final double fontHeightAvailable;
-		
-		//Only recurse if children are visible
-		if(thisInternal.isExpanded && !nuc.child.isEmpty())
+	private double layoutTreeRecursive(Lineage lin, String recurseFromParent, final String nucName, final LineageState linstate, 
+			double displacement, HierarchicalPainter.DrawNode parentDrawNode, Set<String> alreadyLayout, HierarchicalPainter.DrawNode topNode)
+		{
+		if(alreadyLayout.contains(nucName))
 			{
+			ParticleState psThis=linstate.getParticleState(nucName);
+			ParticleState psParent=linstate.getParticleState(recurseFromParent);
 			
+			final double fromX=psThis.startX;
+			final double fromY=psThis.centerY;
+			final double toX=psParent.endX;
+			final double toY=psParent.centerY;
 			
+			final double midX=(fromX+toX)/2 - (toY-fromY)*0.3;
+			final double midY=(fromY+toY)/2 + (toX-fromX)*0.3;
 			
-			//Sum up total width for children
-			for(String cName:nuc.child)
-				{
-				double newDisp=layoutTreeRecursive(lin, cName,linstate, curChildOffset, thisDrawNode);
-				curChildOffset=newDisp;
-				}
+			final Lineage.Particle nuc=lin.particle.get(nucName);
 			
-			
-			//Set displacement of this node
-			if(nuc.child.size()==1)
-				{
-				//
-				thisInternal.centerY=linstate.particleState.get(nuc.child.first()).centerY+sizeOfBranch/2;
-				curChildOffset+=sizeOfBranch/2;
-				
-				//curChildOffset+sizeOfBranch/2;
-				
-				
-				//curChildOffset+=sizeOfBranch;
-				fontHeightAvailable=sizeOfBranch;
-				
-//				Internal cInternal=linstate.getNucinfo(nuc.child.first());
-	//			thisInternal.centerY=cInternal.centerY; //TODO handle 1 child
-				}
-			else
-				{
-				//Use the average
-				double sum=0;
-				double miny=Double.MAX_VALUE;
-				double maxy=Double.MIN_VALUE;
-				for(String cName:nuc.child)
-					{
-					ParticleState cInternal=linstate.particleState.get(cName);
-					if(cInternal.centerY<miny) miny=cInternal.centerY;
-					if(cInternal.centerY>maxy) maxy=cInternal.centerY;
-					sum+=cInternal.centerY;
-					}
-				thisInternal.centerY=sum/nuc.child.size();
-				fontHeightAvailable=maxy-miny;
-				}
-			
-			}
-		else
-			{
-			thisInternal.centerY=curChildOffset+sizeOfBranch/2;
-			curChildOffset+=sizeOfBranch;
-			fontHeightAvailable=sizeOfBranch;
-			}
-		double y2=curChildOffset;
-		
-		EvDecimal firstFrame=nuc.getFirstFrame();
-		double x1;
-		if(firstFrame!=null)
-			x1=firstFrame.doubleValue();
-		else
-			{
-			if(nuc.parent==null)
-				x1=0;
-			else
-				{
-				x1=linstate.getParticleState(nuc.parent).endX+60; //Better than nothing
-				}
-			}
-
-		
-		EvDecimal lastFrame=nuc.getLastFrame();
-		double x2;
-		if(lastFrame!=null)
-			x2=lastFrame.doubleValue();
-		else
-			x2=x1+60; //Better than nothing
-		
-		thisInternal.endX=x2;
-		thisInternal.startX=x1;
-
-		
-		/////////// need to extend x2 here to children start pos that is furthest away ////////////////
-		
-		//Attach a renderer of this branch
-		final LineageSelParticle nucsel=new LineageSelParticle(lin,nucName);
-		HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2){
+			//HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(Math.min(fromX,toX), Math.min(fromY, toY), Math.max(fromX, toX),Math.max(fromY, toY)){
+			HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(
+					EvMathUtil.maxAll(fromX,toX,midX), EvMathUtil.minAll(fromY, toY, midY), EvMathUtil.minAll(fromX, toX, midX), EvMathUtil.maxAll(fromY, toY, midY)){
 			public void paint(Graphics g, double width, double height, Camera cam)
 				{
-				int spaceAvailable=cam.toScreenY(fontHeightAvailable)-cam.toScreenY(0);
-
-				int thisMidY=cam.toScreenY(thisInternal.centerY);
-				int thisStartX=cam.toScreenX(thisInternal.startX);
-				int thisEndX=cam.toScreenX(thisInternal.endX);
-
-				//Line and keyframes
-				if(nuc.color!=null)
+				if(nuc.color!=null) //should use parents color actually
 					g.setColor(nuc.color);
 				else
 					g.setColor(Color.black);
-				g.drawLine(thisStartX, thisMidY, thisEndX, thisMidY);
-				if(nuc.getLastFrame()==null)
-					drawParticleExtendsToInfinity(g, thisEndX, thisMidY);				
-				g.setColor(Color.black);
-				if(getShowKeyFrames())
-					{
-					//Possible to optimize, but not by much
-					for(EvDecimal frame:nuc.pos.keySet())
-						drawKeyFrame(g, cam.toScreenX(frame.doubleValue()), thisMidY, nucsel.snd(), frame);
-					}
-
-				if(getShowEvents())
-					{
-					g.setColor(new Color(0,128,0));
-					for(EvDecimal frame:nuc.events.keySet())
-						{
-						int posX=cam.toScreenX(frame.doubleValue());
-						g.drawLine(posX, thisMidY, posX, thisMidY+10);
-						g.drawString(nuc.events.get(frame), posX, thisMidY+20);
-						}
-					}
-				
-				
-				//Lines to children
-				if(thisInternal.isExpanded && !nuc.child.isEmpty())
-					{
-					for(String cname:nuc.child)
-						{
-						ParticleState cstate=linstate.getParticleState(cname);
-						int cStartX=cam.toScreenX(cstate.startX);
-						int cStartY=cam.toScreenY(cstate.centerY);
-						g.drawLine(thisEndX, thisMidY, cStartX, cStartY);
-						}
-					}
-				if(!nuc.child.isEmpty())
-					{
-					drawExpanderSymbol(g, nucName, thisEndX, thisMidY, thisInternal.isExpanded, spaceAvailable);
-					}
-				
-				
-				//Label
-				if(getShowLabel())
-					{
-					boolean canDrawLabel=true;
-					if(spaceAvailable<16)
-						canDrawLabel=false;
-					if(canDrawLabel)
-						drawNucName(g, "", nucsel, thisMidY, thisEndX);
-					else
-						drawNucNameUnexpanded(g, "", nucsel, thisMidY, thisEndX);
-					}
-
+				g.drawLine(cam.toScreenX(fromX), cam.toScreenY(fromY), cam.toScreenX(midX), cam.toScreenY(midY));
+				g.drawLine(cam.toScreenX(midX), cam.toScreenY(midY), cam.toScreenX(toX), cam.toScreenY(toY));
 				}
-		};
-		thisDrawNode.addSubNode(newnode);
+			};
+			topNode.addSubNode(newnode);
 
-		
-		for(final ExpRenderSetting expsetting:listExpRenderSettings)
-			{
-			final LineageExp nucexp=nuc.exp.get(expsetting.expname1);
-			//System.out.println("get exp "+expsetting.expname1+" "+nucexp);
-			
-			//System.out.println("have "+expsetting.expname1);
-			
-			if(nucexp!=null && !nucexp.level.isEmpty())
-				{
-
-				if(expsetting.type==ExpRenderSetting.typeGraphOnTop)
-					{
-					//TODO bounds
-					HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2)
-						{
-						public void paint(Graphics g, double width, double height, Camera cam)
-							{
-							int thisMidY=cam.toScreenY(thisInternal.centerY);
-
-							double scale=cam.scaleWorldDistY(expsetting.scale1);
-							g.setColor(expsetting.color.getAWTColor());
-							boolean hasLastCoord=false;
-							int lastX=0, lastYAbove=0;
-							for(Map.Entry<EvDecimal, Double> ve:nucexp.level.entrySet())
-								{
-								int yAbove=(int)(-ve.getValue()*scale+thisMidY);
-								//int yBelow=(int)(+ve.getValue()*scale+thisMidY);
-								int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
-								if(hasLastCoord)
-									{
-									if(showExpLine)
-										g.drawLine(lastX, lastYAbove, x, yAbove);
-									if(showExpSolid)
-										g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{thisMidY,lastYAbove,yAbove,thisMidY}, 4);
-									}
-								if(showExpDot)
-									g.drawRect(x-expDotSize, yAbove-expDotSize, 2*expDotSize, 2*expDotSize);
-								hasLastCoord=true;
-								lastX=x;
-								lastYAbove=yAbove;
-								}
-
-
-							}
-						};
-					thisDrawNode.addSubNode(drawExpNode);
-					}
-				else if(expsetting.type==ExpRenderSetting.typeLineThickness)
-					{
-					
-					//TODO bounds
-					HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2)
-						{
-						public void paint(Graphics g, double width, double height, Camera cam)
-							{
-							int thisMidY=cam.toScreenY(thisInternal.centerY);
-
-							double scale=cam.scaleWorldDistY(expsetting.scale1);
-							g.setColor(Color.BLACK);
-							boolean hasLastCoord=false;
-							int lastX=0, lastYAbove=0, lastYBelow=0;
-							for(Map.Entry<EvDecimal, Double> ve:nucexp.level.entrySet())
-								{
-								int dy=(int)Math.round(ve.getValue()*scale);
-								int yAbove=-dy+thisMidY;
-								int yBelow=+dy+thisMidY;
-								int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
-								if(hasLastCoord)
-									g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{lastYBelow,lastYAbove,yAbove,yBelow}, 4);
-								hasLastCoord=true;
-								lastX=x;
-								lastYAbove=yAbove;
-								lastYBelow=yBelow;
-								}
-
-
-							}
-						};
-					thisDrawNode.addSubNode(drawExpNode);
-					}
-				else if(expsetting.type==ExpRenderSetting.typeColorIntensity)
-					{
-					HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,thisInternal.centerY-2,x2,thisInternal.centerY+2)
-						{
-						public void paint(Graphics g, double width, double height, Camera cam)
-							{
-							int thisMidY=cam.toScreenY(thisInternal.centerY);
-							//int thisStartX=cam.toScreenX(thisInternal.startX);
-							//int thisEndX=cam.toScreenX(thisInternal.endX);
-							
-							float scale=(float)(double)expsetting.scale1;
-							float colR=(float)expsetting.color.getRedDouble();
-							float colG=(float)expsetting.color.getGreenDouble();
-							float colB=(float)expsetting.color.getBlueDouble();
-							
-							boolean hasLastCoord=false;
-							int lastX=0;
-							for(Map.Entry<EvDecimal, Double> ve:nucexp.level.entrySet())
-								{
-								int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
-								double level=ve.getValue()*scale;
-								Color nextCol=new Color(clamp01((float)(colR*level)),clamp01((float)(colG*level)),clamp01((float)(colB*level)));
-								g.setColor(nextCol);
-								if(hasLastCoord)
-									g.drawLine(lastX, thisMidY, x, thisMidY);
-								hasLastCoord=true;
-								lastX=x;
-								}
-							
-							
-							}
-						};
-					thisDrawNode.addSubNode(drawExpNode);
-					}
-				else if(expsetting.type==ExpRenderSetting.typeTimeDev)
-					{
-					//bounds TODO
-					HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,thisInternal.centerY-5,x2,thisInternal.centerY+5)
-						{
-						public void paint(Graphics g, double width, double height, Camera cam)
-							{
-							int thisMidY=cam.toScreenY(thisInternal.centerY);
-							//int thisStartX=cam.toScreenX(thisInternal.startX);
-							int thisEndX=cam.toScreenX(thisInternal.endX);
-							
-							int y1=thisMidY+expanderSize+2;
-							int y2=y1-1;
-
-							double level=cam.scaleWorldDistX(nucexp.level.get(nucexp.level.firstKey()));
-							
-							int x1=thisEndX-(int)level;
-							int x2=thisEndX+(int)level;
-
-							g.setColor(expsetting.color.getAWTColor());
-							g.drawLine(x1, y1, x2, y1);
-							g.drawLine(x1, y1, x1, y2);
-							g.drawLine(x2, y1, x2, y2);
-							}
-						};
-					thisDrawNode.addSubNode(drawExpNode);
-					}
-				}
-
+			//This value should not be used
+			return -1;
 			}
-		
-		
-		parentDrawNode.addSubNode(thisDrawNode);
-		return y2;
+		else
+			{
+			alreadyLayout.add(nucName);
+			
+			final ParticleState thisInternal=linstate.getParticleState(nucName);
+			final Lineage.Particle nuc=lin.particle.get(nucName);
+
+			HierarchicalPainter.DrawNodeContainer thisDrawNode=new HierarchicalPainter.DrawNodeContainer();
+
+			double y1=displacement;
+			
+			//Total width of children. 0 if none expanded
+			double curChildOffset=displacement;
+			
+			final double fontHeightAvailable;
+			
+			//Check which children are left to be given a layout
+			final TreeSet<String> childrenToLayout=new TreeSet<String>();
+			for(String childName:nuc.child)
+				if(!alreadyLayout.contains(childName))
+					childrenToLayout.add(childName);
+				else
+					//Layout these right away
+					layoutTreeRecursive(lin, nucName, childName, linstate, 0, null, alreadyLayout, topNode);
+
+			//Only recurse if children are visible
+			if(thisInternal.isExpanded && !childrenToLayout.isEmpty())
+				{
+				//Sum up total width for children
+				for(String childName:nuc.child)
+					{
+					double newDisp=layoutTreeRecursive(lin, nucName, childName,linstate, curChildOffset, thisDrawNode, alreadyLayout, topNode);
+					curChildOffset=newDisp;
+					}
+				
+				//Set displacement of this node
+				if(childrenToLayout.size()==1)
+					{
+					thisInternal.centerY=linstate.particleState.get(nuc.child.first()).centerY+sizeOfBranch/2;
+					curChildOffset+=sizeOfBranch/2;
+					
+					fontHeightAvailable=sizeOfBranch;
+					}
+				else
+					{
+					//Use the average
+					double sum=0;
+					double miny=Double.MAX_VALUE;
+					double maxy=Double.MIN_VALUE;
+					for(String cName:childrenToLayout)
+						{
+						ParticleState cInternal=linstate.particleState.get(cName);
+						if(cInternal.centerY<miny) miny=cInternal.centerY;
+						if(cInternal.centerY>maxy) maxy=cInternal.centerY;
+						sum+=cInternal.centerY;
+						}
+					thisInternal.centerY=sum/childrenToLayout.size();
+					fontHeightAvailable=maxy-miny;
+					}
+				
+				}
+			else
+				{
+				thisInternal.centerY=curChildOffset+sizeOfBranch/2;
+				curChildOffset+=sizeOfBranch;
+				fontHeightAvailable=sizeOfBranch;
+				}
+			double y2=curChildOffset;
+			
+			EvDecimal firstFrame=nuc.getFirstFrame();
+			double x1;
+			if(firstFrame!=null)
+				x1=firstFrame.doubleValue();
+			else
+				{
+				if(nuc.parents.isEmpty())
+					x1=0;
+				else
+					{
+					//Better than nothing
+					x1=0;
+					for(String pname:nuc.parents)
+						{
+						double test=linstate.getParticleState(pname).endX+60; //Better than nothing
+						if(x1<test)
+							x1=test;
+						}
+					}
+				}
+
+			
+			EvDecimal lastFrame=nuc.getLastFrame();
+			double x2;
+			if(lastFrame!=null)
+				x2=lastFrame.doubleValue();
+			else
+				x2=x1+60; //Better than nothing
+			
+			thisInternal.endX=x2;
+			thisInternal.startX=x1;
+
+			
+			/////////// need to extend x2 here to children start pos that is furthest away ////////////////
+			
+			//Attach a renderer of this branch
+			final LineageSelParticle nucsel=new LineageSelParticle(lin,nucName);
+			HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2){
+				public void paint(Graphics g, double width, double height, Camera cam)
+					{
+					int spaceAvailable=cam.toScreenY(fontHeightAvailable)-cam.toScreenY(0);
+
+					int thisMidY=cam.toScreenY(thisInternal.centerY);
+					int thisStartX=cam.toScreenX(thisInternal.startX);
+					int thisEndX=cam.toScreenX(thisInternal.endX);
+
+					//Line and keyframes
+					if(nuc.color!=null)
+						g.setColor(nuc.color);
+					else
+						g.setColor(Color.black);
+					g.drawLine(thisStartX, thisMidY, thisEndX, thisMidY);
+					if(nuc.getLastFrame()==null)
+						drawParticleExtendsToInfinity(g, thisEndX, thisMidY);				
+					g.setColor(Color.black);
+					if(getShowKeyFrames())
+						{
+						//Possible to optimize, but not by much
+						for(EvDecimal frame:nuc.pos.keySet())
+							drawKeyFrame(g, cam.toScreenX(frame.doubleValue()), thisMidY, nucsel.snd(), frame);
+						}
+
+					if(getShowEvents())
+						{
+						g.setColor(new Color(0,128,0));
+						for(EvDecimal frame:nuc.events.keySet())
+							{
+							int posX=cam.toScreenX(frame.doubleValue());
+							g.drawLine(posX, thisMidY, posX, thisMidY+10);
+							g.drawString(nuc.events.get(frame), posX, thisMidY+20);
+							}
+						}
+					
+					
+					//Lines to children
+					if(thisInternal.isExpanded)
+						{
+						for(String cname:childrenToLayout)
+							{
+							ParticleState cstate=linstate.getParticleState(cname);
+							int cStartX=cam.toScreenX(cstate.startX);
+							int cStartY=cam.toScreenY(cstate.centerY);
+							g.drawLine(thisEndX, thisMidY, cStartX, cStartY);
+							}
+						}
+					if(!nuc.child.isEmpty())
+						{
+						drawExpanderSymbol(g, nucName, thisEndX, thisMidY, thisInternal.isExpanded, spaceAvailable);
+						}
+					
+					
+					//Label
+					if(getShowLabel())
+						{
+						boolean canDrawLabel=true;
+						if(spaceAvailable<16)
+							canDrawLabel=false;
+						if(canDrawLabel)
+							drawNucName(g, "", nucsel, thisMidY, thisEndX);
+						else
+							drawNucNameUnexpanded(g, "", nucsel, thisMidY, thisEndX);
+						}
+
+					}
+			};
+			thisDrawNode.addSubNode(newnode);
+
+			
+			for(final ExpRenderSetting expsetting:listExpRenderSettings)
+				{
+				final LineageExp nucexp=nuc.exp.get(expsetting.expname1);
+				//System.out.println("get exp "+expsetting.expname1+" "+nucexp);
+				
+				//System.out.println("have "+expsetting.expname1);
+				
+				if(nucexp!=null && !nucexp.level.isEmpty())
+					{
+
+					if(expsetting.type==ExpRenderSetting.typeGraphOnTop)
+						{
+						//TODO bounds
+						HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2)
+							{
+							public void paint(Graphics g, double width, double height, Camera cam)
+								{
+								int thisMidY=cam.toScreenY(thisInternal.centerY);
+
+								double scale=cam.scaleWorldDistY(expsetting.scale1);
+								g.setColor(expsetting.color.getAWTColor());
+								boolean hasLastCoord=false;
+								int lastX=0, lastYAbove=0;
+								for(Map.Entry<EvDecimal, Double> ve:nucexp.level.entrySet())
+									{
+									int yAbove=(int)(-ve.getValue()*scale+thisMidY);
+									//int yBelow=(int)(+ve.getValue()*scale+thisMidY);
+									int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
+									if(hasLastCoord)
+										{
+										if(showExpLine)
+											g.drawLine(lastX, lastYAbove, x, yAbove);
+										if(showExpSolid)
+											g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{thisMidY,lastYAbove,yAbove,thisMidY}, 4);
+										}
+									if(showExpDot)
+										g.drawRect(x-expDotSize, yAbove-expDotSize, 2*expDotSize, 2*expDotSize);
+									hasLastCoord=true;
+									lastX=x;
+									lastYAbove=yAbove;
+									}
+
+
+								}
+							};
+						thisDrawNode.addSubNode(drawExpNode);
+						}
+					else if(expsetting.type==ExpRenderSetting.typeLineThickness)
+						{
+						
+						//TODO bounds
+						HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2)
+							{
+							public void paint(Graphics g, double width, double height, Camera cam)
+								{
+								int thisMidY=cam.toScreenY(thisInternal.centerY);
+
+								double scale=cam.scaleWorldDistY(expsetting.scale1);
+								g.setColor(Color.BLACK);
+								boolean hasLastCoord=false;
+								int lastX=0, lastYAbove=0, lastYBelow=0;
+								for(Map.Entry<EvDecimal, Double> ve:nucexp.level.entrySet())
+									{
+									int dy=(int)Math.round(ve.getValue()*scale);
+									int yAbove=-dy+thisMidY;
+									int yBelow=+dy+thisMidY;
+									int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
+									if(hasLastCoord)
+										g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{lastYBelow,lastYAbove,yAbove,yBelow}, 4);
+									hasLastCoord=true;
+									lastX=x;
+									lastYAbove=yAbove;
+									lastYBelow=yBelow;
+									}
+
+
+								}
+							};
+						thisDrawNode.addSubNode(drawExpNode);
+						}
+					else if(expsetting.type==ExpRenderSetting.typeColorIntensity)
+						{
+						HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,thisInternal.centerY-2,x2,thisInternal.centerY+2)
+							{
+							public void paint(Graphics g, double width, double height, Camera cam)
+								{
+								int thisMidY=cam.toScreenY(thisInternal.centerY);
+								//int thisStartX=cam.toScreenX(thisInternal.startX);
+								//int thisEndX=cam.toScreenX(thisInternal.endX);
+								
+								float scale=(float)(double)expsetting.scale1;
+								float colR=(float)expsetting.color.getRedDouble();
+								float colG=(float)expsetting.color.getGreenDouble();
+								float colB=(float)expsetting.color.getBlueDouble();
+								
+								boolean hasLastCoord=false;
+								int lastX=0;
+								for(Map.Entry<EvDecimal, Double> ve:nucexp.level.entrySet())
+									{
+									int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
+									double level=ve.getValue()*scale;
+									Color nextCol=new Color(clamp01((float)(colR*level)),clamp01((float)(colG*level)),clamp01((float)(colB*level)));
+									g.setColor(nextCol);
+									if(hasLastCoord)
+										g.drawLine(lastX, thisMidY, x, thisMidY);
+									hasLastCoord=true;
+									lastX=x;
+									}
+								
+								
+								}
+							};
+						thisDrawNode.addSubNode(drawExpNode);
+						}
+					else if(expsetting.type==ExpRenderSetting.typeTimeDev)
+						{
+						//bounds TODO
+						HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,thisInternal.centerY-5,x2,thisInternal.centerY+5)
+							{
+							public void paint(Graphics g, double width, double height, Camera cam)
+								{
+								int thisMidY=cam.toScreenY(thisInternal.centerY);
+								//int thisStartX=cam.toScreenX(thisInternal.startX);
+								int thisEndX=cam.toScreenX(thisInternal.endX);
+								
+								int y1=thisMidY+expanderSize+2;
+								int y2=y1-1;
+
+								double level=cam.scaleWorldDistX(nucexp.level.get(nucexp.level.firstKey()));
+								
+								int x1=thisEndX-(int)level;
+								int x2=thisEndX+(int)level;
+
+								g.setColor(expsetting.color.getAWTColor());
+								g.drawLine(x1, y1, x2, y1);
+								g.drawLine(x1, y1, x1, y2);
+								g.drawLine(x2, y1, x2, y2);
+								}
+							};
+						thisDrawNode.addSubNode(drawExpNode);
+						}
+					}
+
+				}
+			
+			
+			parentDrawNode.addSubNode(thisDrawNode);
+			return y2;
+			}
 		}
 	
 	public static float clamp01(float x)

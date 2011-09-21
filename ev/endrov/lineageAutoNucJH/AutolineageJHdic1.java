@@ -44,9 +44,9 @@ import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.line.EvLine;
+import endrov.lineage.Lineage;
 import endrov.lineageImage.LineagingAlgorithm;
 import endrov.lineageImage.LineagingAlgorithm.LineageAlgorithmDef;
-import endrov.particle.Lineage;
 import endrov.shell.Shell;
 import endrov.util.*;
 
@@ -1064,7 +1064,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 					{
 					Tuple<String,Lineage.Particle> child=createNucleusFromCandidate(lin, currentFrame, cand);
 					parentNuc.child.add(child.fst());
-					child.snd().parent=parentName;
+					child.snd().parents.add(parentName);
 					}
 				}
 			}
@@ -1361,8 +1361,9 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 				if(nuc.pos.isEmpty())
 					{
 					toRemove.add(name);
-					if(nuc.parent!=null)
-						lin.particle.get(nuc.parent).child.remove(name);
+					//TODO not sure if this is right
+					if(!nuc.parents.isEmpty())
+						lin.particle.get(nuc.parents.iterator().next()).child.remove(name);
 					}
 				}
 			for(String name:toRemove)

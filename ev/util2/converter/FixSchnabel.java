@@ -11,7 +11,7 @@ import java.util.*;
 
 import endrov.data.*;
 import endrov.ev.*;
-import endrov.particle.Lineage;
+import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 
 

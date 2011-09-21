@@ -13,9 +13,9 @@ import javax.vecmath.*;
 import endrov.basicWindow.*;
 import endrov.data.EvSelection;
 import endrov.imageWindow.*;
-import endrov.particle.LineageCommonUI;
-import endrov.particle.Lineage;
-import endrov.particle.LineageSelParticle;
+import endrov.lineage.Lineage;
+import endrov.lineage.LineageCommonUI;
+import endrov.lineage.LineageSelParticle;
 import endrov.undo.UndoOpBasic;
 import endrov.util.EvDecimal;
 
@@ -123,7 +123,7 @@ public class LineageImageRenderer implements ImageWindowRenderer
 			hasReallyModified=false;
 			final Lineage lin=modifyingParticleSelected.fst();
 			final String name=modifyingParticleSelected.snd();
-			final Lineage.Particle currentNuc=modifyingParticleSelected.getNuc().clone();
+			final Lineage.Particle currentNuc=modifyingParticleSelected.getParticle().clone();
 			final Lineage.Particle lastNuc=modifiedParticle; 
 	
 			new UndoOpBasic("Modify keyframe for "+modifyingParticleSelected.snd())
@@ -180,10 +180,10 @@ public class LineageImageRenderer implements ImageWindowRenderer
 			
 			//Draw division lines
 			g.setColor(Color.YELLOW);
-			EvDecimal lastFrame=sel.getNuc().pos.lastKey();
+			EvDecimal lastFrame=sel.getParticle().pos.lastKey();
 			if(lastFrame!=null && lastFrame.lessEqual(currentFrame))
 				{
-				for(String child:sel.getNuc().child)
+				for(String child:sel.getParticle().child)
 					{
 					Lineage.Particle nchild=sel.fst().particle.get(child);
 					if(!nchild.pos.isEmpty())
@@ -254,7 +254,7 @@ public class LineageImageRenderer implements ImageWindowRenderer
 				if(LineageCommonUI.currentHover.equals(sel) || EvSelection.isSelected(sel))
 					{
 					String showString=nucName;
-					String eventName=sel.getNuc().events.get(currentFrame);
+					String eventName=sel.getParticle().events.get(currentFrame);
 					if(eventName!=null)
 						showString+=" ("+eventName+")";
 					

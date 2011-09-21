@@ -18,7 +18,7 @@ import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
 import endrov.frameTime.FrameTime;
-import endrov.particle.Lineage;
+import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 
