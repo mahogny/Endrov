@@ -1,11 +1,11 @@
-package endrov.worms;
+package endrov.worms.javier;
 
 import endrov.tesselation.PolygonRasterizer;
 import endrov.tesselation.utils.Line;
 import endrov.util.ImVector2;
 import endrov.util.Vector2i;
 import endrov.util.curves.EvCardinalSpline;
-import endrov.worms.skeleton.WormSkeleton;
+import endrov.worms.javier.skeleton.WormSkeleton;
 
 import java.util.ArrayList;
 import java.util.Iterator;

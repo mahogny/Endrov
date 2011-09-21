@@ -1,4 +1,4 @@
-package endrov.worms.fit;
+package endrov.worms.javier.fit;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,10 +8,10 @@ import java.util.Iterator;
 //import endrov.quickhull3d.Vector3d;
 import javax.vecmath.Vector3d;
 import endrov.util.Vector2i;
-import endrov.worms.WormPixelMatcher;
-import endrov.worms.WormShape;
-import endrov.worms.skeleton.WormClusterSkeleton;
-import endrov.worms.utils.greedyNonBipartiteAssignment;
+import endrov.worms.javier.WormPixelMatcher;
+import endrov.worms.javier.WormShape;
+import endrov.worms.javier.skeleton.WormClusterSkeleton;
+import endrov.worms.javier.utils.GreedyNonBipartiteAssignment;
 
 
 /**
@@ -105,7 +105,7 @@ public class WormFitUtils
 		Vector3d match;
 		Integer secondBase;
 		int base;
-		int shapeIndex;
+		//int shapeIndex;
 		for (int i = 0; i<conflictingBases.size(); i++)
 			{
 			base = conflictingBases.get(i);
@@ -119,7 +119,7 @@ public class WormFitUtils
 			while (it3.hasNext())
 				{
 				match = it3.next();
-				shapeIndex = (int) match.z;
+				//shapeIndex = (int) match.z;
 				secondBase = baseHash.get((int) match.x);
 				// Discard paths that reach non conflicting bases
 				if (secondBase==null)
@@ -130,13 +130,14 @@ public class WormFitUtils
 				}
 			}
 
-		ArrayList<Vector2i> bestAssignment = greedyNonBipartiteAssignment
+		ArrayList<Vector2i> bestAssignment = GreedyNonBipartiteAssignment
 				.findBestAssignment(matchMatrix);
 		// System.out.println("Best Assignment WAS)");
+		/*
 		for (Vector2i v : bestAssignment)
 			{
-			// System.out.println(v);
-			}
+			 System.out.println(v);
+			}*/
 
 		Iterator<Vector2i> bit = bestAssignment.iterator();
 		Vector2i assignment;
@@ -243,23 +244,19 @@ public class WormFitUtils
 			}
 
 		bit = bases.iterator();
-		HashSet basePaths = new HashSet<Integer>();
+		HashSet<Integer> basePaths = new HashSet<Integer>();
 		while (bit.hasNext())
 			{
 			base = bit.next();
 			basePaths = pathsPerBase.get(base);
 			if (basePaths==null)
 				continue;
-			// If there are more than 1 path for a base point add all the involved
-			// bases
+			// If there are more than 1 path for a base point add all the involved bases
 			if (basePaths.size()>1)
 				{
-
 				Iterator<Integer> pit = basePaths.iterator();
 				while (pit.hasNext())
-					{
 					conflictingBases.add(pit.next());
-					}
 				conflictingBases.add(base);
 				}
 			}

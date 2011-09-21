@@ -1,4 +1,4 @@
-package endrov.worms;
+package endrov.worms.javier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +11,8 @@ import com.graphbuilder.curve.Point;
 
 import endrov.tesselation.PolygonRasterizer;
 import endrov.util.curves.EvCardinalSpline;
-import endrov.worms.skeleton.SkeletonUtils;
-import endrov.worms.skeleton.WormSkeleton;
+import endrov.worms.javier.skeleton.SkeletonUtils;
+import endrov.worms.javier.skeleton.WormSkeleton;
 
 /**
  * Defines a worm shape as the contour and area of the shape.
@@ -22,15 +22,13 @@ import endrov.worms.skeleton.WormSkeleton;
 
 public class WormShape
 	{
-
 	ArrayList<Integer> wormContour;
 	ArrayList<Integer> wormArea;
 	WormPixelMatcher wpm;
 	boolean[] isContourPoint;
 	boolean[] isWormArea;
 
-	public WormShape(ArrayList<Integer> wormContour, ArrayList<Integer> wormArea,
-			WormPixelMatcher wpm, int[] dtArray)
+	public WormShape(ArrayList<Integer> wormContour, ArrayList<Integer> wormArea,	WormPixelMatcher wpm, int[] dtArray)
 		{
 		if (wormArea==null)
 			this.wormArea = new ArrayList<Integer>();
@@ -46,10 +44,8 @@ public class WormShape
 			}
 
 		this.wpm = wpm;
-		this.isContourPoint = SkeletonUtils.listToMatrix(wpm.getH()*wpm.getW(),
-				wormContour);
-		this.isWormArea = SkeletonUtils.listToMatrix(wpm.getH()*wpm.getW(),
-				wormArea);
+		this.isContourPoint = SkeletonUtils.listToMatrix(wpm.getH()*wpm.getW(),	wormContour);
+		this.isWormArea = SkeletonUtils.listToMatrix(wpm.getH()*wpm.getW(),	wormArea);
 		}
 
 	/**
@@ -66,8 +62,7 @@ public class WormShape
 		if (contourGiven)
 			{
 			wormContour = new ArrayList<Integer>(wormPoints);
-			isContourPoint = SkeletonUtils.listToMatrix(wpm.getH()*wpm.getW(),
-					wormContour);
+			isContourPoint = SkeletonUtils.listToMatrix(wpm.getH()*wpm.getW(), wormContour);
 
 			double[] srs =
 				{ 2.0, 1.5, 1.0 };
@@ -126,8 +121,7 @@ public class WormShape
 			wormArea = new ArrayList<Integer>(wormPoints);
 			isWormArea = SkeletonUtils.listToMatrix(wpm.getH()*wpm.getW(), wormArea);
 			wormContour = contourFromArea(wormArea, isWormArea, wpm);
-			isContourPoint = SkeletonUtils.listToMatrix(wpm.getH()*wpm.getW(),
-					wormContour);
+			isContourPoint = SkeletonUtils.listToMatrix(wpm.getH()*wpm.getW(), wormContour);
 			}
 
 		}
@@ -258,16 +252,14 @@ public class WormShape
 	 * Returns the pixels belonging to the area of the worm defined
 	 * by the calling worm descriptor
 	 */
-	public static ArrayList<Integer> rasterizeWorm(
-			ArrayList<Integer> wormContour, WormPixelMatcher wpm)
+	public static ArrayList<Integer> rasterizeWorm(ArrayList<Integer> wormContour, WormPixelMatcher wpm)
 		{
 		ArrayList<Vector2d> tpv = wpm.pixelListToVector2d(wormContour);
 		ArrayList<Integer> area = PolygonRasterizer.rasterize(wpm.w, wpm.h, tpv);
 		return area;
 		}
 
-	private static ArrayList<Point> getSubList(ArrayList<Point> pointList,
-			int init, int end)
+	private static ArrayList<Point> getSubList(ArrayList<Point> pointList,	int init, int end)
 		{
 		Iterator<Point> pit = pointList.iterator();
 		ArrayList<Point> sub = new ArrayList<Point>();

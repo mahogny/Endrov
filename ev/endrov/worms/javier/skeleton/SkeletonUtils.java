@@ -1,4 +1,4 @@
-package endrov.worms.skeleton;
+package endrov.worms.javier.skeleton;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,7 +6,7 @@ import java.util.Iterator;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.util.Vector2i;
-import endrov.worms.WormPixelMatcher;
+import endrov.worms.javier.WormPixelMatcher;
 
 /**
  * Utils for morphological skeleton calculation and associated information
@@ -130,8 +130,7 @@ public class SkeletonUtils
 	 */
 	public static EvPixels buildImage(EvPixels input, ArrayList<Integer> points)
 		{
-		EvPixels skImage = new EvPixels(EvPixelsType.INT, input.getWidth(), input
-				.getHeight());
+		EvPixels skImage = new EvPixels(EvPixelsType.INT, input.getWidth(), input.getHeight());
 		int[] skArray = skImage.getArrayInt();
 
 		Iterator<Integer> it = points.iterator();
@@ -473,6 +472,7 @@ public class SkeletonUtils
 		 */
 		}
 
+	//TODO unused
 	private static int trackSkeleton(int pixel, boolean[] isSkPoint, int w)
 		{
 		isSkPoint[pixel] = false;

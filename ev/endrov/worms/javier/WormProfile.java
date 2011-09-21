@@ -1,4 +1,4 @@
-package endrov.worms;
+package endrov.worms.javier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,8 +12,8 @@ import endrov.tesselation.utils.Line;
 import endrov.util.ImVector2;
 import endrov.util.Vector2i;
 import endrov.util.curves.EvCardinalSpline;
-import endrov.worms.skeleton.SkeletonUtils;
-import endrov.worms.skeleton.WormSkeleton;
+import endrov.worms.javier.skeleton.SkeletonUtils;
+import endrov.worms.javier.skeleton.WormSkeleton;
 
 /**
  * Defines a numerical profile of a worm shape

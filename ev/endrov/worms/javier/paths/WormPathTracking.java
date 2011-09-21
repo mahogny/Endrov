@@ -1,4 +1,4 @@
-package endrov.worms.paths;
+package endrov.worms.javier.paths;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,10 +7,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import endrov.util.Vector2i;
-import endrov.worms.WormPixelMatcher;
-import endrov.worms.skeleton.SkeletonUtils;
-import endrov.worms.skeleton.WormClusterSkeleton;
-import endrov.worms.skeleton.WormSkeleton;
+import endrov.worms.javier.WormPixelMatcher;
+import endrov.worms.javier.skeleton.SkeletonUtils;
+import endrov.worms.javier.skeleton.WormClusterSkeleton;
+import endrov.worms.javier.skeleton.WormSkeleton;
 
 /**
  * Set of tools for tracking and analysis of paths belonging to worm skeletons.
