@@ -48,7 +48,7 @@ public class Main
 		{
 		try
 			{
-			File zip=new File("../ev081225.zip");
+			File zip=null;
 			if(args.length==1)
 				zip=new File(args[0]);
 			else
@@ -98,7 +98,8 @@ public class Main
 			dShareApplications.mkdirs();
 			
 			//Extract files
-			System.out.println("unzipping");
+			System.out.println("unzipping "+zip.getPath());
+			dZipTemp.mkdirs();
 			Process proc=Runtime.getRuntime().exec(new String[]{"/usr/bin/unzip",zip.getPath(),"-d",dZipTemp.getPath()});
 			BufferedReader os=new BufferedReader(new InputStreamReader(proc.getInputStream()));
 			while(os.readLine()!=null);
@@ -109,7 +110,7 @@ public class Main
 			
 			
 			
-			System.out.println("Moving into place");
+			System.out.println("Moving into place, "+dZipTemp.listFiles()[0]+" ---> "+dEndrov);
 			dZipTemp.listFiles()[0].renameTo(dEndrov);
 			new File(dEndrov,"docs").renameTo(new File(dShareDoc,"endrov"));
 			copyFile(new File(dRes,"endrov.1"), new File(dMan,"endrov.1"));

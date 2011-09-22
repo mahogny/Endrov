@@ -28,6 +28,7 @@ rm -Rf libs/unused
 cd ..
 rm $name.zip
 zip -r $name $name
+mkdirs -p release/
 mv $name.zip release/
 
 #linecount
@@ -48,4 +49,4 @@ echo ""
 rm -Rf $name
 
 cd ev
-java util.debian.Main ../$name.zip
+java util.debian.Main ../release/$name.zip
