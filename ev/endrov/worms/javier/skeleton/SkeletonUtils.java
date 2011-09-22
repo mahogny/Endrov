@@ -473,7 +473,7 @@ public class SkeletonUtils
 		}
 
 	//TODO unused
-	private static int trackSkeleton(int pixel, boolean[] isSkPoint, int w)
+	public static int trackSkeleton(int pixel, boolean[] isSkPoint, int w)
 		{
 		isSkPoint[pixel] = false;
 		int[] neigh = getCircularNeighbors(pixel, w);

@@ -207,7 +207,8 @@ public final class WormClusterSkeleton extends Skeleton
 	 * cluster following the directional neighbors starting from the given base
 	 * points.
 	 */
-	private ArrayList<ArrayList<Integer>> getAppWormPaths()
+	//TODO never used
+	public ArrayList<ArrayList<Integer>> getAppWormPaths()
 		{
 		ArrayList<Integer> baseCopy = new ArrayList<Integer>(basePoints);
 		Iterator<Integer> bIt = baseCopy.iterator();

@@ -86,7 +86,7 @@ public class GreedyNonBipartiteAssignment
 		}
 
 	//TODO never used
-	private static ArrayList<Vector2i> turningProcessing(double[][] matchMatrix,
+	public static ArrayList<Vector2i> turningProcessing(double[][] matchMatrix,
 			int row)
 		{
 		int loop = matchMatrix.length-1;

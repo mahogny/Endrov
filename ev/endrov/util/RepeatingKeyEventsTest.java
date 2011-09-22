@@ -12,6 +12,8 @@ import com.sun.javafx.newt.MouseListener;
 
 public class RepeatingKeyEventsTest extends JFrame implements KeyListener, MouseListener
 	{
+	private static final long serialVersionUID = 1L;
+
 	public RepeatingKeyEventsTest()
 		{
 		add(new JLabel("foo"));

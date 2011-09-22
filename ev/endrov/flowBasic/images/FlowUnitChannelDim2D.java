@@ -22,7 +22,6 @@ import endrov.imageset.AnyEvImage;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
-import endrov.util.ProgressHandle;
 import endrov.util.Vector2i;
 
 /**
