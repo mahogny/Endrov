@@ -57,12 +57,17 @@ public class EvOpCalcEuler
 		fillEulerLUT26(eulerLUT);
 		}
 	
+	public static class Result
+		{
+		double deltaChi;
+		double connectivity;
+		}
 	
 	/**
 	 * Calculate euler characteristic for the only object.
 	 * TODO Modify code to do this for a given object, or do it for all objects?
 	 */
-	public static void apply(ProgressHandle progh, EvStack in)
+	public static Result apply(ProgressHandle progh, EvStack in)
 		{
 		//Make sure values are in the right format directly, less overhead
 		double[][] stack=in.getReadOnlyArraysDouble(progh);
@@ -85,8 +90,11 @@ public class EvOpCalcEuler
 		sumEuler /= 8; // deltaEuler values in LUT are 8*true value for clarity
 		//JH comment: double sounds insane for precision. should use int?
 		
-		double deltaChi = sumEuler-correctForEdges(stack, width, height, depth);
-		double connectivity = 1-deltaChi;
+		Result r=new Result();
+		r.deltaChi = sumEuler-correctForEdges(stack, width, height, depth);
+		r.connectivity = 1-r.deltaChi;
+		
+		return r;
 
 		/*
 		ResultsTable rt = ResultsTable.getResultsTable();

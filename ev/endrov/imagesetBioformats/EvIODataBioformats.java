@@ -168,7 +168,7 @@ public class EvIODataBioformats implements EvIOData
 	*/
 
 	
-	
+	/*
 	@SuppressWarnings("deprecation")
 	private static EvDecimal parseBFDate(String s)
 		{
@@ -191,6 +191,7 @@ public class EvIODataBioformats implements EvIOData
 			return null;
 			}
 		}
+		*/
 	
 	/**
 	 * Scan recording for channels and build a file database

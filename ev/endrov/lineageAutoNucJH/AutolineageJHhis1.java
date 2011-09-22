@@ -76,7 +76,7 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 	 * @author Johan Henriksson
 	 *
 	 */
-	private static class Algo implements LineagingAlgorithm
+	public static class Algo implements LineagingAlgorithm
 		{
 		private EvComboObjectOne<EvChannel> comboChanHis=new EvComboObjectOne<EvChannel>(new EvChannel(), false, false);
 		private EvComboObjectOne<Shell> comboShell=new EvComboObjectOne<Shell>(new Shell(), false, false);
@@ -310,6 +310,7 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 		 * Generate candidate division pairs as the Delaunay edges. 
 		 * Turns out to be hypersensitive to false positives.
 		 */
+		
 		public LinkedList<CandDivPair> generateCandDivVoronoi(List<Candidate> candlist)
 			{
 			LinkedList<CandDivPair> pairs=new LinkedList<CandDivPair>();
@@ -338,6 +339,7 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 				}
 			return pairs;
 			}
+			
 		
 		
 		/**

@@ -113,8 +113,8 @@ public class Thinning
 		int n[];
 		int a, b;
 		Iterator<Integer> it = shapePoints.iterator();
-		double init;
-		double total=0;
+		//double init;
+		//double total=0;
 		
 		// First iteration: remove south-east boundary points and the north-west
 		// corner point

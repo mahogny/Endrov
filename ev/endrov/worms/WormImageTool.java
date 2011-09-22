@@ -16,7 +16,6 @@ import javax.swing.*;
 import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.imageWindow.*;
-import endrov.network.Network;
 import endrov.util.EvDecimal;
 
 /**

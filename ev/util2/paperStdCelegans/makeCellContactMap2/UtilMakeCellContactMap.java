@@ -10,8 +10,6 @@ import java.io.*;
 import java.text.NumberFormat;
 import java.util.*;
 
-import util2.ConnectImserv;
-
 import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.imageset.Imageset;
@@ -141,9 +139,9 @@ public class UtilMakeCellContactMap
 			//bottle neck: building imageset when not needed. fix in Endrov3/OST4
 			
 			///////////
-			System.out.println("Connecting");
-			String url=ConnectImserv.url;
-			String query="not trash and CCM";
+			//System.out.println("Connecting");
+			//String url=ConnectImserv.url;
+			//String query="not trash and CCM";
 			//TODO make a getDataKeysWithTrash, exclude by default?
 			System.out.println("Loading imsets");
 			

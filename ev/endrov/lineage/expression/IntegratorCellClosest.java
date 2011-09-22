@@ -5,7 +5,6 @@
  */
 package endrov.lineage.expression;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -14,10 +13,8 @@ import java.util.TreeSet;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
-import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
 import endrov.lineage.Lineage;
 import endrov.lineage.LineageExp;
 import endrov.lineage.LineageSelParticle;
@@ -174,7 +171,7 @@ public class IntegratorCellClosest implements Integrator
 					}
 				}
 		
-			HashMap<String, Integer> nucMap=new HashMap<String, Integer>();
+			//HashMap<String, Integer> nucMap=new HashMap<String, Integer>();
 			
 			
 			// Integrate this area. Go through all pixels and find nucleus, O(w h d #nuc)

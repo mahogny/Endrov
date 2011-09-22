@@ -91,7 +91,7 @@ public class DataBrowserTreeX extends JXTreeTable implements TreeTableModel
 			}
 		else
 			{
-			EvContainer c=(EvContainer)arg0;
+			//EvContainer c=(EvContainer)arg0;
 //			c.metaObject
 	//TODO		
 			

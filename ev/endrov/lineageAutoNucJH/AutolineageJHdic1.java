@@ -78,7 +78,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 	 * @author Johan Henriksson
 	 *
 	 */
-	private static class Algo implements LineagingAlgorithm
+	public static class Algo implements LineagingAlgorithm
 		{
 		private EvComboObjectOne<EvChannel> comboChanDIC=new EvComboObjectOne<EvChannel>(new EvChannel(), false, false);
 		private EvComboObjectOne<Shell> comboShell=new EvComboObjectOne<Shell>(new Shell(), false, false);

@@ -46,7 +46,7 @@ public class WidgetChooseHardware extends JPanel
 		
 		}
 	
-	private static class EntryWrapper implements Comparable<EntryWrapper>
+	public static class EntryWrapper implements Comparable<EntryWrapper>
 		{
 		public final HardwareMetadata meta;
 		private final String desc;

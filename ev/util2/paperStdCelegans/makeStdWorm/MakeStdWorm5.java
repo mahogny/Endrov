@@ -10,8 +10,6 @@ import java.util.*;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Vector3d;
 
-import util2.ConnectImserv;
-
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.lineage.Lineage;

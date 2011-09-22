@@ -10,14 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import util2.paperCeExpression.compare.CompareAll;
-
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.frameTime.FrameTime;
 import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;

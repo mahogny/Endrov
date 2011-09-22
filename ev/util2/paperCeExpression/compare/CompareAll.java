@@ -573,7 +573,6 @@ public class CompareAll
 	
 	public static Lineage coordLineageFor(EvContainer data)
 		{
-		Lineage lin=null;
 		//Find lineage
 		for(Map.Entry<EvPath, Lineage> e:data.getIdObjectsRecursive(Lineage.class).entrySet())
 			if(!e.getKey().getLeafName().startsWith("AP"))

@@ -117,9 +117,6 @@ public class WormFitStoringUtils
 		{
 		Iterator<WormShape> wit = matchedShapes.iterator();
 		Iterator<Integer> lit;
-		ArrayList<Vector3d> mlist;
-		Vector3d rec;
-		int base;
 
 		File f = new File(filename);
 		FileOutputStream fis = null;
@@ -163,9 +160,6 @@ public class WormFitStoringUtils
 		{
 		Iterator<WormShape> wit = isolatedWorms.iterator();
 		Iterator<Integer> lit;
-		ArrayList<Vector3d> mlist;
-		Vector3d rec;
-		int base;
 
 		File f = new File(filename);
 		FileOutputStream fis = null;
