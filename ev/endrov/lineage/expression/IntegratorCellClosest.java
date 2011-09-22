@@ -464,8 +464,8 @@ public class IntegratorCellClosest implements Integrator
 			
 			
 			//This should only be enabled if the user knows this is fine!
-			if(false)
-				assumeLeastExpressionIsBackground(lin, integrator.expName);
+			//if(false)
+			//	assumeLeastExpressionIsBackground(lin, integrator.expName);
 			}
 
 		}

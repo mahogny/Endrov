@@ -5,7 +5,6 @@
  */
 package endrov.network;
 import endrov.ev.PluginDef;
-import endrov.lineageImage.LineageImageRenderer;
 
 public class PLUGIN extends PluginDef
 	{

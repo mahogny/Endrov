@@ -582,10 +582,8 @@ public class CompareAll
 					System.out.println("!!!!! lineage is null in tree");
 				return e.getValue();
 				}
-//				lin=e.getValue();
-		if(lin!=null)
-			System.out.println("no lineage. got: "+data.getIdObjectsRecursive(Lineage.class).keySet());
-		return lin;
+		System.out.println("no lineage. got: "+data.getIdObjectsRecursive(Lineage.class).keySet());
+		return null;
 		}
 	
 	
