@@ -14,10 +14,8 @@ import util2.ConnectImserv;
 
 import endrov.data.*;
 import endrov.ev.*;
-import endrov.imagesetImserv.EvImserv;
-import endrov.nuc.NucLineage;
-import endrov.nuc.NucSel;
-import endrov.nuc.NucLineage.NucInterp;
+import endrov.lineage.Lineage;
+import endrov.lineage.LineageSelParticle;
 import endrov.util.EvDecimal;
 
 //with OST3+, frametime concept gone, solved
@@ -36,13 +34,16 @@ public class MakeStdWorm5
 	public static boolean saveNormalized=true;
 	public static int NUMTRY=0;
 
-	public static SortedMap<String, NucLineage> lins=new TreeMap<String, NucLineage>();
+	public static SortedMap<String, Lineage> lins=new TreeMap<String, Lineage>();
 	public static NucStats nucstats=new NucStats();
 
 	public static EvDecimal frameInc=new EvDecimal(10); //TODO best value?
 
 	public static void loadSelected() throws Exception
 		{
+		//This function has to be rewritten to use this code again
+		
+		/*
 		System.out.println("Connecting");
 		String url=ConnectImserv.url;
 		String query="not trash and stdworm";
@@ -54,13 +55,13 @@ public class MakeStdWorm5
 			System.out.println("loading "+s);
 			EvData data=EvData.loadFile(url+s);
 			//Imageset im=data.getObjects(Imageset.class).iterator().next();
-			for(NucLineage lin:data.getIdObjectsRecursive(NucLineage.class).values())
-			//for(NucLineage lin:data.getObjects(NucLineage.class))
+			for(Lineage lin:data.getIdObjectsRecursive(Lineage.class).values())
+			//for(Lineage lin:data.getObjects(Lineage.class))
 				{
-				if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
-						lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'") && //these are required for the coord sys
-						(lin.nuc.containsKey("ABal") || lin.nuc.containsKey("ABar")) &&
-						(lin.nuc.containsKey("ABpl") || lin.nuc.containsKey("ABpr"))) //these make sense
+				if(lin.particle.containsKey("ABa") && lin.particle.containsKey("ABp") &&
+						lin.particle.containsKey("EMS") && lin.particle.containsKey("P2'") && //these are required for the coord sys
+						(lin.particle.containsKey("ABal") || lin.particle.containsKey("ABar")) &&
+						(lin.particle.containsKey("ABpl") || lin.particle.containsKey("ABpr"))) //these make sense
 					{
 					lins.put(s, lin); //Limitation: only one lineage per imset allowed
 					System.out.println("ok:"+s);
@@ -68,23 +69,22 @@ public class MakeStdWorm5
 				}
 			}
 		
-		
+		*/
 		}
 	
 	/**
 	 * Copy lineage tree: all names and PC relations. no coordinates
 	 */
-	public static NucLineage copyTree(NucLineage lin)
+	public static Lineage copyTree(Lineage lin)
 		{
-		NucLineage newlin=new NucLineage();
+		Lineage newlin=new Lineage();
 			
-		for(Map.Entry<String, NucLineage.Nuc> e:lin.nuc.entrySet())
+		for(Map.Entry<String, Lineage.Particle> e:lin.particle.entrySet())
 			{
-			NucLineage.Nuc nuc=e.getValue();
-			NucLineage.Nuc newnuc=newlin.getCreateNuc(e.getKey());
-			for(String s:nuc.child)
-				newnuc.child.add(s);
-			newnuc.parent=nuc.parent;
+			Lineage.Particle nuc=e.getValue();
+			Lineage.Particle newnuc=newlin.getCreateParticle(e.getKey());
+			newnuc.child.addAll(nuc.child);
+			newnuc.parents.addAll(nuc.parents);
 			}
 		return newlin;
 		}
@@ -93,17 +93,17 @@ public class MakeStdWorm5
 	/**
 	 * Normalize lineages in terms of size and rotation
 	 */
-	public static TreeMap<String, NucLineage> normalizeRot(SortedMap<String, NucLineage> lins)
+	public static TreeMap<String, Lineage> normalizeRot(SortedMap<String, Lineage> lins)
 		{
 		System.out.println("--- normalize rigidbody ---");
 		double avsize=0;
-		TreeMap<String, NucLineage> newLins=new TreeMap<String, NucLineage>();
-		for(Map.Entry<String, NucLineage> le:lins.entrySet())
+		TreeMap<String, Lineage> newLins=new TreeMap<String, Lineage>();
+		for(Map.Entry<String, Lineage> le:lins.entrySet())
 			{
-			NucLineage lin=le.getValue();
+			Lineage lin=le.getValue();
 			//These define the normalized coord sys
-			if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
-					lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'"))
+			if(lin.particle.containsKey("ABa") && lin.particle.containsKey("ABp") &&
+					lin.particle.containsKey("EMS") && lin.particle.containsKey("P2'"))
 				{
 				//Adjust pos
 				newLins.put(le.getKey(),lin);
@@ -114,8 +114,8 @@ public class MakeStdWorm5
 				rotate3(lin);
 
 				//Adjust radius
-				for(NucLineage.Nuc nuc:lin.nuc.values())
-					for(NucLineage.NucPos pos:nuc.pos.values())
+				for(Lineage.Particle nuc:lin.particle.values())
+					for(Lineage.ParticlePos pos:nuc.pos.values())
 						pos.r/=thisSize;
 				}
 			else
@@ -123,7 +123,7 @@ public class MakeStdWorm5
 			}
 		avsize/=newLins.size();
 		System.out.println("avsize: "+avsize);
-		for(NucLineage lin:newLins.values())
+		for(Lineage lin:newLins.values())
 			{
 			//Pos
 			Matrix3d m=new Matrix3d();
@@ -132,8 +132,8 @@ public class MakeStdWorm5
 			applyMat(lin, m);
 			
 			//Adjust radius
-			for(NucLineage.Nuc nuc:lin.nuc.values())
-				for(NucLineage.NucPos pos:nuc.pos.values())
+			for(Lineage.Particle nuc:lin.particle.values())
+				for(Lineage.ParticlePos pos:nuc.pos.values())
 					pos.r*=avsize;
 			}
 		
@@ -146,20 +146,20 @@ public class MakeStdWorm5
 	 * Normalize lineages in terms of time.
 	 * The duration and start of a cell will match the reference 
 	 */
-	public static SortedMap<String, NucLineage> normalizeT(SortedMap<String, NucLineage> lins)
+	public static SortedMap<String, Lineage> normalizeT(SortedMap<String, Lineage> lins)
 		{
 		System.out.println("--- normalize T");
-		TreeMap<String, NucLineage> newLins=new TreeMap<String, NucLineage>();
-		for(Map.Entry<String, NucLineage> le:lins.entrySet())
+		TreeMap<String, Lineage> newLins=new TreeMap<String, Lineage>();
+		for(Map.Entry<String, Lineage> le:lins.entrySet())
 			{
-			NucLineage lin=le.getValue();
-			NucLineage newlin=copyTree(lin);
+			Lineage lin=le.getValue();
+			Lineage newlin=copyTree(lin);
 			newLins.put(le.getKey(), newlin);
 			
-			for(Map.Entry<String, NucLineage.Nuc> e:lin.nuc.entrySet())
+			for(Map.Entry<String, Lineage.Particle> e:lin.particle.entrySet())
 				{
-				NucLineage.Nuc nuc=e.getValue();
-				NucLineage.Nuc newnuc=newlin.getCreateNuc(e.getKey());
+				Lineage.Particle nuc=e.getValue();
+				Lineage.Particle newnuc=newlin.getCreateParticle(e.getKey());
 				NucStats.NucStatsOne one=nucstats.nuc.get(e.getKey());
 				EvDecimal thisDur;
 				EvDecimal thisFirstFrame=nuc.getFirstFrame();
@@ -175,7 +175,7 @@ public class MakeStdWorm5
 					EvDecimal newFrame=one.lifeStart.add(oneLifeLen.multiply(frame.subtract(thisFirstFrame)).divide(thisDur));
 //					System.out.println("> "+e.getKey()+" "+one.lifeStart+" "+frame+" -> "+newFrame+" // "+one.lifeEnd);
 					
-					NucLineage.NucPos pos=nuc.pos.get(frame);
+					Lineage.ParticlePos pos=nuc.pos.get(frame);
 					newnuc.pos.put(newFrame, pos.clone());
 					}
 				}
@@ -186,11 +186,11 @@ public class MakeStdWorm5
 	/**
 	 * Set end frame of all cells without children to last frame. This stops them from occuring in interpolations.
 	 */
-	public static void endAllCells(SortedMap<String, NucLineage> lins)
+	public static void endAllCells(SortedMap<String, Lineage> lins)
 		{
 		//End all nuc without children for clarity
-		for(NucLineage lin:lins.values())
-			for(NucLineage.Nuc nuc:lin.nuc.values())
+		for(Lineage lin:lins.values())
+			for(Lineage.Particle nuc:lin.particle.values())
 				if(nuc.child.isEmpty() && !nuc.pos.isEmpty())
 					nuc.overrideEnd=nuc.pos.lastKey();
 		}
@@ -198,10 +198,10 @@ public class MakeStdWorm5
 	/**
 	 * Get names of nuclei that appear in an interpolated frame
 	 */
-	public static SortedSet<String> interpNucNames(Map<NucSel, NucLineage.NucInterp> inter)
+	public static SortedSet<String> interpNucNames(Map<LineageSelParticle, Lineage.InterpolatedParticle> inter)
 		{
 		TreeSet<String> names=new TreeSet<String>();
-		for(NucSel p:inter.keySet())
+		for(LineageSelParticle p:inter.keySet())
 			names.add(p.snd());
 		return names;
 		}
@@ -213,23 +213,23 @@ public class MakeStdWorm5
 		{
 		//Collect tree
 		System.out.println("--- collect tree");
-		for(NucLineage lin:lins.values())
+		for(Lineage lin:lins.values())
 			{
 			//Relative time between AB and P1'
 			//Could take child times into account as well to increase resolution
-			if(lin.nuc.containsKey("AB") && lin.nuc.containsKey("P1'"))
-				nucstats.ABPdiff.add(lin.nuc.get("AB").getLastFrame().subtract(lin.nuc.get("P1'").getLastFrame()));
+			if(lin.particle.containsKey("AB") && lin.particle.containsKey("P1'"))
+				nucstats.ABPdiff.add(lin.particle.get("AB").getLastFrame().subtract(lin.particle.get("P1'").getLastFrame()));
 			
 			//Life length and children
-			for(String nucname:lin.nuc.keySet())
+			for(String nucname:lin.particle.keySet())
 				{
-				NucLineage.Nuc nuc=lin.nuc.get(nucname);
+				Lineage.Particle nuc=lin.particle.get(nucname);
 				
 				EvDecimal start=nuc.getFirstFrame();
 				EvDecimal end=nuc.getLastFrame();
 				NucStats.NucStatsOne one=nucstats.get(nucname);
-				if(nuc.parent!=null)
-					one.parent=nuc.parent;
+				if(!nuc.parents.isEmpty())
+					one.parent=nuc.parents.iterator().next();
 
 				//Should only add life time of this cell if it has children, otherwise there is no
 				//guarantee that the length is correct.
@@ -245,11 +245,11 @@ public class MakeStdWorm5
 	/**
 	 * Helper for rigid transform fitter: write transformed coordinates to a lineage object
 	 */
-	public static void writeRigidFitCoord(NucLineage newlin, BestFitRotTransScale bf, NucLineage lin, EvDecimal curframe)
+	public static void writeRigidFitCoord(Lineage newlin, BestFitRotTransScale bf, Lineage lin, EvDecimal curframe)
 		{
 		for(String nucName:bf.lininfo.get(lin).untransformed.keySet())
 			{
-			NucLineage.NucPos npos=newlin.getCreateNuc(nucName).getCreatePos(curframe);
+			Lineage.ParticlePos npos=newlin.getCreateParticle(nucName).getCreatePos(curframe);
 			npos.setPosCopy(bf.lininfo.get(lin).transformed.get(nucName));
 			npos.r=bf.lininfo.get(lin).untransformedR.get(nucName);
 			}
@@ -258,10 +258,10 @@ public class MakeStdWorm5
 	/**
 	 * Find the last keyframe ever mentioned in a lineage object
 	 */
-	public static EvDecimal lastFrameOfLineage(NucLineage lin)
+	public static EvDecimal lastFrameOfLineage(Lineage lin)
 		{
 		EvDecimal maxframe=null;
-		for(NucLineage.Nuc nuc:lin.nuc.values())
+		for(Lineage.Particle nuc:lin.particle.values())
 			{
 			if(maxframe==null || nuc.pos.lastKey().greater(maxframe))
 				maxframe=nuc.pos.lastKey();
@@ -272,10 +272,10 @@ public class MakeStdWorm5
 	/**
 	 * Find the first keyframe ever mentioned in a lineage object
 	 */
-	public static EvDecimal firstFrameOfLineage(NucLineage lin)
+	public static EvDecimal firstFrameOfLineage(Lineage lin)
 		{
 		EvDecimal minframe=null;
-		for(NucLineage.Nuc nuc:lin.nuc.values())
+		for(Lineage.Particle nuc:lin.particle.values())
 			{
 			if(minframe==null || nuc.getFirstFrame().less(minframe))
 				minframe=nuc.getFirstFrame();
@@ -290,16 +290,16 @@ public class MakeStdWorm5
 	public static void rigidFitOverTime() throws Exception
 		{
 		//Choose one lineage for rotation reference
-//		final NucLineage refLin=lins.get("TB2167_0804016.ost");
-		final NucLineage refLin=lins.get("TB2167_080416");
+//		final Lineage refLin=lins.get("TB2167_0804016.ost");
+		final Lineage refLin=lins.get("TB2167_080416");
 		if(refLin==null)
 			throw new Exception("did not find rot ref");
 		final EvDecimal fminframe=firstFrameOfLineage(refLin);
 		final EvDecimal fmaxframe=lastFrameOfLineage(refLin);
 		
 		//Make copies of lineages
-		SortedMap<String,NucLineage> newlin=new TreeMap<String, NucLineage>();
-		for(Map.Entry<String, NucLineage> e:lins.entrySet())
+		SortedMap<String,Lineage> newlin=new TreeMap<String, Lineage>();
+		for(Map.Entry<String, Lineage> e:lins.entrySet())
 			newlin.put(e.getKey(),copyTree(e.getValue()));
 		
 
@@ -311,7 +311,7 @@ public class MakeStdWorm5
 		boolean firstTime=true;
 		
 		//Add lineages
-		for(NucLineage lin:lins.values())
+		for(Lineage lin:lins.values())
 			bf.addLineage(lin);
 		
 		
@@ -323,21 +323,21 @@ public class MakeStdWorm5
 			
 			//Fit
 			bf=new BestFitRotTransScale(bf);
-			for(Map.Entry<String, NucLineage> entry2:lins.entrySet())
+			for(Map.Entry<String, Lineage> entry2:lins.entrySet())
 				{
-				NucLineage lin=entry2.getValue();
+				Lineage lin=entry2.getValue();
 				
 				//Interpolate for this frame
-				Map<NucSel, NucLineage.NucInterp> interp=lin.getInterpNuc(curframe);
+				Map<LineageSelParticle, Lineage.InterpolatedParticle> interp=lin.interpolateParticles(curframe);
 				//Only keep visible nuclei
-				Set<NucSel> visibleNuc=new HashSet<NucSel>();
-				for(Map.Entry<NucSel, NucLineage.NucInterp> e:interp.entrySet())
+				Set<LineageSelParticle> visibleNuc=new HashSet<LineageSelParticle>();
+				for(Map.Entry<LineageSelParticle, Lineage.InterpolatedParticle> e:interp.entrySet())
 					if(e.getValue().isVisible())
 						visibleNuc.add(e.getKey());
 				interp.keySet().retainAll(visibleNuc);
 
 				//Add coordinates
-				for(Map.Entry<NucSel, NucLineage.NucInterp> entry:interp.entrySet())
+				for(Map.Entry<LineageSelParticle, Lineage.InterpolatedParticle> entry:interp.entrySet())
 					{
 					String nucname=entry.getKey().snd();
 					bf.lininfo.get(lin).untransformed.put(nucname, entry.getValue().pos.getPosCopy());
@@ -359,7 +359,7 @@ public class MakeStdWorm5
 				firstBF=new BestFitRotTransScale(bf);
 
 			//Write rotated coordinates
-			for(Map.Entry<String, NucLineage> e:lins.entrySet())
+			for(Map.Entry<String, Lineage> e:lins.entrySet())
 				writeRigidFitCoord(newlin.get(e.getKey()), bf, e.getValue(), curframe);
 			}
 			
@@ -377,7 +377,7 @@ public class MakeStdWorm5
 	 * Assemble model using averaging.
 	 * Calculate variance
 	 */
-	public static void assembleModel(NucLineage refLin)
+	public static void assembleModel(Lineage refLin)
 		{
 		//Fit coordinates
 		EvDecimal maxframe=nucstats.maxFrame();
@@ -388,8 +388,6 @@ public class MakeStdWorm5
 			if(frame.intValue()%100==0)
 				System.out.println(frame);
 
-//			Map<String, NucStatsOne> curnuc=nucstats.getAtFrame(frame);
-//			System.out.println("num ent "+curnuc.size());
 
 			for(Map.Entry<String, NucStats.NucStatsOne> onee:nucstats.nuc.entrySet())
 				{
@@ -448,10 +446,10 @@ public class MakeStdWorm5
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	
-	public static void applyMat(NucLineage lin, Matrix3d m)
+	public static void applyMat(Lineage lin, Matrix3d m)
 		{
-		for(NucLineage.Nuc nuc:lin.nuc.values())
-			for(NucLineage.NucPos pos:nuc.pos.values())
+		for(Lineage.Particle nuc:lin.particle.values())
+			for(Lineage.ParticlePos pos:nuc.pos.values())
 				{
 				Vector3d v=pos.getPosCopy();
 				m.transform(v);
@@ -459,13 +457,13 @@ public class MakeStdWorm5
 				}
 		}
 	
-	public static void center(NucLineage lin)
+	public static void center(Lineage lin)
 		{
-		NucLineage.Nuc nucABa=lin.nuc.get("ABa");
-		NucLineage.NucPos posABa=nucABa.pos.get(nucABa.pos.lastKey());
+		Lineage.Particle nucABa=lin.particle.get("ABa");
+		Lineage.ParticlePos posABa=nucABa.pos.get(nucABa.pos.lastKey());
 		Vector3d sub=new Vector3d(posABa.getPosCopy());
-		for(NucLineage.Nuc nuc:lin.nuc.values())
-			for(NucLineage.NucPos pos:nuc.pos.values())
+		for(Lineage.Particle nuc:lin.particle.values())
+			for(Lineage.ParticlePos pos:nuc.pos.values())
 				{
 				Vector3d v=pos.getPosCopy();
 				v.sub(sub);
@@ -476,13 +474,13 @@ public class MakeStdWorm5
 	
 	
 	
-	public static double rotate1(NucLineage lin)
+	public static double rotate1(Lineage lin)
 		{
-		NucLineage.Nuc nucABa=lin.nuc.get("ABa");
-		NucLineage.Nuc nucP2 =lin.nuc.get("P2'");
+		Lineage.Particle nucABa=lin.particle.get("ABa");
+		Lineage.Particle nucP2 =lin.particle.get("P2'");
 
-		NucLineage.NucPos posABa=nucABa.pos.get(nucABa.pos.lastKey());
-		NucLineage.NucPos posP2 =nucP2.pos.get(nucP2.pos.lastKey());
+		Lineage.ParticlePos posABa=nucABa.pos.get(nucABa.pos.lastKey());
+		Lineage.ParticlePos posP2 =nucP2.pos.get(nucP2.pos.lastKey());
 
 		Vector3d vdir=new Vector3d(posP2.x,posP2.y,posP2.z);
 		vdir.sub(new Vector3d(posABa.x,posABa.y,posABa.z));
@@ -501,12 +499,12 @@ public class MakeStdWorm5
 		
 		return size;
 		}
-	public static void rotate2(NucLineage lin)
+	public static void rotate2(Lineage lin)
 		{
-		NucLineage.Nuc nucABa=lin.nuc.get("ABa");
-		NucLineage.Nuc nucP2 =lin.nuc.get("P2'");
-		NucLineage.NucPos posABa=nucABa.pos.get(nucABa.pos.lastKey());
-		NucLineage.NucPos posP2 =nucP2.pos.get(nucP2.pos.lastKey());
+		Lineage.Particle nucABa=lin.particle.get("ABa");
+		Lineage.Particle nucP2 =lin.particle.get("P2'");
+		Lineage.ParticlePos posABa=nucABa.pos.get(nucABa.pos.lastKey());
+		Lineage.ParticlePos posP2 =nucP2.pos.get(nucP2.pos.lastKey());
 
 		Vector3d vdir=new Vector3d(posP2.x,posP2.y,posP2.z);
 		vdir.sub(new Vector3d(posABa.x,posABa.y,posABa.z));
@@ -519,13 +517,13 @@ public class MakeStdWorm5
 		
 		System.out.println("pos2 "+nucP2.pos.get(nucP2.pos.lastKey()).getPosCopy());
 		}
-	public static void rotate3(NucLineage lin)
+	public static void rotate3(Lineage lin)
 		{
-		NucLineage.Nuc nucABp=lin.nuc.get("ABp");
-		NucLineage.Nuc nucEMS=lin.nuc.get("EMS");
+		Lineage.Particle nucABp=lin.particle.get("ABp");
+		Lineage.Particle nucEMS=lin.particle.get("EMS");
 
-		NucLineage.NucPos posABp=nucABp.pos.get(nucABp.pos.lastKey());
-		NucLineage.NucPos posEMS=nucEMS.pos.get(nucEMS.pos.lastKey());
+		Lineage.ParticlePos posABp=nucABp.pos.get(nucABp.pos.lastKey());
+		Lineage.ParticlePos posEMS=nucEMS.pos.get(nucEMS.pos.lastKey());
 		Vector3d vdir=new Vector3d(posEMS.x,posEMS.y,posEMS.z);
 		vdir.sub(new Vector3d(posABp.x,posABp.y,posABp.z));
 		System.out.println("dir "+vdir);
@@ -536,7 +534,7 @@ public class MakeStdWorm5
 
 		applyMat(lin,m);
 		
-		NucLineage.Nuc nucP2 =lin.nuc.get("P2'");
+		Lineage.Particle nucP2 =lin.particle.get("P2'");
 		System.out.println("pos3 "+nucP2.pos.get(nucP2.pos.lastKey()).getPosCopy());
 		
 		Vector3d vdir2=new Vector3d(posEMS.x,posEMS.y,posEMS.z);
@@ -564,14 +562,14 @@ public class MakeStdWorm5
 
 			//Get names of nuclei
 			TreeSet<String> nucNames=new TreeSet<String>();
-			for(NucLineage lin:lins.values())
-				nucNames.addAll(lin.nuc.keySet());
+			for(Lineage lin:lins.values())
+				nucNames.addAll(lin.particle.keySet());
 			
 			//Remove all :-nucs from all lineages, as well as just crap
-			for(NucLineage lin:lins.values())
+			for(Lineage lin:lins.values())
 				{
 				TreeSet<String> nucstocopynot=new TreeSet<String>();
-				for(String n:lin.nuc.keySet())
+				for(String n:lin.particle.keySet())
 					if(n.startsWith(":") || 
 							n.startsWith("shell") || n.equals("ant") || n.equals("post") || 
 							n.equals("venc") || n.equals("germline") ||n.equals("2ftail") ||
@@ -579,7 +577,7 @@ public class MakeStdWorm5
 						nucstocopynot.add(n);
 				nucstocopynot.add("int2D");
 				for(String n:nucstocopynot)
-					lin.removeNuc(n);
+					lin.removeParticle(n);
 				}
 			
 			
@@ -594,7 +592,7 @@ public class MakeStdWorm5
 
 
 			//Write tree to XML
-			NucLineage combinedLin=nucstats.generateXMLtree();
+			Lineage combinedLin=nucstats.generateXMLtree();
 			
 			
 			//Collect distances and radii
@@ -606,13 +604,13 @@ public class MakeStdWorm5
 				{
 				if(curframe.intValue()%100==0)
 					System.out.println(curframe);
-				for(NucLineage lin:lins.values())
+				for(Lineage lin:lins.values())
 					{
-					Map<NucSel, NucInterp> inter=lin.getInterpNuc(curframe);
-					for(Map.Entry<NucSel, NucInterp> ie:inter.entrySet())
+					Map<LineageSelParticle, Lineage.InterpolatedParticle> inter=lin.interpolateParticles(curframe);
+					for(Map.Entry<LineageSelParticle, Lineage.InterpolatedParticle> ie:inter.entrySet())
 						{
 						String thisnucname=ie.getKey().snd();
-						NucInterp ni=ie.getValue();
+						Lineage.InterpolatedParticle ni=ie.getValue();
 						
 						NucStats.NucStatsOne one=nucstats.nuc.get(thisnucname);
 						if(one!=null)
@@ -635,14 +633,14 @@ public class MakeStdWorm5
 				/*
 				EvIODataXML output2=new EvIODataXML("/Volumes/TBU_main02/ostxml/model/normalize3.ostxml");
 				output2.metaObject.clear();
-				for(Map.Entry<String, NucLineage> e:lins.entrySet())
+				for(Map.Entry<String, Lineage> e:lins.entrySet())
 					output2.metaObject.put(e.getKey(),e.getValue());
 				output2.metaObject.put("model", combinedLin);
 				output2.saveMeta();
 				*/
 				
 				EvData output2=new EvData();
-				for(Map.Entry<String, NucLineage> e:lins.entrySet())
+				for(Map.Entry<String, Lineage> e:lins.entrySet())
 					output2.metaObject.put(e.getKey(),e.getValue());
 				output2.metaObject.put("model", combinedLin);
 				output2.saveDataAs("/Volumes/TBU_main02/ost4dgood/celegans2008.new.all.ost");
@@ -696,13 +694,13 @@ private static void loadAllNuc()
 				worms.add(ost);
 				for(EvObject evob:ost.metaObject.values())
 					{
-					if(evob instanceof NucLineage)
+					if(evob instanceof Lineage)
 						{
-						NucLineage lin=(NucLineage)evob;
-						if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
-								lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'") && //these are required for the coord sys
-								(lin.nuc.containsKey("ABal") || lin.nuc.containsKey("ABar")) &&
-								(lin.nuc.containsKey("ABpl") || lin.nuc.containsKey("ABpr"))) //these make sense
+						Lineage lin=(Lineage)evob;
+						if(lin.particle.containsKey("ABa") && lin.particle.containsKey("ABp") &&
+								lin.particle.containsKey("EMS") && lin.particle.containsKey("P2'") && //these are required for the coord sys
+								(lin.particle.containsKey("ABal") || lin.particle.containsKey("ABar")) &&
+								(lin.particle.containsKey("ABpl") || lin.particle.containsKey("ABpr"))) //these make sense
 							{
 							lins.put(s, lin);
 							System.out.println("ok:"+s);
@@ -739,13 +737,13 @@ for(String s:wnlist)
 	worms.add(ost);
 	for(EvObject evob:ost.metaObject.values())
 		{
-		if(evob instanceof NucLineage)
+		if(evob instanceof Lineage)
 			{
-			NucLineage lin=(NucLineage)evob;
-			if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
-					lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'") && //these are required for the coord sys
-					(lin.nuc.containsKey("ABal") || lin.nuc.containsKey("ABar")) &&
-					(lin.nuc.containsKey("ABpl") || lin.nuc.containsKey("ABpr"))) //these make sense
+			Lineage lin=(Lineage)evob;
+			if(lin.particle.containsKey("ABa") && lin.particle.containsKey("ABp") &&
+					lin.particle.containsKey("EMS") && lin.particle.containsKey("P2'") && //these are required for the coord sys
+					(lin.particle.containsKey("ABal") || lin.particle.containsKey("ABar")) &&
+					(lin.particle.containsKey("ABpl") || lin.particle.containsKey("ABpr"))) //these make sense
 				{
 				lins.put(new File(s).getName(), lin);
 				System.out.println("ok:"+s);

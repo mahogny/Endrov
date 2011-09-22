@@ -265,10 +265,10 @@ public abstract class BasicWindow extends JPanel
 			List<File> files = new LinkedList<File>();
 			if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
 				{
-				List data = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
-				Iterator i = data.iterator();
+				List<File> data = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+				Iterator<File> i = data.iterator();
 				while (i.hasNext())
-					files.add((File) i.next());
+					files.add(i.next());
 				System.out.println("javalistflavour "+files);
 				return files;
 				}
