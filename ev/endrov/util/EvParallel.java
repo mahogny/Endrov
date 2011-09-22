@@ -107,9 +107,12 @@ public class EvParallel
 	/**
 	 * Map :: [A] -> (A->B) -> [B]
 	 */
-	public static <A,B> List<B> map(final int numThread, Collection<A> in, final FuncAB<A,B> func)
+	public static <A,B> List<B> map(int numThread, Collection<A> in, final FuncAB<A,B> func)
 		{
-		//final LinkedList<B> out = new LinkedList<B>();
+		//No need to start more threads than work items
+		if(numThread>in.size())
+			numThread=in.size();
+		
 		final ArrayList<B> out = new ArrayList<B>(in.size());
 		for(int i=0;i<in.size();i++)
 			out.add(null);

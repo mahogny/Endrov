@@ -5,7 +5,9 @@
  */
 package endrov.data;
 
-import javax.swing.*;
+
+import javax.swing.Icon;
+import javax.swing.JMenu;
 
 import org.jdom.*;
 

@@ -262,8 +262,9 @@ public class EvContainer
 				
 				Element eData=new Element("data");
 				String metatypeName=o.saveMetadata(eData);
+				if(metatypeName==null)
+					throw new RuntimeException("Object of type "+o.getClass()+" reports null metadata name");
 				el.setName(metatypeName);
-//				eData.setName("data");
 				el.addContent(eData);
 				
 				if(el.getName().equals(tempString))

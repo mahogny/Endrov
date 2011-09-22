@@ -413,22 +413,12 @@ public class EvChannel extends EvObject implements AnyEvImage
 			{
 			EvStack fstack=getFirstStack(new ProgressHandle());
 			
-			
 			vecDefaultRes=fstack.getRes();
 			defaultResX=vecDefaultRes.x;
 			defaultResY=vecDefaultRes.y;
 			defaultResZ=vecDefaultRes.z;
-			/*
-			defaultResX=fstack.resX;
-			defaultResY=fstack.resY;
-			defaultResZ=fstack.resZ;*/
 
 			defaultDisp=fstack.getDisplacement();
-/*			Vector3d sDisp=fstack.getDisplacement();
-			defaultDispX=sDisp.x;
-			defaultDispY=sDisp.y;
-			defaultDispZ=sDisp.z;
-			*/
 
 			metaOther.put("resX", ""+defaultResX);
 			metaOther.put("resY", ""+defaultResY);
@@ -473,20 +463,6 @@ public class EvChannel extends EvObject implements AnyEvImage
 				otherMeta.remove("resZ");
 				}
 			
-			/*
-			if(stack.resX!=defaultResX)
-				otherMeta.put("resX", ""+stack.resX);
-			else
-				otherMeta.remove("resX");
-			if(stack.resY!=defaultResY)
-				otherMeta.put("resY", ""+stack.resY);
-			else
-				otherMeta.remove("resY");
-			if(stack.resZ!=defaultResZ)
-				otherMeta.put("resZ", ""+stack.resZ);
-			else
-				otherMeta.remove("resZ");
-				*/
 			Vector3d sDisp=stack.getDisplacement();
 			if(!sDisp.equals(defaultDisp))
 				{
@@ -500,22 +476,6 @@ public class EvChannel extends EvObject implements AnyEvImage
 				otherMeta.remove("dispYum");
 				otherMeta.remove("dispZ");
 				}
-			/*
-			if(sDisp.x!=defaultDisp.x)
-				otherMeta.put("dispXum", ""+-sDisp.x);
-			else
-				otherMeta.remove("dispXum");
-			
-			if(sDisp.y!=defaultDisp.y)
-				otherMeta.put("dispYum", ""+-sDisp.y);
-			else
-				otherMeta.remove("dispYum");
-			
-			if(sDisp.z!=defaultDisp.z)
-				otherMeta.put("dispZ", ""+-sDisp.z);
-			else
-				otherMeta.remove("dispZ");
-			*/
 			
 			if(!otherMeta.isEmpty())
 				{
