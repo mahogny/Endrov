@@ -6,18 +6,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.swing.JMenu;
 import javax.vecmath.Vector3d;
 
+import org.jdom.DataConversionException;
 import org.jdom.Element;
-
 
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.ev.EV;
 import endrov.util.EvDecimal;
 
 /**
@@ -140,8 +142,7 @@ public class Network extends EvObject
 	@Override
 	public EvObject cloneEvObject()
 		{
-		// TODO Auto-generated method stub
-		return null;
+		return cloneUsingSerialize();
 		}
 
 	@Override
@@ -153,15 +154,105 @@ public class Network extends EvObject
 	@Override
 	public void loadMetadata(Element e)
 		{
-		// TODO Auto-generated method stub
-		
+		try
+			{
+			for(Element nfe:EV.castIterableElement(e.getChildren()))
+				{
+				EvDecimal f=new EvDecimal(nfe.getAttributeValue("frame"));
+				NetworkFrame nf=new NetworkFrame();
+				frame.put(f, nf);
+				
+				for(Element pose:EV.castIterableElement(nfe.getChildren()))
+					{
+					if(pose.getName().equals("p"))
+						{
+						int pid=pose.getAttribute("id").getIntValue();
+						double posx=pose.getAttribute("x").getDoubleValue();
+						double posy=pose.getAttribute("y").getDoubleValue();
+						double posz=pose.getAttribute("z").getDoubleValue();
+						Double posr=null;
+						if(pose.getAttribute("r")!=null)
+							posr=pose.getAttribute("r").getDoubleValue();
+
+						Point p=new Point(posx,posy,posz,posr);
+						nf.points.put(pid, p);
+						}
+					else if(pose.getName().equals("seg"))
+						{
+						Segment seg=new Segment();
+						nf.segments.add(seg);
+						
+						if(pose.getAttribute("type")!=null)
+							seg.type=pose.getAttributeValue("type");
+						
+						//Parse points
+						ArrayList<Integer> pids=new ArrayList<Integer>(); 
+						StringTokenizer stok=new StringTokenizer(pose.getAttributeValue("points"),",");
+						while(stok.hasMoreElements())
+							pids.add(Integer.parseInt(stok.nextToken()));						
+						seg.points=new int[pids.size()];
+						for(int i=0;i<seg.points.length;i++)
+							seg.points[i]=pids.get(i);
+						}
+					}
+
+				}
+			}
+		catch (DataConversionException e1)
+			{
+			e1.printStackTrace();
+			}
 		}
 
 	@Override
 	public String saveMetadata(Element e)
 		{
-		// TODO Auto-generated method stub
-		return null;
+		for(EvDecimal f:frame.keySet())
+			{
+			NetworkFrame nf=frame.get(f);
+			Element framee=new Element("frame");
+			e.addContent(framee);
+			framee.setAttribute("frame",""+f);
+			
+			//Points
+			for(int pid:nf.points.keySet())
+				{
+				Point pos=nf.points.get(pid);
+				Element pose=new Element("p");
+				framee.addContent(pose);
+				pose.setAttribute("id", ""+pid);
+				pose.setAttribute("x", ""+pos.x);
+				pose.setAttribute("y", ""+pos.y);
+				pose.setAttribute("z", ""+pos.z);
+				if(pos.r!=null)
+					pose.setAttribute("r", ""+pos.r);
+				}
+			
+			//Segments
+			for(Segment segment:nf.segments)
+				{
+				Element segmente=new Element("seg");
+				framee.addContent(segmente);
+
+				if(segment.type!=null)
+					segmente.setAttribute("type",segment.type);
+
+				//Write segment pids
+				StringBuffer sbp=new StringBuffer();
+				boolean first=true;
+				for(int pid:segment.points)
+					{
+					sbp.append(pid);
+					if(first)
+						sbp.append(",");
+					first=false;
+					}
+				segmente.setAttribute("points", sbp.toString());
+				
+				}
+
+			}
+		return metaType;
 		}
 
 	
