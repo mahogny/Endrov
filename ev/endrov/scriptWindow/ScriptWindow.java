@@ -7,16 +7,14 @@ package endrov.scriptWindow;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
+import java.io.Writer;
 
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.swing.*;
 
 import java.util.HashSet;
@@ -31,13 +29,7 @@ import endrov.util.EvFileUtil;
 
 import org.jdom.*;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-import bsh.script.BeanShellScriptEngineFactory;
 
-
-//import bsh.ConsoleInterface;
-//import bsh.Interpreter;
 
 
 /**
@@ -139,10 +131,13 @@ public class ScriptWindow extends BasicWindow implements ActionListener
 	private void buildLanguageOptions(JMenu menu)
 		{
 
-		ScriptEngineManager scriptEngineManager=new ScriptEngineManager();
+		ScriptEngineManager scriptEngineManager=new ScriptEngineManager(ScriptWindow.class.getClassLoader());
 
 		Set<ScriptEngineFactory> languages=new HashSet<ScriptEngineFactory>(scriptEngineManager.getEngineFactories());
-		languages.add(new BeanShellScriptEngineFactory());
+		
+		
+		
+		//languages.add(new BeanShellScriptEngineFactory());
 		
 		//scriptEngineManager.registerEngineName("BeanShell", new BeanShellScriptEngineFactory());
 
@@ -165,7 +160,7 @@ public class ScriptWindow extends BasicWindow implements ActionListener
 			grp.add(miOptionLang);
 			menu.add(miOptionLang);
 			
-			if(factory.getEngineName().equals("BeanShell"))
+			if(factory.getExtensions().contains("bsh"))
 				{
 				currentLanguage=factory;
 				miOptionLang.setSelected(true);
@@ -213,41 +208,58 @@ public class ScriptWindow extends BasicWindow implements ActionListener
 			public void run()
 				{
 				//ScriptEngineManager factory = new ScriptEngineManager();
-				/*
-				ScriptEngine eng=currentLanguage.getScriptEngine();
 				
-				eng.getContext().setWriter(new Writer()
+				//Class<?> cl=Class.forName(currentLanguage.getClass().getCanonicalName());
+				
+				
+				try
 					{
-						StringBuffer sb=new StringBuffer();
-						
-						@Override
-						public void write(char[] cbuf, int off, int len) throws IOException
+					Class<?> cl=ScriptWindow.class.getClassLoader().loadClass(currentLanguage.getClass().getCanonicalName());
+					currentLanguage=(ScriptEngineFactory)cl.newInstance();
+					}
+				catch (Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				
+				ScriptEngine eng=currentLanguage.getScriptEngine();
+
+				
+				Writer w=new Writer()
+					{
+					StringBuffer sb=new StringBuffer();
+					
+					@Override
+					public void write(char[] cbuf, int off, int len) throws IOException
+						{
+						for(int i=off;i<off+len;i++)
 							{
-							for(int i=off;i<off+len;i++)
+							char c=cbuf[i];
+							if(c=='\n')
 								{
-								char c=cbuf[i];
-								if(c=='\n')
-									{
-									flush();
-									}
-								else
-									sb.append(c);
+								flush();
 								}
+							else
+								sb.append(c);
 							}
-						
-						@Override
-						public void flush() throws IOException
-							{
-							EvLog.printLog(sb.toString());
-							sb=new StringBuffer();
-							}
-						
-						@Override
-						public void close() throws IOException
-							{
-							flush();
-							}
-					});
+						}
+					
+					@Override
+					public void flush() throws IOException
+						{
+						EvLog.printLog(sb.toString());
+						sb=new StringBuffer();
+						}
+					
+					@Override
+					public void close() throws IOException
+						{
+						flush();
+						EvLog.printLog("-ok-");
+						}
+				};
+				
+				eng.getContext().setWriter(w);
 				
 				try
 					{
@@ -259,7 +271,17 @@ public class ScriptWindow extends BasicWindow implements ActionListener
 					//EvLog.printError(e);
 					e.printStackTrace();
 					}
-				*/
+				try
+					{
+					w.close();
+					}
+				catch (IOException e)
+					{
+					e.printStackTrace();
+					}
+				
+				
+				/*
 				
 				PipedInputStream pin=new PipedInputStream();
 				final BufferedReader bin=new BufferedReader(new InputStreamReader(pin));
@@ -303,11 +325,13 @@ public class ScriptWindow extends BasicWindow implements ActionListener
 					{
 					EvLog.printError(e.getMessage(), null);
 					}
+				*/
 				
 				stopThread();
 
 				}
 			};
+			
 		scriptThread.start();
 
 

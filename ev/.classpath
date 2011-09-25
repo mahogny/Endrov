@@ -24,7 +24,6 @@
 	<classpathentry kind="lib" path="libs/jcommon-1.0.9.jar"/>
 	<classpathentry kind="lib" path="libs/hessian-3.2.1.jar"/>
 	<classpathentry kind="lib" path="libs/functionaljava.jar"/>
-	<classpathentry kind="lib" path="libs/bsh-2.0b4.jar"/>
 	<classpathentry kind="lib" path="libs/bcel-5.2.jar"/>
 	<classpathentry kind="lib" path="libs/xml_inc/xml-apis.jar"/>
 	<classpathentry kind="lib" path="libs/xml_inc/xerces.jar"/>
@@ -97,6 +96,6 @@
 	<classpathentry kind="lib" path="libs/ome_inc/omero_client.jar"/>
 	<classpathentry kind="lib" path="libs/gnujpdf.jar"/>
 	<classpathentry kind="lib" path="endrov/util/Memoize.java"/>
-	<classpathentry kind="lib" path="libs/bshscript.jar"/>
+	<classpathentry kind="lib" path="libs/bsh-2.0b5.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

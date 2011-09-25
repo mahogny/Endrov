@@ -6,11 +6,15 @@
 package endrov.starter;
 
 import endrov.basicWindow.*;
+import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.imageWindow.*;
 import endrov.util.RepeatingKeyEventsFixer;
 
+import java.io.File;
 import java.lang.reflect.Method;
+
+import javax.swing.JOptionPane;
 
 //http://lopica.sourceforge.net/faq.html#nosandbox
 //System.setSecurityManager(null)
@@ -81,11 +85,15 @@ public class MW
 				EvLog.printLog("Opening up first window");
 				new ImageWindow();
 				}
+			
+			//Closethe splash screen
 			if(ss!=null)
 				{
 				ss.disableLog();
 				ss.dispose();
 				}
+			
+			//Bring up registration dialog if needed
 			if(!EndrovRegistrationDialog.hasRegistered())
 				{
 				EndrovRegistrationDialog.runDialog();
@@ -93,6 +101,32 @@ public class MW
 				}
 			else
 				EndrovRegistrationDialog.connectAndRegister(false);
+			
+			//Load files specified on command line
+
+			for(final String s:args)
+				{
+
+				new Runnable() { 
+				public void run()
+					{ 
+					File f=new File(s);
+
+					EV.waitUntilStartedUp();
+
+					EvData d=EvData.loadFile(f);
+					if(d==null)
+						JOptionPane.showMessageDialog(null, "Failed to open "+f);
+					else
+						{
+						EvData.registerOpenedData(d);
+						BasicWindow.updateLoadedFile(d);
+						}
+					}}.run(); 
+				}
+				
+				
+			
 			}
 		catch (Exception e)
 			{

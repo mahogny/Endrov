@@ -133,7 +133,7 @@ public class Main
 			//maybe do pattern match instead?
 			List<DebPackage> pkgs=new LinkedList<DebPackage>();
 			pkgs.add(new DebPackage("java2-runtime",null,new String[]{"linux.paths"}));
-			pkgs.add(new DebPackage("bsh",new String[]{"bsh.jar"},new String[]{"bsh-2.0b4.jar"}));
+			pkgs.add(new DebPackage("bsh",new String[]{"bsh-2.0b5.jar"},new String[]{"bsh-2.0b5.jar"}));
 			pkgs.add(new DebPackage("junit",new String[]{"junit.jar"},new String[]{"junit.jar"}));
 			pkgs.add(new DebPackage("libpg-java",new String[]{"postgresql.jar"},new String[]{"postgresql-8.2-505.jdbc3.jar"}));
 			//pkgs.add(new DebPackage("libvecmath1.2-java",new String[]{"vecmath1.2.jar"},new String[]{"vecmath.jar"}));
@@ -213,6 +213,24 @@ libjboss-webservices-java
 			deleteBinDirs(dEndrov);
 			deleteExt(dEndrov, ".app"); //Mac APP-bundles
 			
+			//Check which packages are present
+			for(DebPackage pkg:new LinkedList<DebPackage>(pkgs))
+				{
+				for(String jar:pkg.linkJars)
+					{
+					File jarfile=new File("/usr/share/java",jar);
+					if(!jarfile.exists())
+						{
+						System.out.println("System jar does not exist: "+jarfile+", excluding package "+pkg.name);
+						pkgs.remove(pkg);
+						}
+					}
+				//TODO check that files exist 
+				//for(String jar:pkg.providesFiles)
+
+				}
+
+			
 			System.out.println("Extracting packages");
 			deletePkgFiles(pkgs, dEndrovLibs);
 
@@ -223,9 +241,7 @@ libjboss-webservices-java
 			for(DebPackage pkg:pkgs)
 				for(String jar:pkg.linkJars)
 					{
-					File jarfile=new File("/usr/share/java/"+jar);
-					if(!jarfile.exists())
-						System.out.println("Error: does not exist: "+jarfile);
+					File jarfile=new File("/usr/share/java",jar);
 					manifestContent.append(" "+jarfile.getAbsolutePath()+" \n");
 					}
 			manifestContent.append("\n");
