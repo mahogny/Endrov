@@ -123,6 +123,8 @@ public class Main
 			copyRecursive(new File(dRes,"root"), dPkg);
 			
 			setExec(fUsrBinEndrov);
+			setExec(new File(dControl,"postinst"));
+			setExec(new File(dControl,"postrm"));
 			//fUsrEndrov.setExecutable(true);
 			
 			System.out.println("Cleaning out windows/mac specific files");
