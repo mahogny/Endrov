@@ -103,7 +103,6 @@ public class MW
 				EndrovRegistrationDialog.connectAndRegister(false);
 			
 			//Load files specified on command line
-
 			for(final String s:args)
 				{
 
