@@ -97,5 +97,6 @@
 	<classpathentry kind="lib" path="libs/gnujpdf.jar"/>
 	<classpathentry kind="lib" path="endrov/util/Memoize.java"/>
 	<classpathentry kind="lib" path="libs/bsh-2.0b5.jar"/>
+	<classpathentry kind="lib" path="libs/dbus.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

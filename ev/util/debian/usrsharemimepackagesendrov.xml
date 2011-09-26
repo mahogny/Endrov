@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Notes:
+- the mime types in this file are valid with the version 0.30 of the
+  shared-mime-info package.
+- the "fdo #xxxxx" are the wish in the freedesktop.org bug database to include
+  the mime type there.
+-->
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="image/bf">
+    <comment>Bio-formats image</comment>
+    <sub-class-of type="image/bf"/>
+  </mime-type>
+
+
+  <mime-type type="image/ics">
+    <comment>ICS image</comment>
+    <glob pattern="*.ics"/>
+    <glob pattern="*.ids"/>
+    <sub-class-of type="image/bf"/>
+  </mime-type>
+
+  <mime-type type="image/stk">
+    <comment>Metamorph stack</comment>
+    <glob pattern="*.stk"/>
+    <glob pattern="*.nd"/>
+    <sub-class-of type="image/bf"/>
+  </mime-type>
+
+  <mime-type type="image/nd2">
+    <comment>Nikon NIS-element</comment>
+    <glob pattern="*.nd2"/>
+    <sub-class-of type="image/bf"/>
+  </mime-type>
+
+  <mime-type type="image/lsm">
+    <comment>Zeiss LSM</comment>
+    <glob pattern="*.lsm"/>
+    <sub-class-of type="image/bf"/>
+  </mime-type>
+
+
+</mime-info>
