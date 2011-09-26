@@ -61,25 +61,25 @@ public class Main
 			
 			File dPkg=new File("/tmp/endrov");
 			File dUsr=new File(dPkg,"usr");
-			File dEtc=new File(dPkg,"etc");
+			//File dEtc=new File(dPkg,"etc");
 			File dShare=new File(dUsr,"share");
 			File dEndrov=new File(dShare,"endrov");
 			File dEndrovLibs=new File(dEndrov,"libs");
-			File dMan=new File(dShare,"man/man1");
-			File dMenu=new File(dShare,"menu");
+			//File dMan=new File(dShare,"man/man1");
+			//File dMenu=new File(dShare,"menu");
 			File dControl=new File(dPkg,"DEBIAN");
 			File dZipTemp=new File("/tmp/unzip");
 			File dShareDoc=new File(dShare,"doc");
-			File dSharePixmaps=new File(dShare,"pixmaps");
+			//File dSharePixmaps=new File(dShare,"pixmaps");
 			File dUsrBin=new File(dUsr,"bin");
-			File dShareApplications=new File(dShare,"applications");
-			File dEtcBash=new File(dEtc,"bash_completion.d");
+			//File dShareApplications=new File(dShare,"applications");
+			//File dEtcBash=new File(dEtc,"bash_completion.d");
 			File dRes=new File("util/debian");
 			
 			File fUsrBinEndrov=new File(dUsrBin,"endrov");
-			File fIcon=new File(dSharePixmaps,"endrov.xpm");
-			File fUsrShareMenuEndrov=new File(dMenu,"endrov");
-			File fUsrShareApplicationsEndrov=new File(dShareApplications,"endrov.desktop");
+			//File fIcon=new File(dSharePixmaps,"endrov.xpm");
+			//File fUsrShareMenuEndrov=new File(dMenu,"endrov");
+			//File fUsrShareApplicationsEndrov=new File(dShareApplications,"endrov.desktop");
 			
 			//Clean dirs
 			if(dPkg.exists())
@@ -91,11 +91,11 @@ public class Main
 			dShare.mkdirs();
 			dControl.mkdirs();
 			dShareDoc.mkdirs();
-			dMan.mkdirs();
-			dMenu.mkdirs();
+			//dMan.mkdirs();
+			//dMenu.mkdirs();
 			dUsrBin.mkdirs();
-			dSharePixmaps.mkdirs();
-			dShareApplications.mkdirs();
+			//dSharePixmaps.mkdirs();
+			//dShareApplications.mkdirs();
 			
 			//Extract files
 			System.out.println("unzipping "+zip.getPath());
@@ -113,12 +113,15 @@ public class Main
 			System.out.println("Moving into place, "+dZipTemp.listFiles()[0]+" ---> "+dEndrov);
 			dZipTemp.listFiles()[0].renameTo(dEndrov);
 			new File(dEndrov,"docs").renameTo(new File(dShareDoc,"endrov"));
-			copyFile(new File(dRes,"endrov.1"), new File(dMan,"endrov.1"));
+			/*copyFile(new File(dRes,"endrov.1"), new File(dMan,"endrov.1"));
 			copyFile(new File(dRes,"icon.xpm"), fIcon);
 			copyFile(new File(dRes,"endrov.sh"),fUsrBinEndrov);
 			copyFile(new File(dRes,"usrShareMenuEndrov"),fUsrShareMenuEndrov);
 			copyFile(new File(dRes,"endrov.desktop"),fUsrShareApplicationsEndrov);
-			copyFile(new File(dRes,"bash_completion"),new File(dEtcBash,"endrov"));
+			copyFile(new File(dRes,"bash_completion"),new File(dEtcBash,"endrov"));*/
+			
+			copyRecursive(new File(dRes,"root"), dPkg);
+			
 			setExec(fUsrBinEndrov);
 			//fUsrEndrov.setExecutable(true);
 			
@@ -426,6 +429,22 @@ libjboss-webservices-java
 		}
 	
 	
+	public static void copyRecursive(File in, File out) throws IOException 
+		{
+		if(in.isDirectory())
+			{
+			for(File c:in.listFiles())
+				if(!c.getName().equals(".") && !c.getName().equals(".."))
+					{
+					File outc=new File(out,c.getName());
+					if(c.isDirectory())
+						outc.mkdirs();
+					copyRecursive(c, outc);
+					}
+			}
+		else
+			copyFile(in,out);
+		}
 	
 	
 	public static void recursiveDelete(File root)
