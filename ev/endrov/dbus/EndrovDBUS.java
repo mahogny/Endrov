@@ -46,6 +46,7 @@ public class EndrovDBUS
 				{
 				conn = DBusConnection.getConnection(DBusConnection.SESSION);
 				info = conn.getRemoteObject(busName, "/", DBus.class);
+				System.out.println("    info "+info);
 				}
 			catch (DBusException e)
 				{
@@ -69,6 +70,7 @@ public class EndrovDBUS
 				catch (Exception e)
 					{
 					e.printStackTrace();
+					return false;
 					}
 			return true;
 			}

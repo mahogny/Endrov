@@ -34,11 +34,11 @@ public class MW
 	 */
 	public static void main(String[] args)
 		{
+		//If there is a file to open, try send it to existing session
 		if(args.length!=0)
 			{
 			if(EndrovDBUS.openFile(Arrays.asList(args)))
 				System.exit(0);
-			
 			}
 		
 		
