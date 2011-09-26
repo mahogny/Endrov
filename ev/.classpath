@@ -98,5 +98,6 @@
 	<classpathentry kind="lib" path="endrov/util/Memoize.java"/>
 	<classpathentry kind="lib" path="libs/bsh-2.0b5.jar"/>
 	<classpathentry kind="lib" path="libs/dbus.jar"/>
+	<classpathentry kind="lib" path="libs/commons-io-2.0.1.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

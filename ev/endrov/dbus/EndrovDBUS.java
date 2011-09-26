@@ -14,39 +14,39 @@ public class EndrovDBUS
 	/**
 	 * Start the DBUS server
 	 */
-	public static void startServer()
+	public static boolean startServer()
 		{
 		try
 			{
 			DBusConnection conn = DBusConnection.getConnection(DBusConnection.SESSION);
 			conn.requestBusName(busName);
 			conn.exportObject("/", new DBusImpl());
+			return true;
 			}
 		catch (DBusException e)
 			{
-			e.printStackTrace();
+			return false;
 			}
 		}
 	
 	
 	
 	private static DBusConnection conn;
-	private static DBus info;
+	private static DBus object;
 	
 	/**
 	 * Connect to dbus server
 	 */
 	public static boolean connect()
 		{
-		if(info!=null)
+		if(object!=null)
 			return true;
 		else
 			{
 			try
 				{
 				conn = DBusConnection.getConnection(DBusConnection.SESSION);
-				info = conn.getRemoteObject(busName, "/", DBus.class);
-				System.out.println("    info "+info);
+				object = conn.getRemoteObject(busName, "/", DBus.class);
 				}
 			catch (DBusException e)
 				{
@@ -65,7 +65,7 @@ public class EndrovDBUS
 			for(String f:filename)
 				try
 					{
-					info.openFile(f);
+					object.openFile(f);
 					}
 				catch (Exception e)
 					{

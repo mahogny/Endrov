@@ -32,7 +32,7 @@ public class MW
 	 * Entry point
 	 * @param args Command line arguments
 	 */
-	public static void main(String[] args)
+	public static void main(final String[] args)
 		{
 		//If there is a file to open, try send it to existing session
 		if(args.length!=0)
@@ -85,7 +85,10 @@ public class MW
 		
 		try
 			{
-			EndrovDBUS.startServer();
+			if(EndrovDBUS.startServer())
+				System.out.println("Started DBUS server");
+			else
+				System.out.println("Could not start DBUS server, skipping");
 			
 			EV.loadPlugins();
 			BasicWindowExitLast.integrate();
@@ -98,7 +101,7 @@ public class MW
 				new ImageWindow();
 				}
 			
-			//Closethe splash screen
+			//Close the splash screen
 			if(ss!=null)
 				{
 				ss.disableLog();
@@ -115,26 +118,27 @@ public class MW
 				EndrovRegistrationDialog.connectAndRegister(false);
 			
 			//Load files specified on command line
-			for(final String s:args)
-				{
-				
-				new Runnable() { 
+			new Thread(new Runnable()
+				{ 
 				public void run()
 					{ 
-					File f=new File(s);
-
-					EV.waitUntilStartedUp();
-
-					EvData d=EvData.loadFile(f);
-					if(d==null)
-						JOptionPane.showMessageDialog(null, "Failed to open "+f);
-					else
+					for(String s:args)
 						{
-						EvData.registerOpenedData(d);
-						BasicWindow.updateLoadedFile(d);
+						File f=new File(s);
+	
+						EV.waitUntilStartedUp();
+	
+						EvData d=EvData.loadFile(f);
+						if(d==null)
+							JOptionPane.showMessageDialog(null, "Failed to open "+f);
+						else
+							{
+							EvData.registerOpenedData(d);
+							BasicWindow.updateLoadedFile(d);
+							}
 						}
-					}}.run(); 
-				}
+					}}).start(); 
+
 				
 				
 			
