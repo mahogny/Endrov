@@ -7,12 +7,14 @@ package endrov.starter;
 
 import endrov.basicWindow.*;
 import endrov.data.EvData;
+import endrov.dbus.EndrovDBUS;
 import endrov.ev.*;
 import endrov.imageWindow.*;
 import endrov.util.RepeatingKeyEventsFixer;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import javax.swing.JOptionPane;
 
@@ -32,6 +34,14 @@ public class MW
 	 */
 	public static void main(String[] args)
 		{
+		if(args.length!=0)
+			{
+			if(EndrovDBUS.openFile(Arrays.asList(args)))
+				System.exit(0);
+			
+			}
+		
+		
 		//This reduces the effect of one VERY annoying swing bug
 		new RepeatingKeyEventsFixer().install();
 
@@ -75,6 +85,8 @@ public class MW
 		
 		try
 			{
+			EndrovDBUS.startServer();
+			
 			EV.loadPlugins();
 			BasicWindowExitLast.integrate();
 			EV.loadPersonalConfig();		
@@ -105,7 +117,7 @@ public class MW
 			//Load files specified on command line
 			for(final String s:args)
 				{
-
+				
 				new Runnable() { 
 				public void run()
 					{ 
