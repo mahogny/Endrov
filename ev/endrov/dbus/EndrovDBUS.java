@@ -12,10 +12,18 @@ public class EndrovDBUS
 	private static String busName="org.endrov.service";
 	
 	/**
+	 * To only try to connect once
+	 */
+	private static boolean use=true;
+	
+	/**
 	 * Start the DBUS server
 	 */
 	public static boolean startServer()
 		{
+		if(!use)
+			return false;
+		
 		try
 			{
 			DBusConnection conn = DBusConnection.getConnection(DBusConnection.SESSION);
@@ -25,6 +33,13 @@ public class EndrovDBUS
 			}
 		catch (DBusException e)
 			{
+			use=false;
+			return false;
+			}
+		catch (NoClassDefFoundError e)
+			{
+			System.out.println("---- DBUS library not found");
+			use=false;
 			return false;
 			}
 		}
@@ -39,6 +54,8 @@ public class EndrovDBUS
 	 */
 	public static boolean connect()
 		{
+		if(!use)
+			return false;
 		if(object!=null)
 			return true;
 		else
@@ -51,6 +68,13 @@ public class EndrovDBUS
 			catch (DBusException e)
 				{
 				e.printStackTrace();
+				use=false;
+				return false;
+				}
+			catch (NoClassDefFoundError e)
+				{
+				System.out.println("---- DBUS library not found");
+				use=false;
 				return false;
 				}
 			return true;

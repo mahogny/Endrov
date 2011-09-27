@@ -2,10 +2,15 @@
 
 if [ `test -e makerelease.sh` ]; then exit -1; fi
 
+#version info
+timestamp=`date +%s`
+version=`cat ../endrov/ev/version.txt`
+
 #decide on a name
-name="ev"`date +%g%m%d`
+name="endrov-$version.$timestamp"
 echo $name
 
+#Create a copy
 cd ..
 cd ..
 cp -r ev $name
@@ -24,10 +29,13 @@ rm -Rf .project .classpath .metadata .settings
 rm *.log
 rm -Rf libs/unused
 
+#add timestamp file
+echo $timestamp > endrov/ev/timestamp.txt
+
 #compress
 cd ..
 rm $name.zip
-zip -r $name $name
+zip -r $name.zip $name
 mkdirs -p release/
 mv $name.zip release/
 
@@ -43,6 +51,7 @@ ls -1 $name/*/*.png $name/*/*/*.png $name/*/*/*/*.png | wc -l
 
 echo "claimed version"
 cat $name/endrov/ev/version.txt
+cat $name/endrov/ev/timestamp.txt
 echo ""
 
 #delete
