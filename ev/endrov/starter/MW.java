@@ -122,11 +122,10 @@ public class MW
 				{ 
 				public void run()
 					{ 
+					EV.waitUntilStartedUp();
 					for(String s:args)
 						{
 						File f=new File(s);
-	
-						EV.waitUntilStartedUp();
 	
 						EvData d=EvData.loadFile(f);
 						if(d==null)

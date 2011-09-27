@@ -14,18 +14,7 @@ public class DBusImpl implements DBus
 	
 	public boolean openFile(final String filename)
 		{
-		System.out.println("Asking to open "+filename);
-		
-		
-
-		try
-			{
-			throw new Exception("here")	;
-			}
-		catch (Exception e)
-			{
-			e.printStackTrace();
-			}
+		System.out.println("Via DBUS, asking to open "+filename);
 		
 		new Thread(new Runnable() { 
 		public void run()
@@ -43,8 +32,6 @@ public class DBusImpl implements DBus
 				BasicWindow.updateLoadedFile(d);
 				}
 			}}).start(); 
-		
-		System.out.println("at end..................");
 			
 		return true;
 		}

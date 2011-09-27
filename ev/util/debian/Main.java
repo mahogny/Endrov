@@ -149,7 +149,7 @@ public class Main
 			pkgs.add(new DebPackage("libjfreechart-java",new String[]{"jfreechart.jar"},new String[]{"jfreechart-1.0.5.jar"}));
 			pkgs.add(new DebPackage("libjakarta-poi-java",new String[]{"jakarta-poi-contrib.jar","jakarta-poi.jar","jakarta-poi-scratchpad.jar"},new String[]{"poi-contrib-3.0.1-FINAL-20070705.jar","poi-3.0.1-FINAL-20070705.jar","poi-scratchpad-3.0.1-FINAL-20070705.jar"}));
 			pkgs.add(new DebPackage("libjaxen-java",new String[]{"jaxen.jar"},new String[]{"jaxen-core.jar","jaxen-jdom.jar","saxpath.jar"}));
-			
+			pkgs.add(new DebPackage("libdbus-java",new String[]{"dbus.jar"},new String[]{"dbus.jar"}));
 			
 			//jogl2 must get into the repos!
 			//pkgs.add(new DebPackage("libjogl-java",new String[]{"jogl.jar","gluegen-rt.jar"},new String[]{"gluegen-rt.jar","jogl.jar","libgluegen-rt.so","libjogl_awt.so","libjogl_cg.so","libjogl.so"}));
