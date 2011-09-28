@@ -59,18 +59,13 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 	
 	//GUI components
 	private JButton bStart=new JButton("Start");
-	//private EvComboChannel channelCombo=new EvComboChannel(null,false);
-	private EvComboChannel channelCombo=new EvComboChannel(true,false);
+	private EvComboChannel channelCombo=new EvComboChannel(false,false);
 	
 	private SpinnerModel startModel  =new SpinnerNumberModel(0,0,1000000,1);
 	private JSpinner spinnerStart    =new JSpinner(startModel);
 	
 	private SpinnerModel endModel    =new SpinnerNumberModel(1000000,0,1000000,1);
 	private JSpinner spinnerEnd      =new JSpinner(endModel);
-
-//	private SpinnerModel qualityModel    =new SpinnerNumberModel(0.99,0.0,1.0,0.01);
-//	private JSpinner spinnerQuality      =new JSpinner(qualityModel);
-
 	
 	/**
 	 * Make a new window at default location
