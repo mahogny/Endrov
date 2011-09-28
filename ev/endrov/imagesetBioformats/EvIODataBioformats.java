@@ -13,10 +13,12 @@ import java.io.*;
 import java.util.*;
 
 import ome.xml.model.enums.DimensionOrder;
+import ome.xml.model.enums.EnumerationException;
 import ome.xml.model.enums.PixelType;
 import ome.xml.model.primitives.NonNegativeInteger;
 import ome.xml.model.primitives.PositiveInteger;
 
+import loci.common.DataTools;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
@@ -25,8 +27,12 @@ import loci.formats.in.OMETiffReader;
 import loci.formats.meta.*;
 import loci.formats.out.OMETiffWriter;
 import loci.formats.out.OMEXMLWriter;
+import loci.formats.out.TiffWriter;
 import loci.formats.services.OMEXMLService;
 import endrov.data.*;
+import endrov.ev.EV;
+import endrov.ev.EvLog;
+import endrov.ev.EvLogStdout;
 import endrov.imageset.*;
 import endrov.imagesetOST.EvIODataOST;
 import endrov.util.EvDecimal;
@@ -138,27 +144,30 @@ public class EvIODataBioformats implements EvIOData
 		try
 			{
 			
+			
+			int formatType=FormatTools.INT32;
+			
+			
+			//PixelType pixelType=PixelType.DOUBLE;
+			//PixelType pixelType=PixelType.INT32;
+			//PixelType pixelType=PixelType.INT8;
+			
 			//TODO other formats supported too!
 			
-			if(basedir.getName().endsWith(".ome.tif"))  //and .ome.tiff
+			//if(basedir.getName().endsWith(".ome.tif"))  //and .ome.tiff
 				{
-				if(!basedir.exists())
+				//if(!basedir.exists())
 					{
 
 					
 					
 					// http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/utils/ConvertToOmeTiff.java;hb=HEAD
 					
-					/*
+					
 					
 					try
 						{
-						ImageWriter writer = new ImageWriter();
 						
-				
-//						OMETiffWriter writer = new OMETiffWriter();
-	//				  writer.setBigTiff(true);
-
 				
 
 
@@ -170,22 +179,75 @@ public class EvIODataBioformats implements EvIOData
 
 						//Create map channel -> series ID
 					  Map<EvPath, EvChannel> channels=d.getIdObjectsRecursive(EvChannel.class);
-					  ArrayList<EvPath> chanToId=new ArrayList<EvPath>();
+					  //channels=Collections.singletonMap(channels.entrySet().iterator().next().getKey(), channels.entrySet().iterator().next().getValue()); //Temp only one chan
+					  ArrayList<EvPath> evchanToId=new ArrayList<EvPath>();
 					  for(EvPath curChan:channels.keySet())
-					  	chanToId.add(curChan);
+					  	evchanToId.add(curChan);
+					  
+					  System.out.println("channels "+evchanToId);
 					  
 					  //Create metadata for each series
 					  IMetadata metadata = service.createOMEXMLMetadata();
 					  
-					  int datasetIndex=0;
-					  metadata.setDatasetID("id0", datasetIndex);
-					  metadata.setDatasetName("name0", datasetIndex);
-					  metadata.setDatasetDescription("desc0", datasetIndex);
-					  
-					  
-					  for (int imageIndex=0; imageIndex<imageCount; imageIndex++) 
+					  /*
+					  for(int datasetIndex=0;datasetIndex<1;datasetIndex++)
 					  	{
-					  	//One "image" per channel!
+						  metadata.setDatasetID("id"+datasetIndex, datasetIndex);
+						  metadata.setDatasetName("name"+datasetIndex, datasetIndex);
+						  metadata.setDatasetDescription("desc"+datasetIndex, datasetIndex);
+						  
+						  //dataset group?
+					  	}
+					  */
+					  
+					  //Map<EvImage,Integer> planeIDs=new HashMap<EvImage, Integer>();
+					  
+					  
+					  //Mapping: One "bf image" per "evchannel"
+					  for (int imageIndex=0; imageIndex<evchanToId.size(); imageIndex++) 
+					  	{
+					  	EvChannel ch=(EvChannel)evchanToId.get(imageIndex).getContainer(d);
+					  	System.out.println("getting ch "+ch+" for path "+evchanToId.get(imageIndex));
+
+
+					  	//all image in one dataset
+						  metadata.setImageID("foo", imageIndex);
+						  metadata.setImageName("bar", imageIndex);
+//					  	metadata.setImageDatasetRef(metadata.getDatasetID(0),imageIndex,0);
+					  	
+					  	
+					  	//Map frames to timeIDs
+					  	/*
+						  Map<EvDecimal,Integer> timeID=new HashMap<EvDecimal, Integer>();
+						  int curTimeID=0;
+						  for(EvDecimal frame:ch.getFrames())
+						  	timeID.put(frame,curTimeID++);*/
+						  
+					  	//Figure out resolution
+						  int depth=0;
+						  int width=0;
+						  int height=0;
+						  double resX=1, resY=1, resZ=1;
+						  if(!ch.getFrames().isEmpty())
+						  	{
+						  	EvStack s=ch.getFirstStack(null);
+						  	if(s==null)
+						  		throw new RuntimeException("Couldn't read first stack in memory");
+						  	
+						  	System.out.println("width "+s.getWidth());
+						  	width=s.getWidth();
+						  	height=s.getHeight();
+						  	depth=s.getDepth();
+						  	
+						  	resX=s.resX;
+						  	resY=s.resY;
+						  	resZ=s.resZ;
+						  	}
+
+					  	//TODO verify all stacks the same size. can wait until write
+					  	
+					  	
+					  	//One "image" per evchannel!
 					  	//as many datasets as channels
 					  	//Exception: RGB handling? to store tiffs etc, need to be able to merge
 					  	
@@ -207,9 +269,12 @@ public class EvIODataBioformats implements EvIOData
 					  	//channelcount for a given imageIndex
 					  	for (int channelIndex=0; channelIndex<1; channelIndex++) 
 					  		{
-					  	
-					  		//TODO a lot of metadata for the channel
+					  		metadata.setChannelID("ch"+channelIndex, imageIndex, channelIndex);
+					  		metadata.setChannelName("chn"+channelIndex, imageIndex, channelIndex);
+					  		metadata.setChannelSamplesPerPixel(new PositiveInteger(1), imageIndex, channelIndex);
 					  		
+					  		
+					  		//TODO a lot of metadata for the channel
 					  		
 					  		
 					  		}
@@ -217,40 +282,59 @@ public class EvIODataBioformats implements EvIOData
 					  	
 					  	
 					  	
-					  	metadata.setPixelsPhysicalSizeX(1.0, imageIndex);
-					  	metadata.setPixelsPhysicalSizeY(1.0, imageIndex);
-					  	metadata.setPixelsPhysicalSizeZ(1.0, imageIndex);
+					  	metadata.setPixelsPhysicalSizeX(resX, imageIndex);  //um/px
+					  	metadata.setPixelsPhysicalSizeY(resY, imageIndex);
+					  	metadata.setPixelsPhysicalSizeZ(resZ, imageIndex);
 					  	
-					  	metadata.setPixelsSizeX(new PositiveInteger(500), imageIndex);
-					  	metadata.setPixelsSizeY(new PositiveInteger(500), imageIndex);
-					  	metadata.setPixelsSizeZ(new PositiveInteger(500), imageIndex);
+					  	metadata.setPixelsSizeX(new PositiveInteger(width), imageIndex);
+					  	metadata.setPixelsSizeY(new PositiveInteger(height), imageIndex);
+					  	metadata.setPixelsSizeZ(new PositiveInteger(depth), imageIndex);
 					  	metadata.setPixelsSizeC(new PositiveInteger(1), imageIndex);
-					  	metadata.setPixelsSizeT(new PositiveInteger(500), imageIndex);
+					  	metadata.setPixelsSizeT(new PositiveInteger(ch.getFrames().size()), imageIndex);
 					  
 						  metadata.setPixelsDimensionOrder(DimensionOrder.XYZCT, imageIndex);
+						  try
+								{
+								metadata.setPixelsType(PixelType.fromString(FormatTools.getPixelTypeString(formatType)), imageIndex);
+								}
+							catch (EnumerationException e)
+								{
+								throw new RuntimeException(e.getMessage());
+								}
+
+							
+							boolean isLittleEndian=false;
+
+						  int binDataIndex=0; //hmmmmm
+						  metadata.setPixelsBinDataBigEndian(!isLittleEndian, imageIndex, binDataIndex);
 						  
-						  metadata.setPixelsType(PixelType.DOUBLE, imageIndex);
+						  metadata.setPixelsID("pixelsid"+imageIndex, imageIndex);
 						  
-						  for(int planeIndex=0;planeIndex<5;planeIndex++)
+						  //For each XY-plane
+						  int curEvFrameID=0;
+						  for(EvDecimal frame:ch.getFrames())
 						  	{
-						  	//Each XY-plane ....
+						  	for(int curEvZ=0;curEvZ<depth;curEvZ++)
+						  		{
+						  		int planeIndex=curEvFrameID*depth+curEvZ;
+						  		
+						  		
+						  	  metadata.setPlaneDeltaT(frame.doubleValue(), imageIndex, planeIndex);
+								  //metadata.setPlaneExposureTime(1.0, imageIndex, planeIndex);   //TODO
+								  
+								  //Position with image
+								  metadata.setPlaneTheC(new NonNegativeInteger(0), imageIndex, planeIndex);
+								  metadata.setPlaneTheZ(new NonNegativeInteger(curEvZ), imageIndex, planeIndex);
+								  metadata.setPlaneTheT(new NonNegativeInteger(curEvFrameID), imageIndex, planeIndex);
+								  
+								  //For stage
+								  metadata.setPlanePositionX(0.0, imageIndex, planeIndex);
+								  metadata.setPlanePositionY(0.0, imageIndex, planeIndex);
+								  metadata.setPlanePositionZ(0.0, imageIndex, planeIndex);
+						  		}
+						  	curEvFrameID++;
 						  	
 						  	
-							  metadata.setPlaneDeltaT(1.0, imageIndex, planeIndex);
-							  metadata.setPlaneExposureTime(1.0, imageIndex, planeIndex);
-							  
-							  //Position with image
-							  metadata.setPlaneTheC(new NonNegativeInteger(0), imageIndex, planeIndex);
-							  metadata.setPlaneTheZ(new NonNegativeInteger(0), imageIndex, planeIndex);
-							  metadata.setPlaneTheT(new NonNegativeInteger(0), imageIndex, planeIndex);
-							  
-							  //For stage
-							  metadata.setPlanePositionX(1.0, imageIndex, planeIndex);
-							  metadata.setPlanePositionY(1.0, imageIndex, planeIndex);
-							  metadata.setPlanePositionZ(1.0, imageIndex, planeIndex);
-							  
-							  
-							  
 						  	}
 						  
 						  
@@ -258,8 +342,10 @@ public class EvIODataBioformats implements EvIOData
 						  
 					  
 					  
+					  System.out.println("size "+metadata.getPixelsSizeX(0));
+					  System.out.println("imagecount "+metadata.getImageCount());
 					  
-					  
+					  MetadataTools.verifyMinimumPopulated(metadata);
 					  
 					  //TODO fill in metadata
 					  
@@ -268,48 +354,138 @@ public class EvIODataBioformats implements EvIOData
 					  // http://www.ome-xml.org/wiki/CompliantSpecification
 					  // THE file to understand how to write metadata:
 					  // http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/meta/MetadataConverter.java;h=3780d383239aa519be1ae149d3a875825dfd03ef;hb=HEAD
+
 					  
+					  
+						ImageWriter writer = new ImageWriter();
+						/*
+						if(basedir.getName().endsWith(".ome.tif") || basedir.getName().endsWith(".ome.tiff"))
+							{
+							
+							}*/
+
+						//Delete old file. TODO. can continue writing on it!
+						System.out.println("deleting "+basedir);
+						basedir.delete();
+						
 					  //Start writing
 					  writer.setMetadataRetrieve(metadata);
 					  writer.setId(basedir.getAbsolutePath());
+					  writer.setInterleaved(false);
 					  //writer.setCompression("J2K");
 
 					  //Use BIGTIFF if possible. Later this will not be needed
+					  
 					  if(writer.getWriter() instanceof OMETiffWriter)
 					  	{
-					  	System.out.println("ometiff! "+writer.getWriter());
-					  	((OMETiffWriter)writer.getWriter()).setBigTiff(true);
+					  	System.out.println("This is OME-TIFF");
+					  	OMETiffWriter ome=(OMETiffWriter)writer.getWriter();
+					  	//ome.setBigTiff(true);
+					  	ome.setCompression(TiffWriter.COMPRESSION_LZW);
 					  	}
 
 					  //Write all the series
-					  for(int curChanID=0;curChanID<channels.size();curChanID++)
+					  System.out.println("-------------- writing image data ------------------------- "+evchanToId.size());
+					  for(int imageIndex=0;imageIndex<evchanToId.size();imageIndex++)
 					  	{
-					  	EvChannel curChan=channels.get(curChanID);
+					  	writer.setSeries(imageIndex);
 					  	
-					  	writer.setSeries(curChanID);
+					  	EvChannel ch=(EvChannel)evchanToId.get(imageIndex).getContainer(d);
+					  	int depth=ch.getStack(ch.getFirstFrame()).getDepth();
 					  	
-					  	
+					  	System.out.println("wrint chan "+evchanToId.get(imageIndex)+"   "+depth);
 
-					  	for (int curZ=0; curZ<3; curZ++) 
+					  	
+					  	//For each frame
+					  	int curFrameID=0;
+					  	for(EvDecimal frame:ch.getFrames())
 					  		{
-					  		byte[] plane=null;
-
+					  		int binDataIndex=0;
+					  		boolean littleEndian = !writer.getMetadataRetrieve().getPixelsBinDataBigEndian(imageIndex, binDataIndex).booleanValue();
 					  		
-					  		writer.saveBytes(curZ, plane);
+					  		System.out.println("writing frame "+frame);
+				  			boolean signed=true;
+
+					  		//boolean isSigned = pixelType == PixelType.INT8 || pixelType == PixelType.INT16 || pixelType == PixelType.INT32;
+					  		
+					  		//For each z
+					  		EvStack s=ch.getStack(frame);
+					  		for (int curZ=0; curZ<depth; curZ++) 
+						  		{
+						  		System.out.println("writing plane "+curZ);
+						  		
+						  		EvPixels p=s.getInt(curZ).getPixels(null);
+
+						  		//Convert to bytes in the specified format, given evpixel format
+						  		byte[] plane=null;
+						  		if(formatType==FormatTools.DOUBLE)
+						  			{
+						  			//TODO: mystery. why does it not work?
+						  			plane=DataTools.doublesToBytes(p.convertToDouble(true).getArrayDouble(), littleEndian);
+						  			}
+						  		else if(formatType==FormatTools.INT32)
+						  			{
+						  			int[] arr;
+						  			if(signed)
+						  				{
+							  			arr=p.convertToInt(false).getArrayInt();
+							  			makeUnSigned(arr);
+						  				}
+						  			else
+							  			arr=p.convertToInt(true).getArrayInt();
+						  			
+						  			/*
+						  			for(int b:arr)
+						  				System.out.print(b+",");
+						  			System.out.println();
+						  			*/
+						  			
+						  			plane=DataTools.intsToBytes(arr, littleEndian); //TODO !
+						  			}
+						  		else if(formatType==FormatTools.INT8)
+						  			{
+						  			byte[] arr;
+						  			if(signed)
+						  				{
+							  			arr=p.convertToUByte(false).getArrayUnsignedByte();
+							  			makeUnSigned(arr);
+						  				}
+						  			else
+							  			arr=p.convertToUByte(true).getArrayUnsignedByte();
+						  			plane=arr;
+						  			}
+						  		else
+						  			throw new RuntimeException("Unsupported format in bf writer - bug");
+
+						  		int planeID=curFrameID*depth+curZ;
+
+						  		System.out.println("plane ID: "+planeID);
+						  		
+						  		/*
+						  		System.out.println("islittleendian "+littleEndian);
+					  			for(int b:plane)
+					  				System.out.print(b+",");
+					  			System.out.println();
+									*/
+						  		
+						  		writer.saveBytes(planeID, plane);
+						  		}
+					  		
+					  		curFrameID++;
 					  		}
-					  	curChanID++;
+					  	
+					  	curFrameID++;
 					  	}
+					  
 
 					  writer.close();
 						}
 					catch (DependencyException e)
 						{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						}
 					catch (ServiceException e)
 						{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						}
 					catch (FormatException e)
@@ -318,7 +494,7 @@ public class EvIODataBioformats implements EvIOData
 						e.printStackTrace();
 						}
 
-*/
+
 					
 					
 					
@@ -365,6 +541,28 @@ public class EvIODataBioformats implements EvIOData
 		}
 	
 
+	
+	public static byte[] makeUnSigned(byte[] b) {
+	    for (int i=0; i<b.length; i++) {
+	      b[i] = (byte) (b[i] - 128);
+		    }
+		    return b;
+		  }
+		
+		  public static short[] makeUnSigned(short[] s) {
+		    for (int i=0; i<s.length; i++) {
+		      s[i] = (short) (s[i] - 32768);
+		    }
+		    return s;
+		  }
+		
+		  public static int[] makeUnSigned(int[] i) {
+		    for (int j=0; j<i.length; j++) {
+		      i[j] = (int) (i[j] - 2147483648L);
+		    }
+		    return i;
+		  }
+	
 	//Consider using this instead
 	/*
 	private static int getPlaneIndex(IFormatReader r, int planeNum) 
@@ -680,5 +878,44 @@ public class EvIODataBioformats implements EvIOData
 		});
 		}
 
+	
+	
+	public static void main(String[] args)
+		{
+		EvLog.listeners.add(new EvLogStdout());
+		EV.loadPlugins();
+	
+		/*
+		
+		EvData d=EvData.loadFile(new File("/home/tbudev3/test.png"));
+		
+		try
+			{
+			d.saveDataAs(new File("/home/tbudev3/foo.ome"));
+			d.saveDataAs(new File("/home/tbudev3/foo.ome.tiff"));
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		
+*/
+		EvData d=EvData.loadFile(new File("/Volumes/TBU_main06/ost3dgood/A12D51070814.ost"));
+		
+		try
+			{
+			d.saveDataAs(new File("/home/tbudev3/temp/A12D51070814.ome.tiff"));
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		
+
+		
+		System.exit(0);
+		
+		
+		}
 	
 	}

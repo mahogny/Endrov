@@ -53,9 +53,9 @@ public class BioformatsSliceIO extends EvIOImage
 			boolean isSigned = type == FormatTools.INT8 || type == FormatTools.INT16 || type == FormatTools.INT32;
 			Object bfpixels = DataTools.makeDataArray(bytes, bpp, isFloat, isLittle);
 			
-			//System.out.println("bpp "+bpp+" fp "+isFloat+" islittle "+isLittle);
 			
-			//System.out.println(bfpixels.getClass()+"  "+isSigned);
+			
+			System.out.println("bpp:"+bpp+" fp:"+isFloat+" islittle:"+isLittle+" signed:"+isSigned+" class:"+bfpixels.getClass());
 			
 			//Much of this code modified from bioformats IJ-plugin. I deem it functional and hence not copyrightable
 			//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/loci/plugins/Util.java?rev=4289
@@ -95,7 +95,9 @@ public class BioformatsSliceIO extends EvIOImage
 					return EvPixels.createFromShort(w, h, q);
 					}
 				else
+					{
 					return EvPixels.createFromInt(w, h, EvPixels.convertUshortToInt(q, len));
+					}
 				/*
 				if (q.length > w * h) 
 					{
@@ -121,12 +123,25 @@ public class BioformatsSliceIO extends EvIOImage
 					System.arraycopy(tmp, 0, q, 0, q.length);
 					}
 
-				/*for(int i:q)
-					System.out.println(" "+i);
-				System.out.println();*/
-				
+/*
+				System.out.println("byte: ");
+				for(int i:bytes)
+					System.out.print(" "+i);
+				System.out.println();
+
+				System.out.println("int: ");
+				for(int i:q)
+					System.out.print(" "+i);
+				System.out.println();
+				*/
 				if (isSigned) 
 					q = DataTools.makeSigned(q);
+
+				/*
+				System.out.println("signed int: ");
+				for(int i:q)
+					System.out.print(" "+i);
+				System.out.println();*/
 
 				//unsigned? - screw it. would have to convert to float/double, evil.
 				return EvPixels.createFromInt(w, h, q);

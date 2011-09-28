@@ -183,6 +183,8 @@ public class Main
 			pkgs.add(new DebPackage("libcommons-httpclient-java",new String[]{"commons-httpclient.jar"},new String[]{"commons-httpclient-3.0.1.jar"}));           
 			pkgs.add(new DebPackage("libcommons-logging-java",new String[]{"commons-logging.jar"},new String[]{"commons-logging-1.0.4.jar"}));                  
 
+			//pkgs.add(new DebPackage("libcommons-io-java",new String[]{"commons-io.jar"},new String[]{"commons-io-2.0.1.jar"}));
+			
 			pkgs.add(DebPackage.recommends("ffmpeg",null,null));
 			
 			//Unused
@@ -273,9 +275,9 @@ libjboss-webservices-java
 			
 			System.out.println("Debianizing");
 			
-			String datepart=zip.getName().substring(2,8);
+			//String datepart=zip.getName().substring(2,8);
 //			File outDeb=new File(zip.getParentFile(),zip.getName().replace(".zip", ".deb"));
-			File outDeb=new File(zip.getParentFile(),"endrov-"+version+"-"+datepart+".deb");
+			File outDeb=new File(zip.getParentFile(),"endrov-"+version+".deb");
 
 			
 			if(outDeb.exists())

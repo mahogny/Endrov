@@ -666,7 +666,7 @@ public class ImageWindow extends BasicWindow
 				//System.out.println("---- got stack "+stack);
 				
 				if(stack==null)
-					pi.setImage(stack,null);
+					pi.setImage(null,null);
 				else
 					{
 					int closestZ=stack.closestZint(z.doubleValue());

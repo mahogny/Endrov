@@ -34,12 +34,6 @@ public class EvStack implements AnyEvImage
 	public double resX;
 	public double resY;
 	public double resZ;
-
-	/*
-	public double getResX()
-		{
-		return 
-		}*/
 	
 	public void setRes(double resX, double resY, double resZ)
 		{
