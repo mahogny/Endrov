@@ -439,12 +439,12 @@ public class EvIODataBioformats implements EvIOData
 						  		else if(formatType==FormatTools.INT32)
 						  			{
 						  			int[] arr;
-						  			if(signed)
+						  			/*if(signed)
 						  				{
 							  			arr=p.convertToInt(false).getArrayInt();
 							  			makeUnSigned(arr);
 						  				}
-						  			else
+						  			else*/
 							  			arr=p.convertToInt(true).getArrayInt();
 						  			
 						  			/*
@@ -458,12 +458,12 @@ public class EvIODataBioformats implements EvIOData
 						  		else if(formatType==FormatTools.INT8)
 						  			{
 						  			byte[] arr;
-						  			if(signed)
+						  			/*if(signed)
 						  				{
 							  			arr=p.convertToUByte(false).getArrayUnsignedByte();
 							  			makeUnSigned(arr);
 						  				}
-						  			else
+						  			else*/
 							  			arr=p.convertToUByte(true).getArrayUnsignedByte();
 						  			plane=arr;
 						  			}
