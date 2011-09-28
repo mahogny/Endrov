@@ -16,13 +16,15 @@ import loci.formats.IFormatReader;
  */
 public class BioformatsSliceIO extends EvIOImage
 	{
+	private int series;
 	private int id;
 	private IFormatReader imageReader;
 	private Object sourceName;
 	private boolean closeReaderOnFinalize;
 
-	public BioformatsSliceIO(IFormatReader imageReader, int id, Object sourceName, boolean closeReaderOnFinalize)
+	public BioformatsSliceIO(IFormatReader imageReader, int series, int id, Object sourceName, boolean closeReaderOnFinalize)
 		{
+		this.series=series;
 		this.sourceName=sourceName;
 		this.id=id;
 		this.imageReader=imageReader;
@@ -37,8 +39,12 @@ public class BioformatsSliceIO extends EvIOImage
 		{
 		try
 			{
-			byte[] bytes=imageReader.openBytes(id);
-			
+			byte[] bytes;
+			synchronized(this)
+				{
+				imageReader.setSeries(series);
+				bytes=imageReader.openBytes(id);
+				}
 			//FormatTools, DOUBLE, FLOAT, INT16, INT32, INT8, UINT16, UINT32, UINT8
 			
 			

@@ -26,7 +26,6 @@ import loci.formats.*;
 import loci.formats.in.OMETiffReader;
 import loci.formats.meta.*;
 import loci.formats.out.OMETiffWriter;
-import loci.formats.out.OMEXMLWriter;
 import loci.formats.out.TiffWriter;
 import loci.formats.services.OMEXMLService;
 import endrov.data.*;
@@ -145,7 +144,6 @@ public class EvIODataBioformats implements EvIOData
 			{
 			
 			
-			int formatType=FormatTools.INT32;
 			
 			
 			//PixelType pixelType=PixelType.DOUBLE;
@@ -153,6 +151,10 @@ public class EvIODataBioformats implements EvIOData
 			//PixelType pixelType=PixelType.INT8;
 			
 			//TODO other formats supported too!
+
+			int formatType=FormatTools.INT32;
+
+			//TODO find the right type
 			
 			//if(basedir.getName().endsWith(".ome.tif"))  //and .ome.tiff
 				{
@@ -206,15 +208,20 @@ public class EvIODataBioformats implements EvIOData
 					  //Mapping: One "bf image" per "evchannel"
 					  for (int imageIndex=0; imageIndex<evchanToId.size(); imageIndex++) 
 					  	{
-					  	EvChannel ch=(EvChannel)evchanToId.get(imageIndex).getContainer(d);
+					  	EvPath pathToChan=evchanToId.get(imageIndex);
+					  	EvChannel ch=(EvChannel)pathToChan.getContainer(d);
 					  	System.out.println("getting ch "+ch+" for path "+evchanToId.get(imageIndex));
 
 
 					  	//all image in one dataset
-						  metadata.setImageID("foo", imageIndex);
-						  metadata.setImageName("bar", imageIndex);
-//					  	metadata.setImageDatasetRef(metadata.getDatasetID(0),imageIndex,0);
 					  	
+					  	//Find a free name (for now, no uniqueness check)
+					  	String imageName=pathToChan.getLeafName();
+					  	
+						  metadata.setImageID(imageName, imageIndex);
+						  metadata.setImageName(imageName, imageIndex);
+//					  	metadata.setImageDatasetRef(metadata.getDatasetID(0),imageIndex,0);
+						  
 					  	
 					  	//Map frames to timeIDs
 					  	/*
@@ -252,21 +259,21 @@ public class EvIODataBioformats implements EvIOData
 					  	//Exception: RGB handling? to store tiffs etc, need to be able to merge
 					  	
 					  	
-					  //TODO "image" metadata, image in a dataset, nothing critical right now
+						  //TODO "image" metadata, image in a dataset, nothing critical right now
 
 					  	//TODO image to dataset ref
 					  	//metadata.setImageDatasetRef(arg0, arg1, arg2)
 
 					  	//image can have an optional ID and name
 					  	
-					  	
+					  	//TODO pull this out of our metadata
 						  //metadata.setImageAcquiredDate(arg0, imageIndex);
 						  //metadata.setImageDescription(arg0, imageIndex);
 						  //metadata.setImageName(arg0, imageIndex);
 						  
 
 					  	
-					  	//channelcount for a given imageIndex
+					  	//Here we only use one channel per image. Later, multiplex
 					  	for (int channelIndex=0; channelIndex<1; channelIndex++) 
 					  		{
 					  		metadata.setChannelID("ch"+channelIndex, imageIndex, channelIndex);
@@ -282,7 +289,7 @@ public class EvIODataBioformats implements EvIOData
 					  	
 					  	
 					  	
-					  	metadata.setPixelsPhysicalSizeX(resX, imageIndex);  //um/px
+					  	metadata.setPixelsPhysicalSizeX(resX, imageIndex);
 					  	metadata.setPixelsPhysicalSizeY(resY, imageIndex);
 					  	metadata.setPixelsPhysicalSizeZ(resZ, imageIndex);
 					  	
@@ -291,7 +298,10 @@ public class EvIODataBioformats implements EvIOData
 					  	metadata.setPixelsSizeZ(new PositiveInteger(depth), imageIndex);
 					  	metadata.setPixelsSizeC(new PositiveInteger(1), imageIndex);
 					  	metadata.setPixelsSizeT(new PositiveInteger(ch.getFrames().size()), imageIndex);
-					  
+
+							System.out.println("chan: "+imageName+" xyzct "+width+" "+height+" "+depth+" "+metadata.getPixelsSizeC(imageIndex)+" "+metadata.getPixelsSizeT(imageIndex));
+
+
 						  metadata.setPixelsDimensionOrder(DimensionOrder.XYZCT, imageIndex);
 						  try
 								{
@@ -303,9 +313,9 @@ public class EvIODataBioformats implements EvIOData
 								}
 
 							
-							boolean isLittleEndian=false;
+							boolean isLittleEndian=false; //what is optimal?
 
-						  int binDataIndex=0; //hmmmmm
+						  int binDataIndex=0; //hmmmmm. TODO what is this?
 						  metadata.setPixelsBinDataBigEndian(!isLittleEndian, imageIndex, binDataIndex);
 						  
 						  metadata.setPixelsID("pixelsid"+imageIndex, imageIndex);
@@ -327,27 +337,24 @@ public class EvIODataBioformats implements EvIOData
 								  metadata.setPlaneTheZ(new NonNegativeInteger(curEvZ), imageIndex, planeIndex);
 								  metadata.setPlaneTheT(new NonNegativeInteger(curEvFrameID), imageIndex, planeIndex);
 								  
-								  //For stage
+								  //TODO stage information
+								  /*
 								  metadata.setPlanePositionX(0.0, imageIndex, planeIndex);
 								  metadata.setPlanePositionY(0.0, imageIndex, planeIndex);
 								  metadata.setPlanePositionZ(0.0, imageIndex, planeIndex);
+								  */
 						  		}
 						  	curEvFrameID++;
-						  	
-						  	
 						  	}
 						  
 						  
 						  }
-						  
 					  
 					  
 					  System.out.println("size "+metadata.getPixelsSizeX(0));
 					  System.out.println("imagecount "+metadata.getImageCount());
 					  
 					  MetadataTools.verifyMinimumPopulated(metadata);
-					  
-					  //TODO fill in metadata
 					  
 
 					  // Overview
@@ -393,9 +400,6 @@ public class EvIODataBioformats implements EvIOData
 					  	EvChannel ch=(EvChannel)evchanToId.get(imageIndex).getContainer(d);
 					  	int depth=ch.getStack(ch.getFirstFrame()).getDepth();
 					  	
-					  	System.out.println("wrint chan "+evchanToId.get(imageIndex)+"   "+depth);
-
-					  	
 					  	//For each frame
 					  	int curFrameID=0;
 					  	for(EvDecimal frame:ch.getFrames())
@@ -403,7 +407,6 @@ public class EvIODataBioformats implements EvIOData
 					  		int binDataIndex=0;
 					  		boolean littleEndian = !writer.getMetadataRetrieve().getPixelsBinDataBigEndian(imageIndex, binDataIndex).booleanValue();
 					  		
-					  		System.out.println("writing frame "+frame);
 				  			boolean signed=true;
 
 					  		//boolean isSigned = pixelType == PixelType.INT8 || pixelType == PixelType.INT16 || pixelType == PixelType.INT32;
@@ -412,11 +415,21 @@ public class EvIODataBioformats implements EvIOData
 					  		EvStack s=ch.getStack(frame);
 					  		for (int curZ=0; curZ<depth; curZ++) 
 						  		{
-						  		System.out.println("writing plane "+curZ);
-						  		
-						  		EvPixels p=s.getInt(curZ).getPixels(null);
+						  		int planeID=curFrameID*depth+curZ;
 
-						  		//Convert to bytes in the specified format, given evpixel format
+						  		System.out.println("writing ch:"+evchanToId.get(imageIndex)+" frame:"+frame+" z:"+curZ+" planeID:"+planeID);
+						  		
+						  		
+						  		//TODO pull out type of format
+						  		/*
+						  		PixelType pixelType=metadata.getPixelsType(imageIndex);
+						  		pixelType.
+						  		FormatTools.getPixelTypeString(pixelType)
+						  		
+						  		int formatType=;*/
+						  		
+						  		//Get and convert to bytes in the specified format, given evpixel format
+						  		EvPixels p=s.getInt(curZ).getPixels(null);
 						  		byte[] plane=null;
 						  		if(formatType==FormatTools.DOUBLE)
 						  			{
@@ -457,10 +470,7 @@ public class EvIODataBioformats implements EvIOData
 						  		else
 						  			throw new RuntimeException("Unsupported format in bf writer - bug");
 
-						  		int planeID=curFrameID*depth+curZ;
 
-						  		System.out.println("plane ID: "+planeID);
-						  		
 						  		/*
 						  		System.out.println("islittleendian "+littleEndian);
 					  			for(int b:plane)
@@ -622,7 +632,7 @@ public class EvIODataBioformats implements EvIOData
 
 		System.out.println("#series "+imageReader.getSeriesCount());
 		
-		HashSet<String> usedImsetNames=new HashSet<String>();
+		//HashSet<String> usedImsetNames=new HashSet<String>();
 		for(int seriesIndex=0;seriesIndex<imageReader.getSeriesCount();seriesIndex++)
 			{
 			//Setting series will re-populate the metadata store as well
@@ -630,22 +640,27 @@ public class EvIODataBioformats implements EvIOData
 			
 			System.out.println("bioformats looking at series "+seriesIndex);
 
-			String imageName=retrieve.getImageName(seriesIndex);
+			String imsetName=retrieve.getImageName(seriesIndex);
+			System.out.println("-------------- got image name "+imsetName);
+			if(imsetName==null)
+				imsetName="im"+seriesIndex;
+			else
+				{
+				//On windows, bio-formats uses the entire path. This is ugly so cut off the part until the last file 
+				//if(imsetName.contains("\\"))
+				//	imsetName=imsetName.substring(imsetName.lastIndexOf('\\'));
+				}
 
-			//On windows, bio-formats uses the entire path. This is ugly so cut off the part
-			//until the last file
-			if(imageName.contains("\\"))
-				imageName=imageName.substring(imageName.lastIndexOf('\\'));
-			
-			//The image name usually sucks, don't do this anymore!
-			//String imsetName=imageName==null || imageName.equals("") ? "im"+seriesIndex : "im-"+imageName;
-			String imsetName="im"+seriesIndex;
+			if(imsetName.equals(""))
+				imsetName="im"+seriesIndex;
+
 			
 			
 //			if(d.metaObject.containsKey(imsetName))
-			if(usedImsetNames.contains(imsetName)) //In case channel already exist in XML, do not overwrite it
-				imsetName="im-"+imageName;
-			usedImsetNames.add(imsetName);
+			//if(usedImsetNames.contains(imsetName)) //In case channel already exist in XML, do not overwrite it
+				//imsetName="im-"+imageName;
+			//usedImsetNames.add(imsetName);
+			
 			
 			Imageset imset=(Imageset)d.metaObject.get(imsetName);
 			if(imset==null)
@@ -658,21 +673,23 @@ public class EvIODataBioformats implements EvIOData
 
 			
 			
-			PositiveInteger sizeT=retrieve.getPixelsSizeT(seriesIndex);
-			PositiveInteger sizeZ=retrieve.getPixelsSizeZ(seriesIndex);
-			PositiveInteger sizeC=retrieve.getPixelsSizeC(seriesIndex);
-			//int sizeX=retrieve.getPixelsSizeX(seriesIndex).getValue();
-			//int sizeY=retrieve.getPixelsSizeY(seriesIndex).getValue();
+			int sizeT=retrieve.getPixelsSizeT(seriesIndex).getValue();
+			int sizeZ=retrieve.getPixelsSizeZ(seriesIndex).getValue();
+			int sizeC=retrieve.getPixelsSizeC(seriesIndex).getValue();
 			
 			
-			for(int curC=0;curC<sizeC.getValue();curC++)
+			for(int curC=0;curC<sizeC;curC++)
 				{
-				//EvChannel ch=new EvChannel();
-				EvChannel ch=imset.getCreateChannel("ch"+curC);
-				
-				
-				
-				for(int curT=0;curT<sizeT.getValue();curT++)
+				//Figure out name of channel
+				String chanName=retrieve.getChannelName(seriesIndex, curC);
+				if(chanName==null)
+					chanName="ch"+curC;
+
+				EvChannel ch=imset.getCreateChannel(chanName);
+
+				System.out.println("im: "+imsetName+" ch: "+chanName+" zct: "+sizeZ+" "+sizeC+" "+sizeT);
+
+				for(int curT=0;curT<sizeT;curT++)
 					{
 					
 					int imageIndexFirstPlane=imageReader.getIndex(0, curC, curT);
@@ -728,10 +745,10 @@ public class EvIODataBioformats implements EvIOData
 					stack.setRes(resX,resY,resZ);
 					
 					//Fill stack with planes
-					for(int curZ=0;curZ<sizeZ.getValue();curZ++)
+					for(int curZ=0;curZ<sizeZ;curZ++)
 						{
 						EvImage evim=new EvImage();
-						evim.io=new BioformatsSliceIO(imageReader, imageReader.getIndex(curZ, curC, curT), basedir, false);
+						evim.io=new BioformatsSliceIO(imageReader, seriesIndex, imageReader.getIndex(curZ, curC, curT), basedir, false);
 						stack.putInt(curZ, evim);
 						}
 					

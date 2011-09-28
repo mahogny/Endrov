@@ -46,7 +46,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 	private SpinnerModel wModel =new SpinnerNumberModel(336,0,1000000,1);
 	private JSpinner spinnerW   =new JSpinner(wModel);
 
-	private EvComboObjectOne<Imageset> metaCombo=new EvComboObjectOne<Imageset>(new Imageset(),false,false);
+	//private EvComboObjectOne<Imageset> metaCombo=new EvComboObjectOne<Imageset>(new Imageset(),false,false);
 
 	private JComboBox codecCombo = new JComboBox(EvMovieMakerFactory.makers);
 	private JComboBox qualityCombo = new JComboBox();
@@ -84,7 +84,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 		updateQualityList();
 		for(int i=0;i<numChannelCombo;i++)
 			{
-			EvComboChannel c=new EvComboChannel(getCurrentImageset(),true);
+			EvComboChannel c=new EvComboChannel(false, true);
 			c.addActionListener(this);
 			channelCombo.add(c);
 			
@@ -94,7 +94,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 			else
 				chanDesc.add(new JTextField("<channel/>"));
 			}
-		metaCombo.addActionListener(this);
+		//metaCombo.addActionListener(this);
 		bStart.addActionListener(this);
 		codecCombo.addActionListener(this);
 		
@@ -121,7 +121,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 		
 		JPanel cpChan = new JPanel(new GridBagLayout());
 		JPanel someRight=new JPanel(new BorderLayout());
-		someRight.add(metaCombo, BorderLayout.NORTH);
+		//someRight.add(metaCombo, BorderLayout.NORTH);
 		someRight.add(cpChan, BorderLayout.CENTER);
 		
 		add(someRight,BorderLayout.CENTER);
@@ -200,24 +200,27 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 	 */
 	public void actionPerformed(ActionEvent e)
 		{
+		/*
 		if(e.getSource()==metaCombo)
 			{
 			for(EvComboChannel c:channelCombo)
 				c.setRoot(getCurrentImageset());
 			packEvWindow();
 			}
-		else if(e.getSource()==codecCombo)
+		else*/
+		if(e.getSource()==codecCombo)
 			{
 			updateQualityList();
 			}
 		else if(e.getSource()==bStart)
 			{
-			if(/*channelCombo.getChannel().equals("") ||*/ metaCombo.getSelectedObject()==null)
+			/*
+			if( metaCombo.getSelectedObject()==null)
 				{
 				JOptionPane.showMessageDialog(null, "No imageset selected");
 				}
-			else
-				{
+			else*/
+				//{
 				String textBad=null;
 				for(JTextField tf:chanDesc)
 					if(!new MovieDescString(tf.getText()).isValidXML())
@@ -225,17 +228,17 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 				
 				if(textBad!=null)
 					BasicWindow.showErrorDialog(textBad);
-				else if(metaCombo.getSelectedObject()==null)
-					BasicWindow.showErrorDialog("No data selected");
+				//else if(metaCombo.getSelectedObject()==null)
+				//	BasicWindow.showErrorDialog("No data selected");
 				else
 					{
 					EvDecimal z=new EvDecimal((Integer)spinnerZ.getValue());
 					
 					Vector<MakeMovieThread.MovieChannel> channelNames=new Vector<MakeMovieThread.MovieChannel>();
 					for(int i=0;i<channelCombo.size();i++)
-						if(channelCombo.get(i).getChannel()!=null)
+						if(channelCombo.get(i).getSelectedObject()!=null)
 							{
-							channelNames.add(new MakeMovieThread.MovieChannel(channelCombo.get(i).getChannelName(), channelCombo.get(i).getChannel(),/*filterSeq.get(i),*/ chanDesc.get(i).getText(),z));
+							channelNames.add(new MakeMovieThread.MovieChannel(channelCombo.get(i).getChannelName(), channelCombo.get(i).getSelectedObject(),/*filterSeq.get(i),*/ chanDesc.get(i).getText(),z));
 							}
 					if(channelNames.isEmpty())
 						{
@@ -243,7 +246,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 						return;
 						}
 					
-					EvData data=metaCombo.getData();
+					EvData data=channelCombo.get(0).getData();//metaCombo.getData();
 					
 					//Decide name of movie file
 					File outdir;
@@ -267,15 +270,16 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 						new BatchWindow(thread);
 						}
 					}
-				}
+				//}
 			}
 		}
 	
-	
+	/*
 	public Imageset getCurrentImageset()
 		{
+		channelCombo.get(0).
 		return metaCombo.getSelectedObjectNotNull();
-		}
+		}*/
 	
 	/*
 	 * (non-Javadoc)
@@ -283,10 +287,14 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 	 */
 	public void dataChangedEvent()
 		{
+		/*
 		metaCombo.updateList();
 		Imageset im=getCurrentImageset();	
 		for(EvComboChannel c:channelCombo)
-			c.setRoot(im);
+			c.setRoot(im);*/
+		
+		for(EvComboChannel c:channelCombo)
+			c.updateList();
 		}
 	
 	

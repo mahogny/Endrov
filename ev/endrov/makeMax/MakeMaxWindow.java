@@ -59,7 +59,8 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 	
 	//GUI components
 	private JButton bStart=new JButton("Start");
-	private EvComboChannel channelCombo=new EvComboChannel(null,false);
+	//private EvComboChannel channelCombo=new EvComboChannel(null,false);
+	private EvComboChannel channelCombo=new EvComboChannel(true,false);
 	
 	private SpinnerModel startModel  =new SpinnerNumberModel(0,0,1000000,1);
 	private JSpinner spinnerStart    =new JSpinner(startModel);

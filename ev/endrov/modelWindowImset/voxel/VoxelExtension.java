@@ -293,20 +293,20 @@ public class VoxelExtension implements ModelWindowExtension
 					final List<StackRendererInterface.ChannelSelection> chsel=new ArrayList<StackRendererInterface.ChannelSelection>(); 
 					for(ToolIsolayer oc:isolayers)
 						{
-						Imageset im=oc.channelCombo.getImagesetNotNull();
+						/*Imageset im=oc.channelCombo.getImagesetNotNull();
 						String channelName=oc.channelCombo.getChannelName();
 						if(channelName!=null)
-							{
-							EvChannel chim=im.getChannel(channelName);
+							{*/
+							EvChannel chim=oc.channelCombo.getSelectedObject();//im.getChannel(channelName);
 							if(chim!=null)
 								{
 								StackRendererInterface.ChannelSelection sel=new StackRendererInterface.ChannelSelection();
 								chsel.add(sel);
-								sel.im=im;
+								//sel.im=oc.channelCombo.getImageset();//im;
 								sel.ch=chim;
 								sel.prop=oc.prop;
 								}
-							}
+							//}
 						}
 
 					//Start build thread
@@ -380,7 +380,7 @@ public class VoxelExtension implements ModelWindowExtension
 			public ChanProp prop=new ChanProp();
 			
 			static final long serialVersionUID=0;
-			private EvComboChannel channelCombo=new EvComboChannel(null,true);
+			private EvComboChannel channelCombo=new EvComboChannel(true,true);
 			private JButton bDelete=BasicIcon.getButtonDelete();
 			private EvComboColor colorCombo=new EvComboColor(false);
 //			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
@@ -449,8 +449,8 @@ public class VoxelExtension implements ModelWindowExtension
 				
 				System.out.println("new stack (changed)");
 	
-				EvChannel images=channelCombo.getImagesetNotNull().getChannel(channelCombo.getChannelName());
-				lastChannelImages=new WeakReference<EvChannel>(images);
+				EvChannel ch=channelCombo.getSelectedObject();//channelCombo.getImagesetNotNull().getChannel(channelCombo.getChannelName());
+				lastChannelImages=new WeakReference<EvChannel>(ch);
 				
 				System.out.println("voxel repaint");
 				w.view.repaint();
@@ -461,8 +461,8 @@ public class VoxelExtension implements ModelWindowExtension
 				String channelName=channelCombo.getChannelName();
 				if(channelName!=null)
 					{
-					EvChannel images=channelCombo.getImagesetNotNull().getChannel(channelName);
-					if(images!=lastChannelImages.get())
+					EvChannel ch=channelCombo.getSelectedObject();//getImagesetNotNull().getChannel(channelName);
+					if(ch!=lastChannelImages.get())
 						stackChanged();
 					}
 				else if(channelName==null)

@@ -88,10 +88,11 @@ public class ImageWindow extends BasicWindow
 		Element e=new Element("imagewindow");
 		setXMLbounds(e);
 		e.setAttribute("group", ""+frameControl.getGroup());
-		String lastChan=channelWidget.get(0).comboChannel.lastSelectChannel;
+		/*String lastChan=null;//channelWidget.get(0).comboChannel.lastSelectChannel;  //To be redone
 		if(lastChan==null)
 			lastChan="";
 		e.setAttribute("lastSelectChannel", lastChan);
+		*/
 		root.addContent(e);
 		}
 
@@ -222,7 +223,8 @@ public class ImageWindow extends BasicWindow
 		static final long serialVersionUID=0;
 		
 		private final JRadioButton rSelect=new JRadioButton();
-		private final EvComboChannel comboChannel=new EvComboChannel(null,false);
+		//private final EvComboObjectOne<EvChannel> comboChannel=new EvComboObjectOne<EvChannel>(new EvChannel(), true, false); 
+		private final EvComboChannel comboChannel=new EvComboChannel(false,false);
 		private final JSlider sliderContrast=new JSlider(-10000,10000,0);
 		private final JSlider sliderBrightness=new JSlider(-200,200,0);
 		private final EvComboColor comboColor=new EvComboColor(false, channelColorList, EvColor.white);
@@ -435,13 +437,13 @@ public class ImageWindow extends BasicWindow
 		attachDragAndDrop(imagePanel);
 		
 		//Window overall things
-		setTitleEvWindow("Image Window");
 		for(ChannelWidget w:channelWidget)
 			w.comboChannel.updateList();
 		packEvWindow();
 		frameControl.setChannel(getImageset(), getCurrentChannelName());
 		frameControl.setFrame(EvDecimal.ZERO);
 		setBoundsEvWindow(bounds);
+		updateWindowTitle();
 		setVisibleEvWindow(true);
 		updateImagePanel();
 		}
@@ -718,9 +720,13 @@ public class ImageWindow extends BasicWindow
 			{
 			imagePanel.zoomToFit();
 			}
-			
-		//Update window title
-		setTitleEvWindow("Image Window - "+channelWidget.get(0).comboChannel.getSelectedObjectPath());
+
+		updateWindowTitle();
+		}
+	
+	public void updateWindowTitle()
+		{
+		setTitleEvWindow("Image Window - "+channelWidget.get(0).comboChannel.getSelectedPath());
 		}
 	
 	
@@ -1008,7 +1014,14 @@ public class ImageWindow extends BasicWindow
 		{
 		List<Imageset> ims=data.getObjects(Imageset.class);
 		if(!ims.isEmpty())
-			getCurrentChannelWidget().comboChannel.setSelectedObject(ims.get(0), getCurrentChannelWidget().comboChannel.lastSelectChannel);
+			{
+			EvComboChannel chw=getCurrentChannelWidget().comboChannel;
+			
+			//TODO try and set the last selected channel!
+			//TODO store state of window
+			
+			//setSelectedObject(ims.get(0), getCurrentChannelWidget().comboChannel.lastSelectChannel);
+			}
 		}
 
 	public void freeResources(){}
@@ -1121,7 +1134,7 @@ public class ImageWindow extends BasicWindow
 					{
 					ImageWindow win=new ImageWindow(BasicWindow.getXMLbounds(e));
 					win.frameControl.setGroup(e.getAttribute("group").getIntValue());
-					win.channelWidget.get(0).comboChannel.lastSelectChannel=e.getAttributeValue("lastSelectChannel");
+					//win.channelWidget.get(0).comboChannel.lastSelectChannel=e.getAttributeValue("lastSelectChannel");
 					}
 				catch (Exception e1){e1.printStackTrace();}
 				}

@@ -476,7 +476,7 @@ public class OSTdaemon extends Thread
 		LinkedList<BufferedImage> list=new LinkedList<BufferedImage>();
 		for(int id=0;id<count;id++)
 			{
-			EvPixels pixels=new BioformatsSliceIO(imageReader,id,filename, false).get(new ProgressHandle());
+			EvPixels pixels=new BioformatsSliceIO(imageReader,0,id,filename, false).get(new ProgressHandle());
 			BufferedImage i=pixels.quickReadOnlyAWT();
 //			BufferedImage i=imageReader.openImage(id);
 			int w=i.getWidth();

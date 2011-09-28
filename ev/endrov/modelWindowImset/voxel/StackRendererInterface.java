@@ -13,7 +13,6 @@ import javax.media.opengl.GL2;
 import javax.vecmath.Vector3d;
 
 import endrov.imageset.EvChannel;
-import endrov.imageset.Imageset;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
 import endrov.util.EvDecimal;
@@ -32,7 +31,7 @@ public abstract class StackRendererInterface
 	 */
 	public static class ChannelSelection
 		{
-		public Imageset im;
+		//public Imageset im;
 		public EvChannel ch;
 		public ChanProp prop;
 		
