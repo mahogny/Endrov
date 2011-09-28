@@ -12,6 +12,9 @@ import java.awt.image.RasterOp;*/
 import java.io.*;
 import java.util.*;
 
+import ome.xml.model.enums.DimensionOrder;
+import ome.xml.model.enums.PixelType;
+import ome.xml.model.primitives.NonNegativeInteger;
 import ome.xml.model.primitives.PositiveInteger;
 
 import loci.common.services.DependencyException;
@@ -20,6 +23,8 @@ import loci.common.services.ServiceFactory;
 import loci.formats.*;
 import loci.formats.in.OMETiffReader;
 import loci.formats.meta.*;
+import loci.formats.out.OMETiffWriter;
+import loci.formats.out.OMEXMLWriter;
 import loci.formats.services.OMEXMLService;
 import endrov.data.*;
 import endrov.imageset.*;
@@ -63,13 +68,14 @@ public class EvIODataBioformats implements EvIOData
 	/**
 	 * Open a new recording
 	 */
-	public EvIODataBioformats(EvData d, File basedir) throws Exception
+	public EvIODataBioformats(File basedir) throws Exception
 		{
 		this.basedir=basedir;
-		if(!basedir.exists())
-			throw new Exception("File does not exist");
+		}
+	
+	private void load(EvData d) throws Exception
+		{
 
-		
 		imageReader=new ImageReader();
 		
 		//Populate OME-XML i.e. actually parse metadata
@@ -106,10 +112,8 @@ public class EvIODataBioformats implements EvIOData
 		imageReader=sw;*/
 		
 		System.out.println("bioformats building database");
-		buildDatabase(d);
+		buildDatabase(d);		
 		}
-	
-	
 
 	public File datadir()
 		{
@@ -133,6 +137,220 @@ public class EvIODataBioformats implements EvIOData
 		{
 		try
 			{
+			
+			//TODO other formats supported too!
+			
+			if(basedir.getName().endsWith(".ome.tif"))  //and .ome.tiff
+				{
+				if(!basedir.exists())
+					{
+
+					
+					
+					// http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/utils/ConvertToOmeTiff.java;hb=HEAD
+					
+					/*
+					
+					try
+						{
+						ImageWriter writer = new ImageWriter();
+						
+				
+//						OMETiffWriter writer = new OMETiffWriter();
+	//				  writer.setBigTiff(true);
+
+				
+
+
+					  // record metadata to OME-XML format
+					  ServiceFactory factory = new ServiceFactory();
+					  OMEXMLService service = factory.getInstance(OMEXMLService.class);
+					  
+					  
+
+						//Create map channel -> series ID
+					  Map<EvPath, EvChannel> channels=d.getIdObjectsRecursive(EvChannel.class);
+					  ArrayList<EvPath> chanToId=new ArrayList<EvPath>();
+					  for(EvPath curChan:channels.keySet())
+					  	chanToId.add(curChan);
+					  
+					  //Create metadata for each series
+					  IMetadata metadata = service.createOMEXMLMetadata();
+					  
+					  int datasetIndex=0;
+					  metadata.setDatasetID("id0", datasetIndex);
+					  metadata.setDatasetName("name0", datasetIndex);
+					  metadata.setDatasetDescription("desc0", datasetIndex);
+					  
+					  
+					  for (int imageIndex=0; imageIndex<imageCount; imageIndex++) 
+					  	{
+					  	//One "image" per channel!
+					  	//as many datasets as channels
+					  	//Exception: RGB handling? to store tiffs etc, need to be able to merge
+					  	
+					  	
+					  //TODO "image" metadata, image in a dataset, nothing critical right now
+
+					  	//TODO image to dataset ref
+					  	//metadata.setImageDatasetRef(arg0, arg1, arg2)
+
+					  	//image can have an optional ID and name
+					  	
+					  	
+						  //metadata.setImageAcquiredDate(arg0, imageIndex);
+						  //metadata.setImageDescription(arg0, imageIndex);
+						  //metadata.setImageName(arg0, imageIndex);
+						  
+
+					  	
+					  	//channelcount for a given imageIndex
+					  	for (int channelIndex=0; channelIndex<1; channelIndex++) 
+					  		{
+					  	
+					  		//TODO a lot of metadata for the channel
+					  		
+					  		
+					  		
+					  		}
+					  	
+					  	
+					  	
+					  	
+					  	metadata.setPixelsPhysicalSizeX(1.0, imageIndex);
+					  	metadata.setPixelsPhysicalSizeY(1.0, imageIndex);
+					  	metadata.setPixelsPhysicalSizeZ(1.0, imageIndex);
+					  	
+					  	metadata.setPixelsSizeX(new PositiveInteger(500), imageIndex);
+					  	metadata.setPixelsSizeY(new PositiveInteger(500), imageIndex);
+					  	metadata.setPixelsSizeZ(new PositiveInteger(500), imageIndex);
+					  	metadata.setPixelsSizeC(new PositiveInteger(1), imageIndex);
+					  	metadata.setPixelsSizeT(new PositiveInteger(500), imageIndex);
+					  
+						  metadata.setPixelsDimensionOrder(DimensionOrder.XYZCT, imageIndex);
+						  
+						  metadata.setPixelsType(PixelType.DOUBLE, imageIndex);
+						  
+						  for(int planeIndex=0;planeIndex<5;planeIndex++)
+						  	{
+						  	//Each XY-plane ....
+						  	
+						  	
+							  metadata.setPlaneDeltaT(1.0, imageIndex, planeIndex);
+							  metadata.setPlaneExposureTime(1.0, imageIndex, planeIndex);
+							  
+							  //Position with image
+							  metadata.setPlaneTheC(new NonNegativeInteger(0), imageIndex, planeIndex);
+							  metadata.setPlaneTheZ(new NonNegativeInteger(0), imageIndex, planeIndex);
+							  metadata.setPlaneTheT(new NonNegativeInteger(0), imageIndex, planeIndex);
+							  
+							  //For stage
+							  metadata.setPlanePositionX(1.0, imageIndex, planeIndex);
+							  metadata.setPlanePositionY(1.0, imageIndex, planeIndex);
+							  metadata.setPlanePositionZ(1.0, imageIndex, planeIndex);
+							  
+							  
+							  
+						  	}
+						  
+						  
+						  }
+						  
+					  
+					  
+					  
+					  
+					  
+					  //TODO fill in metadata
+					  
+
+					  // Overview
+					  // http://www.ome-xml.org/wiki/CompliantSpecification
+					  // THE file to understand how to write metadata:
+					  // http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/meta/MetadataConverter.java;h=3780d383239aa519be1ae149d3a875825dfd03ef;hb=HEAD
+					  
+					  //Start writing
+					  writer.setMetadataRetrieve(metadata);
+					  writer.setId(basedir.getAbsolutePath());
+					  //writer.setCompression("J2K");
+
+					  //Use BIGTIFF if possible. Later this will not be needed
+					  if(writer.getWriter() instanceof OMETiffWriter)
+					  	{
+					  	System.out.println("ometiff! "+writer.getWriter());
+					  	((OMETiffWriter)writer.getWriter()).setBigTiff(true);
+					  	}
+
+					  //Write all the series
+					  for(int curChanID=0;curChanID<channels.size();curChanID++)
+					  	{
+					  	EvChannel curChan=channels.get(curChanID);
+					  	
+					  	writer.setSeries(curChanID);
+					  	
+					  	
+
+					  	for (int curZ=0; curZ<3; curZ++) 
+					  		{
+					  		byte[] plane=null;
+
+					  		
+					  		writer.saveBytes(curZ, plane);
+					  		}
+					  	curChanID++;
+					  	}
+
+					  writer.close();
+						}
+					catch (DependencyException e)
+						{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						}
+					catch (ServiceException e)
+						{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						}
+					catch (FormatException e)
+						{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						}
+
+*/
+					
+					
+					
+					}
+				
+				
+				}
+			/*
+			else if(basedir.getName().endsWith(".jpg") || basedir.getName().endsWith(".jpeg") || basedir.getName().endsWith(".png"))
+				{
+				String fileEnding=EvFileUtil.fileEnding(basedir);
+				
+				//TODO use ImageIO
+				
+				Map<EvPath, EvChannel> channels=d.getIdObjectsRecursive(EvChannel.class);
+				EvChannel ch=channels.values().iterator().next();
+				EvStack stack=ch.getFirstStack(null);
+				EvImage evim=stack.getInt(0);
+				if(evim.isDirty)
+					{
+					ImageWriter wr=new ImageWriter();
+					
+					
+					JPEGWriter wr=new JPEGWriter();
+					
+					ImageIO.write(im, fileEnding, basedir);
+					evim.isDirty=false;
+					}
+				
+				
+				
+				}*/
 			
 			
 			
@@ -368,11 +586,17 @@ public class EvIODataBioformats implements EvIOData
 		EvData.supportedFileFormats.add(new EvDataSupport(){
 			public Integer loadSupports(String fileS)
 				{
+				//ImageReader r=new ImageReader();
+				//r.setId(fileS);
+
+				
 				//ImageReader r=new ImageReader(); //Possible to get all suffixes and match
 				
 				File file=new File(fileS);
 				return file.isFile() ? 100 : null; //Low priority; need to find a way to check extensions
 				}
+			
+			
 			public List<Tuple<String,String[]>> getLoadFormats()
 				{
 				ImageReader r=new ImageReader();
@@ -397,15 +621,62 @@ public class EvIODataBioformats implements EvIOData
 					}				
 				return formats;
 				}
+			
+			
 			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
 				{
+				if(!new File(file).exists())
+					throw new Exception("File does not exist");
 				EvData d=new EvData();
-				d.io=new EvIODataBioformats(d, new File(file));
+				EvIODataBioformats io=new EvIODataBioformats(new File(file));
+				io.load(d);
+				d.io=io;
+				
 				return d;
 				}
-			public Integer saveSupports(String file){return null;}
-			public List<Tuple<String,String[]>> getSaveFormats(){return new LinkedList<Tuple<String,String[]>>();};
-			public EvIOData getSaver(EvData d, String file) throws IOException{return null;}
+			
+			
+			public Integer saveSupports(String file)
+				{
+				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
+				Set<String> suffixes=new HashSet<String>();
+				for(IFormatHandler h:new ImageWriter().getWriters())
+					{
+					formats.add(new Tuple<String,String[]>(h.getFormat(),h.getSuffixes()));
+					for(String s:h.getSuffixes())
+						suffixes.add(s);
+					}
+				
+				for(String s:suffixes)
+					if(file.endsWith(s))
+						return 100;
+				return null;
+				}
+			
+			
+			public List<Tuple<String,String[]>> getSaveFormats()
+				{
+				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
+				for(IFormatHandler h:new ImageWriter().getWriters())
+					formats.add(new Tuple<String,String[]>(h.getFormat(),h.getSuffixes()));
+				return formats;
+				}
+				
+				
+			public EvIOData getSaver(EvData d, String file) throws IOException
+				{
+				try
+					{
+					EvIODataBioformats io;
+					io = new EvIODataBioformats(new File(file));
+					return io;
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					throw new IOException(e.getMessage());
+					}
+				}
 		});
 		}
 
