@@ -73,7 +73,8 @@ public class DialogImportDataset extends JFrame implements ActionListener
 	
 		bOk.addActionListener(this);
 		bCancel.addActionListener(this);
-	
+		combo.addActionListener(this);
+		
 		pack();
 		setLocationRelativeTo(null);
 	
@@ -84,8 +85,9 @@ public class DialogImportDataset extends JFrame implements ActionListener
 	
 	public void actionPerformed(ActionEvent e)
 		{
-		if(e.getSource()==bOk)
+		if(e.getSource()==bOk || e.getSource()==combo)
 			{
+			dispose();
 			ComboDataset item=(ComboDataset)combo.getSelectedItem();
 			if(item!=null)
 				{
@@ -97,7 +99,7 @@ public class DialogImportDataset extends JFrame implements ActionListener
 				EvData.registerOpenedData(data);
 				BasicWindow.updateWindows();
 				
-				
+
 				}
 			}
 		else if(e.getSource()==bCancel) //Cancel

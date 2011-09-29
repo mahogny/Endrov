@@ -10,6 +10,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.util.EvSwingUtil;
 
 import Glacier2.CannotCreateSessionException;
 import Glacier2.PermissionDeniedException;
@@ -24,46 +25,62 @@ public class DialogOpenOMERODatabase extends JDialog implements ActionListener, 
 	{
 	static final long serialVersionUID=0; 
 	
-	private JTextField iPort=new JTextField();
-	private JTextField iUrl=new JTextField();
-	private JTextField iUser=new JTextField();
-	private JTextField iPassword=new JPasswordField();
-	private JButton bOk=new JButton("Ok");
-	private JButton bCancel=new JButton("Cancel");
-	
-	private Semaphore sem=new Semaphore(0);
-	private boolean pressedOk=false;
 
 	/**
 	 * Final values. Never null
 	 */
 	public String dbUrl="localhost", dbUser="root", dbPassword="";
 	public int dbPort=4064;
+	public boolean dbEncrypted=true;
 	
+	
+	/**
+	 * Input fields
+	 */
+	private JTextField iPort=new JTextField(""+dbPort);
+	private JTextField iUrl=new JTextField(dbUrl);
+	private JTextField iUser=new JTextField(dbUser);
+	private JTextField iPassword=new JPasswordField(dbPassword);
+	private JButton bOk=new JButton("Ok");
+	private JButton bCancel=new JButton("Cancel");
+	private JCheckBox chEncrypted=new JCheckBox("", dbEncrypted);
+	
+	private Semaphore sem=new Semaphore(0);
+	private boolean pressedOk=false;
+
 	/**
 	 * Create the dialog. Let a parameter be null if it should not be in, otherwise default value
 	 */
 	public DialogOpenOMERODatabase(Frame f)
 		{
 		super(f, "OMERO Login", true);
-		setLayout(new BorderLayout());
+		//setLayout(new BorderLayout());
 	
-		int numline=4;
+	//	int numline=5;
 	
-		setLayout(new GridLayout(numline+1,2));
-	
-		iUrl.setText(dbUrl);
-		iPort.setText(""+dbPort);
-		iUser.setText(dbUser);
-		iPassword.setText(dbPassword);
+		setLayout(new GridLayout(1, 1));
+		add(EvSwingUtil.layoutCompactVertical(
+			EvSwingUtil.layoutTableCompactWide(
+					new JLabel("URL:"),      iUrl,
+					new JLabel("Port:"),     iPort,
+					new JLabel("Encrypted:"),  chEncrypted,
+					new JLabel("User:"),     iUser,
+					new JLabel("Password:"), iPassword
+			),
+			EvSwingUtil.layoutEvenHorizontal(bOk, bCancel)
+			));
 		
+//		setLayout(new GridLayout(numline+1,2));
+	
+		/*
 		add(new JLabel("URL:"));      add(iUrl);
 		add(new JLabel("Port:"));     add(iPort);
+		add(new JLabel("Encrypted:"));  add(chEncrypted);
 		add(new JLabel("User:"));     add(iUser);
 		add(new JLabel("Password:")); add(iPassword);
 	
 		add(bOk);
-		add(bCancel);
+		add(bCancel);*/
 		bOk.addActionListener(this);
 		bCancel.addActionListener(this);
 	
@@ -115,6 +132,7 @@ public class DialogOpenOMERODatabase extends JDialog implements ActionListener, 
 				dbUrl=iUrl.getText();
 				dbUser=iUser.getText();
 				dbPassword=iPassword.getText();
+				dbEncrypted=chEncrypted.isSelected();
 				pressedOk=true;
 				dispose();
 				sem.release();
@@ -157,10 +175,8 @@ public class DialogOpenOMERODatabase extends JDialog implements ActionListener, 
 						{
 						OMEROConnection connection;
 						connection = new OMEROConnection();
-						connection.connect(iUrl.getText(), Integer.parseInt(iPort.getText()), iUser.getText(), iPassword.getText());
+						connection.connect(dbUrl, dbPort, dbUser, dbPassword, dbEncrypted);
 
-						//Thread.sleep(2000);
-						
 						System.out.println("got session!!!");
 						
 						//TODO disconnect previous?

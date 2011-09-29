@@ -48,16 +48,16 @@ public class OMEROConnection
 	private client client;
 	private ServiceFactoryPrx entry;
 	
-	public void connect(String hostName, int port, String userName, String password) throws CannotCreateSessionException, PermissionDeniedException, ServerError
+	public void connect(String hostName, int port, String userName, String password, boolean encrypted) throws CannotCreateSessionException, PermissionDeniedException, ServerError
 		{
 		client=new client(hostName, port);
 		entry = getClient().createSession(userName, password);
 
-		//If want to run unencrypted then run this afterwards:
-		/*
+		if(!encrypted)
+			{
 			client unsecureClient = client.createClient(false);
 			entry = unsecureClient.getSession();
-		 */
+			}
 		}
 	
 	public Long getMyUserId() throws ServerError

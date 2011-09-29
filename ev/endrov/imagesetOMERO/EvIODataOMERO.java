@@ -8,6 +8,9 @@ package endrov.imagesetOMERO;
 import java.io.File;
 import java.util.Set;
 
+import loci.common.DataTools;
+import loci.formats.FormatTools;
+
 
 import omero.ServerError;
 import omero.api.RawPixelsStorePrx;
@@ -52,14 +55,14 @@ public class EvIODataOMERO implements EvIOData
 
 	public class SliceIO extends EvIOImage
 		{
-		long pixelsId;
+		private final long pixelsId;
+		private final int c;
+		private final int z;
+		private final int t;
+		private final int w, h;
+		private final int pixelType;
 		
-		int c;
-		int z;
-		int t;
-		int w, h;
-		
-		public SliceIO(ImageData image, int c, int z, int t, int w, int h)
+		public SliceIO(ImageData image, int c, int z, int t, int w, int h, int pixelType)
 			{
 			PixelsData pixels = image.getDefaultPixels();
 			pixelsId = pixels.getId();
@@ -68,6 +71,12 @@ public class EvIODataOMERO implements EvIOData
 			this.t=t;
 			this.w=w;
 			this.h=h;
+			this.pixelType=pixelType;
+			
+			//image.getFormat()  //This is the FILE format
+			
+			
+			
 			}
 		
 		@Override
@@ -83,14 +92,33 @@ public class EvIODataOMERO implements EvIOData
 
 				System.out.println("plane size "+plane.length+"  wh "+w+"   "+h);
 				
+				boolean little=false;
+				
+				if(pixelType==FormatTools.INT32)
+					{
+					
+					int[] arr=new int[w*h];
+					for(int i=0;i<arr.length;i++)
+						arr[i]=DataTools.bytesToInt(plane, i*4, little);
+					
+					//int[] arr=DataTools.bytesToInt(plane, little);
+					
+					
+					return EvPixels.createFromInt(w, h, arr);
+					}
+				else
+					{
+					return EvPixels.createFromUByte(w, h, plane);
+					
+					}
+				
 				//TODO convert to suitable evpixel!!!!
 				
-				//boolean little=true;
+				
 				//int[] arr=DataTools.bytesToInt(plane, little);
 				
+				//NOTE: the array might be longer than w*h
 				
-				
-				return EvPixels.createFromUByte(w, h, plane);
 				}
 			catch (ServerError e)
 				{
@@ -138,11 +166,18 @@ public class EvIODataOMERO implements EvIOData
 		//Timestamp acqDate=imd.getAcquisitionDate();
 
 
+		//System.out.println("fooormaaat"+image.getDescription());
+
 		PixelsData pixels = imd.getDefaultPixels();  
 		int sizeZ = pixels.getSizeZ(); 
 		int sizeT = pixels.getSizeT();
 		int w = pixels.getSizeX(); 
 		int h = pixels.getSizeY(); 
+		
+		System.out.println("Pixel type "+pixels.getPixelType());
+		
+		int type = FormatTools.pixelTypeFromString(pixels.getPixelType());
+
 		
 		
 		for(int t=0;t<sizeT;t++)
@@ -151,7 +186,7 @@ public class EvIODataOMERO implements EvIOData
 			EvStack stack=new EvStack();
 			for(int z=0;z<sizeZ;z++)
 				{
-				SliceIO io=new SliceIO(imd, omeroChannel, z, t, w, h);
+				SliceIO io=new SliceIO(imd, omeroChannel, z, t, w, h, type);
 
 
 				EvImage evim=new EvImage();
@@ -159,9 +194,10 @@ public class EvIODataOMERO implements EvIOData
 				stack.putInt(z, evim);
 				}
 
-			stack.resX=1;
-			stack.resY=1;
-			stack.resZ=1;
+			stack.resX=pixels.getPixelSizeX();
+			stack.resY=pixels.getPixelSizeY();
+			stack.resZ=pixels.getPixelSizeZ();
+			
 			
 			//TODO metadata, frame!
 			
@@ -204,10 +240,11 @@ public class EvIODataOMERO implements EvIOData
 						m.imageId=imd.getId();
 						m.omeroChannel=omeroChannel;
 						
+						String chanName=imd.getName()+"-"+omeroChannel;
 						
 						populateChannel(imd, ch, m);
 						
-						imset.metaObject.put("thech", ch);
+						imset.metaObject.put(chanName, ch);
 						}
 					}
 				

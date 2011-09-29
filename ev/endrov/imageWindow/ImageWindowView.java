@@ -229,7 +229,7 @@ public class ImageWindowView extends JPanel
 				//DataBufferByte out=new DataBufferByte(w*h*3);
 				//double[]
 				
-				for(int i=0;i<aPixels.length;i++)
+				for(int i=0;i<w*h;i++)
 					{
 					//double c=aPixels[i]*contrast+brightness;
 					byte b=clampByte((int)(aPixels[i]*contrastB+brightness));
