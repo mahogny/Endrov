@@ -3,10 +3,14 @@ package endrov.ev;
 import java.io.InputStream;
 import java.util.Scanner;
 
+/**
+ * Information about this version of the software
+ * @author Johan Henriksson
+ *
+ */
 public class EvBuild
 	{
 	public static String version;
-	
 	public static String timestamp;
 	
 	static
@@ -22,6 +26,5 @@ public class EvBuild
 		
 		Scanner scanner = new Scanner(EV.class.getResourceAsStream("version.txt"));
 		version=scanner.nextLine()+"."+timestamp;
-		
 		}
 	}

@@ -630,11 +630,6 @@ public abstract class BasicWindow extends JPanel
 	
 	public JMenu getCreateMenuWindowCategory(String category)
 		{
-		/*
-		synchronized (ni)
-			{
-			
-			}*/
 		for(Component c:menuWindows.getMenuComponents())
 			if(c instanceof JMenu)
 				{
@@ -808,9 +803,7 @@ public abstract class BasicWindow extends JPanel
 	 */
 	public static String showInputDialog(String message, String value)
 		{
-//		JOptionPane.showInputDialog(message, value);
 		return JOptionPane.showInputDialog(null, message, value);
-//		return JOptionPane.showInputDialog(null, message, EV.programName, JOptionPane.OK_OPTION);
 		}
 	
 	/**

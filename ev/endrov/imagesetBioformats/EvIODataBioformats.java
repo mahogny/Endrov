@@ -16,6 +16,7 @@ import ome.xml.model.enums.DimensionOrder;
 import ome.xml.model.enums.EnumerationException;
 import ome.xml.model.enums.PixelType;
 import ome.xml.model.primitives.NonNegativeInteger;
+import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
 
 import loci.common.DataTools;
@@ -23,7 +24,6 @@ import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
 import loci.formats.*;
-import loci.formats.in.OMETiffReader;
 import loci.formats.meta.*;
 import loci.formats.out.OMETiffWriter;
 import loci.formats.out.TiffWriter;
@@ -97,7 +97,7 @@ public class EvIODataBioformats implements EvIOData
 			}
 		catch (DependencyException de) 
 			{
-			throw new MissingLibraryException(OMETiffReader.NO_OME_XML_MSG, de);
+			throw new Exception(de.getMessage());
 			}
 		catch (ServiceException se) 
 			{
@@ -289,9 +289,9 @@ public class EvIODataBioformats implements EvIOData
 					  	
 					  	
 					  	
-					  	metadata.setPixelsPhysicalSizeX(resX, imageIndex);
-					  	metadata.setPixelsPhysicalSizeY(resY, imageIndex);
-					  	metadata.setPixelsPhysicalSizeZ(resZ, imageIndex);
+					  	metadata.setPixelsPhysicalSizeX(new PositiveFloat(resX), imageIndex);
+					  	metadata.setPixelsPhysicalSizeY(new PositiveFloat(resY), imageIndex);
+					  	metadata.setPixelsPhysicalSizeZ(new PositiveFloat(resZ), imageIndex);
 					  	
 					  	metadata.setPixelsSizeX(new PositiveInteger(width), imageIndex);
 					  	metadata.setPixelsSizeY(new PositiveInteger(height), imageIndex);
@@ -703,9 +703,9 @@ public class EvIODataBioformats implements EvIOData
 					Double resY=retrieve.getPixelsPhysicalSizeY(imageIndexFirstPlane); //[um/px]
 					Double resZ=retrieve.getPixelsPhysicalSizeZ(imageIndexFirstPlane); //[um/px]*/
 					
-					Double resX=retrieve.getPixelsPhysicalSizeX(0); //[um/px]
-					Double resY=retrieve.getPixelsPhysicalSizeY(0); //[um/px]
-					Double resZ=retrieve.getPixelsPhysicalSizeZ(0); //[um/px]
+					Double resX=retrieve.getPixelsPhysicalSizeX(0).getValue(); //[um/px]
+					Double resY=retrieve.getPixelsPhysicalSizeY(0).getValue(); //[um/px]
+					Double resZ=retrieve.getPixelsPhysicalSizeZ(0).getValue(); //[um/px]
 
 					System.out.println("Detected resolution: "+resX+"    "+resY+"   "+resZ);
 					
