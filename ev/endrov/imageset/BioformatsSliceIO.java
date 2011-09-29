@@ -16,13 +16,15 @@ import loci.formats.IFormatReader;
  */
 public class BioformatsSliceIO extends EvIOImage
 	{
+	private int series;
 	private int id;
 	private IFormatReader imageReader;
 	private Object sourceName;
 	private boolean closeReaderOnFinalize;
 
-	public BioformatsSliceIO(IFormatReader imageReader, int id, Object sourceName, boolean closeReaderOnFinalize)
+	public BioformatsSliceIO(IFormatReader imageReader, int series, int id, Object sourceName, boolean closeReaderOnFinalize)
 		{
+		this.series=series;
 		this.sourceName=sourceName;
 		this.id=id;
 		this.imageReader=imageReader;
@@ -37,8 +39,12 @@ public class BioformatsSliceIO extends EvIOImage
 		{
 		try
 			{
-			byte[] bytes=imageReader.openBytes(id);
-			
+			byte[] bytes;
+			synchronized(this)
+				{
+				imageReader.setSeries(series);
+				bytes=imageReader.openBytes(id);
+				}
 			//FormatTools, DOUBLE, FLOAT, INT16, INT32, INT8, UINT16, UINT32, UINT8
 			
 			
@@ -53,9 +59,9 @@ public class BioformatsSliceIO extends EvIOImage
 			boolean isSigned = type == FormatTools.INT8 || type == FormatTools.INT16 || type == FormatTools.INT32;
 			Object bfpixels = DataTools.makeDataArray(bytes, bpp, isFloat, isLittle);
 			
-			//System.out.println("bpp "+bpp+" fp "+isFloat+" islittle "+isLittle);
 			
-			//System.out.println(bfpixels.getClass()+"  "+isSigned);
+			
+			System.out.println("bpp:"+bpp+" fp:"+isFloat+" islittle:"+isLittle+" signed:"+isSigned+" class:"+bfpixels.getClass());
 			
 			//Much of this code modified from bioformats IJ-plugin. I deem it functional and hence not copyrightable
 			//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/loci/plugins/Util.java?rev=4289
@@ -95,7 +101,9 @@ public class BioformatsSliceIO extends EvIOImage
 					return EvPixels.createFromShort(w, h, q);
 					}
 				else
+					{
 					return EvPixels.createFromInt(w, h, EvPixels.convertUshortToInt(q, len));
+					}
 				/*
 				if (q.length > w * h) 
 					{
@@ -121,12 +129,25 @@ public class BioformatsSliceIO extends EvIOImage
 					System.arraycopy(tmp, 0, q, 0, q.length);
 					}
 
-				/*for(int i:q)
-					System.out.println(" "+i);
-				System.out.println();*/
-				
+/*
+				System.out.println("byte: ");
+				for(int i:bytes)
+					System.out.print(" "+i);
+				System.out.println();
+
+				System.out.println("int: ");
+				for(int i:q)
+					System.out.print(" "+i);
+				System.out.println();
+				*/
 				if (isSigned) 
 					q = DataTools.makeSigned(q);
+
+				/*
+				System.out.println("signed int: ");
+				for(int i:q)
+					System.out.print(" "+i);
+				System.out.println();*/
 
 				//unsigned? - screw it. would have to convert to float/double, evil.
 				return EvPixels.createFromInt(w, h, q);

@@ -46,13 +46,10 @@ public class EvDataMenu implements BasicWindowExtension
 
 		private JMenuItem miOpenFile=new JMenuItem("Load file");
 		private JMenuItem miOpenFilePath=new JMenuItem("Load file by path");
-
-		//WeakReference<BasicWindow> w;
 		
 		public void createMenus(BasicWindow w)
 			{
 			w.addMenubar(mData);
-			//this.w=new WeakReference<BasicWindow>(null);
 			JMenu mFile=w.menuFile;
 			
 			miNew.setIcon(BasicIcon.iconMenuNew);
@@ -86,11 +83,6 @@ public class EvDataMenu implements BasicWindowExtension
 				{
 				EvData data=GuiEvDataIO.loadFileDialog(null);
 				EvData.registerOpenedData(data);
-/*				new Thread(){
-					public void run()
-						{
-						}
-				}.start();*/
 				}
 			else if(e.getSource()==miOpenFilePath)
 				loadByPath();

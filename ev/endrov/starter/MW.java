@@ -123,9 +123,11 @@ public class MW
 				public void run()
 					{ 
 					EV.waitUntilStartedUp();
+
 					for(String s:args)
 						{
 						File f=new File(s);
+						System.out.println("To be loaded from command line: "+f);
 	
 						EvData d=EvData.loadFile(f);
 						if(d==null)

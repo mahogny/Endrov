@@ -220,12 +220,16 @@ public class ImageWindowView extends JPanel
 				int h=p.getHeight();
 				double[] aPixels=p.convertToDouble(true).getArrayDouble();
 				BufferedImage buf=new BufferedImage(w,h,BufferedImage.TYPE_3BYTE_BGR);
+				
+				
+				//System.out.println("Got image, first pixel values "+p.convertToInt(true).getArrayInt()[0]+"   "+p.convertToInt(true).getArrayInt()[1]);
+				
 
 				byte[] outarr=new byte[w*h*3];
 				//DataBufferByte out=new DataBufferByte(w*h*3);
 				//double[]
 				
-				for(int i=0;i<aPixels.length;i++)
+				for(int i=0;i<w*h;i++)
 					{
 					//double c=aPixels[i]*contrast+brightness;
 					byte b=clampByte((int)(aPixels[i]*contrastB+brightness));
@@ -277,7 +281,14 @@ public class ImageWindowView extends JPanel
 		
 		public void setImage(EvStack stack, EvImage image)
 			{
-			System.out.println("got image "+image);
+			/*
+			if(image==null)
+				System.out.println("Got image, null");
+			else
+				System.out.println("got image "+image+"  type "+image.getPixels(null).getType());
+			*/
+//			System.out.println("Got image 2, first pixel values int "+image.getPixels(null).getArrayInt()[0]+"   "+image.getPixels(null).getArrayInt()[1]);
+			//System.out.println("Got image 2, first pixel values "+image.getPixels(null).convertToInt(true).getArrayInt()[0]+"   "+image.getPixels(null).convertToInt(true).getArrayInt()[1]);
 			this.image=image;
 			this.stack=stack;
 			}

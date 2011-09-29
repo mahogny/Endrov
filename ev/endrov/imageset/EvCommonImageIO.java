@@ -78,7 +78,7 @@ public class EvCommonImageIO
 			ImageReader reader=new ImageReader();
 			reader.setId(file.getAbsolutePath());
 			int id=z==null?0:z;
-			return new BioformatsSliceIO(reader,id,file, true).get(new ProgressHandle());
+			return new BioformatsSliceIO(reader,0,id,file, true).get(new ProgressHandle());
 
 			
 			

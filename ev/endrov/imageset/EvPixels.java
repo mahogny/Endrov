@@ -303,7 +303,7 @@ public class EvPixels implements AnyEvImage
 		//Only convert if needed
 		if(type!=newType)
 			{
-			//Conversion is coded to be slow but short at the moment. Metaprogramming would help!
+			//Conversion is coded to be slow but concise at the moment. Metaprogramming would help!
 			if(type==EvPixelsType.AWT)
 				return helperConvertFromAwt(newType);
 			else
@@ -347,6 +347,10 @@ public class EvPixels implements AnyEvImage
 	public EvPixels convertToShort(boolean readOnly)
 		{
 		return convertTo(EvPixelsType.SHORT, readOnly);
+		}
+	public EvPixels convertToUByte(boolean readOnly)
+		{
+		return convertTo(EvPixelsType.UBYTE, readOnly);
 		}
 
 	/**

@@ -35,7 +35,7 @@ public class ParticleDialogIntegrate extends BasicWindow implements ActionListen
 	{
 	private static final long serialVersionUID = 1L;
 	
-	public EvComboChannel comboChannel=new EvComboChannel(null, false);
+	public EvComboChannel comboChannel=new EvComboChannel(false, false);
 	public EvComboObjectOne<Lineage> comboLin=new EvComboObjectOne<Lineage>(new Lineage(), false, false);
 	public JTextField tfExpName=new JTextField("exp");
 	public JCheckBox cbUseRadius=new JCheckBox();
@@ -114,7 +114,7 @@ public class ParticleDialogIntegrate extends BasicWindow implements ActionListen
 			{
 			Lineage lin=comboLin.getSelectedObject();
 			Imageset imset=comboChannel.getImageset();
-			EvChannel ch=comboChannel.getChannel();
+			EvChannel ch=comboChannel.getSelectedObject();
 			
 			boolean useCellRadius=cbUseRadius.isSelected();
 			
