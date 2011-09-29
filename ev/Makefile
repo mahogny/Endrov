@@ -39,7 +39,6 @@ uploaddoc:
 
 starters:
 	jar cfvm startOSTdaemon.jar OSTdaemon/MANIFEST.STARTOST OSTdaemon/*.class endrov/ev/EvBuild.class
-	jar cfvm startImServ.jar bioserv/MANIFEST.STARTIMSERV bioserv/StartImServ.class endrov/ev/EvBuild.class
 	jar cfvm startEndrov.jar endrov/starter/MANIFEST.STARTGUI endrov/starter/*.class endrov/ev/EvBuild.class
 	jar cfvm startViewer.jar endrov/starter/MANIFEST.STARTCEV endrov/starter/*.class endrov/ev/EvBuild.class
 	du -hc start*.jar
@@ -89,11 +88,4 @@ cpuprof:
 memprof:
 	java -Xrunhprof:heap=dump  -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV -cp .:libs/mac/postgresql-8.2-505.jdbc3.jar:libs/mac/gluegen-rt.jar:libs/mac/jogl.jar:libs/mac/sqlitejdbc-v033-native.jar:libs/jcommon-1.0.9.jar:libs/jfreechart-1.0.5.jar:libs/servlet.jar:libs/gnujaxp.jar:libs/itext-2.0.1.jar:libs/vecmath.jar:libs/junit.jar:libs/gnujaxp.jar:libs/jdom.jar:libs/jaxen-core.jar:libs/jaxen-jdom.jar:libs/saxpath.jar:libs/xalan.jar:libs/xerces.jar:libs/xml-apis.jar:libs/bio-formats.jar -Xmx700M -Djava.library.path=libs/mac/ evgui.GUI
 #	java -Xrunhprof:heap=dump  -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV -cp .:libs/mac/postgresql-8.2-505.jdbc3.jar:libs/mac/gluegen-rt.jar:libs/mac/jogl.jar:libs/mac/sqlitejdbc-v033-native.jar:libs/jcommon-1.0.9.jar:libs/jfreechart-1.0.5.jar:libs/servlet.jar:libs/gnujaxp.jar:libs/itext-2.0.1.jar:libs/vecmath.jar:libs/junit.jar:libs/gnujaxp.jar:libs/jdom.jar:libs/jaxen-core.jar:libs/jaxen-jdom.jar:libs/saxpath.jar:libs/xalan.jar:libs/xerces.jar:libs/xml-apis.jar:libs/bio-formats.jar -Xmx700M -Djava.library.path=libs/mac/ util.BenchmarkOST
-
-
-
-#runimserv:
-#	java -jar startEndrov.jar evplugin.imagesetImserv.service.GUI
-
-	#jar cfvm OSTmaker.jar OSTmaker/MANIFEST OSTmaker/StartOSTmaker.class endrov/ev/EvBuild.class
 
