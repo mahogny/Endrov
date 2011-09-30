@@ -601,4 +601,15 @@ public class EvStack implements AnyEvImage
 		return "stack "+super.toString()+"  "+loaders;
 		}
 	
+	/**
+	 * Check if any image is dirty
+	 */
+	public boolean isDirty()
+		{
+		for(EvImage evim:loaders)
+			if(evim.isDirty)
+				return true;
+		return false;
+		}
+	
 	}

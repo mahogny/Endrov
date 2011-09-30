@@ -152,7 +152,6 @@ public class EvIODataBioformats implements EvIOData
 
 			//TODO other formats supported too!
 
-			int formatType=FormatTools.INT32;
 
 			//TODO find the right type
 
@@ -162,6 +161,7 @@ public class EvIODataBioformats implements EvIOData
 				{
 
 
+				//TODO  use  hasDirtyChannels(d) in case file exists
 
 				// http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/utils/ConvertToOmeTiff.java;hb=HEAD
 
@@ -301,7 +301,9 @@ public class EvIODataBioformats implements EvIOData
 
 						System.out.println("chan: "+imageName+" xyzct "+width+" "+height+" "+depth+" "+metadata.getPixelsSizeC(imageIndex)+" "+metadata.getPixelsSizeT(imageIndex));
 
+						int formatType=FormatTools.INT32;
 
+						
 						metadata.setPixelsDimensionOrder(DimensionOrder.XYZCT, imageIndex);
 						try
 							{
@@ -401,9 +403,8 @@ public class EvIODataBioformats implements EvIOData
 						for(EvDecimal frame:ch.getFrames())
 							{
 							int binDataIndex=0;
-							boolean littleEndian = !writer.getMetadataRetrieve().getPixelsBinDataBigEndian(imageIndex, binDataIndex).booleanValue();
+							boolean littleEndian = !metadata.getPixelsBinDataBigEndian(imageIndex, binDataIndex).booleanValue();
 
-							boolean signed=true;
 
 							//boolean isSigned = pixelType == PixelType.INT8 || pixelType == PixelType.INT16 || pixelType == PixelType.INT32;
 
@@ -415,21 +416,18 @@ public class EvIODataBioformats implements EvIOData
 
 								System.out.println("writing ch:"+evchanToId.get(imageIndex)+" frame:"+frame+" z:"+curZ+" planeID:"+planeID);
 
+								PixelType pixelType=metadata.getPixelsType(imageIndex);
+								int formatType = FormatTools.pixelTypeFromString(pixelType.getValue());
 
-								//TODO pull out type of format
-								/*
-						  		PixelType pixelType=metadata.getPixelsType(imageIndex);
-						  		pixelType.
-						  		FormatTools.getPixelTypeString(pixelType)
-
-						  		int formatType=;*/
+								
+								boolean signed=FormatTools.isSigned(formatType);
 
 								//Get and convert to bytes in the specified format, given evpixel format
 								EvPixels p=s.getInt(curZ).getPixels(null);
 								byte[] plane=null;
 								if(formatType==FormatTools.DOUBLE)
 									{
-									//TODO: mystery. why does it not work?
+									//TODO: mystery. why does it not work? or does it?
 									plane=DataTools.doublesToBytes(p.convertToDouble(true).getArrayDouble(), littleEndian);
 									}
 								else if(formatType==FormatTools.INT32)
@@ -547,7 +545,7 @@ public class EvIODataBioformats implements EvIOData
 		}
 	
 
-	
+	/*
 	public static byte[] makeUnSigned(byte[] b) {
 	    for (int i=0; i<b.length; i++) {
 	      b[i] = (byte) (b[i] - 128);
@@ -567,58 +565,23 @@ public class EvIODataBioformats implements EvIOData
 		      i[j] = (int) (i[j] - 2147483648L);
 		    }
 		    return i;
-		  }
+		  }*/
 	
-	//Consider using this instead
-	/*
-	private static int getPlaneIndex(IFormatReader r, int planeNum) 
+	
+	/**
+	 * Check if there is a channel that need be written. Generated data is not written.
+	 */
+	public boolean hasDirtyChannels(EvContainer d)
 		{
-		MetadataRetrieve retrieve = (MetadataRetrieve) r.getMetadataStore();
-		int imageIndex = r.getSeries();
-		int planeCount = retrieve.getPlaneCount(imageIndex, 0);
-		int[] zct = r.getZCTCoords(planeNum);
-		for (int i=0; i<planeCount; i++) 
-			{
-			Integer theC = retrieve.getPlaneTheC(imageIndex, 0, i);
-			Integer theT = retrieve.getPlaneTheT(imageIndex, 0, i);
-			Integer theZ = retrieve.getPlaneTheZ(imageIndex, 0, i);
-			if (zct[0] == theZ.intValue() && zct[1] == theC.intValue() && zct[2] == theT.intValue())
-				return i;
-			}
-		return -1;
+		for(EvChannel ch:d.getIdObjectsRecursive(EvChannel.class).values())
+			if(!ch.isGeneratedData && ch.isDirty())
+				return true;
+		return false;
 		}
-	*/
-
-	
-	/*
-	@SuppressWarnings("deprecation")
-	private static EvDecimal parseBFDate(String s)
-		{
-		//2002-06-17T18:35:59
-		//Note that there is no time zone here. Use the local one. 
-		try
-			{
-			int year=Integer.parseInt(s.substring(0,4));
-			int month=Integer.parseInt(s.substring(5,7));
-			int day=Integer.parseInt(s.substring(8,10));
-			int hour=Integer.parseInt(s.substring(11,13));
-			int minute=Integer.parseInt(s.substring(14,16));
-			int second=Integer.parseInt(s.substring(17,19));
-			Date d=new Date(year-1900,month-1,day,hour,minute,second);
-			return new EvDecimal(d.getTime());
-			}
-		catch (Exception e)
-			{
-			e.printStackTrace();
-			return null;
-			}
-		}
-		*/
-	
+		  
 	/**
 	 * Scan recording for channels and build a file database
 	 */
-	//@SuppressWarnings("unchecked") 
 	public void buildDatabase(EvData d)
 		{
 		//Load metadata from added OSTXML-file. This has to be done first or all image loaders are screwed
@@ -917,7 +880,7 @@ public class EvIODataBioformats implements EvIOData
 		
 		try
 			{
-			File out=new File("/home/tbudev3/temp/A12D51070814.ome.tiff");
+			File out=new File("/home/tbudev3/temp/A12D51070814_double.ome.tiff");
 			out.delete();
 			d.saveDataAs(out);
 			}

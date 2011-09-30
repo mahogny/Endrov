@@ -54,9 +54,6 @@ public class DialogOpenOMERODatabase extends JDialog implements ActionListener, 
 	public DialogOpenOMERODatabase(Frame f)
 		{
 		super(f, "OMERO Login", true);
-		//setLayout(new BorderLayout());
-	
-	//	int numline=5;
 	
 		setLayout(new GridLayout(1, 1));
 		add(EvSwingUtil.layoutCompactVertical(
@@ -70,17 +67,6 @@ public class DialogOpenOMERODatabase extends JDialog implements ActionListener, 
 			EvSwingUtil.layoutEvenHorizontal(bOk, bCancel)
 			));
 		
-//		setLayout(new GridLayout(numline+1,2));
-	
-		/*
-		add(new JLabel("URL:"));      add(iUrl);
-		add(new JLabel("Port:"));     add(iPort);
-		add(new JLabel("Encrypted:"));  add(chEncrypted);
-		add(new JLabel("User:"));     add(iUser);
-		add(new JLabel("Password:")); add(iPassword);
-	
-		add(bOk);
-		add(bCancel);*/
 		bOk.addActionListener(this);
 		bCancel.addActionListener(this);
 	
@@ -99,24 +85,6 @@ public class DialogOpenOMERODatabase extends JDialog implements ActionListener, 
 		addWindowListener(this);
 		}
 	
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	/*
-	public void actionPerformed(ActionEvent e)
-		{
-		if(e!=null && e.getSource()==bOk)
-			pressedOk=true;
-		dispose();
-		dbPort=Integer.parseInt(iPort.getText());
-		dbUrl=iUrl.getText();
-		dbUser=iUser.getText();
-		dbPassword=iPassword.getText();
-		sem.release();
-		}
-	*/
 	public void actionPerformed(ActionEvent e)
 		{
 		if(e!=null)
@@ -150,7 +118,7 @@ public class DialogOpenOMERODatabase extends JDialog implements ActionListener, 
 		try
 			{
 			setVisible(true);
-			iUser.requestFocus();
+			//iUser.requestFocus();
 			sem.acquire();
 			}
 		catch(InterruptedException e){}
@@ -178,8 +146,6 @@ public class DialogOpenOMERODatabase extends JDialog implements ActionListener, 
 						connection.connect(dbUrl, dbPort, dbUser, dbPassword, dbEncrypted);
 
 						System.out.println("got session!!!");
-						
-						//TODO disconnect previous?
 						
 						OMEROBasic.disconnectCurrent();
 						OMEROBasic.omesession=connection;

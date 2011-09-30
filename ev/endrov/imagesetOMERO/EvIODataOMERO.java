@@ -6,6 +6,7 @@
 package endrov.imagesetOMERO;
 
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.Set;
 
 import loci.common.DataTools;
@@ -92,6 +93,8 @@ public class EvIODataOMERO implements EvIOData
 
 				System.out.println("plane size "+plane.length+"  wh "+w+"   "+h);
 				
+				boolean isSigned=store.isSigned();
+				
 				boolean little=false;
 				
 				if(pixelType==FormatTools.INT32)
@@ -163,10 +166,7 @@ public class EvIODataOMERO implements EvIOData
 		{
 		int omeroChannel=m.omeroChannel;
 
-		//Timestamp acqDate=imd.getAcquisitionDate();
-
-
-		//System.out.println("fooormaaat"+image.getDescription());
+		Timestamp acqDate=imd.getAcquisitionDate();
 
 		PixelsData pixels = imd.getDefaultPixels();  
 		int sizeZ = pixels.getSizeZ(); 
@@ -178,7 +178,6 @@ public class EvIODataOMERO implements EvIOData
 		
 		int type = FormatTools.pixelTypeFromString(pixels.getPixelType());
 
-		
 		
 		for(int t=0;t<sizeT;t++)
 			{

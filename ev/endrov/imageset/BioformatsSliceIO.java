@@ -6,6 +6,8 @@
 package endrov.imageset;
 
 
+import java.io.File;
+
 import endrov.util.ProgressHandle;
 import loci.common.DataTools;
 import loci.formats.FormatTools;
@@ -22,6 +24,17 @@ public class BioformatsSliceIO extends EvIOImage
 	private Object sourceName;
 	private boolean closeReaderOnFinalize;
 
+	/**
+	 * Optional: Might return null
+	 */
+	public File getFile()
+		{
+		if(sourceName instanceof File)
+			return (File)sourceName;
+		else
+			return null;
+		}
+	
 	public BioformatsSliceIO(IFormatReader imageReader, int series, int id, Object sourceName, boolean closeReaderOnFinalize)
 		{
 		this.series=series;
@@ -31,6 +44,10 @@ public class BioformatsSliceIO extends EvIOImage
 		this.closeReaderOnFinalize=closeReaderOnFinalize;
 		}
 
+	/*public static boolean isSigned(int formatType)
+		{
+		return formatType == FormatTools.INT8 || formatType == FormatTools.INT16 || formatType == FormatTools.INT32;
+		}*/
 	
 	/**
 	 * Load the image
@@ -54,9 +71,9 @@ public class BioformatsSliceIO extends EvIOImage
 			
 			int type=imageReader.getPixelType();
 			int bpp=FormatTools.getBytesPerPixel(type);
-			boolean isFloat = type == FormatTools.FLOAT || type == FormatTools.DOUBLE;
+			boolean isFloat = FormatTools.isFloatingPoint(type); //type == FormatTools.FLOAT || type == FormatTools.DOUBLE;
 			boolean isLittle = imageReader.isLittleEndian();
-			boolean isSigned = type == FormatTools.INT8 || type == FormatTools.INT16 || type == FormatTools.INT32;
+			boolean isSigned = FormatTools.isSigned(type);
 			Object bfpixels = DataTools.makeDataArray(bytes, bpp, isFloat, isLittle);
 			
 			

@@ -407,4 +407,32 @@ public class EV
 		}
 
 	
+
+	/**
+	 * http://en.wikipedia.org/wiki/ISO_8601
+	 */
+	public static Date parseISO8601Date(String s)
+		{
+		return javax.xml.bind.DatatypeConverter.parseDateTime(s).getTime();
+		/*
+		//Here assuming date contains :. This is an incorrect assumption, should be checked
+		try
+			{
+			int year=Integer.parseInt(s.substring(0,4));
+			int month=Integer.parseInt(s.substring(5,7));
+			int day=Integer.parseInt(s.substring(8,10));
+			int hour=Integer.parseInt(s.substring(11,13));
+			int minute=Integer.parseInt(s.substring(14,16));
+			int second=Integer.parseInt(s.substring(17,19));
+			Date d=new Date(year-1900,month-1,day,hour,minute,second);
+			return new EvDecimal(d.getTime());
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			return null;
+			}
+			*/
+		}
+	
 	}

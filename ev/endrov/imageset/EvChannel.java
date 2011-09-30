@@ -519,6 +519,13 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 		}
 
+	public boolean isDirty()
+		{
+		for(EvDecimal frame:getFrames())
+				if(getStack(frame).isDirty())
+					return true;
+		return false;
+		}
 	
 
 	@Override
