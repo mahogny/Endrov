@@ -16,6 +16,7 @@ import org.jdom.Element;
 import com.sun.opengl.util.BufferUtil;
 
 import endrov.data.EvObject;
+import endrov.lineage.LineageSelParticle;
 import endrov.modelWindow.*;
 import endrov.modelWindow.gl.GLMaterial;
 import endrov.modelWindow.gl.GLMaterialSelect;
@@ -77,11 +78,15 @@ public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLS
 			}
 
 		
+		
+		private final HashMap<Integer,SelMesh3D> selectColorMap=new HashMap<Integer,SelMesh3D>();
+		
 		/**
 		 * Prepare for rendering
 		 */
 		public void displayInit(GL gl)
 			{
+			selectColorMap.clear();
 			}
 		
 		/**
@@ -105,6 +110,9 @@ public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLS
 					vbos.put(mesh, vbo=buildVBO(gl, mesh));
 				
 				int color=w.view.reserveSelectColor(this);
+				selectColorMap.put(color, new SelMesh3D(mesh));
+				
+				
 				GLMaterial m=new GLMaterialSelect(color);
 				gl.glDisable(GL2.GL_LIGHTING);
 				vbo.render(gl, m);
