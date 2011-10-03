@@ -79,6 +79,8 @@ public class WritePrecompressedPlanes2
 			
 //			twriter.saveBytes(planeID, buf, ifd, 0, 0, reader.getSizeX(), reader.getSizeY());
 			
+			
+			
 			/*
 			 * 
 			//// REUSE goes to a particular location. if it does not exist then always go to end

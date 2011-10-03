@@ -12,14 +12,15 @@ import java.util.StringTokenizer;
 
 import javax.vecmath.Vector3d;
 
-import endrov.basicWindow.EvColor;
 import endrov.data.EvData;
 import endrov.data.EvDataSupport;
 import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.data.EvData.FileIOStatusCallback;
+import endrov.ev.EvLog;
 import endrov.mesh3d.Mesh3D;
 import endrov.modelWindow.gl.GLMaterial;
+import endrov.modelWindow.gl.GLMaterialSolid;
 import endrov.util.Tuple;
 
 /**
@@ -30,6 +31,99 @@ import endrov.util.Tuple;
  */
 public class WavefrontIO implements EvIOData
 	{
+	
+	/**
+	 * Wavefront material definition
+	 *
+	 */
+	public static class Material
+		{
+		float[] ambient;
+		float[] diffuse;
+		float[] specular;
+		double specularWeight;
+		double transparency=1;
+		
+		//There are reflection modes as well, see http://en.wikipedia.org/wiki/Wavefront_.obj_file
+		
+		public GLMaterial toGLmaterial()
+			{
+			//What about transparency?
+			GLMaterial m=new GLMaterialSolid(diffuse, specular, ambient, (float)specularWeight);
+			return m;
+			}
+		}
+	
+	//Map<String, Material> materials=new HashMap<String, Material>();
+	
+	
+	public static void readMaterials(File f, Map<String, GLMaterial> glmaterials) throws IOException
+		{
+		Material current=null;
+		BufferedReader br=new BufferedReader(new FileReader(f));
+		
+		Map<String, Material> materials=new HashMap<String, Material>();
+		
+		String line;
+		while((line=br.readLine())!=null)
+			{
+			if(line.startsWith("#"))
+				; //Comment
+			else if(line.startsWith("newmtl "))
+				{
+				String mname=line.substring("newmtl ".length());
+				Material m=current=new Material();
+				materials.put(mname, m);
+				}
+			else if(line.startsWith("Ka "))
+				{
+				StringTokenizer st=new StringTokenizer(line," ");
+				st.nextElement();
+				float[] arr=current.ambient=new float[4];
+				for(int i=0;i<3;i++)
+					arr[i]=(float)Double.parseDouble(st.nextToken());
+				arr[3]=1f;
+				}
+			else if(line.startsWith("Kd "))
+				{
+				StringTokenizer st=new StringTokenizer(line," ");
+				st.nextElement();
+				float[] arr=current.diffuse=new float[4];
+				for(int i=0;i<3;i++)
+					arr[i]=(float)Double.parseDouble(st.nextToken());
+				arr[3]=1f;
+				}			
+			else if(line.startsWith("Ks "))
+				{
+				StringTokenizer st=new StringTokenizer(line," ");
+				st.nextElement();
+				float[] arr=current.specular=new float[4];
+				for(int i=0;i<3;i++)
+					arr[i]=(float)Double.parseDouble(st.nextToken());
+				arr[3]=1f;
+				}
+			else if(line.startsWith("Ns "))
+				{
+				StringTokenizer st=new StringTokenizer(line," ");
+				st.nextElement();
+				current.specularWeight=Double.parseDouble(st.nextToken());
+				}
+			else if(line.startsWith("d ") || line.startsWith("Tr "))
+				{
+				StringTokenizer st=new StringTokenizer(line," ");
+				st.nextElement();
+				current.transparency=Double.parseDouble(st.nextToken());
+				}
+			else if(line.startsWith("illum "))
+				{
+				//TODO illumination mode
+				}			
+			}
+		
+		for(Map.Entry<String, Material> e:materials.entrySet())
+			glmaterials.put(e.getKey(), e.getValue().toGLmaterial());
+		
+		}
 	
 	
 	public static Map<String,Mesh3D> readFile(File f) throws IOException
@@ -50,13 +144,31 @@ public class WavefrontIO implements EvIOData
 		Map<String,Mesh3D> meshes=new HashMap<String, Mesh3D>(); 
 		Mesh3D currentMesh=null;
 		
+		Map<String, GLMaterial> glmaterials=new HashMap<String, GLMaterial>();
 		
+		GLMaterial currentMaterial=new GLMaterialSolid();
 		
 		String line;
 		while((line=br.readLine())!=null)
 			{
 			if(line.startsWith("#"))
 				; //Comment
+			else if(line.startsWith("mtllib "))
+				{
+				File mtlfile=new File(f.getParentFile(),line.substring("mtllib ".length()));
+				if(mtlfile.exists())
+					readMaterials(mtlfile, glmaterials);
+				else
+					EvLog.printError("Materials file not found, ignoring: "+mtlfile, null);
+				}
+			else if(line.startsWith("usemtl "))
+				{
+				String mname=line.substring("usemtl ".length());
+				if(glmaterials.containsKey(mname))
+					currentMaterial=glmaterials.get(mname);
+				else
+					EvLog.printError("Material not found, ignoring: "+mname, null);
+				}
 			else if(line.startsWith("f "))
 				{
 				//Face
@@ -64,6 +176,7 @@ public class WavefrontIO implements EvIOData
 				st.nextElement();
 
 				Mesh3D.Face face=new Mesh3D.Face();
+				face.material=currentMaterial;
 				face.vertex=new int[3];
 				int[] faceTC=new int[3];
 				int[] faceN=new int[3];
@@ -75,16 +188,19 @@ public class WavefrontIO implements EvIOData
 					
 					StringTokenizer tok2=new StringTokenizer(st.nextToken(),"/");
 					face.vertex[i]=Integer.parseInt(tok2.nextToken())-1;
-					String svt=tok2.nextToken();
-					if(!svt.equals(""))
-						{
-						faceTC[i]=Integer.parseInt(svt)-1;
-						hasTC=true;
-						}
 					if(tok2.hasMoreElements())
 						{
-						faceN[i]=Integer.parseInt(tok2.nextToken())-1;
-						hasN=true;
+						String svt=tok2.nextToken();
+						if(!svt.equals(""))
+							{
+							faceTC[i]=Integer.parseInt(svt)-1;
+							hasTC=true;
+							}
+						if(tok2.hasMoreElements())
+							{
+							faceN[i]=Integer.parseInt(tok2.nextToken())-1;
+							hasN=true;
+							}
 						}
 					}
 				if(hasTC)
@@ -175,6 +291,8 @@ public class WavefrontIO implements EvIOData
 			//TODO prune vertices not used for the group
 			
 			
+			
+			/*
 			//TODO temp?
 			EvColor color=EvColor.colorList[(int)Math.floor(Math.random()*EvColor.colorList.length)];
       float diff=0.7f;
@@ -185,6 +303,7 @@ public class WavefrontIO implements EvIOData
 					new float[]{(float)color.getRedDouble()*spec, (float)color.getGreenDouble()*spec, (float)color.getBlueDouble()*spec},
 					new float[]{(float)color.getRedDouble()*ambient, (float)color.getGreenDouble()*ambient, (float)color.getBlueDouble()*ambient},
 					80);
+					*/
 
 			}
 				
@@ -231,17 +350,16 @@ public class WavefrontIO implements EvIOData
 		if(!basedir.exists())
 			throw new Exception("File does not exist");
 		
-		//Mesh3D m=readFile(file);
 		
 		Map<String,Mesh3D> m=readFile(file);
 
 		for(Map.Entry<String, Mesh3D> e:m.entrySet())
 			d.metaObject.put(e.getKey(), e.getValue());
 
+		System.out.println("Loaded "+m.size()+" meshs from wavefront file");
+
 		
-		
-		//Mesh3D m=Mesh3D.generateTestModel();
-//		d.metaObject.put("model", m);
+		//		d.metaObject.put("model", Mesh3D.generateTestModel());
 		}
 	
 	

@@ -20,6 +20,7 @@ import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
 
 import loci.common.DataTools;
+import loci.common.DateTools;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
@@ -471,7 +472,11 @@ public class EvIODataBioformats implements EvIOData
 					  				System.out.print(b+",");
 					  			System.out.println();
 								 */
+								
+								//TODO use MetadataTools.createLSID(arg0, arg1) to create IDs
 
+								//TODO Have a look at DateTools.
+								
 								writer.saveBytes(planeID, plane);
 								}
 

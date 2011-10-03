@@ -316,7 +316,8 @@ public class ModelView extends GLJPanel //GLCanvas
 			checkerr(gl); //TODO upon start getting this
 			
 			 //Set light to follow camera
-			float light_position[] = new float[]{ 1.0f, 1.0f, 1.0f, 0.0f };
+			//float light_position[] = new float[]{ 1.0f, 1.0f, 1.0f, 0.0f };
+			float light_position[] = new float[]{ 100.0f, 100.0f, 100.0f, 0.0f };
 			gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light_position,0);
 	    ModelView.setupLight(gl);
 			
@@ -893,9 +894,16 @@ public class ModelView extends GLJPanel //GLCanvas
 		}
 	public static void setupLight(GL2 gl)
 		{
+		/*
 		float lightAmbient[] = { 0.2f, 0.2f, 0.2f, 0.0f };
 		float lightDiffuse[]=new float[]{0.8f,0.8f,0.8f};
 		float lightSpecular[]=new float[]{0.5f,0.5f,0.5f};
+*/		
+		float lightAmbient[] ={0.2f, 0.2f, 0.2f, 1.0f};
+		float lightDiffuse[] ={1.0f, 1.0f, 1.0f, 1.0f};
+		float lightSpecular[]={1.0f, 1.0f, 1.0f, 0.0f};
+
+		
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, lightAmbient, 0);   
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, lightDiffuse, 0);
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_SPECULAR, lightSpecular, 0);

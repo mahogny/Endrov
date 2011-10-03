@@ -15,10 +15,11 @@ import org.jdom.Element;
 
 import com.sun.opengl.util.BufferUtil;
 
-import endrov.basicWindow.EvColor;
 import endrov.data.EvObject;
 import endrov.modelWindow.*;
 import endrov.modelWindow.gl.GLMaterial;
+import endrov.modelWindow.gl.GLMaterialSelect;
+import endrov.modelWindow.gl.GLMaterialSolid;
 import endrov.modelWindow.gl.GLMeshVBO;
 import endrov.util.*;
 
@@ -27,7 +28,7 @@ import endrov.util.*;
  * Extension to Model Window: shows meshs
  * @author Johan Henriksson
  */
-public class Mesh3dModelExtension implements ModelWindowExtension
+public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLSelectListener
 	{
   public void newModelWindow(ModelWindow w)
 		{
@@ -86,9 +87,33 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		/**
 		 * Render for selection
 		 */
-		public void displaySelect(GL gl)
+		public void displaySelect(GL glin)
 			{
+			GL2 gl=glin.getGL2();
+			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
+			
+			Collection<Mesh3D> meshs=getMeshs();
+			
+		//TODO what about meshs that have changed?
+			
+			//Render all meshs
+			for(Mesh3D mesh:meshs)
+				{
+				//Upload to card if needed
+				GLMeshVBO vbo=vbos.get(mesh);
+				if(vbo==null)
+					vbos.put(mesh, vbo=buildVBO(gl, mesh));
+				
+				int color=w.view.reserveSelectColor(this);
+				GLMaterial m=new GLMaterialSelect(color);
+				gl.glDisable(GL2.GL_LIGHTING);
+				vbo.render(gl, m);
+				}
+				
+			gl.glPopAttrib();
+			
 			}
+		
 		
 		private Map<Mesh3D, GLMeshVBO> vbos=new HashMap<Mesh3D, GLMeshVBO>();
 
@@ -96,11 +121,10 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		 * Render graphics
 		 */
 		public void displayFinal(GL glin,List<TransparentRender> transparentRenderers)
-			{
+			{			
 			GL2 gl=glin.getGL2();
 			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 			
-//			EvDecimal curFrame=w.getFrame();
 			Collection<Mesh3D> meshs=getMeshs();
 			
 			//Delete VBOs no longer in use
@@ -121,19 +145,21 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				if(vbo==null)
 					vbos.put(mesh, vbo=buildVBO(gl, mesh));
 				
-				GLMaterial material=mesh.material;
+				
+				
+				
+				GLMaterial material=null;
+				
+				//Get material of face. TODO each face might have a different material!
+				if(!mesh.faces.isEmpty())
+					material=mesh.faces.iterator().next().material;
+				
 				if(material==null)
-					{
-        	EvColor color=new EvColor("foo",1,1,1,1);
-	        float diff=0.7f;
-	        float ambient=0.3f;
-	        float spec=0.8f;
-					material=new GLMaterial(
-							new float[]{(float)color.getRedDouble()*diff, (float)color.getGreenDouble()*diff, (float)color.getBlueDouble()*diff},
-							new float[]{(float)color.getRedDouble()*spec, (float)color.getGreenDouble()*spec, (float)color.getBlueDouble()*spec},
-							new float[]{(float)color.getRedDouble()*ambient, (float)color.getGreenDouble()*ambient, (float)color.getBlueDouble()*ambient},
-							80);
-					}
+					material=new GLMaterialSolid();
+				
+				//vbo.drawSolid=false;
+				vbo.drawNormals=true;
+				
 				vbo.render(gl, material);
 				
 				}
@@ -144,6 +170,8 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		
 		private static GLMeshVBO buildVBO(GL gl, Mesh3D mesh)
 			{
+			System.out.println("build vbo");
+			
 			GLMeshVBO vbo=new GLMeshVBO();
 
 			int vertexCount=mesh.faces.size()*3;
@@ -251,6 +279,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		 */
 		public Collection<Double> adjustScale()
 			{
+			System.out.println("adjust scale");
 			Collection<Mesh3D> meshs=getMeshs();
 			for(Mesh3D mesh:meshs)
 				{
@@ -276,6 +305,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 					dist=dy;
 				if(dist<dz)
 					dist=dz;
+				System.out.println("adjust scale done");
 				return Collections.singleton((Double)dist);
 				}
 			return Collections.emptySet();
@@ -288,6 +318,8 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		 */
 		public Collection<Vector3d> autoCenterMid()
 			{
+			System.out.println("adjust center");
+
 			//Calculate center
 			double meanx=0, meany=0, meanz=0;
 			int num=0;
@@ -308,6 +340,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				meanx/=num;
 				meany/=num;
 				meanz/=num;
+				System.out.println("adjust center done");
 				return Collections.singleton(new Vector3d(meanx,meany,meanz));
 				}
 			}
@@ -361,6 +394,16 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 	static
 		{
 		ModelWindow.modelWindowExtensions.add(new Mesh3dModelExtension());
+		}
+	public void hover(int id)
+		{
+		// TODO Auto-generated method stub
+		
+		}
+	public void hoverInit(int id)
+		{
+		// TODO Auto-generated method stub
+		
 		}
 
 	}

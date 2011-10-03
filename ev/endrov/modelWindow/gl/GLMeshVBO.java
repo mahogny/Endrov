@@ -5,6 +5,8 @@ import java.nio.FloatBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import endrov.basicWindow.EvColor;
+
 /**
  * Mesh that has been prepared for efficient rendering
  * 
@@ -16,6 +18,9 @@ public class GLMeshVBO
 	public boolean drawNormals=false;
 	
 	public boolean drawSolid=true;
+	
+	public EvColor outlineColor=null;
+	public float outlineWidth=5;
 	
 	public boolean useVBO=false;
 	public int vertVBO;
@@ -55,10 +60,17 @@ public class GLMeshVBO
 			gl.glNormalPointer(GL.GL_FLOAT, 0, 0);
 			}
 	
+		
+
+
+
+		
+
 		gl.glEnable(GL2.GL_LIGHTING);
 		gl.glEnable(GL2.GL_CULL_FACE);
 	
 		material.set(gl);
+		
 		
 		if(drawSolid)
 			{
@@ -68,19 +80,40 @@ public class GLMeshVBO
 			{
 			for(int i=0;i<vertexCount;i+=3)
 				gl.glDrawArrays(GL.GL_LINE_LOOP, i, 3);
-			
 			}
-		
 		
 	
 		gl.glDisable(GL2.GL_CULL_FACE);
 		gl.glDisable(GL2.GL_LIGHTING);
 	
+		//Draw optional outline
+		if(outlineColor!=null)
+			{
+			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
+
+			gl.glDisable(GL2.GL_LIGHTING);
+			gl.glEnable(GL2.GL_CULL_FACE);
+
+			gl.glColor3d((float)outlineColor.getRedDouble(),(float)outlineColor.getGreenDouble(),(float)outlineColor.getBlueDouble());
+			gl.glLineWidth(outlineWidth);
+			//Back-facing polygons as wireframe
+			gl.glPolygonMode(GL2.GL_BACK, GL2.GL_LINE ); 
+			//Don't draw front-facing
+			gl.glCullFace(GL2.GL_FRONT);     
+			gl.glDepthFunc(GL2.GL_LEQUAL);
+
+			gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertexCount);  
+
+			gl.glPopAttrib();
+			}
+		
+		
+		
 		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);  
 		gl.glDisableClientState(GL2.GL_NORMAL_ARRAY);
 		gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
 	
-		//Draw normals
+		//Draw optional normals
 		if(drawNormals)
 			{
 			normals.rewind();

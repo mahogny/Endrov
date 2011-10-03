@@ -159,6 +159,8 @@ public class EvDataMenu implements BasicWindowExtension
 		
 		/**
 		 * Build Move Object menu
+		 * 
+		 * TODO this menu must be built lazily or making menus is O(n^2)
 		 */
 		private JMenu buildMoveMenu(final EvContainer moveObRoot, final String moveObName)
 			{
@@ -187,6 +189,8 @@ public class EvDataMenu implements BasicWindowExtension
 
 		/**
 		 * Build Copy Object menu
+		 * 
+		 * TODO this menu must be built lazily or making menus is O(n^2)
 		 */
 		private JMenu buildCopyMenu(final EvContainer moveObRoot, final String moveObName)
 			{
@@ -280,13 +284,13 @@ public class EvDataMenu implements BasicWindowExtension
 						
 						}
 					
-					
+					/*
 					JMenu miMoveOb=buildMoveMenu(thisMeta, obId);
 					obmenu.add(miMoveOb);
 					
 					JMenu miCopyOb=buildCopyMenu(thisMeta, obId);
 					obmenu.add(miCopyOb);
-					
+					*/
 					ob.buildMetamenu(obmenu, thisMeta);
 
 					attachSubObjectMenus(obmenu, ob);
@@ -373,6 +377,7 @@ public class EvDataMenu implements BasicWindowExtension
 		 */
 		public void buildMenu(BasicWindow w)
 			{
+			System.out.println("Build menu start");
 			EvSwingUtil.tearDownMenu(mData);
 			EvSwingUtil.tearDownMenu(mRecent);
 			
@@ -553,7 +558,7 @@ public class EvDataMenu implements BasicWindowExtension
 				
 				}
 
-			
+			System.out.println("Build menu end");
 			}
 		}
 	}

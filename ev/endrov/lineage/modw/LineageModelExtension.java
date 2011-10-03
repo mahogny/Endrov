@@ -625,7 +625,7 @@ public class LineageModelExtension implements ModelWindowExtension
 			for(ModwPanelExpPattern panel:expsettings)
 				panel.setAvailableExpressions(v);
 
-			
+			//Render each lineage
 			for(Map<LineageSelParticle, Lineage.InterpolatedParticle> inter:interpNuc)
 				{
 				//Draw neighbours. Need be calculated in the background and cached
@@ -635,11 +635,11 @@ public class LineageModelExtension implements ModelWindowExtension
 						{
 						///////////////////////////// TODO TODO TODO  BAD
 						double r=3000; //300 is about the embryo. embryo is not centered in reality.
-						
-//						r=600; //TODO consistent voronoi calc
-						
+
+						//						r=600; //TODO consistent voronoi calc
+
 						Map<LineageSelParticle, Lineage.InterpolatedParticle> interX=new HashMap<LineageSelParticle, InterpolatedParticle>(inter);
-						
+
 						Lineage.InterpolatedParticle i1=new Lineage.InterpolatedParticle();
 						i1.pos=new Lineage.ParticlePos();
 						i1.frameBefore=EvDecimal.ZERO;
@@ -663,9 +663,9 @@ public class LineageModelExtension implements ModelWindowExtension
 						interX.put(new LineageSelParticle(null,":::4"), i4);
 						///////////////////////////// TODO TODO TODO  BAD
 
-						
+
 						LineageVoronoi nvor=new LineageVoronoi(interX,false);
-						
+
 						/*
 						for(int[] facelist:nvor.vor.vface)
 	//					int size=nvor.nucnames.size();
@@ -688,8 +688,8 @@ public class LineageModelExtension implements ModelWindowExtension
 								gl.glEnd();
 								}
 							}
-						*/
-						
+						 */
+
 						//Lines between neighbours
 						//TODO The ::: is really ugly
 						if(miShowDelaunay.isSelected())
@@ -712,19 +712,19 @@ public class LineageModelExtension implements ModelWindowExtension
 									}
 							gl.glEnd();
 							}
-						
+
 						}
 					catch (Exception e)
 						{
 						e.printStackTrace();
 						}
 					}
+
 				
-				
-				
+				//Render all particles
 				for(LineageSelParticle nucPair:inter.keySet())
 					{
-					//Render nuc body
+					//Render particle body
 					renderParticle(gl, nucPair, inter.get(nucPair), curFrame);
 					
 					if(traceCur && !traceSel && inter.get(nucPair).isVisible())

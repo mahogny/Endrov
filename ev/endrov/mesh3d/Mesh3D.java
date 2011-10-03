@@ -64,6 +64,8 @@ public class Mesh3D extends EvObject
 		
 		public Integer smoothGroup;
 //		public String group; //Note. Same string, must be possible to compare with ==
+		
+		public GLMaterial material;
 		}
 	
 	public List<Face> faces=new ArrayList<Face>();
@@ -71,7 +73,7 @@ public class Mesh3D extends EvObject
 	public List<Vector3d> texcoord=new ArrayList<Vector3d>();
 	public List<Vector3d> normal=new ArrayList<Vector3d>();
 	
-	public GLMaterial material;
+	//public GLMaterial material;
 	
 	public void calcNormals()
 		{
