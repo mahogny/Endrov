@@ -5,11 +5,16 @@
  */
 package endrov.dataBrowser;
 
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
 
 import org.jdom.Element;
 
@@ -27,12 +32,31 @@ public class DataBrowserWindow extends BasicWindow
 	{
 	private static final long serialVersionUID = 1L;
 
+	private DataBrowserTree tree=new DataBrowserTree(); 
+	
+	
 	
 	public DataBrowserWindow()
 		{
-		packEvWindow();
+		setLayout(new GridLayout(1,1));
+		
+		JComponent mid=new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		
+		add(mid);
+	
+		
+		
+		
+		
 		setTitleEvWindow("Data Browser");
-		setVisible(true);
+		
+		
+		setMinimumSize(new Dimension(50,50));
+		packEvWindow();
+		setBoundsEvWindow(new Rectangle(200,400));
+		
+		
+		setVisibleEvWindow(true);
 		}
 	
 	/**
@@ -51,6 +75,7 @@ public class DataBrowserWindow extends BasicWindow
 	@Override
 	public void dataChangedEvent()
 		{
+		tree.dataChangedEvent();
 		}
 
 	@Override
@@ -61,6 +86,7 @@ public class DataBrowserWindow extends BasicWindow
 	@Override
 	public void loadedFile(EvData data)
 		{
+		dataChangedEvent();
 		}
 
 	@Override
@@ -114,7 +140,7 @@ public class DataBrowserWindow extends BasicWindow
 			{
 			public void createMenus(BasicWindow w)
 				{
-				JMenuItem mi=new JMenuItem("Data Browser",new ImageIcon(getClass().getResource("tangoConsole.png")));
+				JMenuItem mi=new JMenuItem("Data Browser",new ImageIcon(getClass().getResource("iconBrowser.png")));
 				mi.addActionListener(this);
 				w.addMenuWindow(mi);
 				}
@@ -122,6 +148,7 @@ public class DataBrowserWindow extends BasicWindow
 			public void actionPerformed(ActionEvent e) 
 				{
 				new DataBrowserWindow();
+				System.out.println("here");
 				}
 			
 			public void buildMenu(BasicWindow w){}

@@ -15,8 +15,8 @@ import org.jdom.Element;
 
 import com.sun.opengl.util.BufferUtil;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.data.EvObject;
-import endrov.lineage.LineageSelParticle;
 import endrov.modelWindow.*;
 import endrov.modelWindow.gl.GLMaterial;
 import endrov.modelWindow.gl.GLMaterialSelect;
@@ -29,7 +29,7 @@ import endrov.util.*;
  * Extension to Model Window: shows meshs
  * @author Johan Henriksson
  */
-public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLSelectListener
+public class Mesh3dModelExtension implements ModelWindowExtension
 	{
   public void newModelWindow(ModelWindow w)
 		{
@@ -111,7 +111,8 @@ public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLS
 				
 				int color=w.view.reserveSelectColor(this);
 				selectColorMap.put(color, new SelMesh3D(mesh));
-				
+
+				//System.out.println("render select "+color);
 				
 				GLMaterial m=new GLMaterialSelect(color);
 				gl.glDisable(GL2.GL_LIGHTING);
@@ -166,7 +167,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLS
 					material=new GLMaterialSolid();
 				
 				//vbo.drawSolid=false;
-				vbo.drawNormals=true;
+				//vbo.drawNormals=true;
 				
 				vbo.render(gl, material);
 				
@@ -178,8 +179,6 @@ public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLS
 		
 		private static GLMeshVBO buildVBO(GL gl, Mesh3D mesh)
 			{
-			System.out.println("build vbo");
-			
 			GLMeshVBO vbo=new GLMeshVBO();
 
 			int vertexCount=mesh.faces.size()*3;
@@ -287,7 +286,6 @@ public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLS
 		 */
 		public Collection<Double> adjustScale()
 			{
-			System.out.println("adjust scale");
 			Collection<Mesh3D> meshs=getMeshs();
 			for(Mesh3D mesh:meshs)
 				{
@@ -313,7 +311,6 @@ public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLS
 					dist=dy;
 				if(dist<dz)
 					dist=dz;
-				System.out.println("adjust scale done");
 				return Collections.singleton((Double)dist);
 				}
 			return Collections.emptySet();
@@ -326,8 +323,6 @@ public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLS
 		 */
 		public Collection<Vector3d> autoCenterMid()
 			{
-			System.out.println("adjust center");
-
 			//Calculate center
 			double meanx=0, meany=0, meanz=0;
 			int num=0;
@@ -348,7 +343,6 @@ public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLS
 				meanx/=num;
 				meany/=num;
 				meanz/=num;
-				System.out.println("adjust center done");
 				return Collections.singleton(new Vector3d(meanx,meany,meanz));
 				}
 			}
@@ -384,13 +378,35 @@ public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLS
 			return null;
 			}
 
-		public void hover(int id)
+		
+		SelMesh3D lastHover;
+		SelMesh3D currentHover;
+		SelMesh3D emptyHover=new SelMesh3D(null);
+		
+		public void hoverInit(int pixelid)
 			{
+			//Update hover
+			lastHover=currentHover;
+			currentHover=emptyHover;
+//			LineageCommonUI.currentHover=LineageCommonUI.emptyHover;
 			}
 
-		public void hoverInit(int id)
+		public void hover(int pixelid)
 			{
+			System.out.println("tryhover "+pixelid);
+			
+			currentHover=selectColorMap.get(pixelid);
+			if(!currentHover.equals(lastHover))
+				{
+				System.out.println("mesh rerend");
+				BasicWindow.updateWindows(w);
+				
+				
+				}
+			System.out.println("Now hovering "+currentHover);
 			}
+			
+
 		
 		};
 		
@@ -403,16 +419,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension, ModelView.GLS
 		{
 		ModelWindow.modelWindowExtensions.add(new Mesh3dModelExtension());
 		}
-	public void hover(int id)
-		{
-		// TODO Auto-generated method stub
-		
-		}
-	public void hoverInit(int id)
-		{
-		// TODO Auto-generated method stub
-		
-		}
+	
 
 	}
 

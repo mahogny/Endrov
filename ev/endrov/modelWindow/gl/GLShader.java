@@ -27,6 +27,11 @@ import endrov.modelWindow.ModelView;
 /**
  * GLSL shader
  * 
+ * 
+ * 
+ * TODO replace by http://download.java.net/media/jogl/jogl-2.x-docs/com/sun/opengl/util/glsl/ShaderState.html
+ * it has all the goodies already!
+ * 
  * @author Johan Henriksson
  */
 public class GLShader

@@ -14,6 +14,7 @@ import java.util.*;
 import javax.vecmath.*;
 
 
+import endrov.ev.EV;
 import endrov.imageWindow.*;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
@@ -205,7 +206,7 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 	
 	public void setForcedStartingPoint(Vector3d v)
 		{
-		if(!equalsHandlesNull(forcedStartingPoint,v))
+		if(!EV.equalsHandlesNull(forcedStartingPoint,v))
 			{
 			forcedStartingPoint=v;
 			lastAuto=null;
@@ -213,19 +214,6 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 			}
 		}
 
-	/**
-	 * Check equality, handles null objects
-	 */
-	private static <E> boolean equalsHandlesNull(E a, E b)
-		{
-		if(a==null)
-			return b==null;
-		else if(b==null)
-			return false;
-		else
-			return a.equals(b);
-		}
-	
 	/**
 	 * Get the automatic tracer and ensure it is up to date
 	 */

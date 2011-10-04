@@ -1,24 +1,31 @@
 package endrov.dataBrowser;
 
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JTree;
+import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-public class DataBrowserTree extends JTree
+import endrov.data.EvContainer;
+import endrov.data.EvData;
+import endrov.data.EvObject;
+
+public class DataBrowserTree extends JTree implements TreeModel
 	{
 	private static final long serialVersionUID = 1L;
-
+	
+	private List<TreeModelListener> listeners=new LinkedList<TreeModelListener>();
 	
 	/**
 	 * 
 	 * 
-//	JXTreeTable   from swingx? 
+	//	JXTreeTable   from swingx? 
 	 * 
 	 * columns can be shown if wanted. mod date.
 	 * 
@@ -33,90 +40,206 @@ public class DataBrowserTree extends JTree
 	 * 
 	 *
 	 */
- 	
 	
-	public static class DataTreeModel implements TreeModel
+	private static class Node
 		{
-		private List<TreeModelListener> listeners=new LinkedList<TreeModelListener>();
+		Node parent;
+		EvContainer con;
+		ArrayList<Node> children=new ArrayList<Node>();
+		String name;
 		
-		public void addTreeModelListener(TreeModelListener l)
-			{
-			listeners.add(l);
-
-			
-			
-			}
-
-		public Object getChild(Object parent, int index)
+		@Override
+		public String toString()
 			{
 			if(parent==null)
+				return "Loaded files";
+			else
 				{
-				//This is the root
-				
+				return name;
+				}
+			}
+		
+		
+		
+		public void updateChildren()
+			{
+			//TODO reuse existing children!
+			children.clear();
+			
+			if(con==null)
+				{
+				//List opened data files
+				for(EvData d:EvData.openedData)
+					{
+					System.out.println("adding "+d);
+					
+					Node n=new Node();
+					n.parent=this;
+					n.con=d;
+					n.name=d.getMetadataName();
+					/*
+					if(d.io!=null)
+						n.name=d.io.getMetadataName();
+					else
+						n.name="<unnamed>";
+						*/
+
+					children.add(n);
+
+					//Recurse
+					n.updateChildren();
+					
+					}
+		
+		
+				}
+			else
+				{
+				//List sub-objects
+				for(String name:con.metaObject.keySet())
+					{
+					
+					Node n=new Node();
+					n.parent=this;
+					n.con=con.metaObject.get(name);
+					n.name=name;
+					
+					n.updateChildren();
+					
+					children.add(n);
+					}
 				
 				}
-			
-			// TODO Auto-generated method stub
-			return null;
-			}
-
-		public int getChildCount(Object parent)
-			{
-			// TODO Auto-generated method stub
-			return 0;
-			}
-
-		public int getIndexOfChild(Object parent, Object child)
-			{
-			// TODO Auto-generated method stub
-			return 0;
-			}
-
-		public Object getRoot()
-			{
-			// TODO Auto-generated method stub
-			return null;
-			}
-
-		public boolean isLeaf(Object node)
-			{
-			// TODO Auto-generated method stub
-			return false;
-			}
-
-		public void removeTreeModelListener(TreeModelListener l)
-			{
-			listeners.remove(l);
-			}
-
-		public void valueForPathChanged(TreePath path, Object newValue)
-			{
 			}
 		}
 	
 	
+	
+	
+	//public class DataTreeModel 
+	
+	private Node root=new Node();
+	
+	
+	
+
 	public DataBrowserTree()
 		{
-		setModel(new DataTreeModel());
-		setCellRenderer(new TreeCellRenderer()
-			{
-				
-				public Component getTreeCellRendererComponent(JTree arg0, Object arg1,
-						boolean arg2, boolean arg3, boolean arg4, int arg5, boolean arg6)
+		root.updateChildren();
+		setModel(this);
+	
+		
+		setCellRenderer(new DefaultTreeCellRenderer(){
+			private static final long serialVersionUID = 1L;
+			public Component getTreeCellRendererComponent(JTree tree, Object value,
+					boolean selected, boolean expanded, boolean leaf, int row,
+					boolean hasFocus)
+				{
+				super.getTreeCellRendererComponent(
+            tree, value, selected,
+            expanded, leaf, row,
+            hasFocus);
+
+				Node n=(Node)value;
+				if(n.con!=null)
 					{
-					// TODO Auto-generated method stub
-					return null;
+					setIcon(n.con.getContainerIcon());
+					if(n.con instanceof EvObject)
+						setToolTipText(((EvObject)n.con).getMetaTypeDesc());
 					}
+				return this;
+				}
 			});
-		
-		
-		// TODO Auto-generated constructor stub
-		
-//		EvPath p;
-//		p.
-		
-		
+	
 		}
 	
+	
+	
+	public Object getValueAt(Object node, int row)
+		{
+		Node n=(Node)node;
+		return n.children.get(row);
+		}
+	
+	
+	
+	public boolean isCellEditable(Object arg0, int arg1)
+		{
+		return false;
+		}
+	
+	
+	
+	public void setValueAt(Object arg0, Object arg1, int arg2)
+		{
+		}
+	
+	
+	
+	
+	public void addTreeModelListener(TreeModelListener arg0)
+		{
+		listeners.add(arg0);
+		}
+	
+	
+	
+	public Object getChild(Object parent, int row)
+		{
+		Node parentn=(Node)parent;
+		return parentn.children.get(row);
+		}
+	
+	
+	
+	public int getChildCount(Object parent)
+		{
+		Node parentn=(Node)parent;
+		return parentn.children.size();
+		}
+	
+	
+	
+	public int getIndexOfChild(Object parent, Object ob)
+		{
+		Node n=(Node)parent;
+		return n.children.indexOf(ob);
+		}
+	
+	
+	
+	public Object getRoot()
+		{
+		return root;
+		}
+	
+	
+	
+	public boolean isLeaf(Object ob)
+		{
+		Node n=(Node)ob;
+		return n.children.isEmpty();
+		}
+	
+	
+	
+	public void removeTreeModelListener(TreeModelListener arg0)
+		{
+		listeners.remove(arg0);
+		}
+	
+	
+	
+	public void valueForPathChanged(TreePath arg0, Object arg1)
+		{
+		//TODO this might be useful!
+		}
+	
+	
+	public void dataChangedEvent()
+		{
+		for(TreeModelListener l:listeners)
+			l.treeStructureChanged(new TreeModelEvent(this, new Object[]{root}));
+		}
 	
 	}

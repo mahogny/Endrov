@@ -162,7 +162,8 @@ public class ModelView extends GLJPanel //GLCanvas
 		{		
 		HashSet<ModelWindowHook> hasInited=new HashSet<ModelWindowHook>();
 		
-		
+		float light_position[] = new float[]{ 100.0f, 100.0f, 100.0f, 0.0f };
+
 		/**
 		 * Called once when OpenGL is inititalized
 		 */
@@ -261,6 +262,9 @@ public class ModelView extends GLJPanel //GLCanvas
 			
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
+			
+			
+			System.out.println("---- reshape ---- ");
 			}
 		
 
@@ -316,8 +320,6 @@ public class ModelView extends GLJPanel //GLCanvas
 			checkerr(gl); //TODO upon start getting this
 			
 			 //Set light to follow camera
-			//float light_position[] = new float[]{ 1.0f, 1.0f, 1.0f, 0.0f };
-			float light_position[] = new float[]{ 100.0f, 100.0f, 100.0f, 0.0f };
 			gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light_position,0);
 	    ModelView.setupLight(gl);
 			
