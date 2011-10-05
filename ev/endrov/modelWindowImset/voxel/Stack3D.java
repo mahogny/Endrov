@@ -138,12 +138,30 @@ public class Stack3D extends StackRendererInterface
 			EvDecimal cframe=chsel.ch.closestFrame(frame);
 			EvStack stack=chsel.ch.getStack(cframe);
 			Texture3D texture=new Texture3D();
-			VoxelStack os=null;
-
+			
+			
 			int skipcount=0;
 			if(stack!=null)
+				{
+				VoxelStack os=new VoxelStack();
+				os.tex=texture;
+				os.w=stack.getWidth();
+				os.h=stack.getHeight();
+				os.d=stack.getDepth();//ceilPower2(stack.getDepth());
+
+				os.prop=chsel.prop;
+				texture.allocate(os.w, os.h, os.d);
+
+				//Size of the stack
+				//TODO support rotated stacks
+				os.realw=stack.getRes().x*stack.getWidth();
+				os.realh=stack.getRes().y*stack.getHeight();
+				os.reald=stack.getRes().z*stack.getDepth();
+				
+				System.out.println("stack size "+os.realw+" "+os.realh+" "+os.reald);
+				System.out.println("stack res "+stack.getRes().x+" "+stack.getRes().y+" "+stack.getRes().z);
+				
 				for(int az=0;az<stack.getDepth();az++)
-				//for(EvDecimal i:stack.keySet())
 					{
 					if(stopBuildThread) //Allow to just stop thread if needed
 						return false;
@@ -158,27 +176,8 @@ public class Stack3D extends StackRendererInterface
 						//Get image for this plane
 						EvImage evim=stack.getInt(az);
 						EvPixels p=evim.getPixels(progh);
-						BufferedImage bim=p.quickReadOnlyAWT();
+						BufferedImage bim=p.quickReadOnlyAWT();   //TODO this is BAD; handle more types
 
-						//Set up slice if not done yet
-						if(os==null)
-							{
-							os=new VoxelStack();
-							os.tex=texture;
-							os.w=p.getWidth();
-							os.h=p.getHeight();
-							os.d=ceilPower2(stack.getDepth());
-							
-//							os.color=chsel.color;
-							os.prop=chsel.prop;
-							texture.allocate(os.w, os.h, os.d);
-
-							//real size
-							//TODO support rotated stacks
-							os.realw=stack.getRes().x*stack.getWidth();
-							os.realh=stack.getRes().y*stack.getHeight();
-							os.reald=stack.getRes().z*stack.getDepth();
-							}
 
 
 						//Load bitmap, scale down
@@ -199,20 +198,23 @@ public class Stack3D extends StackRendererInterface
 								{
 								int pix[]=new int[3];
 								ras.getPixel(ax, ay, pix);
-								//texture.b.put((byte)ras.getSample(ax, ay, 0));
 								texture.b.put((byte)pix[0]);
 								}
 
 						}
 					}
+				
+				
+				//TODO This is a crap way of handling it!
+				//Add black frames up to z power of 2
+				int pixToWrite=os.w*os.h*os.d-texture.b.position();
+				texture.b.put(new byte[pixToWrite], 0, 0);
 
-			//Add black frames up to z power of 2
-			int pixToWrite=os.w*os.h*os.d-texture.b.position();
-			texture.b.put(new byte[pixToWrite], 0, 0);
 
+				texSlices.add(os);
+				os.needLoadGL=true;
+				}
 
-			texSlices.add(os);
-			os.needLoadGL=true;
 
 			curchannum++;
 			}
@@ -497,6 +499,7 @@ public class Stack3D extends StackRendererInterface
 			case 1092: points=new Vector3d[]{points[6],points[2],points[10]}; break;
 			case 1099: points=new Vector3d[]{points[0],points[1],points[6],points[10],points[3]}; break;
 			case 1144: points=new Vector3d[]{points[5],points[6],points[10],points[3],points[4]}; break;
+			case 1152: points=new Vector3d[]{}; break;
 			case 1159: points=new Vector3d[]{points[7],points[0],points[1],points[2],points[10]}; break;
 			case 1160: points=new Vector3d[]{points[10],points[3],points[7]}; break;
 			case 1204: points=new Vector3d[]{points[7],points[4],points[5],points[2],points[10]}; break;
@@ -529,6 +532,7 @@ public class Stack3D extends StackRendererInterface
 			case 3601: points=new Vector3d[]{points[4],points[0],points[9],points[10],points[11]}; break;
 			case 3618: points=new Vector3d[]{points[9],points[1],points[5],points[11],points[10]}; break;
 			case 3840: points=new Vector3d[]{points[8],points[9],points[10],points[11]}; break;
+
 
 				
 			default:
@@ -802,7 +806,7 @@ public class Stack3D extends StackRendererInterface
 	/**
 	 * Ceil to nearest 2^
 	 */
-	private static int ceilPower2(int s)
+	public static int ceilPower2(int s)
 		{
 		if(s>1024)
 			{

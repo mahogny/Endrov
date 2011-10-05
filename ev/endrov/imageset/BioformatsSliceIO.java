@@ -23,6 +23,7 @@ public class BioformatsSliceIO extends EvIOImage
 	private IFormatReader imageReader;
 	private Object sourceName;
 	private boolean closeReaderOnFinalize;
+	public boolean isDicom=false;
 
 	/**
 	 * Optional: Might return null
@@ -115,6 +116,19 @@ public class BioformatsSliceIO extends EvIOImage
 						System.arraycopy(tmp, 0, q, 0, q.length);
 						}
 					q = DataTools.makeSigned(q);
+					
+					if(isDicom)
+						{
+						System.out.println("applying dicom ...");
+						for(int i=0;i<w*h;i++)
+							if(q[i]==30768)
+								q[i]=0;
+							else
+								q[i]+=32768;
+	//						if(q[i]==30768)
+//								q[i]=0;
+						}
+					
 					return EvPixels.createFromShort(w, h, q);
 					}
 				else

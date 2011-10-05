@@ -218,15 +218,19 @@ public class ImageWindow extends BasicWindow
 	/**
 	 * One row of channel settings in the GUI
 	 */
-	public class ChannelWidget extends JPanel implements ActionListener, ChangeListener
+	public class ChannelWidget extends JPanel implements ActionListener, ChangeListener, SnapBackSlider.SnapChangeListener
 		{
 		static final long serialVersionUID=0;
 		
 		private final JRadioButton rSelect=new JRadioButton();
 		//private final EvComboObjectOne<EvChannel> comboChannel=new EvComboObjectOne<EvChannel>(new EvChannel(), true, false); 
 		private final EvComboChannel comboChannel=new EvComboChannel(false,false);
-		private final JSlider sliderContrast=new JSlider(-10000,10000,0);
-		private final JSlider sliderBrightness=new JSlider(-200,200,0);
+		//private final JSlider sliderContrast=new JSlider(-10000,10000,0);
+		//private final JSlider sliderBrightness=new JSlider(-200,200,0);
+		
+		private final SnapBackSlider sliderContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -10000,10000);
+		private final SnapBackSlider sliderBrightness=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -200,200);
+		
 		private final EvComboColor comboColor=new EvComboColor(false, channelColorList, EvColor.white);
 		private final JImageButton bRemoveChannel=new JImageButton(BasicIcon.iconRemove,"Remove channel");
 		
@@ -259,12 +263,37 @@ public class ImageWindow extends BasicWindow
 					brightnessPanel,
 					bRemoveChannel));
 
+			
+			
 			comboColor.addActionListener(this);
-			sliderContrast.addChangeListener(this);
-			sliderBrightness.addChangeListener(this);
+			//sliderContrast.addChangeListener(this);
+			//sliderBrightness.addChangeListener(this);
 			comboChannel.addActionListener(this);
 			bRemoveChannel.addActionListener(this);
+			
+			sliderContrast.addSnapListener(this);
+			sliderBrightness.addSnapListener(this);
+
 			}
+		
+
+		
+		double brightness=0;
+		double contrast=1;
+
+		public void slideChange(SnapBackSlider source, int change)
+			{
+			if(source==sliderBrightness)
+				{
+				brightness+=change;
+				}
+			else if(source==sliderContrast)
+				{
+				contrast*=Math.pow(2,change/1000.0);
+				}
+			updateImagePanel();
+			}
+	
 		
 		public void actionPerformed(ActionEvent e)
 			{
@@ -289,12 +318,14 @@ public class ImageWindow extends BasicWindow
 		
 		public double getContrast()
 			{
-			return Math.pow(2,sliderContrast.getValue()/1000.0);
+			return contrast;
+//			return Math.pow(2,sliderContrast.getValue()/1000.0);
 			}
 		
 		public double getBrightness()
 			{
-			return sliderBrightness.getValue();
+			return brightness;
+//			return sliderBrightness.getValue();
 			}
 		
 		public EvColor getColor()
@@ -318,6 +349,13 @@ public class ImageWindow extends BasicWindow
 				return rec2.getChannel(chname);
 			else
 				return null;
+			}
+
+
+		public void resetSettings()
+			{
+			brightness=1;
+			contrast=1;
 			}
 		
 		}	
@@ -386,6 +424,7 @@ public class ImageWindow extends BasicWindow
 		sliderZoom2.addSnapListener(new SnapChangeListener(){
 			public void slideChange(SnapBackSlider source, int change){zoom(change/50.0);}
 		});
+		
 		miShowOverlay.addChangeListener(chListenerNoInvalidate);
 		bAddChannel.addActionListener(this);
 		
@@ -767,8 +806,7 @@ public class ImageWindow extends BasicWindow
 			{
 			for(ChannelWidget w:channelWidget)
 				{
-				w.sliderBrightness.setValue(0);
-				w.sliderContrast.setValue(0);
+				w.resetSettings();
 				}
 			setRotation(0);
 			updateImagePanel();

@@ -25,20 +25,15 @@ public class EvSelectObject<E> implements EvSelectable
 		this.mesh=mesh;
 		}
 	
-	/*
+	
 	public int hashCode()
 		{
-		//needed? don't think so
-		return super.hashCode();
-		}*/
-	
+		return mesh.hashCode();
+		}
 	
 	public void setColor(EvColor c)
 		{
 		//TODO
-		
-		
-		//getParticle().color=c.getAWTColor();
 		}
 	
 	protected EvSelectObject<E> clone()

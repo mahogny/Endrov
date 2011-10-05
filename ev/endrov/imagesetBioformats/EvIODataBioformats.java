@@ -25,6 +25,7 @@ import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
 import loci.formats.*;
+import loci.formats.in.DicomReader;
 import loci.formats.meta.*;
 import loci.formats.out.OMETiffWriter;
 import loci.formats.out.TiffWriter;
@@ -381,7 +382,7 @@ public class EvIODataBioformats implements EvIOData
 					//writer.setCompression("J2K");
 
 					//Use BIGTIFF if possible. Later this will not be needed
-
+					
 					if(writer.getWriter() instanceof OMETiffWriter)
 						{
 						System.out.println("This is OME-TIFF");
@@ -719,6 +720,11 @@ public class EvIODataBioformats implements EvIOData
 							}
 						}
 					
+					
+					
+					
+					boolean isDicom=imageReader.getFormat().equals("DICOM");//imageReader instanceof DicomReader;
+					//System.out.println("isdicom "+isDicom+" "+imageReader.getFormat());
 
 					//Create stack
 					EvStack stack=new EvStack();
@@ -730,6 +736,8 @@ public class EvIODataBioformats implements EvIOData
 						{
 						EvImage evim=new EvImage();
 						evim.io=new BioformatsSliceIO(imageReader, seriesIndex, imageReader.getIndex(curZ, curC, curT), basedir, false);
+						if(isDicom)
+							((BioformatsSliceIO)evim.io).isDicom=true;
 						stack.putInt(curZ, evim);
 						}
 					
