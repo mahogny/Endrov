@@ -1,19 +1,11 @@
 package endrov.dataBrowser;
 
 import java.awt.Component;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
-import javax.swing.JComponent;
 import javax.swing.JTree;
-import javax.swing.TransferHandler;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -30,9 +22,7 @@ public class DataBrowserTree extends JTree implements TreeModel
 	
 	private List<TreeModelListener> listeners=new LinkedList<TreeModelListener>();
 	
-	
-	//TreeDragSource ds;
-	//TreeDropTarget dt;
+	public static Node root=new Node();
 
 	/**
 	 * 
@@ -83,14 +73,6 @@ public class DataBrowserTree extends JTree implements TreeModel
 				}
 			}
 		
-		
-		public boolean isAbove(Node other)
-			{
-			//TODO
-			return true;
-			}
-		
-		
 		public void updateChildren()
 			{
 			//TODO reuse existing children!
@@ -107,12 +89,6 @@ public class DataBrowserTree extends JTree implements TreeModel
 					n.parent=this;
 					n.con=d;
 					n.name=d.getMetadataName();
-					/*
-					if(d.io!=null)
-						n.name=d.io.getMetadataName();
-					else
-						n.name="<unnamed>";
-						*/
 
 					children.add(n);
 
@@ -120,8 +96,6 @@ public class DataBrowserTree extends JTree implements TreeModel
 					n.updateChildren();
 					
 					}
-		
-		
 				}
 			else
 				{
@@ -143,44 +117,9 @@ public class DataBrowserTree extends JTree implements TreeModel
 			}
 
 
-
-		public int getChildCount()
-			{
-			return children.size();
-			}
-
-		
-		/*
-		public static final DataFlavor DnDNode_FLAVOR = new DataFlavor(Node.class, "Drag and drop Node");
-		protected static DataFlavor[] flavors = { Node.DnDNode_FLAVOR };
-
-
-		public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException
-			{
-			if (this.isDataFlavorSupported(flavor))
-				return this;
-			else
-				throw new UnsupportedFlavorException(flavor);
-			}
-
-		public DataFlavor[] getTransferDataFlavors()
-			{
-			return flavors;
-			}
-
-		public boolean isDataFlavorSupported(DataFlavor flavor)
-			{
-			DataFlavor[] flavs = this.getTransferDataFlavors();
-			for (int i = 0; i < flavs.length; i++)
-				if (flavs[i].equals(flavor))
-					return true;
-			return false;
-			}
-*/
 		}
 	
 	
-	private Node root=new Node();
 	
 	
 	
@@ -213,13 +152,9 @@ public class DataBrowserTree extends JTree implements TreeModel
 				}
 			});
 	
-		
-		// ds = new TreeDragSource(this, DnDConstants.ACTION_COPY_OR_MOVE);
-	    //dt = new TreeDropTarget(this);
-	    
-	    setDragEnabled(true);  
+	  setDragEnabled(true);  
 	    //setDropMode(DropMode.ON_OR_INSERT);  
-	    setTransferHandler(new DataBrowserTreeDnD.TreeTransferHandler());  
+	  setTransferHandler(new DataBrowserTreeDnD.TreeTransferHandler());  
 		}
 	
 	

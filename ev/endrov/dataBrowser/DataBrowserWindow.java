@@ -10,25 +10,38 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+import javax.swing.tree.TreePath;
 
 import org.jdom.Element;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.BasicWindowExtension;
 import endrov.basicWindow.BasicWindowHook;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.data.EvObject;
+import endrov.dataBrowser.DataBrowserTree.Node;
+import endrov.ev.EV;
 
 /**
  * Data browsing - work on objects
  * @author Johan Henriksson
  *
  */
-public class DataBrowserWindow extends BasicWindow
+public class DataBrowserWindow extends BasicWindow implements MouseListener
 	{
 	private static final long serialVersionUID = 1L;
 
@@ -45,6 +58,8 @@ public class DataBrowserWindow extends BasicWindow
 		
 		add(mid);
 		
+		
+		tree.addMouseListener(this);
 		
 		setTitleEvWindow("Data Browser");
 		
@@ -152,6 +167,111 @@ public class DataBrowserWindow extends BasicWindow
 			
 			public void buildMenu(BasicWindow w){}
 			}
+		}
+
+
+	public void mouseClicked(MouseEvent e)
+		{
+		if(SwingUtilities.isRightMouseButton(e))
+			{
+			TreePath[] paths=tree.getSelectionPaths();
+			if(paths!=null)
+				{
+				JPopupMenu menu=new JPopupMenu();
+				
+				////// Rename entry
+				if(paths.length==1)
+					{
+					final DataBrowserTree.Node n=(DataBrowserTree.Node)paths[0].getLastPathComponent();
+					//Can only rename objects, not evdata
+					if(n.parent!=null)
+						{
+						JMenuItem miRename=new JMenuItem("Rename "+n.name);
+						miRename.addActionListener(new ActionListener()
+							{
+							public void actionPerformed(ActionEvent e)
+								{
+								String input=JOptionPane.showInputDialog(DataBrowserWindow.this, "New name for "+n.name, n.name);
+								if(input!=null)
+									{
+									if(n.parent.con.metaObject.containsKey(input))
+										showErrorDialog("Name already taken");
+									else
+										{
+										n.parent.con.metaObject.remove(n.name);
+										n.parent.con.metaObject.put(input, (EvObject)n.con);
+										BasicWindow.updateWindows();
+										}
+									}
+								}
+							});
+						menu.add(miRename);
+						}
+					}
+				
+				////// Delete entry
+				final Set<DataBrowserTree.Node> toDelete=new HashSet<Node>();
+				final Set<String> names=new TreeSet<String>();
+				for(TreePath path:paths)
+					{
+					Node n=(Node)path.getLastPathComponent();
+					if(n!=DataBrowserTree.root)
+						{
+						toDelete.add(n);
+						names.add(n.name);
+						}
+					}
+				if(!toDelete.isEmpty())
+					{
+					JMenuItem miDelete=new JMenuItem("Delete");
+					miDelete.addActionListener(new ActionListener()	{
+						public void actionPerformed(ActionEvent e)
+							{
+							int ret=JOptionPane.showConfirmDialog(DataBrowserWindow.this, "Do you really want to delete "+names, EV.programName, JOptionPane.YES_NO_OPTION);
+							if(ret==JOptionPane.YES_NO_OPTION)
+								{
+								for(Node n:toDelete)
+									{
+									EvContainer parent=n.parent.con;
+									if(parent==null)
+										EvData.openedData.remove(n.con);
+									else
+										n.parent.con.metaObject.remove(n.name);
+									}
+								BasicWindow.updateWindows();
+								}
+							}
+						});
+					menu.add(miDelete);
+					}
+				
+				if(menu.getComponentCount()!=0)
+					menu.show(tree, e.getX(), e.getY());
+				}
+			
+
+			
+			
+			
+			
+			
+			}
+		}
+
+	public void mouseEntered(MouseEvent e)
+		{
+		}
+
+	public void mouseExited(MouseEvent e)
+		{
+		}
+
+	public void mousePressed(MouseEvent e)
+		{
+		}
+
+	public void mouseReleased(MouseEvent e)
+		{
 		}
 
 	}
