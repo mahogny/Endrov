@@ -34,6 +34,7 @@ public class DataBrowserWindow extends BasicWindow
 
 	private DataBrowserTree tree=new DataBrowserTree(); 
 	
+
 	
 	
 	public DataBrowserWindow()
@@ -43,9 +44,6 @@ public class DataBrowserWindow extends BasicWindow
 		JComponent mid=new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		
 		add(mid);
-	
-		
-		
 		
 		
 		setTitleEvWindow("Data Browser");
@@ -53,7 +51,7 @@ public class DataBrowserWindow extends BasicWindow
 		
 		setMinimumSize(new Dimension(50,50));
 		packEvWindow();
-		setBoundsEvWindow(new Rectangle(200,400));
+		setBoundsEvWindow(new Rectangle(250,400));
 		
 		
 		setVisibleEvWindow(true);
@@ -75,6 +73,7 @@ public class DataBrowserWindow extends BasicWindow
 	@Override
 	public void dataChangedEvent()
 		{
+		
 		tree.dataChangedEvent();
 		}
 
