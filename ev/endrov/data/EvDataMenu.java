@@ -377,7 +377,6 @@ public class EvDataMenu implements BasicWindowExtension
 		 */
 		public void buildMenu(BasicWindow w)
 			{
-			System.out.println("Build menu start");
 			EvSwingUtil.tearDownMenu(mData);
 			EvSwingUtil.tearDownMenu(mRecent);
 			
@@ -557,8 +556,6 @@ public class EvDataMenu implements BasicWindowExtension
 				attachSubObjectMenus(menuMetadata, thisMeta);
 				
 				}
-
-			System.out.println("Build menu end");
 			}
 		}
 	}

@@ -645,7 +645,19 @@ public class EvIODataBioformats implements EvIOData
 			for(int curC=0;curC<sizeC;curC++)
 				{
 				//Figure out name of channel
-				String chanName=retrieve.getChannelName(seriesIndex, curC);
+				String chanName=null;
+				
+				try
+					{
+					chanName=retrieve.getChannelName(seriesIndex, curC);
+					}
+				catch (Exception e1)
+					{
+					//Ugly hack! report to bioformats
+					e1.printStackTrace();
+					}
+				
+				
 				if(chanName==null)
 					chanName="ch"+curC;
 
@@ -667,16 +679,21 @@ public class EvIODataBioformats implements EvIOData
 					Double resY=retrieve.getPixelsPhysicalSizeY(imageIndexFirstPlane); //[um/px]
 					Double resZ=retrieve.getPixelsPhysicalSizeZ(imageIndexFirstPlane); //[um/px]*/
 					
-					Double resX=retrieve.getPixelsPhysicalSizeX(0).getValue(); //[um/px]
-					Double resY=retrieve.getPixelsPhysicalSizeY(0).getValue(); //[um/px]
-					Double resZ=retrieve.getPixelsPhysicalSizeZ(0).getValue(); //[um/px]
+					PositiveFloat resXf=retrieve.getPixelsPhysicalSizeX(0); //[um/px]
+					PositiveFloat resYf=retrieve.getPixelsPhysicalSizeY(0); //[um/px]
+					PositiveFloat resZf=retrieve.getPixelsPhysicalSizeZ(0); //[um/px]
+					
+					Double resX=1.0;
+					Double resY=1.0;
+					Double resZ=1.0;
+
+					
+					if(resXf!=null && resXf.getValue()!=0) resX=1.0;
+					if(resYf!=null && resYf.getValue()!=0) resY=1.0;
+					if(resZf!=null && resZf.getValue()!=0) resZ=1.0;
 
 					System.out.println("Detected resolution: "+resX+"    "+resY+"   "+resZ);
-					
-					if(resX==null || resX==0) resX=1.0;
-					if(resY==null || resY==0) resY=1.0;
-					if(resZ==null || resZ==0) resZ=1.0;
-					
+
 					//Calculate which frame this is. Note that we only consider the time of the first plane!
 					EvDecimal frame=null;
 					//Double timeIncrement=retrieve.getPixelsTimeIncrement(imageIndexFirstPlane);   
