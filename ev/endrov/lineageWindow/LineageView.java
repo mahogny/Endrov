@@ -639,7 +639,7 @@ public class LineageView extends JPanel
 		for(String nucName:getRootParticles(getLineage()))
 			{
 			HierarchicalPainter.DrawNode dnode=new HierarchicalPainter.DrawNodeContainer();
-			displacement=layoutTreeRecursive(lin, null, nucName,linstate, displacement,dnode, alreadyLayout,dnode);
+			displacement=layoutTreeRecursive(lin, null, nucName,linstate, displacement,dnode, alreadyLayout,hpainter);
 			hpainter.topNodes.add(dnode);
 			}
 		}
@@ -648,40 +648,14 @@ public class LineageView extends JPanel
 	 * Prepare rendering of a tree branch
 	 */
 	private double layoutTreeRecursive(Lineage lin, String recurseFromParent, final String nucName, final LineageState linstate, 
-			double displacement, HierarchicalPainter.DrawNode parentDrawNode, Set<String> alreadyLayout, HierarchicalPainter.DrawNode topNode)
+			final double displacement, HierarchicalPainter.DrawNode parentDrawNode, Set<String> alreadyLayout, HierarchicalPainter hpainter)
 		{
 		if(alreadyLayout.contains(nucName))
 			{
-			ParticleState psThis=linstate.getParticleState(nucName);
-			ParticleState psParent=linstate.getParticleState(recurseFromParent);
-			
-			final double fromX=psThis.startX;
-			final double fromY=psThis.centerY;
-			final double toX=psParent.endX;
-			final double toY=psParent.centerY;
-			
-			final double midX=(fromX+toX)/2 - (toY-fromY)*0.3;
-			final double midY=(fromY+toY)/2 + (toX-fromX)*0.3;
-			
-			final Lineage.Particle nuc=lin.particle.get(nucName);
-			
-			//HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(Math.min(fromX,toX), Math.min(fromY, toY), Math.max(fromX, toX),Math.max(fromY, toY)){
-			HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(
-					EvMathUtil.maxAll(fromX,toX,midX), EvMathUtil.minAll(fromY, toY, midY), EvMathUtil.minAll(fromX, toX, midX), EvMathUtil.maxAll(fromY, toY, midY)){
-			public void paint(Graphics g, double width, double height, Camera cam)
-				{
-				if(nuc.color!=null) //should use parents color actually
-					g.setColor(nuc.color);
-				else
-					g.setColor(Color.black);
-				g.drawLine(cam.toScreenX(fromX), cam.toScreenY(fromY), cam.toScreenX(midX), cam.toScreenY(midY));
-				g.drawLine(cam.toScreenX(midX), cam.toScreenY(midY), cam.toScreenX(toX), cam.toScreenY(toY));
-				}
-			};
-			topNode.addSubNode(newnode);
-
-			//This value should not be used
-			return -1;
+			throw new RuntimeException("Invalid call "+nucName);
+			//Should never be called
+//			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!! "+nucName);
+			//return -1;
 			}
 		else
 			{
@@ -692,7 +666,6 @@ public class LineageView extends JPanel
 
 			HierarchicalPainter.DrawNodeContainer thisDrawNode=new HierarchicalPainter.DrawNodeContainer();
 
-			double y1=displacement;
 			
 			//Total width of children. 0 if none expanded
 			double curChildOffset=displacement;
@@ -703,32 +676,78 @@ public class LineageView extends JPanel
 			final TreeSet<String> childrenToLayout=new TreeSet<String>();
 			for(String childName:nuc.child)
 				if(!alreadyLayout.contains(childName))
+					{
+					//Layout these now
 					childrenToLayout.add(childName);
+					}
 				else
-					//Layout these right away
-					layoutTreeRecursive(lin, nucName, childName, linstate, 0, null, alreadyLayout, topNode);
+					{
+					//This is for drawing the link only. Could move rendering code here!
+					//layoutTreeRecursive(lin, nucName, childName, linstate, 0, null, alreadyLayout, hpainter);
+					
+//					System.out.println("already laid out: "+childName);
+
+					ParticleState childInternal=linstate.getParticleState(childName);
+					//ParticleState thisInternal=linstate.getParticleState(nucName);
+					
+					//ParticleState psChild=linstate.getParticleState(nucName);
+					//ParticleState psParent=linstate.getParticleState(recurseFromParent);
+					
+					final double fromX=childInternal.startX;
+					final double fromY=childInternal.centerY;
+					final double toX=thisInternal.endX;
+					final double toY=thisInternal.centerY;
+					
+					final double midX=(fromX+toX)/2;// - (toY-fromY)*0.3;
+					final double midY=(fromY+toY)/2;// + (toX-fromX)*0.3;
+					
+					//final Lineage.Particle nuc=lin.particle.get(nucName);
+					
+					/*HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(
+							Math.min(fromX,toX), Math.min(fromY, toY), 
+							Math.max(fromX, toX),Math.max(fromY, toY)){*/
+					HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(
+							EvMathUtil.minAll(fromX,toX,midX), EvMathUtil.minAll(fromY, toY, midY), 
+							EvMathUtil.maxAll(fromX, toX, midX), EvMathUtil.maxAll(fromY, toY, midY)){
+					public void paint(Graphics g, double width, double height, Camera cam)
+						{
+						g.setColor(Color.GREEN);
+						/*
+						if(nuc.color!=null) //should use parents color actually
+							g.setColor(nuc.color);
+						else
+							g.setColor(Color.black);*/
+						g.drawLine(cam.toScreenX(fromX), cam.toScreenY(fromY), cam.toScreenX(midX), cam.toScreenY(midY));
+						g.drawLine(cam.toScreenX(midX), cam.toScreenY(midY), cam.toScreenX(toX), cam.toScreenY(toY));
+						}
+					};
+					
+					hpainter.topNodes.add(newnode);
+					}
 
 			//Only recurse if children are visible
 			if(thisInternal.isExpanded && !childrenToLayout.isEmpty())
 				{
+				//System.out.println("layout expanded "+nucName);
 				//Sum up total width for children
-				for(String childName:nuc.child)
+				for(String childName:childrenToLayout)//nuc.child)
 					{
-					double newDisp=layoutTreeRecursive(lin, nucName, childName,linstate, curChildOffset, thisDrawNode, alreadyLayout, topNode);
+					double newDisp=layoutTreeRecursive(lin, nucName, childName,linstate, curChildOffset, thisDrawNode, alreadyLayout, hpainter);
 					curChildOffset=newDisp;
 					}
 				
 				//Set displacement of this node
 				if(childrenToLayout.size()==1)
 					{
-					thisInternal.centerY=linstate.particleState.get(nuc.child.first()).centerY+sizeOfBranch/2;
+					ParticleState cInternal=linstate.particleState.get(childrenToLayout.first());
+					thisInternal.centerY=cInternal.centerY+sizeOfBranch/2;
 					curChildOffset+=sizeOfBranch/2;
 					
 					fontHeightAvailable=sizeOfBranch;
 					}
 				else
 					{
-					//Use the average
+					//Use the average position of children as position of this branch
 					double sum=0;
 					double miny=Double.MAX_VALUE;
 					double maxy=Double.MIN_VALUE;
@@ -743,6 +762,9 @@ public class LineageView extends JPanel
 					fontHeightAvailable=maxy-miny;
 					}
 				
+				
+				//if(thisInternal.centerY<displacement)
+					//System.out.println("eeeeek "+thisInternal.centerY+"  "+displacement+"   "+childrenToLayout.size()+"   "+childrenToLayout);
 				}
 			else
 				{
@@ -750,8 +772,12 @@ public class LineageView extends JPanel
 				curChildOffset+=sizeOfBranch;
 				fontHeightAvailable=sizeOfBranch;
 				}
+			
+			//Bounding space in y
+			double y1=displacement;
 			double y2=curChildOffset;
 			
+			//Particle start pos
 			EvDecimal firstFrame=nuc.getFirstFrame();
 			double x1;
 			if(firstFrame!=null)
@@ -772,24 +798,38 @@ public class LineageView extends JPanel
 						}
 					}
 				}
+			thisInternal.startX=x1;
 
-			
+			//Particle end pos
 			EvDecimal lastFrame=nuc.getLastFrame();
 			double x2;
 			if(lastFrame!=null)
 				x2=lastFrame.doubleValue();
 			else
 				x2=x1+60; //Better than nothing
-			
 			thisInternal.endX=x2;
-			thisInternal.startX=x1;
 
 			
-			/////////// need to extend x2 here to children start pos that is furthest away ////////////////
+			//Bounding box
+			double expandedX2=x2;
+			double expandedY1=y1;
+			double expandedY2=y2;
+			for(String cName:nuc.child)
+				{
+				ParticleState ps=linstate.getParticleState(cName);
+				if(ps.centerY<y1)
+					y1=ps.centerY;
+				if(ps.centerY>y2)
+					y2=ps.centerY;
+				if(ps.startX>expandedX2)
+					expandedX2=ps.startX;
+				}
 			
 			//Attach a renderer of this branch
 			final LineageSelParticle nucsel=new LineageSelParticle(lin,nucName);
-			HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2){
+			HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(
+					x1,expandedY1,
+					expandedX2,expandedY2){
 				public void paint(Graphics g, double width, double height, Camera cam)
 					{
 					int spaceAvailable=cam.toScreenY(fontHeightAvailable)-cam.toScreenY(0);

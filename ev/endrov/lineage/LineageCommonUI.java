@@ -224,7 +224,7 @@ public class LineageCommonUI implements ActionListener
 			{
 			Set<LineageSelParticle> children=new HashSet<LineageSelParticle>(LineageCommonUI.getSelectedParticles());
 			for(LineageSelParticle p:children)
-				actionSecursiveSelectParents(p.fst(), p.snd());
+				actionRecursiveSelectParents(p.fst(), p.snd());
 			BasicWindow.updateWindows();
 			}
 		else if(e.getSource()==miSelectAllSameName)
@@ -802,12 +802,12 @@ public class LineageCommonUI implements ActionListener
 	/**
 	 * Recursively select parents
 	 */
-	public static void actionSecursiveSelectParents(Lineage lin, String nucName)
+	public static void actionRecursiveSelectParents(Lineage lin, String nucName)
 		{
 		for(String pname:lin.particle.get(nucName).parents)
 			{
 			EvSelection.select(new LineageSelParticle(lin, pname));
-			actionSecursiveSelectParents(lin, pname);
+			actionRecursiveSelectParents(lin, pname);
 			}
 		}
 

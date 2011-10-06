@@ -1173,5 +1173,42 @@ public class Lineage extends EvObject implements Cloneable
 		
 		}
 
+
+	public Set<String> getRecursiveChildNames(String name)
+		{
+		Set<String> names=new HashSet<String>();
+		getRecursiveChildNames(name, names);
+		return names;
+		}
+	private void getRecursiveChildNames(String name, Set<String> names)
+		{
+		Particle p=particle.get(name);
+		names.add(name);
+		for(String cname:p.child)
+			{
+			names.add(cname);
+			getRecursiveChildNames(cname);
+			}
+		}
+	
+	
+	public Set<String> getRoots()
+		{
+		Set<String> names=new HashSet<String>();
+		for(String n:particle.keySet())
+			if(particle.get(n).parents.isEmpty())
+				names.add(n);
+		return names;
+		}
+
+
+	public Set<String> getLeafs()
+		{
+		Set<String> names=new HashSet<String>();
+		for(String n:particle.keySet())
+			if(particle.get(n).child.isEmpty())
+				names.add(n);
+		return names;
+		}
 	
 	}
