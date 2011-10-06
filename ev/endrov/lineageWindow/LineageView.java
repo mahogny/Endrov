@@ -652,7 +652,7 @@ public class LineageView extends JPanel
 		{
 		if(alreadyLayout.contains(nucName))
 			{
-			throw new RuntimeException("Invalid call "+nucName);
+			throw new RuntimeException("Invalid call, "+nucName+" already has layout");
 			//Should never be called
 //			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!! "+nucName);
 			//return -1;

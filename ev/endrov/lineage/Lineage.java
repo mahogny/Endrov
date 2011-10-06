@@ -1183,11 +1183,14 @@ public class Lineage extends EvObject implements Cloneable
 	private void getRecursiveChildNames(String name, Set<String> names)
 		{
 		Particle p=particle.get(name);
+		//System.out.println(name);
 		names.add(name);
+		if(p==null)
+			throw new RuntimeException("No such child: "+name);
 		for(String cname:p.child)
 			{
 			names.add(cname);
-			getRecursiveChildNames(cname);
+			getRecursiveChildNames(cname, names);
 			}
 		}
 	

@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -32,6 +33,7 @@ public class GetWormbaseLineage
 		int btime;
 		Integer duration=null;
 		List<String> parent=new LinkedList<String>();
+		List<String> child=new LinkedList<String>();
 		}
 	
 	
@@ -70,9 +72,9 @@ public class GetWormbaseLineage
     				{
     				for(Element child3:EV.castIterableElement(child2.getChildren()))
         			{
-        			//if(child3.getName().equals("Daughter"))
-        			//	cell.children.add(child3.getAttributeValue("value"));
-        			if(child3.getName().equals("Parent"))
+        			if(child3.getName().equals("Daughter"))
+        				cell.child.add(child3.getAttributeValue("value"));
+        			else if(child3.getName().equals("Parent"))
         				cell.parent.add(child3.getAttributeValue("value"));
         			}
     				
@@ -80,8 +82,11 @@ public class GetWormbaseLineage
   					if(childEqOrigin!=null)
   						{
     					String origin=childEqOrigin.getAttributeValue("value");//childMaleOrigin.getText();
-    					System.out.println(origin);
-    					eqorigin.put(cellname, origin);
+    					if(!origin.equals(cellname))
+    						{
+	    					System.out.println(origin+" ----eq----> "+cellname);
+	    					eqorigin.put(cellname, origin);
+    						}
   						}
   					
     				Element childSex=child2.getChild("Sex_dimorphism");
@@ -98,17 +103,15 @@ public class GetWormbaseLineage
 	    						{
 	    						if(origin.equals(cellname))
 	    							{
-	    							System.out.println("cyclic dep "+cellname);
+	    							//System.out.println("cyclic dep "+cellname);
 //	    							System.exit(1);
 	    							}
 	    						else
 	    							{
-			    					System.out.println(origin);
+			    					//System.out.println(origin);
 			    					maleorigin.put(cellname, origin);
 	    							}
 	    						}
-	    					else
-	    						System.out.println("aaargh "+cellname);
     						}
     					}
     				
@@ -152,15 +155,15 @@ public class GetWormbaseLineage
     	WBCell cell=e.getValue();
       Lineage.Particle p=lin.getCreateParticle(name);
 
-      //Connect with children and parents
-      /*
-      p.child.addAll(cell.children);
-      for(String cname:cell.children)
+      //Connect with children
+      p.child.addAll(cell.child);
+      for(String cname:cell.child)
       	{
       	Lineage.Particle cp=lin.getCreateParticle(cname);
       	cp.parents.add(name);
-      	}*/
+      	}
       
+      //Connect with parents
       p.parents.addAll(cell.parent);
       for(String pname:cell.parent)
       	{
@@ -194,7 +197,7 @@ public class GetWormbaseLineage
 
    
     
-    //Delete male cells
+    //Delete male cells, version 2, do not use
     /*
     for(String malecell:maleorigin.keySet())
 	    if(lin.particle.containsKey(malecell))
@@ -206,20 +209,56 @@ public class GetWormbaseLineage
     */
     	
     
-    //Delete gender-specific
-    for(String cellname:hasSexDimorph)
-    	if(lin.particle.containsKey(cellname))
-	    	{
-	    	System.out.println("to delete (sexdimorph) " +lin.getRecursiveChildNames(cellname));
-	    	for(String name:lin.getRecursiveChildNames(cellname))
-	    		lin.removeParticle(name);
-	    	}
-
-    
-    //Delete stupid cells
+    //Delete stupid cells. typos
     lin.removeParticle("hyp7_P5.p");
     lin.removeParticle("hyp7-V6R.pppa");
+    lin.removeParticle("AMLR");
+    lin.removeParticle("Z1.pppaaa"); 
+    lin.removeParticle("IDLDR");
+    lin.removeParticle("M3");
+    lin.removeParticle("proct-B_gamma.arv");
+
+    //Has been split in * L/R
+    lin.removeParticle("PDE");
+    lin.removeParticle("PLN");
+    lin.removeParticle("PVD");
+    lin.removeParticle("Z1.aap");
     
+    
+    //lost in space
+    ///?? R8A, R8B, R8st, 9*
+    //SPsh3VL/R
+    //V6L: V6R exists, did they not annotate this symm? except, is there symm? it got children. see xml
+    
+    //TODO Z1.pa - incomplete???
+    
+    //Missing cell
+    lin.getCreateParticle("Z1.paa");
+    lin.createParentChild("Z1.pa", "Z1.paa");
+    
+    //A whole bunch of cells do not exist
+    for(String name:new LinkedList<String>(lin.particle.keySet()))
+    	if(name.startsWith("Z1.paa") && !name.equals("Z1.paa"))
+      	lin.removeParticle(name);
+    for(String name:new LinkedList<String>(lin.particle.keySet()))
+    	if(name.startsWith("Z1.a") && !name.equals("Z1.a"))
+      	lin.removeParticle(name);
+    for(String name:new LinkedList<String>(lin.particle.keySet()))
+    	if(name.startsWith("Z4.p") && !name.equals("Z4.p"))
+      	lin.removeParticle(name);
+
+    //Missing hierarchy - Z4.aaa TODO
+    
+
+    //Delete gender-specific
+    TreeSet<String> toDelete=new TreeSet<String>(); 
+    for(String cellname:hasSexDimorph)
+    	if(lin.particle.containsKey(cellname))
+	    	toDelete.addAll(lin.getRecursiveChildNames(cellname));
+  	System.out.println("to delete (sexdimorph) " + toDelete);
+  	for(String name:toDelete)
+  		lin.removeParticle(name);
+  		
     
     //Create common cells
     commonCell(lin, "hyp7", "hyp7.");
@@ -228,12 +267,23 @@ public class GetWormbaseLineage
 
     commonCell(lin, "seam", "seam-");
     commonCell(lin, "se_herm", "se_herm-");
-    
+    commonCell(lin, "proct", "proct-");
+    commonCell(lin, "proct", "proct_");
+
+    commonCell(lin, "hyp_hook", "hyp_hook.");
+
     commonCell(lin, "um1", "um1-");
     commonCell(lin, "um2", "um2-");
     commonCell(lin, "vm1", "vm1-");
     commonCell(lin, "vm2", "vm2-");
 
+    
+
+
+    //System.out.println("wheee "+lin.getCreateParticle("hyp7-P5.p").child);
+    //System.out.println("wheee2 "+lin.getCreateParticle("hyp7-P5.p").parents);
+    
+    
     /*
     Lineage.Particle phyp7=lin.getCreateParticle("hyp7");
     for(String name:new LinkedList<String>(lin.particle.keySet()))
@@ -325,16 +375,20 @@ public class GetWormbaseLineage
 	
 	public static void commonCell(Lineage lin, String commonname, String prefix)
 		{
-    Lineage.Particle phyp7=lin.getCreateParticle(commonname);
     for(String name:new LinkedList<String>(lin.particle.keySet()))
     	{
     	if(name.startsWith(prefix))
     		{
-      	lin.particle.remove(name);
-      	
+      	lin.removeParticle(name);
     		name=name.substring(prefix.length());
-    		phyp7.parents.add(name);
-    		lin.getCreateParticle(name).child.add(commonname);
+
+    		if(lin.particle.containsKey(name)) //If it does not exist then do not create connection
+    			{
+          Lineage.Particle pCommon=lin.getCreateParticle(commonname);
+      		pCommon.parents.add(name);
+      		lin.getCreateParticle(name).child.add(commonname);
+    			}
+    		
     		}
     	}
 		}
