@@ -94,8 +94,8 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		 */
 		public void displaySelect(GL glin)
 			{
-			GL2 gl=glin.getGL2();
-			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
+			//GL2 gl=glin.getGL2();
+//			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 			
 			Collection<Mesh3D> meshs=getMeshs();
 			
@@ -104,38 +104,44 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			//Render all meshs
 			for(Mesh3D mesh:meshs)
 				{
-				//Upload to card if needed
-				GLMeshVBO vbo=vbos.get(mesh);
-				if(vbo==null)
-					vbos.put(mesh, vbo=buildVBO(gl, mesh));
-				
 				int color=w.view.reserveSelectColor(this);
 				selectColorMap.put(color, new SelMesh3D(mesh));
 
-				//System.out.println("render select "+color);
-				
-				GLMaterial m=new GLMaterialSelect(color);
-				gl.glDisable(GL2.GL_LIGHTING);
-				vbo.render(gl, m);
+				displayMeshSelect(w.view, glin, mesh, color);
 				}
 				
-			gl.glPopAttrib();
+			//gl.glPopAttrib();
 			
 			}
 		
+		public static void displayMeshSelect(ModelView view, GL glin, Mesh3D mesh, int color)
+			{
+			GL2 gl=glin.getGL2();
+			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
+			
+			//Upload to card if needed
+			GLMeshVBO vbo=view.getMesh(mesh);
+			if(vbo==null)
+				view.setMesh(mesh, vbo=buildVBO(gl, mesh));
+			
+			GLMaterial m=new GLMaterialSelect(color);
+			gl.glDisable(GL2.GL_LIGHTING);
+			vbo.render(gl, m);
+			
+			gl.glPopAttrib();
+			}
 		
-		private Map<Mesh3D, GLMeshVBO> vbos=new HashMap<Mesh3D, GLMeshVBO>();
+		
+		//private Map<Mesh3D, GLMeshVBO> vbos=new HashMap<Mesh3D, GLMeshVBO>();
 
 		/**
 		 * Render graphics
 		 */
 		public void displayFinal(GL glin,List<TransparentRender> transparentRenderers)
 			{			
-			GL2 gl=glin.getGL2();
-			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
-			
 			Collection<Mesh3D> meshs=getMeshs();
 			
+			/*
 			//Delete VBOs no longer in use
 			for(Mesh3D oldmesh:new LinkedList<Mesh3D>(vbos.keySet()))
 				if(!meshs.contains(oldmesh))
@@ -143,39 +149,45 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 					vbos.get(oldmesh).destroy(gl);
 					vbos.remove(oldmesh);
 					}
-
+*/
 			//TODO what about meshs that have changed?
 			
 			//Render all meshs
 			for(Mesh3D mesh:meshs)
 				{
-				//Upload to card if needed
-				GLMeshVBO vbo=vbos.get(mesh);
-				if(vbo==null)
-					vbos.put(mesh, vbo=buildVBO(gl, mesh));
+				displayMeshFinal(w.view, glin, mesh);
 				
-				
-				
-				
-				GLMaterial material=null;
-				
-				//Get material of face. TODO each face might have a different material!
-				if(!mesh.faces.isEmpty())
-					material=mesh.faces.iterator().next().material;
-				
-				if(material==null)
-					material=new GLMaterialSolid();
-				
-				//vbo.drawSolid=false;
-				//vbo.drawNormals=true;
-				
-				vbo.render(gl, material);
 				
 				}
 			
+			
+			}
+		
+		public static void displayMeshFinal(ModelView view, GL glin, Mesh3D mesh)
+			{
+			GL2 gl=glin.getGL2();
+			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
+			
+			//Upload to card if needed
+			GLMeshVBO vbo=view.getMesh(mesh);
+			if(vbo==null)
+				view.setMesh(mesh, vbo=buildVBO(gl, mesh));
+			
+			GLMaterial material=null;
+			
+			//Get material of face. TODO each face might have a different material!
+			if(!mesh.faces.isEmpty())
+				material=mesh.faces.iterator().next().material;
+			
+			if(material==null)
+				material=new GLMaterialSolid();
+			
+			//vbo.drawSolid=false;
+			//vbo.drawNormals=true;
+			
+			vbo.render(gl, material);
 			gl.glPopAttrib();
 			}
-
 		
 		private static GLMeshVBO buildVBO(GL gl, Mesh3D mesh)
 			{

@@ -25,6 +25,7 @@ import endrov.coordinateSystem.CoordinateSystem;
 import endrov.ev.*;
 import endrov.modelWindow.TransparentRender.RenderState;
 import endrov.modelWindow.gl.GLCamera;
+import endrov.modelWindow.gl.GLMeshVBO;
 import endrov.util.EvDecimal;
 
 
@@ -93,6 +94,50 @@ public class ModelView extends GLJPanel //GLCanvas
 	public boolean renderAxisArrows=true;
 	
 	public Color bgColor=Color.BLACK;
+	
+	private Map<Object,GLMeshVBO> meshs=new HashMap<Object, GLMeshVBO>();
+	private Set<Object> keepMeshs=new HashSet<Object>();
+	
+
+	
+	
+	/**
+	 * Get a cached mesh. If the mesh is not get:ed every rendering loop it will be removed
+	 */
+	public GLMeshVBO getMesh(Object o)
+		{
+		GLMeshVBO vbo=meshs.get(o);
+		if(vbo!=null)
+			keepMeshs.add(o);
+		return vbo;
+		}
+	
+	/**
+	 * Cache mesh until later
+	 */
+	public void setMesh(Object o, GLMeshVBO m)
+		{
+		meshs.put(o, m);
+		keepMeshs.add(o);
+		}
+	
+	/**
+	 * Unload meshs not used this rendering loop
+	 */
+	private void removeUnusedMesh(GL2 gl)
+		{
+		Map<Object, GLMeshVBO> copy=new HashMap<Object, GLMeshVBO>(meshs);
+		copy.keySet().removeAll(keepMeshs);
+		for(Object key:copy.keySet())
+			{
+			GLMeshVBO m=copy.get(key);
+			m.destroy(gl);
+			meshs.remove(key);
+			}
+		keepMeshs.clear();
+		}
+	
+	
 	
 	/**
 	 * Construct new component with access to common program data
@@ -448,6 +493,10 @@ public class ModelView extends GLJPanel //GLCanvas
 			//Overlays everything else, has to be done absolutely last
 			if(renderAxisArrows)
 				renderAxisArrows(gl);
+			
+			checkerr(gl);
+			
+			removeUnusedMesh(gl);
 			
 			checkerr(gl);
 			//System.out.println("end of render");

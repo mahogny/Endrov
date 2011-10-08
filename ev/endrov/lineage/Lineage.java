@@ -24,6 +24,7 @@ import endrov.data.*;
 import endrov.ev.*;
 import endrov.keyBinding.KeyBinding;
 import endrov.lineage.expression.ParticleDialogIntegrate;
+import endrov.mesh3d.Mesh3D;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 import endrov.util.EvXmlUtil;
@@ -759,6 +760,8 @@ public class Lineage extends EvObject implements Cloneable
 		/** Events */
 		public SortedMap<EvDecimal, String> events=new TreeMap<EvDecimal, String>();
 		
+		public SortedMap<EvDecimal, Mesh3D> meshs=new TreeMap<EvDecimal, Mesh3D>();
+		
 		//idea: reserve x,y,z,r as special keywords, use expression system for all interpol?
 		
 		/** Override first frame of existence */
@@ -1102,24 +1105,8 @@ public class Lineage extends EvObject implements Cloneable
 		return cloneUsingSerialize();
 		}
 	
-
-	/******************************************************************************************************
-	 * Plugin declaration
-	 *****************************************************************************************************/
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,Lineage.class);
-		
-		try
-			{
-			cellGroups.importXML(EvFileUtil.getFileFromURL(Lineage.class.getResource("cecellgroups.cgrp")));
-			}
-		catch (IOException e)
-			{
-			e.printStackTrace();
-			}
-		}
+	
+	
 
 	/** Additions to the object-specific menu */
 	public void buildMetamenu(JMenu menu, final EvContainer parentObject)
@@ -1212,6 +1199,25 @@ public class Lineage extends EvObject implements Cloneable
 			if(particle.get(n).child.isEmpty())
 				names.add(n);
 		return names;
+		}
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,Lineage.class);
+		
+		try
+			{
+			cellGroups.importXML(EvFileUtil.getFileFromURL(Lineage.class.getResource("cecellgroups.cgrp")));
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
 		}
 	
 	}
