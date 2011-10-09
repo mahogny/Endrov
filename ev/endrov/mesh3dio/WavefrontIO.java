@@ -288,6 +288,11 @@ public class WavefrontIO implements EvIOData
 			//Ignore the previous normals! Just recalculate. Or should this be done optionally somehow?
 			m.calcNormals();
 			
+			
+			m.pruneUnusedVertices();
+			m.pruneUnusedTexcoord();
+			m.pruneUnusedNormals();
+			
 			//TODO prune vertices not used for the group
 			
 			

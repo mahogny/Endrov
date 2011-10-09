@@ -17,7 +17,6 @@ import org.jdom.Element;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.lineage.Lineage;
 import endrov.modelWindow.gl.GLMaterial;
 import endrov.modelWindow.gl.GLMaterialSolid;
 
@@ -77,7 +76,6 @@ public class Mesh3D extends EvObject
 	public List<Vector3d> texcoord=new ArrayList<Vector3d>();
 	public List<Vector3d> normal=new ArrayList<Vector3d>();
 	
-	//public GLMaterial material;
 	
 	public void calcNormals()
 		{
@@ -237,30 +235,35 @@ public class Mesh3D extends EvObject
 					{
 					int id=ne.getAttribute("id").getIntValue();
 					
-					//TODO
+					Element me=(Element)ne.getChildren().iterator().next();
+					GLMaterialSolid m=GLMaterialSolid.fromXML(me);
 					
+					materials.put(id, m);
 					}
 				else if(ne.getName().equals("f"))
 					{
 					Face f=new Face();
 					faces.add(f);
 					
-					f.vertex=new int[3];
-					for(int i=0;i<3;i++)
-						f.vertex[i]=ne.getAttribute("v"+i).getIntValue();
+					if(ne.getAttribute("v0")!=null)
+						{
+						int[] arr=f.vertex=new int[3];
+						for(int i=0;i<3;i++)
+							arr[i]=ne.getAttribute("v"+i).getIntValue();
+						}
 					
 					if(ne.getAttribute("t0")!=null)
 						{
-						f.texcoord=new int[3];
+						int[] arr=f.texcoord=new int[3];
 						for(int i=0;i<3;i++)
-							f.texcoord[i]=ne.getAttribute("t"+i).getIntValue();
+							arr[i]=ne.getAttribute("t"+i).getIntValue();
 						}
 
 					if(ne.getAttribute("n0")!=null)
 						{
-						f.normal=new int[3];
+						int[] arr=f.normal=new int[3];
 						for(int i=0;i<3;i++)
-							f.normal[i]=ne.getAttribute("n"+i).getIntValue();
+							arr[i]=ne.getAttribute("n"+i).getIntValue();
 						}
 					
 					if(ne.getAttribute("smoothg")!=null)
@@ -285,52 +288,42 @@ public class Mesh3D extends EvObject
 			{
 			e1.printStackTrace();
 			}
-		
-		
 		}
-	
-	
 	
 	
 	@Override
 	public String saveMetadata(Element e)
 		{
-	//Store materials
+		//Store materials
 		Set<GLMaterial> materials=new HashSet<GLMaterial>();
 		for(Face f:faces)
 			if(f.material!=null)
 				materials.add(f.material);
 		int matCount=0;
 		HashMap<GLMaterial,Integer> materialToID=new HashMap<GLMaterial, Integer>();
-		//for(GLMaterial m:materials)
-			//materialToID.put(m, matCount++);
 		for(GLMaterial m:materials)
 			{
 			if(m instanceof GLMaterialSolid)
 				{
 				int id=matCount;
 				matCount++;
-				/*
 				
 				materialToID.put(m, id);
 				
-				GLMaterialSolid sm=(GLMaterialSolid)m;
-				
-				
 				Element ne=new Element("m");
 				ne.setAttribute("id",""+materialToID.get(m));
+
+				//TODO abstract interface?
+				GLMaterialSolid sm=(GLMaterialSolid)m;
+				Element me=sm.toXML();
+				ne.addContent(me);
 				
-				//TODO eeeek. abstract interface! only support one type? the standard type?
 				e.addContent(ne);
-				*/
 				}
-			
-			
 			
 			}
 		
-		
-		
+		//Store faces
 		for(Face f:faces)
 			{
 			Element ne=new Element("f");
@@ -355,20 +348,20 @@ public class Mesh3D extends EvObject
 			
 			e.addContent(ne);
 			}
-		
-		
 		for(Vector3d v:vertex)
 			{
 			Element ne=new Element("v");
 			vertexToXML(v, ne);
 			e.addContent(ne);
 			}
+		System.out.println("t");
 		for(Vector3d v:texcoord)
 			{
 			Element ne=new Element("t");
 			vertexToXML(v, ne);
 			e.addContent(ne);
 			}
+		System.out.println("n");
 		//TODO store the ability recalc normals later
 		for(Vector3d v:normal)
 			{
@@ -395,6 +388,54 @@ public class Mesh3D extends EvObject
 		}
 	
 
+	/**
+	 * Remove unused vertices
+	 */
+	public void pruneUnusedVertices()
+		{
+		Set<Integer> used=new HashSet<Integer>();
+		
+		for(Face f:faces)
+			for(int i:f.vertex)
+				used.add(i);
+
+		if(used.size()!=vertex.size())
+			{
+			//New IDs & compactify
+			Map<Integer, Integer> lastToNewId=new HashMap<Integer, Integer>();
+			List<Vector3d> newlist=new ArrayList<Vector3d>();
+			int count=0;
+			for(int oldId:used)
+				{
+				lastToNewId.put(oldId, count++);
+				newlist.add(vertex.get(oldId));
+				}
+			vertex=newlist;
+			
+			//Remap 
+			for(Face f:faces)
+				for(int i=0;i<3;i++)
+					f.vertex[i]=lastToNewId.get(f.vertex[i]);
+			}
+		}
+
+	
+	public void pruneUnusedTexcoord()
+		{
+		// TODO Auto-generated method stub
+		
+		}
+
+
+
+
+	public void pruneUnusedNormals()
+		{
+		// TODO Auto-generated method stub
+		
+		}
+	
+
 	@Override
 	public EvObject cloneEvObject()
 		{
@@ -408,8 +449,9 @@ public class Mesh3D extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedMetadataFormats.put(metaType,Lineage.class);
+		EvData.supportedMetadataFormats.put(metaType,Mesh3D.class);
 		
 		}
+	
 
 	}

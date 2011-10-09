@@ -227,7 +227,7 @@ public class DataBrowserWindow extends BasicWindow implements MouseListener
 					miDelete.addActionListener(new ActionListener()	{
 						public void actionPerformed(ActionEvent e)
 							{
-							int ret=JOptionPane.showConfirmDialog(DataBrowserWindow.this, "Do you really want to delete "+names, EV.programName, JOptionPane.YES_NO_OPTION);
+							int ret=JOptionPane.showConfirmDialog(DataBrowserWindow.this, "Do you really want to delete these "+names.size()+" object(s)?", EV.programName, JOptionPane.YES_NO_OPTION);
 							if(ret==JOptionPane.YES_NO_OPTION)
 								{
 								for(Node n:toDelete)

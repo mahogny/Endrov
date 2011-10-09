@@ -125,7 +125,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				view.setMesh(mesh, vbo=buildVBO(gl, mesh));
 			
 			GLMaterial m=new GLMaterialSelect(color);
-			gl.glDisable(GL2.GL_LIGHTING);
+			
 			vbo.render(gl, m);
 			
 			gl.glPopAttrib();

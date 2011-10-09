@@ -66,7 +66,6 @@ public class GLMeshVBO
 
 		
 
-		gl.glEnable(GL2.GL_LIGHTING);
 		gl.glEnable(GL2.GL_CULL_FACE);
 	
 		material.set(gl);

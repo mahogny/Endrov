@@ -112,6 +112,7 @@ public class ModelWindow extends BasicWindow
 	private JMenuItem miCopyState=new JMenuItem("Copy");
 	private JMenuItem miPasteState=new JMenuItem("Paste");
 	private JCheckBoxMenuItem miShowAxis=new JCheckBoxMenuItem("Show axis directions");
+	private JCheckBoxMenuItem miShowSelection=new JCheckBoxMenuItem("Show selection layer");
 	private JMenu miSetBGColor=makeSetBGColorMenu();
 
 	
@@ -180,6 +181,7 @@ public class ModelWindow extends BasicWindow
 		//Build other menu entries
 		menuModel.add(miSetBGColor);
 		menuModel.add(miShowAxis);
+		menuModel.add(miShowSelection);
 		
 		//Add action listeners
 		miViewTop.addActionListener(this);
@@ -193,6 +195,7 @@ public class ModelWindow extends BasicWindow
 		miCopyState.addActionListener(this);
 		miPasteState.addActionListener(this);
 		miShowAxis.addActionListener(this);
+		miShowSelection.addActionListener(this);
 		
 		//Add change listeners
 		objectDisplayList.addChangeListener(this);
@@ -416,6 +419,11 @@ public class ModelWindow extends BasicWindow
 		else if(e.getSource()==miShowAxis)
 			{
 			view.renderAxisArrows=miShowAxis.isSelected();
+			repaint();
+			}
+		else if(e.getSource()==miShowSelection)
+			{
+			view.showSelectChannel=miShowSelection.isSelected();
 			repaint();
 			}
 		}

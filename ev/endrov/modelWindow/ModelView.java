@@ -46,6 +46,8 @@ public class ModelView extends GLJPanel //GLCanvas
 	
   private static GLCapabilities caps;
 
+  public boolean showSelectChannel=false;
+  
 	static
 	{
 	System.out.println("Default gl profile "+GLProfile.getDefault());
@@ -207,7 +209,11 @@ public class ModelView extends GLJPanel //GLCanvas
 		{		
 		HashSet<ModelWindowHook> hasInited=new HashSet<ModelWindowHook>();
 		
-		float light_position[] = new float[]{ 100.0f, 100.0f, 100.0f, 0.0f };
+		float light_position[][] = new float[][]{
+					{ 0f, 0f, 100.0f, 0.0f },
+					//{ 100.0f, 100.0f, 100.0f, 0.0f },
+					//{ -100.0f, -100.0f, 100.0f, 0.0f }
+				};
 
 		/**
 		 * Called once when OpenGL is inititalized
@@ -358,18 +364,13 @@ public class ModelView extends GLJPanel //GLCanvas
 			
 			
 			
-			//Store away unaffected matrix
 			GL2 gl = drawable.getGL().getGL2();
-			gl.glPushMatrix();
+			//Store away unaffected matrix
+			//gl.glPushMatrix();
 			
 			checkerr(gl); //TODO upon start getting this
 			
-			 //Set light to follow camera
-			gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light_position,0);
-	    ModelView.setupLight(gl);
 			
-			//Get camera into position
-			camera.transformGL(gl);
 			
 			window.crossHandler.resetCrossList();
 			
@@ -393,6 +394,11 @@ public class ModelView extends GLJPanel //GLCanvas
 			// Render for selection
 			/////////////////////////////////
 			
+			//Get camera into position
+			gl.glLoadIdentity();
+			camera.transformGL(gl);
+
+			checkerr(gl);
 			
 			//Skip this step if mouse isn't even within the window
 			if(mouseX>=0 && mouseY>=0)
@@ -408,6 +414,10 @@ public class ModelView extends GLJPanel //GLCanvas
 				gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 				resetSelectColor();
 				
+				gl.glDisable(GL2.GL_LIGHTING);
+
+				checkerr(gl);
+
 				//Render extensions
 				for(ModelWindowHook h:window.modelWindowHooks)
 					{
@@ -438,61 +448,75 @@ public class ModelView extends GLJPanel //GLCanvas
 			/////////////////////////////////
 			
 
-
-			//Clear buffers
-			gl.glClearColor((float)bgColor.getRed()/255.0f,(float)bgColor.getGreen()/255.0f,(float)bgColor.getBlue()/255.0f,0.0f);
-			gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-
-			
-			
-			
-			//Render cross. could be an extension
-			window.crossHandler.displayCrossFinal(gl,window);
-			
-			checkerr(gl);
-			
-			//Render extensions
-			List<TransparentRender> transparentRenderers=new LinkedList<TransparentRender>();
-			for(ModelWindowHook h:window.modelWindowHooks)
+			if(!showSelectChannel)
 				{
-				h.displayFinal(gl, transparentRenderers);
-				checkerr(gl,h);
-				}
-			
-			
-			//Take care of transparent renderers
-			Collections.sort(transparentRenderers);
-			RenderState currentRenderState=null;
-			for(TransparentRender r:transparentRenderers)
-				{
-				//System.out.println("z "+r.z);
-				if(r.renderState!=currentRenderState)
+				gl.glLoadIdentity();
+
+				//Set light to follow camera
+				for(int i=0;i<light_position.length;i++)
+					gl.glLightfv(GL2.GL_LIGHT0+i, GL2.GL_POSITION, light_position[i],0);
+		    setupLight(gl);
+				
+				//Get camera into position
+				camera.transformGL(gl);
+
+				//Clear buffers
+				gl.glClearColor((float)bgColor.getRed()/255.0f,(float)bgColor.getGreen()/255.0f,(float)bgColor.getBlue()/255.0f,0.0f);
+				gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+
+				gl.glEnable(GL2.GL_LIGHTING);
+
+				
+				
+				//Render cross. could be an extension
+				window.crossHandler.displayCrossFinal(gl,window);
+				
+				checkerr(gl);
+				
+				//Render extensions
+				List<TransparentRender> transparentRenderers=new LinkedList<TransparentRender>();
+				for(ModelWindowHook h:window.modelWindowHooks)
 					{
-					if(r.renderState!=null && r.renderState.optimizedSwitch(gl, currentRenderState))
-						currentRenderState=r.renderState;
-					else
-						{
-						if(currentRenderState!=null) currentRenderState.deactivate(gl);
-						currentRenderState=r.renderState;
-						if(currentRenderState!=null) currentRenderState.activate(gl);
-						}
+					h.displayFinal(gl, transparentRenderers);
+					checkerr(gl,h);
 					}
-				r.render(gl);
-				checkerr(gl,r);
+				
+				
+				//Take care of transparent renderers
+				Collections.sort(transparentRenderers);
+				RenderState currentRenderState=null;
+				for(TransparentRender r:transparentRenderers)
+					{
+					//System.out.println("z "+r.z);
+					if(r.renderState!=currentRenderState)
+						{
+						if(r.renderState!=null && r.renderState.optimizedSwitch(gl, currentRenderState))
+							currentRenderState=r.renderState;
+						else
+							{
+							if(currentRenderState!=null) currentRenderState.deactivate(gl);
+							currentRenderState=r.renderState;
+							if(currentRenderState!=null) currentRenderState.activate(gl);
+							}
+						}
+					r.render(gl);
+					checkerr(gl,r);
+					}
+				if(currentRenderState!=null)
+					currentRenderState.deactivate(gl);
+				
 				}
-			if(currentRenderState!=null)
-				currentRenderState.deactivate(gl);
-			
-			
 			
 			//Restore unaffected matrix
-			gl.glPopMatrix();
+			//gl.glPopMatrix();
 
-			
-			//Axis rendering
-			//Overlays everything else, has to be done absolutely last
-			if(renderAxisArrows)
-				renderAxisArrows(gl);
+			if(!showSelectChannel)
+				{
+				//Axis rendering
+				//Overlays everything else, has to be done absolutely last
+				if(renderAxisArrows)
+					renderAxisArrows(gl);
+				}
 			
 			checkerr(gl);
 			
@@ -503,8 +527,33 @@ public class ModelView extends GLJPanel //GLCanvas
 			}
 
 		
+		
+		public void setupLight(GL2 gl)
+			{
+			
+			float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 0.0f };
+			float lightDiffuse[]=new float[]{1.0f,1.0f,1.0f};
+			float lightSpecular[]=new float[]{0.5f,0.5f,0.5f};
+			
+			/*
+			float lightAmbient[] ={0.2f, 0.2f, 0.2f, 1.0f};
+			float lightDiffuse[] ={1.0f, 1.0f, 1.0f, 1.0f};
+			float lightSpecular[]={1.0f, 1.0f, 1.0f, 0.0f};
+			*/
+
+			for(int i=0;i<light_position.length;i++)
+				{
+				gl.glLightfv(GL2.GL_LIGHT0+i, GL2.GL_AMBIENT, lightAmbient, 0);   
+				gl.glLightfv(GL2.GL_LIGHT0+i, GL2.GL_DIFFUSE, lightDiffuse, 0);
+				gl.glLightfv(GL2.GL_LIGHT0+i, GL2.GL_SPECULAR, lightSpecular, 0);
+				gl.glEnable(GL2.GL_LIGHT0+i);
+				}
+			gl.glShadeModel(GL2.GL_SMOOTH);
+			}
+		
 		private void renderAxisArrows(GL2 gl)
 			{
+			gl.glDisable(GL2.GL_LIGHTING);
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPushMatrix();
 			gl.glLoadIdentity();
@@ -943,24 +992,7 @@ public class ModelView extends GLJPanel //GLCanvas
 		 */
 		
 		}
-	public static void setupLight(GL2 gl)
-		{
-		/*
-		float lightAmbient[] = { 0.2f, 0.2f, 0.2f, 0.0f };
-		float lightDiffuse[]=new float[]{0.8f,0.8f,0.8f};
-		float lightSpecular[]=new float[]{0.5f,0.5f,0.5f};
-*/		
-		float lightAmbient[] ={0.2f, 0.2f, 0.2f, 1.0f};
-		float lightDiffuse[] ={1.0f, 1.0f, 1.0f, 1.0f};
-		float lightSpecular[]={1.0f, 1.0f, 1.0f, 0.0f};
-
-		
-		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, lightAmbient, 0);   
-		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, lightDiffuse, 0);
-		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_SPECULAR, lightSpecular, 0);
-		gl.glShadeModel(GL2.GL_SMOOTH);
-		gl.glEnable(GL2.GL_LIGHT0);
-		}
+	
 
 	//http://www.felixgers.de/teaching/jogl/imagingProg.html
 

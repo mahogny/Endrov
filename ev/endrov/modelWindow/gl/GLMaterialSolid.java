@@ -2,6 +2,9 @@ package endrov.modelWindow.gl;
 
 import javax.media.opengl.GL2;
 
+import org.jdom.DataConversionException;
+import org.jdom.Element;
+
 /**
  * Solid color material
  * 
@@ -10,6 +13,9 @@ import javax.media.opengl.GL2;
  */
 public class GLMaterialSolid implements GLMaterial
 	{
+	public static final String metadataType="materialsolid";
+
+	
 	public float[] diffuse;
 	public float[] specular;
 	public float[] ambient;
@@ -67,6 +73,48 @@ public class GLMaterialSolid implements GLMaterial
 		
 		}
 	
+	
+	public Element toXML()
+		{
+		Element e=new Element(metadataType);
+		
+		for(int i=0;i<4;i++)
+			{
+			e.setAttribute("d"+i, Double.toString(diffuse[i]));
+			e.setAttribute("s"+i, Double.toString(specular[i]));
+			e.setAttribute("a"+i, Double.toString(ambient[i]));
+			}
+		e.setAttribute("shin", Double.toString(shininess));
+		
+		return e;
+		}
+	
+	
+	public static GLMaterialSolid fromXML(Element e)
+		{
+		try
+			{
+			float[] diffuse=new float[4];
+			float[] specular=new float[4];
+			float[] ambient=new float[4];
+			
+			for(int i=0;i<4;i++)
+				{
+				diffuse[i]=e.getAttribute("d"+i).getFloatValue();
+				specular[i]=e.getAttribute("s"+i).getFloatValue();
+				ambient[i]=e.getAttribute("a"+i).getFloatValue();			
+				}
+			float shininess=e.getAttribute("shin").getFloatValue();
+			
+			return new GLMaterialSolid(diffuse, specular, ambient, shininess);
+			}
+		catch (DataConversionException e1)
+			{
+			throw new RuntimeException(e1.getMessage());
+			}
+		
+		
+		}
 	
 	}
 	
