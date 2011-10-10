@@ -254,6 +254,18 @@ public class Lineage extends EvObject implements Cloneable
 					}
 				}
 			
+			
+			for(Map.Entry<EvDecimal, Mesh3D> entry:n.meshs.entrySet())
+				{
+				Element modele=new Element("mesh");
+				modele.setAttribute("f",""+entry.getKey());
+				nuce.addContent(modele);
+				
+				Element meshe=new Element("x");
+				entry.getValue().saveMetadata(meshe);
+				modele.addContent(meshe);
+				}
+			
 			}
 		return metaType;
 		}
@@ -309,6 +321,16 @@ public class Lineage extends EvObject implements Cloneable
 							double level=expe.getAttribute("l").getDoubleValue();
 							exp.level.put(frame, level);
 							}
+						}
+					else if(pose.getName().equals("mesh"))
+						{
+						System.out.println("mesh");
+
+						EvDecimal f=new EvDecimal(pose.getAttributeValue("f"));
+						Element meshe=(Element)pose.getChildren().iterator().next();
+						Mesh3D m=new Mesh3D();
+						m.loadMetadata(meshe);
+						n.meshs.put(f, m);
 						}
 					}
 				}
@@ -622,20 +644,33 @@ public class Lineage extends EvObject implements Cloneable
 	
 
 	/**
-	 * Find the first keyframe and particle ever mentioned in a lineage object
+	 * Find the first keyframe and particle ever mentioned in a lineage object. Can optionally also check mesh frames
 	 */
-	public Tuple<EvDecimal, String> firstFrameOfLineage()
+	public Tuple<EvDecimal, String> firstFrameOfLineage(boolean checkMesh)
 		{
 		Tuple<EvDecimal, String> found=null;
 		for(Map.Entry<String, Particle> n:particle.entrySet())
-			if(found==null || (!n.getValue().pos.isEmpty() && n.getValue().getFirstFrame().less(found.fst())))
-				found=new Tuple<EvDecimal, String>(n.getValue().getFirstFrame(),n.getKey());
+			{
+			Particle p=n.getValue();
+			EvDecimal f=null;
+			if(!p.pos.isEmpty())
+				f=p.getFirstFrame();
+			
+			if(!p.meshs.isEmpty())
+				if(f==null || p.meshs.firstKey().less(f))
+					f=p.meshs.firstKey();
+			
+			if(found==null || (f!=null && f.less(found.fst())))
+				found=new Tuple<EvDecimal, String>(p.getFirstFrame(),n.getKey());
+			}
+			
 		return found;
 		}
 
 	/**
 	 * Find the last keyframe and particle ever mentioned in a lineage object
 	 */
+	/*
 	public Tuple<EvDecimal, String> lastFrameOfLineage()
 		{
 		Tuple<EvDecimal, String> found=null;
@@ -643,8 +678,29 @@ public class Lineage extends EvObject implements Cloneable
 			if(found==null || (!n.getValue().pos.isEmpty() && n.getValue().getLastFrame().greater(found.fst())))
 				found=new Tuple<EvDecimal, String>(n.getValue().getLastFrame(),n.getKey());
 		return found;
-		}
+		}*/
 
+	
+	public Tuple<EvDecimal, String> lastFrameOfLineage(boolean checkMesh)
+		{
+		Tuple<EvDecimal, String> found=null;
+		for(Map.Entry<String, Particle> n:particle.entrySet())
+			{
+			Particle p=n.getValue();
+			EvDecimal f=null;
+			if(!p.pos.isEmpty())
+				f=p.getLastFrame();
+			
+			if(!p.meshs.isEmpty())
+				if(f==null || p.meshs.lastKey().greater(f))
+					f=p.meshs.lastKey();
+			
+			if(found==null || (f!=null && f.greater(found.fst())))
+				found=new Tuple<EvDecimal, String>(p.getLastFrame(),n.getKey());
+			}
+			
+		return found;
+		}
 	
 	
 	/******************************************************************************************************

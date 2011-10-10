@@ -8,6 +8,7 @@ package util2.paperCeExpression.wblin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,8 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.lineage.Lineage;
+import endrov.mesh3d.Mesh3D;
+import endrov.util.EvDecimal;
 
 public class MergeWormbaseMesh
 	{
@@ -29,9 +32,9 @@ public class MergeWormbaseMesh
 		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 
-		EvData data=EvData.loadFile(new File("/Volumes/TBU_main06/wblineage/lin.ost"));
+		EvData dataLin=EvData.loadFile(new File("/Volumes/TBU_main06/wblineage/lin.ost"));
 		
-		Lineage lin=(Lineage)data.getChild("lin");
+		Lineage lin=(Lineage)dataLin.getChild("lin");
 		
     
     Set<String> deleted=new TreeSet<String>(); 
@@ -83,28 +86,38 @@ public class MergeWormbaseMesh
     
     	{
 
-      Map<String,String> lowercasePartname=new HashMap<String,String>();
+      Map<String,String> lowercasePartName=new HashMap<String,String>();
       for(String name:lin.particle.keySet())
-      	lowercasePartname.put(name.toLowerCase(), name);
+      	lowercasePartName.put(name.toLowerCase(), name);
       
 	    //Check which parts matches up
 	    int linkpartcount=0;
 	    int deletepartcount=0;
-	    for(String objpart:moddata.metaObject.keySet())
+	    for(String objName:moddata.metaObject.keySet())
 	    	{
-	    	if(lowercasePartname.containsKey(objpart.toLowerCase()))
+	    	String lowerobjpart=objName.toLowerCase();
+	    	
+	    	if(lowercasePartName.containsKey(lowerobjpart))
 	    		{
 	    		linkpartcount++;
+	    		
+	    		String pname=lowercasePartName.get(lowerobjpart);
+	  	    lin.particle.get(pname).meshs.put(EvDecimal.ZERO, (Mesh3D)moddata.metaObject.get(objName));
+	  	    System.out.println("match "+objName+"  "+pname);
 	    		}
-	    	else if(deleted.contains(objpart.toLowerCase()))
+	    	else if(deleted.contains(lowerobjpart))
 	    		{
-	    		System.out.println("has deleted object "+objpart);
+	    		System.out.println("has deleted object "+objName);
 	    		deletepartcount++;
 	    		}
 	    	else
-	    		System.out.println("Missing nuc for "+objpart);
+	    		System.out.println("Missing nuc for "+objName);
 	    	}
 	    System.out.println("mesh->lin: linked "+linkpartcount+" + "+deletepartcount+"   vs  "+moddata.metaObject.size());
+	    
+	    
+	    
+	    
     	}
     
     	{
@@ -127,6 +140,19 @@ public class MergeWormbaseMesh
 	    System.out.println("lin->mesh: linked "+linkpartcount+"  vs  "+total);
     	}
     
+    	
+    	
+    try
+			{
+			dataLin.saveDataAs(new File("/Volumes/TBU_main06/wblineage/mod.ost"));
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+    	
+    	
+    	
     System.exit(0);
 		}
 	

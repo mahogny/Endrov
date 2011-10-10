@@ -61,8 +61,8 @@ public class TestSingleCellPrecision
 		
 		Lineage approxLin=LineageMergeUtil.mapModelToRec(refLin, IntegrateAllExp.loadModel());
 		
-		EvDecimal firstFrame=refLin.firstFrameOfLineage().fst();
-		EvDecimal lastFrame=refLin.lastFrameOfLineage().fst();
+		EvDecimal firstFrame=refLin.firstFrameOfLineage(false).fst();
+		EvDecimal lastFrame=refLin.lastFrameOfLineage(false).fst();
 		for(EvDecimal curFrame=firstFrame;curFrame.less(lastFrame);curFrame=curFrame.add(new EvDecimal(20)))
 			{
 			Map<LineageSelParticle, InterpolatedParticle> allInterpRef=refLin.interpolateParticles(curFrame);

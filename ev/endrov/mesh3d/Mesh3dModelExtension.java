@@ -122,22 +122,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			
 			}
 		
-		public static void displayMeshSelect(ModelView view, GL glin, Mesh3D mesh, int color)
-			{
-			GL2 gl=glin.getGL2();
-			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
-			
-			//Upload to card if needed
-			GLMeshVBO vbo=view.getMesh(mesh);
-			if(vbo==null)
-				view.setMesh(mesh, vbo=buildVBO(gl, mesh));
-			
-			GLMaterial m=new GLMaterialSelect(color);
-			
-			vbo.render(gl, m);
-			
-			gl.glPopAttrib();
-			}
+		
 		
 		
 		//private Map<Mesh3D, GLMeshVBO> vbos=new HashMap<Mesh3D, GLMeshVBO>();
@@ -161,136 +146,6 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			
 			
 			}
-		
-		public static void displayMeshFinal(ModelView view, GL glin, Mesh3D mesh)
-			{
-			GL2 gl=glin.getGL2();
-			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
-			
-			//Upload to card if needed
-			GLMeshVBO vbo=view.getMesh(mesh);
-			if(vbo==null)
-				view.setMesh(mesh, vbo=buildVBO(gl, mesh));
-			
-			GLMaterial material=null;
-			
-			//Get material of face. TODO each face might have a different material!
-			if(!mesh.faces.isEmpty())
-				material=mesh.faces.iterator().next().material;
-			
-			if(material==null)
-				material=new GLMaterialSolid();
-			
-			//vbo.drawSolid=false;
-			//vbo.drawNormals=true;
-			
-			vbo.render(gl, material);
-			gl.glPopAttrib();
-			}
-		
-		private static GLMeshVBO buildVBO(GL gl, Mesh3D mesh)
-			{
-			GLMeshVBO vbo=new GLMeshVBO();
-
-			int vertexCount=mesh.faces.size()*3;
-
-      FloatBuffer vertices=BufferUtil.newFloatBuffer(vertexCount*3);
-      FloatBuffer normals=BufferUtil.newFloatBuffer(vertexCount*3);
-      FloatBuffer tex=BufferUtil.newFloatBuffer(vertexCount*2);
-
-			for(int fi=0;fi<mesh.faces.size();fi++)
-				{
-				Mesh3D.Face f=mesh.faces.get(fi);
-				for(int vi=0;vi<3;vi++)
-					{
-	      	Vector3d vert=mesh.vertex.get(f.vertex[vi]);
-	      	vertices.put((float)vert.x);
-	      	vertices.put((float)vert.y);
-	      	vertices.put((float)vert.z);
-					
-	      	if(f.texcoord!=null)
-	      		{
-		      	Vector3d t=mesh.texcoord.get(f.texcoord[vi]);
-		      	tex.put((float)t.x);
-		      	tex.put((float)t.y);
-		      	//TODO 3d texture support?
-	      		}
-	      	else
-	      		{
-		      	tex.put(0);
-		      	tex.put(0);
-	      		}
-	      	
-	      	if(f.normal!=null)
-	      		{
-		      	Vector3d n=mesh.normal.get(f.normal[vi]);
-		      	normals.put((float)n.x);
-		      	normals.put((float)n.y);
-		      	normals.put((float)n.z);
-	      		}
-	      	else
-	      		{
-	      		normals.put(0);
-	      		normals.put(0);
-	      		normals.put(0);
-	      		}
-					}
-				}
-			
-			
-			boolean extensionOK = gl.isExtensionAvailable("GL_ARB_vertex_buffer_object");
-
-			if(extensionOK)
-				{
-      	vertices.rewind();
-      	tex.rewind();
-      	normals.rewind();
-      	
-	      int[] VBOVertices = new int[1];  
-	      gl.glGenBuffers(1, VBOVertices, 0);  
-	      gl.glBindBuffer(GL.GL_ARRAY_BUFFER, VBOVertices[0]);  
-	      gl.glBufferData(GL.GL_ARRAY_BUFFER, vertexCount * 3 * BufferUtil.SIZEOF_FLOAT, vertices, GL.GL_STATIC_DRAW);
-	
-	      int[] VBONormals = new int[1];  
-	      gl.glGenBuffers(1, VBONormals, 0);  
-	      gl.glBindBuffer(GL.GL_ARRAY_BUFFER, VBONormals[0]);  
-	      gl.glBufferData(GL.GL_ARRAY_BUFFER, vertexCount * 3 * BufferUtil.SIZEOF_FLOAT, vertices, GL.GL_STATIC_DRAW);
-	
-	      int[] VBOTexCoords = new int[1];
-	      gl.glGenBuffers(1, VBOTexCoords, 0);
-	      gl.glBindBuffer(GL.GL_ARRAY_BUFFER, VBOTexCoords[0]);
-	      gl.glBufferData(GL.GL_ARRAY_BUFFER, vertexCount * 2 * BufferUtil.SIZEOF_FLOAT, tex, GL.GL_STATIC_DRAW);
-	      
-	      vbo.vertVBO=VBOVertices[0];
-	      vbo.texVBO=VBOTexCoords[0];
-	      vbo.normalsVBO=VBONormals[0];
-	      vbo.useVBO=true;
-				}
-			else
-				{
-	      vbo.vertices=vertices;
-	      vbo.normals=normals;
-	      vbo.tex=tex;
-
-	      vbo.useVBO=false;
-				}
-
-			/*
-      vbo.vertices=vertices;
-      vbo.normals=normals;
-      vbo.tex=tex;
-      */
-			
-      vbo.vertices=vertices;
-      vbo.normals=normals;
-      vbo.tex=tex;
-
-			
-      vbo.vertexCount=vertexCount;
-      return vbo;
-			}
-
-		
 		
 		
 		
@@ -342,29 +197,14 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		 */
 		public Collection<Vector3d> autoCenterMid()
 			{
-			System.out.println("auto center mid mesh");
-			//Calculate center
-			double meanx=0, meany=0, meanz=0;
-			int num=0;
-			for(Mesh3D lin:getVisibleObjects())
+			List<Vector3d> list=new LinkedList<Vector3d>(); 
+			for(Mesh3D m:getVisibleObjects())
 				{
-				for(Vector3d pos:lin.vertex)
-					{
-					meanx+=pos.x;
-					meany+=pos.y;
-					meanz+=pos.z;
-					}
-				num+=lin.vertex.size();
+				Vector3d v=m.getVertexAverage();
+				if(v!=null)
+					list.add(v);
 				}
-			if(num==0)
-				return Collections.emptySet();
-			else
-				{
-				meanx/=num;
-				meany/=num;
-				meanz/=num;
-				return Collections.singleton(new Vector3d(meanx,meany,meanz));
-				}
+			return list;
 			}
 		
 		
@@ -429,6 +269,160 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 
 		
 		};
+		
+
+	
+	public static void displayMeshSelect(ModelView view, GL glin, Mesh3D mesh, int color)
+		{
+		GL2 gl=glin.getGL2();
+		gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
+		
+		//Upload to card if needed
+		GLMeshVBO vbo=view.getMesh(mesh);
+		if(vbo==null)
+			view.setMesh(mesh, vbo=buildVBO(gl, mesh));
+		
+		GLMaterial m=new GLMaterialSelect(color);
+		
+		vbo.render(gl, m);
+		
+		gl.glPopAttrib();
+		}	
+		
+
+
+	public static void displayMeshFinal(ModelView view, GL glin, Mesh3D mesh)
+		{
+		GL2 gl=glin.getGL2();
+		gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
+		
+		//Upload to card if needed
+		GLMeshVBO vbo=view.getMesh(mesh);
+		if(vbo==null)
+			view.setMesh(mesh, vbo=buildVBO(gl, mesh));
+		
+		GLMaterial material=null;
+		
+		//Get material of face. TODO each face might have a different material!
+		if(!mesh.faces.isEmpty())
+			material=mesh.faces.iterator().next().material;
+		
+		if(material==null)
+			material=new GLMaterialSolid();
+		
+		//vbo.drawSolid=false;
+		//vbo.drawNormals=true;
+		
+		vbo.render(gl, material);
+		gl.glPopAttrib();
+		}
+	
+	
+	
+	private static GLMeshVBO buildVBO(GL gl, Mesh3D mesh)
+		{
+		GLMeshVBO vbo=new GLMeshVBO();
+
+		int vertexCount=mesh.faces.size()*3;
+
+    FloatBuffer vertices=BufferUtil.newFloatBuffer(vertexCount*3);
+    FloatBuffer normals=BufferUtil.newFloatBuffer(vertexCount*3);
+    FloatBuffer tex=BufferUtil.newFloatBuffer(vertexCount*2);
+
+		for(int fi=0;fi<mesh.faces.size();fi++)
+			{
+			Mesh3D.Face f=mesh.faces.get(fi);
+			for(int vi=0;vi<3;vi++)
+				{
+      	Vector3d vert=mesh.vertex.get(f.vertex[vi]);
+      	vertices.put((float)vert.x);
+      	vertices.put((float)vert.y);
+      	vertices.put((float)vert.z);
+				
+      	if(f.texcoord!=null)
+      		{
+	      	Vector3d t=mesh.texcoord.get(f.texcoord[vi]);
+	      	tex.put((float)t.x);
+	      	tex.put((float)t.y);
+	      	//TODO 3d texture support?
+      		}
+      	else
+      		{
+	      	tex.put(0);
+	      	tex.put(0);
+      		}
+      	
+      	if(f.normal!=null)
+      		{
+	      	Vector3d n=mesh.normal.get(f.normal[vi]);
+	      	normals.put((float)n.x);
+	      	normals.put((float)n.y);
+	      	normals.put((float)n.z);
+      		}
+      	else
+      		{
+      		normals.put(0);
+      		normals.put(0);
+      		normals.put(0);
+      		}
+				}
+			}
+		
+		
+		boolean extensionOK = gl.isExtensionAvailable("GL_ARB_vertex_buffer_object");
+
+		if(extensionOK)
+			{
+    	vertices.rewind();
+    	tex.rewind();
+    	normals.rewind();
+    	
+      int[] VBOVertices = new int[1];  
+      gl.glGenBuffers(1, VBOVertices, 0);  
+      gl.glBindBuffer(GL.GL_ARRAY_BUFFER, VBOVertices[0]);  
+      gl.glBufferData(GL.GL_ARRAY_BUFFER, vertexCount * 3 * BufferUtil.SIZEOF_FLOAT, vertices, GL.GL_STATIC_DRAW);
+
+      int[] VBONormals = new int[1];  
+      gl.glGenBuffers(1, VBONormals, 0);  
+      gl.glBindBuffer(GL.GL_ARRAY_BUFFER, VBONormals[0]);  
+      gl.glBufferData(GL.GL_ARRAY_BUFFER, vertexCount * 3 * BufferUtil.SIZEOF_FLOAT, vertices, GL.GL_STATIC_DRAW);
+
+      int[] VBOTexCoords = new int[1];
+      gl.glGenBuffers(1, VBOTexCoords, 0);
+      gl.glBindBuffer(GL.GL_ARRAY_BUFFER, VBOTexCoords[0]);
+      gl.glBufferData(GL.GL_ARRAY_BUFFER, vertexCount * 2 * BufferUtil.SIZEOF_FLOAT, tex, GL.GL_STATIC_DRAW);
+      
+      vbo.vertVBO=VBOVertices[0];
+      vbo.texVBO=VBOTexCoords[0];
+      vbo.normalsVBO=VBONormals[0];
+      vbo.useVBO=true;
+			}
+		else
+			{
+      vbo.vertices=vertices;
+      vbo.normals=normals;
+      vbo.tex=tex;
+
+      vbo.useVBO=false;
+			}
+
+		/*
+    vbo.vertices=vertices;
+    vbo.normals=normals;
+    vbo.tex=tex;
+    */
+		
+    vbo.vertices=vertices;
+    vbo.normals=normals;
+    vbo.tex=tex;
+
+		
+    vbo.vertexCount=vertexCount;
+    return vbo;
+		}
+
+	
+	
 		
 		
 	/******************************************************************************************************

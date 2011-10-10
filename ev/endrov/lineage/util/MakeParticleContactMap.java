@@ -117,9 +117,9 @@ public class MakeParticleContactMap
 		{
 		//Defaults
 		if(startFrame==null)
-			startFrame=lin.firstFrameOfLineage().fst();
+			startFrame=lin.firstFrameOfLineage(false).fst();
 		if(endFrame==null)
-			endFrame=lin.lastFrameOfLineage().fst();
+			endFrame=lin.lastFrameOfLineage(false).fst();
 		if(frameInc==null)
 			frameInc=new EvDecimal(1);
 

@@ -1053,7 +1053,7 @@ public class ImageWindow extends BasicWindow
 		List<Imageset> ims=data.getObjects(Imageset.class);
 		if(!ims.isEmpty())
 			{
-			EvComboChannel chw=getCurrentChannelWidget().comboChannel;
+			//EvComboChannel chw=getCurrentChannelWidget().comboChannel;
 			
 			//TODO try and set the last selected channel!
 			//TODO store state of window

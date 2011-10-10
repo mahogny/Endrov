@@ -21,6 +21,7 @@ import javax.vecmath.Vector3d;
 
 import com.sun.opengl.util.awt.TextRenderer;
 
+import endrov.basicWindow.EvColor;
 import endrov.coordinateSystem.CoordinateSystem;
 import endrov.ev.*;
 import endrov.modelWindow.TransparentRender.RenderState;
@@ -95,7 +96,7 @@ public class ModelView extends GLJPanel //GLCanvas
 	/** Render axis arrows in the corner */
 	public boolean renderAxisArrows=true;
 	
-	public Color bgColor=Color.BLACK;
+	public Color bgColor=EvColor.grayMedium.getAWTColor();
 	
 	private Map<Object,GLMeshVBO> meshs=new HashMap<Object, GLMeshVBO>();
 	private Set<Object> keepMeshs=new HashSet<Object>();

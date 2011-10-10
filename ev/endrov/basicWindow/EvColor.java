@@ -33,7 +33,10 @@ public class EvColor
 	
 	
 	public static EvColor redMedium=new EvColor("Red/Medium",new Color(255,0,0));
+	
+	public static EvColor grayDark=new EvColor("Gray/Dark",Color.DARK_GRAY);
 	public static EvColor grayMedium=new EvColor("Gray/Medium",Color.GRAY);
+	public static EvColor grayBright=new EvColor("Gray/Bright",Color.LIGHT_GRAY);
 	
 	public static Color makeCol(double r, double g, double b, double mul)
 		{
@@ -52,9 +55,9 @@ public class EvColor
 			new EvColor("Cyan/Dark",new Color(0,128,128)),
 			new EvColor("Cyan/Bright",new Color(128,255,255)),
 
-			new EvColor("Gray/Dark",Color.DARK_GRAY),
+			grayDark,
 			grayMedium,
-			new EvColor("Gray/Bright",Color.LIGHT_GRAY),
+			grayBright,
 
 			new EvColor("Green/Dark",new Color(0,128,0)),
 			new EvColor("Green/Medium",new Color(0,255,0)),

@@ -31,6 +31,8 @@ import endrov.lineage.LineageExp;
 import endrov.lineage.LineageSelParticle;
 import endrov.lineage.Lineage.InterpolatedParticle;
 import endrov.lineage.util.LineageVoronoi;
+import endrov.mesh3d.Mesh3D;
+import endrov.mesh3d.Mesh3dModelExtension;
 import endrov.modelWindow.*;
 import endrov.undo.UndoOpBasic;
 import endrov.util.*;
@@ -54,6 +56,7 @@ public class LineageModelExtension implements ModelWindowExtension
 	static class NucModelWindowHook implements ModelWindowHook, ActionListener, ModelView.GLSelectListener
 		{
 		private final HashMap<Integer,LineageSelParticle> selectColorMap=new HashMap<Integer,LineageSelParticle>();
+		//private final HashMap<LineageSelParticle, Integer> selectColorMap2=new HashMap<LineageSelParticle, Integer>();
 		private Vector<Map<LineageSelParticle, Lineage.InterpolatedParticle>> interpNuc=new Vector<Map<LineageSelParticle, Lineage.InterpolatedParticle>>();
 		final ModelWindow w;
 		public void fillModelWindowMenus()
@@ -297,7 +300,7 @@ public class LineageModelExtension implements ModelWindowExtension
 				
 				public boolean mouseDragged(MouseEvent e, int dx, int dy)
 					{
-					if(modifyingState==ModState.Dragging)
+					if(modifyingState==ModState.Dragging || modifyingState==ModState.Resizing)
 						{
 						hasReallyModified=true;
 						
@@ -306,33 +309,33 @@ public class LineageModelExtension implements ModelWindowExtension
 						Lineage.Particle nuc=currentModifying.getParticle();
 						Lineage.InterpolatedParticle interp=nuc.interpolatePos(curFrame);
 						
-						//Find movement vector
-						Vector3d moveVecWorld=w.view.getMouseMoveVector(dx, dy, interp.pos.getPosCopy());
-						
-						//Move particle
-						Lineage.ParticlePos nucPos=interp.pos.clone();
-						nucPos.x+=moveVecWorld.x;
-						nucPos.y+=moveVecWorld.y;
-						nucPos.z+=moveVecWorld.z;
-						nuc.pos.put(curFrame, nucPos);
-						
-						return true;
-						}
-					else if(modifyingState==ModState.Resizing)
-						{
-						hasReallyModified=true;
-						
-						//Get nuc
-						EvDecimal curFrame=w.getFrame();
-						Lineage.Particle nuc=currentModifying.getParticle();
-						Lineage.InterpolatedParticle interp=nuc.interpolatePos(curFrame);
-
-						//Resize particle
-						Lineage.ParticlePos nucPos=interp.pos.clone();
-						nucPos.r*=Math.exp(dy*0.01);
-						nuc.pos.put(curFrame, nucPos);
-						
-						return true;
+						if(interp!=null)
+							{
+							if(modifyingState==ModState.Dragging)
+								{
+								//Find movement vector
+								Vector3d moveVecWorld=w.view.getMouseMoveVector(dx, dy, interp.pos.getPosCopy());
+								
+								//Move particle
+								Lineage.ParticlePos nucPos=interp.pos.clone();
+								nucPos.x+=moveVecWorld.x;
+								nucPos.y+=moveVecWorld.y;
+								nucPos.z+=moveVecWorld.z;
+								nuc.pos.put(curFrame, nucPos);
+								
+								return true;
+								}
+							else if(modifyingState==ModState.Resizing)
+								{
+								//Resize particle
+								Lineage.ParticlePos nucPos=interp.pos.clone();
+								nucPos.r*=Math.exp(dy*0.01);
+								nuc.pos.put(curFrame, nucPos);
+								
+								return true;
+								}
+							}
+						return false;
 						}
 					else
 						return false;
@@ -471,7 +474,7 @@ public class LineageModelExtension implements ModelWindowExtension
 			}
 
 		
-		public Collection<Lineage> getLineages()
+		public Collection<Lineage> getVisibleLineages()
 			{
 			Vector<Lineage> v=new Vector<Lineage>();
 			for(Lineage lin:Lineage.getParticles(w.getSelectedData()))
@@ -492,17 +495,36 @@ public class LineageModelExtension implements ModelWindowExtension
 		public void displayInit(GL gl)
 			{
 			selectColorMap.clear();
+			//selectColorMap2.clear();
 
 			interpNuc.clear();
-			for(Lineage lin:getLineages())
+			for(Lineage lin:getVisibleLineages())
 				interpNuc.add(lin.interpolateParticles(w.getFrame()));
 			}
+		
+		/*
+		private int getSelectColor(LineageSelParticle sel)
+			{
+			Integer selectColor=selectColorMap2.get(sel);
+			if(selectColor==null)
+				{
+				selectColor=w.view.reserveSelectColor(this);
+				selectColorMap.put(selectColor, sel);
+				//selectColorMap2.put(sel, selectColor);
+				}
+			
+			
+			selectColorMap.put(selectColor, sel);
+			w.view.setReserveColor(gl, selectColor);
+			}*/
 		
 		/**
 		 * Render for selection
 		 */
 		public void displaySelect(GL gl)
 			{
+			EvDecimal curFrame=w.getFrame();
+			
 			//boolean showSmallNuc=miShowSmallNuclei.isSelected();
 			if(EV.debugMode)
 				System.out.println("#nuc to render: "+interpNuc.size());
@@ -510,11 +532,40 @@ public class LineageModelExtension implements ModelWindowExtension
 				for(Map.Entry<LineageSelParticle, Lineage.InterpolatedParticle> entry:inter.entrySet())
 					if(entry.getValue().isVisible())
 						{
-						int rawcol=w.view.reserveSelectColor(this);
-						selectColorMap.put(rawcol, entry.getKey());
-						w.view.setReserveColor(gl, rawcol);
+						//Reserve color
+						int selectColor=w.view.reserveSelectColor(this);
+						selectColorMap.put(selectColor, entry.getKey());
+						w.view.setReserveColor(gl, selectColor);
+						
+						//Render
 						renderParticleSelection(gl,entry.getKey(), entry.getValue(), nucMagnification);
+
 						}
+			
+			//Meshs
+			for(Lineage lin:getVisibleLineages())
+				for(String name:lin.particle.keySet())
+					{
+					Lineage.Particle p=lin.particle.get(name);
+					Mesh3D mesh=p.meshs.get(curFrame);
+					if(mesh!=null)
+						{
+						//Reserve select color
+						LineageSelParticle sel=new LineageSelParticle(lin, name);
+						int selectColor=w.view.reserveSelectColor(this);
+						selectColorMap.put(selectColor, sel);
+						w.view.setReserveColor(gl, selectColor);
+						
+						//Render mesh
+						Mesh3dModelExtension.displayMeshSelect(w.view, gl, mesh, selectColor);
+						}
+					
+					
+					
+					}
+				
+				
+			
 			}
 		
 		/**
@@ -752,7 +803,48 @@ public class LineageModelExtension implements ModelWindowExtension
 				gl.glDisable(GL2.GL_LIGHTING);
 				for(LineageSelParticle nucPair:inter.keySet())
 					renderParticleOverlay(gl,transparentRenderers,nucPair, inter.get(nucPair), curFrame);
+				
+				/*
+				//Render meshs
+				for(LineageSelParticle s:inter.keySet())
+					{
+					Lineage.Particle p=s.getParticle();
+					Mesh3D mesh=p.meshs.get(curFrame);
+					
+					if(mesh!=null)
+						{
+						Mesh3dModelExtension.displayMeshFinal(w.view, gl, mesh);
+						}
+					
+					}
+*/
 				}
+			
+			
+
+			//Meshs
+			for(Lineage lin:getVisibleLineages())
+				{
+				for(String name:lin.particle.keySet())
+					{
+					Lineage.Particle p=lin.particle.get(name);
+
+					Mesh3D mesh=p.meshs.get(curFrame);
+					if(mesh!=null)
+						{
+						//Reserve select color
+						LineageSelParticle sel=new LineageSelParticle(lin, name);
+						int selectColor=w.view.reserveSelectColor(this);
+						selectColorMap.put(selectColor, sel);
+						w.view.setReserveColor(gl, selectColor);
+						
+						//Render mesh
+						Mesh3dModelExtension.displayMeshFinal(w.view, gl, mesh);
+						}
+					}
+				}
+			
+			
 			
 			if(traceSel)
 				for(LineageSelParticle pair:LineageCommonUI.getSelectedParticles())
@@ -765,7 +857,7 @@ public class LineageModelExtension implements ModelWindowExtension
 			if(miShowDiv.isSelected())
 				{
 				gl.glLineWidth(3);
-				for(Lineage lin:getLineages())
+				for(Lineage lin:getVisibleLineages())
 					{
 					for(Lineage.Particle nuc:lin.particle.values())
 						if(!nuc.pos.isEmpty() && !nuc.parents.isEmpty())
@@ -827,41 +919,6 @@ public class LineageModelExtension implements ModelWindowExtension
 			}
 
 		
-		/**
-		 * Adjust the scale
-		 */
-		public Collection<Double> adjustScale()
-			{
-			int count=0;
-			for(Map<LineageSelParticle, Lineage.InterpolatedParticle> i:interpNuc)
-				count+=i.size();
-			if(count>=2)
-				{
-				double maxx=-1000000,maxy=-1000000,maxz=-1000000;
-				double minx= 1000000,miny= 1000000,minz= 1000000;
-
-				//Calculate bounds
-				for(Map<LineageSelParticle, Lineage.InterpolatedParticle> inter:interpNuc)
-					for(Lineage.InterpolatedParticle nuc:inter.values())
-						{
-						if(maxx<nuc.pos.x) maxx=nuc.pos.x;
-						if(maxy<nuc.pos.y) maxy=nuc.pos.y;
-						if(maxz<nuc.pos.z) maxz=nuc.pos.z;
-						if(minx>nuc.pos.x) minx=nuc.pos.x;
-						if(miny>nuc.pos.y) miny=nuc.pos.y;
-						if(minz>nuc.pos.z) minz=nuc.pos.z;
-						}
-				double dx=maxx-minx;
-				double dy=maxy-miny;
-				double dz=maxz-minz;
-				double dist=dx;
-				if(dist<dy) dist=dy;
-				if(dist<dz) dist=dz;
-				return Collections.singleton((Double)dist);
-				}
-			else
-				return Collections.emptySet();
-			}
 
 		
 		private double clamp0(double x)
@@ -1272,15 +1329,87 @@ public class LineageModelExtension implements ModelWindowExtension
 		
 
 		
+
+		/**
+		 * Adjust the scale
+		 */
+		public Collection<Double> adjustScale()
+			{
+			List<Double> list=new LinkedList<Double>();
+			/*
+			//Meshs
+			for(Lineage lin:getVisibleLineages())
+				for(String name:lin.particle.keySet())
+					{
+					Lineage.Particle p=lin.particle.get(name);
+					Mesh3D mesh=p.meshs.get(w.getFrame());
+					if(mesh!=null)
+						{
+						Vector3d v=mesh.getVertexAverage();
+						if(v!=null)
+							list.add(v);
+						}
+					}*/
+			
+			//Lineages
+			int count=0;
+			for(Map<LineageSelParticle, Lineage.InterpolatedParticle> i:interpNuc)
+				count+=i.size();
+			if(count>=2)
+				{
+				double maxx=Double.MIN_VALUE,maxy=Double.MIN_VALUE,maxz=Double.MIN_VALUE;
+				double minx=Double.MAX_VALUE,miny=Double.MAX_VALUE,minz=Double.MAX_VALUE;
+
+				//Calculate bounds
+				for(Map<LineageSelParticle, Lineage.InterpolatedParticle> inter:interpNuc)
+					for(Lineage.InterpolatedParticle nuc:inter.values())
+						{
+						if(maxx<nuc.pos.x) maxx=nuc.pos.x;
+						if(maxy<nuc.pos.y) maxy=nuc.pos.y;
+						if(maxz<nuc.pos.z) maxz=nuc.pos.z;
+						if(minx>nuc.pos.x) minx=nuc.pos.x;
+						if(miny>nuc.pos.y) miny=nuc.pos.y;
+						if(minz>nuc.pos.z) minz=nuc.pos.z;
+						}
+				double dx=maxx-minx;
+				double dy=maxy-miny;
+				double dz=maxz-minz;
+				double dist=dx;
+				if(dist<dy) dist=dy;
+				if(dist<dz) dist=dz;
+				list.add(dist);
+				//return Collections.singleton((Double)dist);
+				}
+			//else
+				//return Collections.emptySet();
+			return list;
+			}
+		
 		/**
 		 * Give suitable center of all objects
 		 */
 		public Collection<Vector3d> autoCenterMid()
 			{
-			//Calculate center
+			List<Vector3d> list=new LinkedList<Vector3d>();
+			
+			//Meshs
+			for(Lineage lin:getVisibleLineages())
+				for(String name:lin.particle.keySet())
+					{
+					Lineage.Particle p=lin.particle.get(name);
+					Mesh3D mesh=p.meshs.get(w.getFrame());
+					if(mesh!=null)
+						{
+						Vector3d v=mesh.getVertexAverage();
+						if(v!=null)
+							list.add(v);
+						}
+					}
+			
+			//Lineages
 			double meanx=0, meany=0, meanz=0;
 			int num=0;
-			for(Lineage lin:getLineages())
+			for(Lineage lin:getVisibleLineages())
 				{
 				Map<LineageSelParticle, Lineage.InterpolatedParticle> interpNuc=lin.interpolateParticles(w.getFrame());
 				num+=interpNuc.size();
@@ -1291,15 +1420,14 @@ public class LineageModelExtension implements ModelWindowExtension
 					meanz+=nuc.pos.z;
 					}
 				}
-			if(num==0)
-				return Collections.emptySet();
-			else
+			if(num!=0)
 				{
 				meanx/=num;
 				meany/=num;
 				meanz/=num;
-				return Collections.singleton(new Vector3d(meanx,meany,meanz));
+				list.add(new Vector3d(meanx,meany,meanz));
 				}
+			return list;
 			}
 		
 		
@@ -1310,7 +1438,7 @@ public class LineageModelExtension implements ModelWindowExtension
 			{
 			//Calculate maximum radius
 			double maxr=0;
-			for(Lineage lin:getLineages())
+			for(Lineage lin:getVisibleLineages())
 				{
 				Map<LineageSelParticle, Lineage.InterpolatedParticle> interpNuc=lin.interpolateParticles(w.getFrame());
 				for(Lineage.InterpolatedParticle nuc:interpNuc.values())
@@ -1333,7 +1461,7 @@ public class LineageModelExtension implements ModelWindowExtension
 			EvDecimal first=null;
 			for(Lineage lin:w.getVisibleObjects(Lineage.class))
 				{
-				EvDecimal f=lin.firstFrameOfLineage().fst();
+				EvDecimal f=lin.firstFrameOfLineage(true).fst();
 				if(f!=null && (first==null || f.less(first)))
 					first=f;
 				}
@@ -1344,7 +1472,7 @@ public class LineageModelExtension implements ModelWindowExtension
 			EvDecimal last=null;
 			for(Lineage lin:w.getVisibleObjects(Lineage.class))
 				{
-				EvDecimal f=lin.lastFrameOfLineage().fst();
+				EvDecimal f=lin.lastFrameOfLineage(true).fst();
 				if(f!=null && (last==null || f.greater(last)))
 					last=f;
 				}

@@ -363,7 +363,7 @@ public class LineageView extends JPanel
 	 */
 	public void goToRoot()
 		{
-		Tuple<EvDecimal, String> found=currentLin.firstFrameOfLineage();
+		Tuple<EvDecimal, String> found=currentLin.firstFrameOfLineage(false);
 		if(found!=null)
 			{
 			LineageState linstat=getLinState(currentLin);

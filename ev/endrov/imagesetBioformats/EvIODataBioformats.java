@@ -20,12 +20,10 @@ import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
 
 import loci.common.DataTools;
-import loci.common.DateTools;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
 import loci.formats.*;
-import loci.formats.in.DicomReader;
 import loci.formats.meta.*;
 import loci.formats.out.OMETiffWriter;
 import loci.formats.out.TiffWriter;

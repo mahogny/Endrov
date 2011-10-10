@@ -71,7 +71,7 @@ public class LineageToPCM
 
 		//Go through all frames
 		int numframes=0;
-		for(EvDecimal curframe=lin.firstFrameOfLineage().fst();curframe.less(lin.lastFrameOfLineage().fst());curframe=curframe.add(frameInc))
+		for(EvDecimal curframe=lin.firstFrameOfLineage(false).fst();curframe.less(lin.lastFrameOfLineage(false).fst());curframe=curframe.add(frameInc))
 			{
 			ccm.framesTested.add(curframe);
 			numframes++;

@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.swing.JMenu;
 import javax.vecmath.Vector3d;
@@ -245,26 +246,33 @@ public class Mesh3D extends EvObject
 					Face f=new Face();
 					faces.add(f);
 					
-					if(ne.getAttribute("v0")!=null)
+					if(ne.getAttribute("v")!=null)
+						f.vertex=indexListToArr(ne.getAttributeValue("v"));
+					/*
 						{
 						int[] arr=f.vertex=new int[3];
 						for(int i=0;i<3;i++)
 							arr[i]=ne.getAttribute("v"+i).getIntValue();
 						}
+						*/
 					
-					if(ne.getAttribute("t0")!=null)
+					if(ne.getAttribute("t")!=null)
+						f.texcoord=indexListToArr(ne.getAttributeValue("t"));
+					/*
 						{
 						int[] arr=f.texcoord=new int[3];
 						for(int i=0;i<3;i++)
 							arr[i]=ne.getAttribute("t"+i).getIntValue();
-						}
+						}*/
 
-					if(ne.getAttribute("n0")!=null)
+					if(ne.getAttribute("n")!=null)
+						f.normal=indexListToArr(ne.getAttributeValue("n"));
+						/*
 						{
 						int[] arr=f.normal=new int[3];
 						for(int i=0;i<3;i++)
 							arr[i]=ne.getAttribute("n"+i).getIntValue();
-						}
+						}*/
 					
 					if(ne.getAttribute("smoothg")!=null)
 						f.smoothGroup=ne.getAttribute("smoothg").getIntValue();
@@ -276,11 +284,14 @@ public class Mesh3D extends EvObject
 						}
 					}
 				else if(ne.getName().equals("v"))
-					vertex.add(xmlToVertex(ne));
+					vertex=string2vector(ne.getText());
+					//vertex.add(xmlToVertex(ne));
 				else if(ne.getName().equals("t"))
-					texcoord.add(xmlToVertex(ne));
+					texcoord=string2vector(ne.getText());
+//					texcoord.add(xmlToVertex(ne));
 				else if(ne.getName().equals("n"))
-					normal.add(xmlToVertex(ne));
+					normal=string2vector(ne.getText());
+	//				normal.add(xmlToVertex(ne));
 				
 				}
 			}
@@ -327,14 +338,18 @@ public class Mesh3D extends EvObject
 		for(Face f:faces)
 			{
 			Element ne=new Element("f");
-			for(int i=0;i<3;i++)
-				ne.setAttribute("v"+i,Integer.toString(f.vertex[i]));
+			ne.setAttribute("v",arrayToIndexList(f.vertex));//
+//			for(int i=0;i<3;i++)
+	//			ne.setAttribute("v"+i,Integer.toString(f.vertex[i]));
 			if(f.texcoord!=null)
-				for(int i=0;i<3;i++)
-					ne.setAttribute("t"+i,Integer.toString(f.texcoord[i]));
+				ne.setAttribute("t",arrayToIndexList(f.texcoord));//
+//				for(int i=0;i<3;i++)
+	//				ne.setAttribute("t"+i,Integer.toString(f.texcoord[i]));
 			if(f.normal!=null)
-				for(int i=0;i<3;i++)
-					ne.setAttribute("n"+i,Integer.toString(f.normal[i]));
+				ne.setAttribute("n",arrayToIndexList(f.normal));//
+
+//				for(int i=0;i<3;i++)
+	//				ne.setAttribute("n"+i,Integer.toString(f.normal[i]));
 
 			if(f.smoothGroup!=null)
 				ne.setAttribute("smoothg",Integer.toString(f.smoothGroup));
@@ -348,20 +363,33 @@ public class Mesh3D extends EvObject
 			
 			e.addContent(ne);
 			}
+		
+		Element neV=new Element("v");
+		neV.setText(vectors2string(vertex));
+		e.addContent(neV);
+
+		Element neT=new Element("t");
+		neT.setText(vectors2string(texcoord));
+		e.addContent(neT);
+		
+		Element neN=new Element("n");
+		neN.setText(vectors2string(normal));
+		e.addContent(neN);
+		
+		/*
 		for(Vector3d v:vertex)
 			{
-			Element ne=new Element("v");
-			vertexToXML(v, ne);
-			e.addContent(ne);
+			vertexToXML(v, neV);
+			e.addContent(neV);
 			}
-		System.out.println("t");
+		//System.out.println("t");
 		for(Vector3d v:texcoord)
 			{
 			Element ne=new Element("t");
 			vertexToXML(v, ne);
 			e.addContent(ne);
 			}
-		System.out.println("n");
+		//System.out.println("n");
 		//TODO store the ability recalc normals later
 		for(Vector3d v:normal)
 			{
@@ -369,10 +397,60 @@ public class Mesh3D extends EvObject
 			vertexToXML(v, ne);
 			e.addContent(ne);
 			}
-		
+		*/
 		return metaType;
 		}
 	
+	
+	private static String vectors2string(List<Vector3d> vs)
+		{
+		//TODO could cut down on decimals!
+		StringBuffer sb=new StringBuffer();
+		for(int i=0;i<vs.size();i++)
+			{
+			Vector3d v=vs.get(i);
+			sb.append(v.x);
+			sb.append(",");
+			sb.append(v.y);
+			sb.append(",");
+			sb.append(v.z);
+			if(i!=vs.size()-1)
+				sb.append(",");
+			}
+		return sb.toString();
+		}
+	
+	private static List<Vector3d> string2vector(String s)
+		{
+		List<Vector3d> list=new ArrayList<Vector3d>();
+		StringTokenizer st=new StringTokenizer(s,",");
+		while(st.hasMoreTokens())
+			{
+			Vector3d v=new Vector3d(
+					Double.parseDouble(st.nextToken()),
+					Double.parseDouble(st.nextToken()),
+					Double.parseDouble(st.nextToken()));
+			list.add(v);
+			}
+		return list;
+		}
+		
+	
+	private static String arrayToIndexList(int[] arr)
+		{
+		return arr[0]+","+arr[1]+","+arr[2];
+		}
+
+	private static int[] indexListToArr(String s)
+		{
+		int[] arr=new int[3];
+		StringTokenizer stok=new StringTokenizer(s,",");
+		for(int i=0;i<3;i++)
+			arr[i]=Integer.parseInt(stok.nextToken());
+		return arr;
+		}
+
+	/*
 	private static void vertexToXML(Vector3d v, Element e)
 		{
 		e.setAttribute("x", Double.toString(v.x));
@@ -386,7 +464,7 @@ public class Mesh3D extends EvObject
 				e.getAttribute("y").getDoubleValue(),
 				e.getAttribute("z").getDoubleValue());
 		}
-	
+	*/
 
 	/**
 	 * Remove unused vertices
@@ -442,6 +520,33 @@ public class Mesh3D extends EvObject
 		return cloneUsingSerialize();
 		}
 
+	
+	/**
+	 * Get average position of all vertices
+	 */
+	public Vector3d getVertexAverage()
+		{
+		if(vertex.isEmpty())
+			return null;
+		else
+			{
+			double meanx=0, meany=0, meanz=0;
+			int num=0;
+			for(Vector3d pos:vertex)
+				{
+				meanx+=pos.x;
+				meany+=pos.y;
+				meanz+=pos.z;
+				}
+			num+=vertex.size();
+
+			meanx/=num;
+			meany/=num;
+			meanz/=num;
+			return new Vector3d(meanx,meany,meanz);
+			}
+		}
+	
 
 	/******************************************************************************************************
 	 * Plugin declaration
