@@ -106,7 +106,7 @@ public class WavefrontIO implements EvIOData
 				{
 				StringTokenizer st=new StringTokenizer(line," ");
 				st.nextElement();
-				current.specularWeight=Double.parseDouble(st.nextToken());
+				current.specularWeight=Double.parseDouble(st.nextToken())*128/1000; //With OpenGL-rescaling
 				}
 			else if(line.startsWith("d ") || line.startsWith("Tr "))
 				{

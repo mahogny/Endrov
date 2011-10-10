@@ -109,7 +109,11 @@ public class ModelWindowGrid implements ModelWindowExtension
 		 */
 		public void displayFinal(GL glin,List<TransparentRender> transparentRenderers)
 			{
+			
 			GL2 gl=glin.getGL2();
+			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
+			gl.glDisable(GL2.GL_LIGHTING);
+			
 			gl.glLineWidth(1f);
 			gl.glPushMatrix(); 
 			gl.glRotatef(90,0,1,0); 
@@ -146,6 +150,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 				renderRuler(gl,transparentRenderers,gridsize);
 				}
 			gl.glPopMatrix();
+			gl.glPopAttrib();
 			}
 
 		/**

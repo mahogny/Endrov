@@ -333,6 +333,7 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 					{
 					//If rendering done in one place, some state changes can be avoided
 					gl.glPushAttrib(GL2.GL_ENABLE_BIT);
+					gl.glDisable(GL2.GL_LIGHTING);
 					
 					for(int i=0;i<w.view.numClipPlanesSupported;i++)
 						gl.glDisable(GL2.GL_CLIP_PLANE0+i);

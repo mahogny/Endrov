@@ -531,10 +531,14 @@ public class ModelView extends GLJPanel //GLCanvas
 		public void setupLight(GL2 gl)
 			{
 			
+			float lightAmbient[] = { 1.0f, 1.0f, 1.0f, 0.0f };
+			float lightDiffuse[]=new float[]{1.0f,1.0f,1.0f};
+			float lightSpecular[]=new float[]{1.0f,1.0f,1.0f};
+/*
 			float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 0.0f };
 			float lightDiffuse[]=new float[]{1.0f,1.0f,1.0f};
 			float lightSpecular[]=new float[]{0.5f,0.5f,0.5f};
-			
+*/
 			/*
 			float lightAmbient[] ={0.2f, 0.2f, 0.2f, 1.0f};
 			float lightDiffuse[] ={1.0f, 1.0f, 1.0f, 1.0f};

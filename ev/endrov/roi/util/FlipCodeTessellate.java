@@ -4,7 +4,7 @@
  * No idea about license but since it's posted on a forum where code is supposed
  * to be free, assume fair citation or something.
  */
-package endrov.roi.newer;
+package endrov.roi.util;
 
 import java.util.ArrayList;
 import java.util.List;

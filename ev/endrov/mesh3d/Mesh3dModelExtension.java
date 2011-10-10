@@ -64,12 +64,20 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			}
 
 		
-		public Collection<Mesh3D> getMeshs()
+		//public Set<WeakReference<Mesh3D>> lastVisible=new HashSet<WeakReference<Mesh3D>>();
+		//private static class Bounds
+		//WeakHashMap<Mesh3D, Bounds>
+		
+		
+		public Collection<Mesh3D> getVisibleObjects()
 			{
 			List<Mesh3D> v=new LinkedList<Mesh3D>();
 			for(Mesh3D ob:w.getSelectedData().getObjects(Mesh3D.class))
 				if(w.showObject(ob))
 					v.add(ob);
+			
+			
+			
 			return v;
 			}
 		
@@ -97,7 +105,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			//GL2 gl=glin.getGL2();
 //			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 			
-			Collection<Mesh3D> meshs=getMeshs();
+			Collection<Mesh3D> meshs=getVisibleObjects();
 			
 		//TODO what about meshs that have changed?
 			
@@ -139,17 +147,8 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		 */
 		public void displayFinal(GL glin,List<TransparentRender> transparentRenderers)
 			{			
-			Collection<Mesh3D> meshs=getMeshs();
+			Collection<Mesh3D> meshs=getVisibleObjects();
 			
-			/*
-			//Delete VBOs no longer in use
-			for(Mesh3D oldmesh:new LinkedList<Mesh3D>(vbos.keySet()))
-				if(!meshs.contains(oldmesh))
-					{
-					vbos.get(oldmesh).destroy(gl);
-					vbos.remove(oldmesh);
-					}
-*/
 			//TODO what about meshs that have changed?
 			
 			//Render all meshs
@@ -291,20 +290,24 @@ public class Mesh3dModelExtension implements ModelWindowExtension
       return vbo;
 			}
 
+		
+		
+		
+		
 		/**
 		 * Adjust the scale
-		 * 
-		 * TODO: eliminate. use radius function instead?
 		 */
 		public Collection<Double> adjustScale()
 			{
-			Collection<Mesh3D> meshs=getMeshs();
+			//System.out.println("adjust scale mesh");
+			//long t=System.currentTimeMillis();
+			Collection<Mesh3D> meshs=getVisibleObjects();
+
+			double maxx=-1000000,maxy=-1000000,maxz=-1000000;
+			double minx= 1000000,miny= 1000000,minz= 1000000;
+			Double dist=null;
 			for(Mesh3D mesh:meshs)
 				{
-				//TODO Potentially slow!!!! cache somehow!
-				double maxx=-1000000,maxy=-1000000,maxz=-1000000;
-				double minx= 1000000,miny= 1000000,minz= 1000000;
-
 				//Calculate bounds
 				for(Vector3d pos:mesh.vertex)
 					{
@@ -318,14 +321,18 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				double dx=maxx-minx;
 				double dy=maxy-miny;
 				double dz=maxz-minz;
-				double dist=dx;
+				if(dist==null || dist<dx)
+					dist=dx;
 				if(dist<dy)
 					dist=dy;
 				if(dist<dz)
 					dist=dz;
-				return Collections.singleton((Double)dist);
 				}
-			return Collections.emptySet();
+			//System.out.println("time "+(System.currentTimeMillis()-t));
+			if(dist!=null)
+				return Collections.singleton((Double)dist);
+			else
+				return Collections.emptySet();
 			}
 
 
@@ -335,10 +342,11 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		 */
 		public Collection<Vector3d> autoCenterMid()
 			{
+			System.out.println("auto center mid mesh");
 			//Calculate center
 			double meanx=0, meany=0, meanz=0;
 			int num=0;
-			for(Mesh3D lin:getMeshs())
+			for(Mesh3D lin:getVisibleObjects())
 				{
 				for(Vector3d pos:lin.vertex)
 					{
@@ -367,7 +375,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			{
 			//Calculate maximum radius
 			double maxr2=0;
-			for(Mesh3D lin:getMeshs())
+			for(Mesh3D lin:getVisibleObjects())
 				for(Vector3d pos:lin.vertex)
 					{
 					double dx=pos.x-mid.x;

@@ -1,4 +1,4 @@
-package endrov.roi.ij;
+package endrov.IJ.roi;
 //import ij.gui.*;
 import java.io.*;
 import java.util.*;
@@ -39,7 +39,7 @@ import endrov.roi.ROI;
 */
 
 /** Decodes an ImageJ, NIH Image or Scion Image ROI file. */
-public class ROIDecoder {
+public class ROIDecoderMod {
 	// offsets
 	public static final int VERSION_OFFSET = 4;
 	public static final int TYPE = 6;
@@ -101,12 +101,12 @@ public class ROIDecoder {
 	private int size;
 
 	/** Constructs an ROIDecoder using a file path. */
-	public ROIDecoder(String path) {
+	public ROIDecoderMod(String path) {
 		this.path = path;
 	}
 
 	/** Constructs an ROIDecoder using a byte array. */
-	public ROIDecoder(byte[] bytes, String name) {
+	public ROIDecoderMod(byte[] bytes, String name) {
 		is = new ByteArrayInputStream(bytes);	
 		this.name = name;
 		this.size = bytes.length;
@@ -405,7 +405,7 @@ public class ROIDecoder {
 	public static ROI openFromByteArray(byte[] bytes, EvStack stack) {
 		ROI roi = null;
 		try {
-			ROIDecoder decoder = new ROIDecoder(bytes, null);
+			ROIDecoderMod decoder = new ROIDecoderMod(bytes, null);
 			roi = decoder.getROI(stack);
 			
 			

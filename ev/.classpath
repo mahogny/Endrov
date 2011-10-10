@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="endrov/imagesetImserv/|endrov/imagesetOME/|endrov/macBinding/" kind="src" path="">
+	<classpathentry excluding="endrov/imagesetImserv/|endrov/imagesetOME/|endrov/macBinding/|endrov/roi/ij/OvalRoi.java|endrov/roi/ij/PolygonRoi.java|endrov/roi/ij/Roi.java|endrov/roi/ij/RoiDecoder.java|endrov/roi/ij/ROIDecoderMod.java|endrov/roi/ij/ROIEncoder.java|endrov/IJ/roi/OvalRoi.java|endrov/IJ/roi/PolygonRoi.java|endrov/IJ/roi/Roi.java|endrov/IJ/roi/RoiDecoder.java|endrov/IJ/roi/ROIDecoderMod.java|endrov/IJ/roi/ROIEncoder.java" kind="src" path="">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="ev/libs/bin_linux"/>
 		</attributes>
@@ -134,5 +134,6 @@
 	<classpathentry kind="lib" path="libs/ome_inc/slf4j-api.jar"/>
 	<classpathentry kind="lib" path="libs/ome_inc/slf4j-log4j12.jar"/>
 	<classpathentry kind="lib" path="libs/ome_inc/TableLayout.jar"/>
+	<classpathentry kind="lib" path="libs/ij.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

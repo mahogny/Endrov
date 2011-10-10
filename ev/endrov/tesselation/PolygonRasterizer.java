@@ -5,8 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.vecmath.Vector2d;
-import endrov.roi.newer.FlipCodeTessellate;
-import endrov.roi.newer.TriangulationException;
+
+import endrov.roi.util.FlipCodeTessellate;
+import endrov.roi.util.TriangulationException;
 import endrov.util.Vector2i;
 
 /**
