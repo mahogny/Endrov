@@ -324,8 +324,6 @@ public class Lineage extends EvObject implements Cloneable
 						}
 					else if(pose.getName().equals("mesh"))
 						{
-						System.out.println("mesh");
-
 						EvDecimal f=new EvDecimal(pose.getAttributeValue("f"));
 						Element meshe=(Element)pose.getChildren().iterator().next();
 						Mesh3D m=new Mesh3D();
@@ -660,8 +658,9 @@ public class Lineage extends EvObject implements Cloneable
 				if(f==null || p.meshs.firstKey().less(f))
 					f=p.meshs.firstKey();
 			
-			if(found==null || (f!=null && f.less(found.fst())))
-				found=new Tuple<EvDecimal, String>(p.getFirstFrame(),n.getKey());
+			if(f!=null)
+				if(found==null || f.less(found.fst()))
+					found=new Tuple<EvDecimal, String>(f,n.getKey());
 			}
 			
 		return found;
@@ -695,8 +694,9 @@ public class Lineage extends EvObject implements Cloneable
 				if(f==null || p.meshs.lastKey().greater(f))
 					f=p.meshs.lastKey();
 			
-			if(found==null || (f!=null && f.greater(found.fst())))
-				found=new Tuple<EvDecimal, String>(p.getLastFrame(),n.getKey());
+			if(f!=null)
+				if(found==null || f.greater(found.fst()))
+					found=new Tuple<EvDecimal, String>(f,n.getKey());
 			}
 			
 		return found;

@@ -15,12 +15,15 @@ import endrov.basicWindow.EvColor;
  */
 public class GLMeshVBO
 	{
-	public boolean drawNormals=false;
 	
-	public boolean drawSolid=true;
-	
-	public EvColor outlineColor=null;
-	public float outlineWidth=5;
+	public static class MeshRenderSettings
+		{
+		public boolean drawNormals=false;
+		public boolean drawSolid=true;
+		public EvColor outlineColor=null;
+		public float outlineWidth=5;
+		}
+		
 	
 	public boolean useVBO=false;
 	public int vertVBO;
@@ -33,7 +36,7 @@ public class GLMeshVBO
 	
 	
 	
-	public void render(GL2 gl, GLMaterial material)
+	public void render(GL2 gl, GLMaterial material, MeshRenderSettings settings)
 		{
 		gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 		gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
@@ -71,7 +74,7 @@ public class GLMeshVBO
 		material.set(gl);
 		
 		
-		if(drawSolid)
+		if(settings.drawSolid)
 			{
 			gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertexCount);  
 			}
@@ -86,15 +89,15 @@ public class GLMeshVBO
 		gl.glDisable(GL2.GL_LIGHTING);
 	
 		//Draw optional outline
-		if(outlineColor!=null)
+		if(settings.outlineColor!=null)
 			{
 			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 
 			gl.glDisable(GL2.GL_LIGHTING);
 			gl.glEnable(GL2.GL_CULL_FACE);
 
-			gl.glColor3d((float)outlineColor.getRedDouble(),(float)outlineColor.getGreenDouble(),(float)outlineColor.getBlueDouble());
-			gl.glLineWidth(outlineWidth);
+			gl.glColor3d((float)settings.outlineColor.getRedDouble(),(float)settings.outlineColor.getGreenDouble(),(float)settings.outlineColor.getBlueDouble());
+			gl.glLineWidth(settings.outlineWidth);
 			//Back-facing polygons as wireframe
 			gl.glPolygonMode(GL2.GL_BACK, GL2.GL_LINE ); 
 			//Don't draw front-facing
@@ -113,7 +116,7 @@ public class GLMeshVBO
 		gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
 	
 		//Draw optional normals
-		if(drawNormals)
+		if(settings.drawNormals)
 			{
 			normals.rewind();
 			vertices.rewind();

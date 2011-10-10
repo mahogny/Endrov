@@ -21,6 +21,7 @@ import javax.vecmath.Vector3d;
 import org.jdom.*;
 
 import endrov.data.EvObject;
+import endrov.modelWindow.BoundingBox;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.ModelWindowExtension;
 import endrov.modelWindow.ModelWindowHook;
@@ -92,7 +93,7 @@ public class ModelWindowScreenshot implements ModelWindowExtension
 		
 		
 			
-		public Collection<Double> adjustScale()
+		public Collection<BoundingBox> adjustScale()
 			{
 			return Collections.emptySet();
 			}

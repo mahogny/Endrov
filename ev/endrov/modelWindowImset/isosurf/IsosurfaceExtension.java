@@ -79,9 +79,9 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			}
 		
 		
-		public Collection<Double> adjustScale()
+		public Collection<BoundingBox> adjustScale()
 			{
-			List<Double> scale=new LinkedList<Double>();
+			List<BoundingBox> scale=new LinkedList<BoundingBox>();
 			for(IsosurfaceRenderer s:getSurfaces())
 				scale.addAll(s.adjustScale(w));
 			return scale;

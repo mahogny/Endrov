@@ -17,6 +17,7 @@ import com.sun.opengl.util.awt.TextureRenderer;
 import com.sun.opengl.util.texture.*;
 
 import endrov.imageset.*;
+import endrov.modelWindow.BoundingBox;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
 import endrov.util.EvDecimal;
@@ -49,7 +50,7 @@ http://lists.apple.com/archives/Mac-opengl/2007/Feb/msg00063.html
  */
 public class Stack2D extends StackRendererInterface
 	{	
-	private TreeMap<Double,Vector<OneSlice>> texSlices=null; //Z->slices for one plane
+	private TreeMap<Double,List<OneSlice>> texSlices=null; //Z->slices for one plane
 	private final int skipForward=1; //later maybe allow this to change
 	private boolean needLoadGL=false;
 	
@@ -70,10 +71,10 @@ public class Stack2D extends StackRendererInterface
 	/**
 	 * Get or create slices for one z. Has to be synchronized
 	 */ 
-	private synchronized Vector<OneSlice> getTexSlicesFrame(double z)
+	private synchronized List<OneSlice> getTexSlicesFrame(double z)
 		{
 		//Put it texture into list
-		Vector<OneSlice> texSlicesV=texSlices.get(z);
+		List<OneSlice> texSlicesV=texSlices.get(z);
 		if(texSlicesV==null)
 			{
 			texSlicesV=new Vector<OneSlice>();
@@ -93,7 +94,7 @@ public class Stack2D extends StackRendererInterface
 	public void clean(GL gl)
 		{
 		if(texSlices!=null)
-			for(Vector<OneSlice> osv:texSlices.values())
+			for(List<OneSlice> osv:texSlices.values())
 				for(OneSlice os:osv)
 					{
 					os.tex.destroy(gl);
@@ -182,13 +183,13 @@ public class Stack2D extends StackRendererInterface
 	public void addSlice(GL gl, List<Tuple<TextureRenderer,OneSlice>> procList)
 		{
 		clean(gl);
-		texSlices=new TreeMap<Double,Vector<OneSlice>>();
+		texSlices=new TreeMap<Double,List<OneSlice>>();
 		for(Tuple<TextureRenderer,OneSlice> proc:procList)
 			{
 			OneSlice os=proc.snd();
 			os.tex=proc.fst().getTexture();
 			
-			Vector<OneSlice> texSlicesV=getTexSlicesFrame(os.z);
+			List<OneSlice> texSlicesV=getTexSlicesFrame(os.z);
 			texSlicesV.add(os);
 			}
 		}
@@ -243,7 +244,8 @@ public class Stack2D extends StackRendererInterface
 			//Draw edges
 			if(drawEdges && !texSlices.isEmpty())
 				{
-				OneSlice os=texSlices.get(texSlices.lastKey()).lastElement();
+				List<OneSlice> slices=texSlices.get(texSlices.lastKey());
+				OneSlice os=slices.get(slices.size()-1);
 				double w=os.w*os.resX;
 				double h=os.h*os.resY;
 				double d=os.z;
@@ -280,12 +282,12 @@ public class Stack2D extends StackRendererInterface
 			
 			
 			//Sort planes, O(n) since pre-ordered
-			SortedMap<Double,Vector<OneSlice>> frontMap=texSlices.headMap(cam.pos.z);
-			SortedMap<Double,Vector<OneSlice>> backMap=texSlices.tailMap(cam.pos.z);
-			LinkedList<Vector<OneSlice>> frontList=new LinkedList<Vector<OneSlice>>();
-			LinkedList<Vector<OneSlice>> backList=new LinkedList<Vector<OneSlice>>();
+			SortedMap<Double,List<OneSlice>> frontMap=texSlices.headMap(cam.pos.z);
+			SortedMap<Double,List<OneSlice>> backMap=texSlices.tailMap(cam.pos.z);
+			LinkedList<List<OneSlice>> frontList=new LinkedList<List<OneSlice>>();
+			LinkedList<List<OneSlice>> backList=new LinkedList<List<OneSlice>>();
 			frontList.addAll(frontMap.values());
-			for(Vector<OneSlice> os:backMap.values())
+			for(List<OneSlice> os:backMap.values())
 				backList.addFirst(os);
 			
 			//renderstate.activate(gl);
@@ -312,14 +314,14 @@ public class Stack2D extends StackRendererInterface
 	/**
 	 * Render list of slices
 	 */
-	public void render(GL glin,List<TransparentRender> transparentRenderers, GLCamera cam, TransparentRender.RenderState renderstate, LinkedList<Vector<OneSlice>> list)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, GLCamera cam, TransparentRender.RenderState renderstate, LinkedList<List<OneSlice>> list)
 		{
 		//Get direction of camera as vector, and z-position
 		Vector3d camv=cam.rotateVector(0, 0, 1);
 		double camz=cam.pos.dot(camv);
 		
 		//For all stacks
-		for(Vector<OneSlice> osv:list)
+		for(List<OneSlice> osv:list)
 			{
 			//For all planes
 			for(final OneSlice os:osv)
@@ -358,14 +360,19 @@ public class Stack2D extends StackRendererInterface
 	
 	
 	
-	public Collection<Double> adjustScale(ModelWindow w)
+	public Collection<BoundingBox> adjustScale(ModelWindow w)
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
-			OneSlice os=texSlices.get(texSlices.firstKey()).get(0);
-			double width=os.w*os.resX;
+			List<OneSlice> slices=texSlices.get(texSlices.lastKey());
+			OneSlice os=slices.get(slices.size()-1);
 			
-			return Collections.singleton(width);
+			return Collections.singleton(
+					new BoundingBox(
+							0.0, os.w*os.resX,
+							0.0, os.h*os.resY,
+							0.0, os.z)
+					);
 			}
 		else
 			return Collections.emptySet();
@@ -396,7 +403,8 @@ public class Stack2D extends StackRendererInterface
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
-			OneSlice os=texSlices.get(texSlices.firstKey()).lastElement();
+			List<OneSlice> slices=texSlices.get(texSlices.firstKey());
+			OneSlice os=slices.get(slices.size()-1);
 			double width=os.w/os.resX;
 			double height=os.h/os.resY;
 			double depth=os.z;

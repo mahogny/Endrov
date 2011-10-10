@@ -19,6 +19,7 @@ import javax.vecmath.Vector3f;
 
 import com.sun.opengl.util.BufferUtil;
 
+import endrov.modelWindow.BoundingBox;
 import endrov.modelWindow.ModelView;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
@@ -74,9 +75,9 @@ public class IsosurfaceRenderer
 	
 	
 	
-	public Collection<Double> adjustScale(ModelWindow w)
+	public Collection<BoundingBox> adjustScale(ModelWindow w)
 		{
-		return Collections.singleton((double)(maxX-minX));
+		return Collections.singleton(new BoundingBox(minX,maxX, minY,maxY, minZ,maxZ));
 		}
 	
 	/**

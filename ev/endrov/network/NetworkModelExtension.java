@@ -328,40 +328,16 @@ public class NetworkModelExtension implements ModelWindowExtension
 		/**
 		 * Adjust the scale
 		 */
-		public Collection<Double> adjustScale()
+		public Collection<BoundingBox> adjustScale()
 			{
-			int count=0;
-	
-			double maxx=-1000000,maxy=-1000000,maxz=-1000000;
-			double minx= 1000000,miny= 1000000,minz= 1000000;
+			BoundingBox bb=new BoundingBox();
 	
 			for(Network network:getObjects())
-				{
 				for(Network.NetworkFrame nf:network.frame.values())
-					{
 					for(Network.Point p:nf.points.values())
-						{
-						if(maxx<p.x) maxx=p.x;
-						if(maxy<p.y) maxy=p.y;
-						if(maxz<p.z) maxz=p.z;
-						if(minx>p.x) minx=p.x;
-						if(miny>p.y) miny=p.y;
-						if(minz>p.z) minz=p.z;
-						count++;
-						}
-					}
-				}
-			if(count<2)
-				return Collections.emptySet();
-	
-			double dx=maxx-minx;
-			double dy=maxy-miny;
-			double dz=maxz-minz;
-			double dist=dx;
-			if(dist<dy) dist=dy;
-			if(dist<dz) dist=dz;
-			return Collections.singleton((Double)dist);
-
+						bb.addPoint(p.x, p.y, p.z);
+			
+			return Collections.singleton(bb);
 			}
 
 		

@@ -387,10 +387,14 @@ public class LineageView extends JPanel
 			LineageSelParticle sel=selectedParticles.iterator().next();
 			if(sel.fst()==currentLin)
 				{
-				Lineage.Particle nuc=sel.getParticle();
-				EvDecimal frame=nuc.getLastFrame();
-				v.add(new Vector2d(frame.doubleValue(),linstat.getParticleState(sel.snd()).centerY));
-				cnt++;
+				ParticleState pstate=linstat.getParticleState(sel.snd());
+				if(pstate==null)
+					System.out.println("No state for particle "+sel.snd());
+				else
+					{
+					v.add(new Vector2d(pstate.endX,pstate.centerY));
+					cnt++;
+					}
 				}
 			if(cnt>0)
 				{

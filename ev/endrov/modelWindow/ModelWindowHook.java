@@ -37,9 +37,11 @@ public interface ModelWindowHook
 	
 	public void fillModelWindowMenus();
 	
-	public Collection<Double> adjustScale();
+	
+	public Collection<BoundingBox> adjustScale();
 	public Collection<Vector3d> autoCenterMid();
 	public double autoCenterRadius(Vector3d mid);
+	
 	
 	//These two could be put in a special class that EvContainer can implement.
 	//it can then be shared with imagewindow

@@ -54,11 +54,11 @@ public class Slice3DExtension implements ModelWindowExtension
 		
 		
  		
-		public Collection<Double> adjustScale()
+		public Collection<BoundingBox> adjustScale()
 			{
-			List<Double> col=new LinkedList<Double>();
+			List<BoundingBox> col=new LinkedList<BoundingBox>();
 			for(ToolIsolayer ti:isolayers)
-				col.addAll(ti.slice.adjustScale());
+				col.addAll(ti.slice.adjustScale(ti.zProject.isSelected()));
 			return col;
 			}
 		public Collection<Vector3d> autoCenterMid()

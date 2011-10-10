@@ -34,6 +34,8 @@ import endrov.lineage.util.LineageVoronoi;
 import endrov.mesh3d.Mesh3D;
 import endrov.mesh3d.Mesh3dModelExtension;
 import endrov.modelWindow.*;
+import endrov.modelWindow.gl.GLMaterialSelect;
+import endrov.modelWindow.gl.GLMeshVBO.MeshRenderSettings;
 import endrov.undo.UndoOpBasic;
 import endrov.util.*;
 
@@ -557,7 +559,7 @@ public class LineageModelExtension implements ModelWindowExtension
 						w.view.setReserveColor(gl, selectColor);
 						
 						//Render mesh
-						Mesh3dModelExtension.displayMeshSelect(w.view, gl, mesh, selectColor);
+						Mesh3dModelExtension.displayMesh(w.view, gl, mesh, new GLMaterialSelect(selectColor), null);
 						}
 					
 					
@@ -804,20 +806,7 @@ public class LineageModelExtension implements ModelWindowExtension
 				for(LineageSelParticle nucPair:inter.keySet())
 					renderParticleOverlay(gl,transparentRenderers,nucPair, inter.get(nucPair), curFrame);
 				
-				/*
-				//Render meshs
-				for(LineageSelParticle s:inter.keySet())
-					{
-					Lineage.Particle p=s.getParticle();
-					Mesh3D mesh=p.meshs.get(curFrame);
-					
-					if(mesh!=null)
-						{
-						Mesh3dModelExtension.displayMeshFinal(w.view, gl, mesh);
-						}
-					
-					}
-*/
+				
 				}
 			
 			
@@ -832,14 +821,18 @@ public class LineageModelExtension implements ModelWindowExtension
 					Mesh3D mesh=p.meshs.get(curFrame);
 					if(mesh!=null)
 						{
-						//Reserve select color
-						LineageSelParticle sel=new LineageSelParticle(lin, name);
-						int selectColor=w.view.reserveSelectColor(this);
-						selectColorMap.put(selectColor, sel);
-						w.view.setReserveColor(gl, selectColor);
+						MeshRenderSettings renderSettings=new MeshRenderSettings();
 						
-						//Render mesh
-						Mesh3dModelExtension.displayMeshFinal(w.view, gl, mesh);
+						LineageSelParticle psel=new LineageSelParticle(lin, name);
+						
+						if(EvSelection.isSelected(psel))
+							{
+							renderSettings.outlineColor=EvColor.red;
+							}
+						
+//						if(LineageCommonUI.currentHover.fst()==lin && LineageCommonUI.currentHover.snd().equals(name))
+						
+						Mesh3dModelExtension.displayMesh(w.view, gl, mesh, null, renderSettings);
 						}
 					}
 				}
@@ -1333,10 +1326,10 @@ public class LineageModelExtension implements ModelWindowExtension
 		/**
 		 * Adjust the scale
 		 */
-		public Collection<Double> adjustScale()
+		public Collection<BoundingBox> adjustScale()
 			{
-			List<Double> list=new LinkedList<Double>();
-			/*
+			List<BoundingBox> list=new LinkedList<BoundingBox>();
+			
 			//Meshs
 			for(Lineage lin:getVisibleLineages())
 				for(String name:lin.particle.keySet())
@@ -1345,11 +1338,11 @@ public class LineageModelExtension implements ModelWindowExtension
 					Mesh3D mesh=p.meshs.get(w.getFrame());
 					if(mesh!=null)
 						{
-						Vector3d v=mesh.getVertexAverage();
+						BoundingBox v=mesh.getBoundingBox();
 						if(v!=null)
 							list.add(v);
 						}
-					}*/
+					}
 			
 			//Lineages
 			int count=0;
@@ -1357,31 +1350,14 @@ public class LineageModelExtension implements ModelWindowExtension
 				count+=i.size();
 			if(count>=2)
 				{
-				double maxx=Double.MIN_VALUE,maxy=Double.MIN_VALUE,maxz=Double.MIN_VALUE;
-				double minx=Double.MAX_VALUE,miny=Double.MAX_VALUE,minz=Double.MAX_VALUE;
+				BoundingBox bb=new BoundingBox();
 
 				//Calculate bounds
 				for(Map<LineageSelParticle, Lineage.InterpolatedParticle> inter:interpNuc)
 					for(Lineage.InterpolatedParticle nuc:inter.values())
-						{
-						if(maxx<nuc.pos.x) maxx=nuc.pos.x;
-						if(maxy<nuc.pos.y) maxy=nuc.pos.y;
-						if(maxz<nuc.pos.z) maxz=nuc.pos.z;
-						if(minx>nuc.pos.x) minx=nuc.pos.x;
-						if(miny>nuc.pos.y) miny=nuc.pos.y;
-						if(minz>nuc.pos.z) minz=nuc.pos.z;
-						}
-				double dx=maxx-minx;
-				double dy=maxy-miny;
-				double dz=maxz-minz;
-				double dist=dx;
-				if(dist<dy) dist=dy;
-				if(dist<dz) dist=dz;
-				list.add(dist);
-				//return Collections.singleton((Double)dist);
+						bb.addPoint(nuc.pos.x, nuc.pos.y, nuc.pos.z);
+				list.add(bb);
 				}
-			//else
-				//return Collections.emptySet();
 			return list;
 			}
 		

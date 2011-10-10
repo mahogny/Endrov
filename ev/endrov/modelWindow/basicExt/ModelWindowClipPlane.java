@@ -67,7 +67,7 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			addIsolevel.addActionListener(this);
 			}
 		
-		public Collection<Double> adjustScale()
+		public Collection<BoundingBox> adjustScale()
 			{
 			return Collections.emptySet();
 			}

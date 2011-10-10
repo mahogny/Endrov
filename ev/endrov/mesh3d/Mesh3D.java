@@ -18,6 +18,7 @@ import org.jdom.Element;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.modelWindow.BoundingBox;
 import endrov.modelWindow.gl.GLMaterial;
 import endrov.modelWindow.gl.GLMaterialSolid;
 
@@ -547,6 +548,14 @@ public class Mesh3D extends EvObject
 			}
 		}
 	
+	public BoundingBox getBoundingBox()
+		{
+		BoundingBox bb=new BoundingBox();
+		for(Vector3d v:vertex)
+			bb.addPoint(v.x, v.y, v.z);
+		return bb;
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration

@@ -22,6 +22,7 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
+import endrov.modelWindow.BoundingBox;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.ModelWindowHook;
 import endrov.modelWindow.TransparentRender;
@@ -51,7 +52,7 @@ public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 		}
 	
 	
-	public Collection<Double> adjustScale()
+	public Collection<BoundingBox> adjustScale()
 		{
 		return Collections.emptySet();
 		}

@@ -13,6 +13,7 @@ import javax.media.opengl.GL2;
 import javax.vecmath.Vector3d;
 
 import endrov.imageset.EvChannel;
+import endrov.modelWindow.BoundingBox;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
 import endrov.util.EvDecimal;
@@ -57,7 +58,7 @@ public abstract class StackRendererInterface
 
 	public EvDecimal newlastFrame;
 	
-	public abstract Collection<Double> adjustScale(ModelWindow w);
+	public abstract Collection<BoundingBox> adjustScale(ModelWindow w);
 	public abstract Collection<Vector3d> autoCenterMid();
 	public abstract double autoCenterRadius(Vector3d mid);
 	

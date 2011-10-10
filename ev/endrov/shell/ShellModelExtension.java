@@ -65,7 +65,7 @@ public class ShellModelExtension implements ModelWindowExtension
 			}
 		
 		
-		public Collection<Double> adjustScale()
+		public Collection<BoundingBox> adjustScale()
 			{
 			return Collections.emptySet();
 			}

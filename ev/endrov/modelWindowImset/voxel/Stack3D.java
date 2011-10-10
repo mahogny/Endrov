@@ -15,6 +15,7 @@ import javax.media.opengl.*;
 import javax.vecmath.Vector3d;
 
 import endrov.imageset.*;
+import endrov.modelWindow.BoundingBox;
 import endrov.modelWindow.ModelView;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
@@ -45,7 +46,7 @@ public class Stack3D extends StackRendererInterface
 	 */
 	private static class VoxelStack
 		{
-		public int w, h, d; //size in pixels
+		public int texW, texH, texD; //Texture size
 		//need starting position
 		public Texture3D tex; //could be multiple textures, interleaved
 		public double realw, realh, reald; //size [um]
@@ -145,12 +146,12 @@ public class Stack3D extends StackRendererInterface
 				{
 				VoxelStack os=new VoxelStack();
 				os.tex=texture;
-				os.w=stack.getWidth();
-				os.h=stack.getHeight();
-				os.d=stack.getDepth();//ceilPower2(stack.getDepth());
+				os.texW=stack.getWidth();
+				os.texH=stack.getHeight();
+				os.texD=stack.getDepth();//ceilPower2(stack.getDepth());
 
 				os.prop=chsel.prop;
-				texture.allocate(os.w, os.h, os.d);
+				texture.allocate(os.texW, os.texH, os.texD);
 
 				//Size of the stack
 				//TODO support rotated stacks
@@ -181,10 +182,10 @@ public class Stack3D extends StackRendererInterface
 
 
 						//Load bitmap, scale down
-						BufferedImage sim=new BufferedImage(os.w,os.h,BufferedImage.TYPE_BYTE_GRAY); 
+						BufferedImage sim=new BufferedImage(os.texW,os.texH,BufferedImage.TYPE_BYTE_GRAY); 
 						//BufferedImage sim=new BufferedImage(os.w,os.h,bim.getType()); //change type to byte or something? float better internally?
 						Graphics2D g=(Graphics2D)sim.getGraphics();
-						g.scale(os.w/(double)bim.getWidth(), os.h/(double)bim.getHeight()); //0.5 sec tot maybe
+						g.scale(os.texW/(double)bim.getWidth(), os.texH/(double)bim.getHeight()); //0.5 sec tot maybe
 						g.drawImage(bim,0,0,Color.BLACK,null);
 
 						//Convert to something suitable for texture upload?
@@ -193,8 +194,8 @@ public class Stack3D extends StackRendererInterface
 
 						//theoretically slower but can be made safer
 						Raster ras=sim.getRaster();
-						for(int ay=0;ay<os.h;ay++)
-							for(int ax=0;ax<os.w;ax++)
+						for(int ay=0;ay<os.texH;ay++)
+							for(int ax=0;ax<os.texW;ax++)
 								{
 								int pix[]=new int[3];
 								ras.getPixel(ax, ay, pix);
@@ -207,7 +208,7 @@ public class Stack3D extends StackRendererInterface
 				
 				//TODO This is a crap way of handling it!
 				//Add black frames up to z power of 2
-				int pixToWrite=os.w*os.h*os.d-texture.b.position();
+				int pixToWrite=os.texW*os.texH*os.texD-texture.b.position();
 				texture.b.put(new byte[pixToWrite], 0, 0);
 
 
@@ -236,12 +237,16 @@ public class Stack3D extends StackRendererInterface
 	/**
 	 * Return suitable scale of model for navigation purposes
 	 */
-	public Collection<Double> adjustScale(ModelWindow w)
+	public Collection<BoundingBox> adjustScale(ModelWindow w)
 		{
 		if(!texSlices.isEmpty())
 			{
 			VoxelStack os=texSlices.get(0);
-			return Collections.singleton((os.realw+os.realh+os.reald)/3);
+			return Collections.singleton(new BoundingBox(
+					0.0, os.realw,
+					0.0, os.realh,
+					0.0, os.reald
+			));
 			}
 		else
 			return Collections.emptySet();

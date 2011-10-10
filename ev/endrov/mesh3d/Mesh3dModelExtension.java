@@ -115,7 +115,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				int color=w.view.reserveSelectColor(this);
 				selectColorMap.put(color, new SelMesh3D(mesh));
 
-				displayMeshSelect(w.view, glin, mesh, color);
+				displayMesh(w.view, glin, mesh, new GLMaterialSelect(color), null);
 				}
 				
 			//gl.glPopAttrib();
@@ -139,9 +139,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			//Render all meshs
 			for(Mesh3D mesh:meshs)
 				{
-				displayMeshFinal(w.view, glin, mesh);
-				
-				
+				displayMesh(w.view, glin, mesh, null, null);
 				}
 			
 			
@@ -152,42 +150,13 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		/**
 		 * Adjust the scale
 		 */
-		public Collection<Double> adjustScale()
+		public Collection<BoundingBox> adjustScale()
 			{
-			//System.out.println("adjust scale mesh");
-			//long t=System.currentTimeMillis();
 			Collection<Mesh3D> meshs=getVisibleObjects();
-
-			double maxx=-1000000,maxy=-1000000,maxz=-1000000;
-			double minx= 1000000,miny= 1000000,minz= 1000000;
-			Double dist=null;
+			List<BoundingBox> list=new LinkedList<BoundingBox>();
 			for(Mesh3D mesh:meshs)
-				{
-				//Calculate bounds
-				for(Vector3d pos:mesh.vertex)
-					{
-					if(maxx<pos.x) maxx=pos.x;
-					if(maxy<pos.y) maxy=pos.y;
-					if(maxz<pos.z) maxz=pos.z;
-					if(minx>pos.x) minx=pos.x;
-					if(miny>pos.y) miny=pos.y;
-					if(minz>pos.z) minz=pos.z;
-					}
-				double dx=maxx-minx;
-				double dy=maxy-miny;
-				double dz=maxz-minz;
-				if(dist==null || dist<dx)
-					dist=dx;
-				if(dist<dy)
-					dist=dy;
-				if(dist<dz)
-					dist=dz;
-				}
-			//System.out.println("time "+(System.currentTimeMillis()-t));
-			if(dist!=null)
-				return Collections.singleton((Double)dist);
-			else
-				return Collections.emptySet();
+				list.add(mesh.getBoundingBox());
+			return list;
 			}
 
 
@@ -272,8 +241,14 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		
 
 	
-	public static void displayMeshSelect(ModelView view, GL glin, Mesh3D mesh, int color)
+		
+
+
+	public static void displayMesh(ModelView view, GL glin, Mesh3D mesh, GLMaterial overrideMaterial, GLMeshVBO.MeshRenderSettings renderSettings)
 		{
+		if(renderSettings==null)
+			renderSettings=new GLMeshVBO.MeshRenderSettings();
+		
 		GL2 gl=glin.getGL2();
 		gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 		
@@ -282,38 +257,23 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		if(vbo==null)
 			view.setMesh(mesh, vbo=buildVBO(gl, mesh));
 		
-		GLMaterial m=new GLMaterialSelect(color);
-		
-		vbo.render(gl, m);
-		
-		gl.glPopAttrib();
-		}	
-		
-
-
-	public static void displayMeshFinal(ModelView view, GL glin, Mesh3D mesh)
-		{
-		GL2 gl=glin.getGL2();
-		gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
-		
-		//Upload to card if needed
-		GLMeshVBO vbo=view.getMesh(mesh);
-		if(vbo==null)
-			view.setMesh(mesh, vbo=buildVBO(gl, mesh));
-		
-		GLMaterial material=null;
-		
-		//Get material of face. TODO each face might have a different material!
-		if(!mesh.faces.isEmpty())
-			material=mesh.faces.iterator().next().material;
-		
+		GLMaterial material=overrideMaterial;
 		if(material==null)
-			material=new GLMaterialSolid();
+			{
+
+			//Get material of face. TODO each face might have a different material!
+			if(!mesh.faces.isEmpty())
+				material=mesh.faces.iterator().next().material;
+			
+			if(material==null)
+				material=new GLMaterialSolid();
+			}
+		
 		
 		//vbo.drawSolid=false;
 		//vbo.drawNormals=true;
 		
-		vbo.render(gl, material);
+		vbo.render(gl, material, renderSettings);
 		gl.glPopAttrib();
 		}
 	

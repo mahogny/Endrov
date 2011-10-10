@@ -176,7 +176,7 @@ public class VoxelExtension implements ModelWindowExtension
 			}
 		
 
-		public Collection<Double> adjustScale()
+		public Collection<BoundingBox> adjustScale()
 			{
 			StackRendererInterface s=getCurrentStack();
 			if(s!=null)

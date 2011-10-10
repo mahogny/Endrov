@@ -134,7 +134,7 @@ public class ChromaCountKJModelExtension implements ModelWindowExtension
 		/**
 		 * Adjust the scale
 		 */
-		public Collection<Double> adjustScale()
+		public Collection<BoundingBox> adjustScale()
 			{
 			return Collections.emptySet();
 			}

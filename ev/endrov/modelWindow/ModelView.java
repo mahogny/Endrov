@@ -28,6 +28,7 @@ import endrov.modelWindow.TransparentRender.RenderState;
 import endrov.modelWindow.gl.GLCamera;
 import endrov.modelWindow.gl.GLMeshVBO;
 import endrov.util.EvDecimal;
+import endrov.util.EvMathUtil;
 
 
 //NEED GLJPanel
@@ -344,6 +345,26 @@ public class ModelView extends GLJPanel //GLCanvas
 				System.out.println("===forced set===");
 			force=false;
 
+			
+			
+			
+			//Adjust scale
+			BoundingBox totbb=new BoundingBox();
+			for(ModelWindowHook h:window.modelWindowHooks)
+				for(BoundingBox bb:h.adjustScale())
+					totbb.addBoundingBox(bb);
+
+			double representativeDist=EvMathUtil.maxAll(
+					totbb.xmax-totbb.xmin,
+					totbb.ymax-totbb.ymin,
+					totbb.zmax-totbb.zmin);
+
+			if(representativeDist==0)
+				representativeDist=1;
+			
+			//TODO
+			
+			/*
 			//Adjust scale
 			double avdist=0;
 			int numdist=0;
@@ -354,10 +375,12 @@ public class ModelView extends GLJPanel //GLCanvas
 					numdist++;
 					}
 			avdist/=numdist;
+			*/
+			
 			//Select pan speed
-			panspeed=avdist/1000.0;
+			panspeed=representativeDist/1000.0;
 			//Select representative scale
-			double g=Math.pow(10, (int)Math.log10(avdist));
+			double g=Math.pow(10, (int)Math.log10(representativeDist));
 			if(g<1) g=1;
 			representativeScale=g;
 
@@ -515,6 +538,7 @@ public class ModelView extends GLJPanel //GLCanvas
 				{
 				//Axis rendering
 				//Overlays everything else, has to be done absolutely last
+				gl.glLoadIdentity();
 				if(renderAxisArrows)
 					renderAxisArrows(gl);
 				}

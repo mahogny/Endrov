@@ -16,6 +16,7 @@ import javax.vecmath.Vector3d;
 import com.sun.opengl.util.texture.*;
 
 import endrov.imageset.*;
+import endrov.modelWindow.BoundingBox;
 import endrov.util.EvDecimal;
 import endrov.util.ImVector3d;
 import endrov.util.ProgressHandle;
@@ -28,8 +29,8 @@ public class Slice3D
 	{	
 	private EvDecimal lastframe; 
 
-	private int w, h;
-	private double resX,resY/*,resZ*/;
+	private int w, h; //Size of texture
+	private double resX,resY;
 	private Texture tex;      
 	private boolean rebuild;
 	private double worldZ;
@@ -172,10 +173,19 @@ public class Slice3D
 		}
 	
 	
-	public Collection<Double> adjustScale()
+	public Collection<BoundingBox> adjustScale(boolean project)
 		{
 		if(tex!=null)
-			return Collections.singleton(this.w/resX);
+			{
+			double z=worldZ;
+			if(project)
+				z=0;
+			return Collections.singleton(
+					new BoundingBox(
+							0.0, w*resX,
+							0.0, h*resY,
+							z,z));
+			}
 		else
 			return Collections.emptySet();
 		}
