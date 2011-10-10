@@ -315,9 +315,6 @@ public class ModelView extends GLJPanel //GLCanvas
 			
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
-			
-			
-			System.out.println("---- reshape ---- ");
 			}
 		
 
@@ -556,9 +553,9 @@ public class ModelView extends GLJPanel //GLCanvas
 		public void setupLight(GL2 gl)
 			{
 			
-			float lightAmbient[] = { 1.0f, 1.0f, 1.0f, 0.0f };
+			float lightAmbient[] = { 0.5f, 0.5f, 0.5f, 0.0f };
 			float lightDiffuse[]=new float[]{1.0f,1.0f,1.0f};
-			float lightSpecular[]=new float[]{1.0f,1.0f,1.0f};
+			float lightSpecular[]=new float[]{0.7f,0.7f,0.7f};
 /*
 			float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 0.0f };
 			float lightDiffuse[]=new float[]{1.0f,1.0f,1.0f};
@@ -570,6 +567,9 @@ public class ModelView extends GLJPanel //GLCanvas
 			float lightSpecular[]={1.0f, 1.0f, 1.0f, 0.0f};
 			*/
 
+			//float dim_light[] = {0.0f, 0.0f, 0.0f, 1.0f};
+			//gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, dim_light, 0); 
+
 			for(int i=0;i<light_position.length;i++)
 				{
 				gl.glLightfv(GL2.GL_LIGHT0+i, GL2.GL_AMBIENT, lightAmbient, 0);   
@@ -577,6 +577,7 @@ public class ModelView extends GLJPanel //GLCanvas
 				gl.glLightfv(GL2.GL_LIGHT0+i, GL2.GL_SPECULAR, lightSpecular, 0);
 				gl.glEnable(GL2.GL_LIGHT0+i);
 				}
+			gl.glLightModelf(GL2.GL_LIGHT_MODEL_LOCAL_VIEWER, 1.0f);
 			gl.glShadeModel(GL2.GL_SMOOTH);
 			}
 		

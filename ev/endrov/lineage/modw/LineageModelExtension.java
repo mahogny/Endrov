@@ -22,7 +22,6 @@ import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.EvColor;
 import endrov.basicWindow.EvColor.ColorMenuListener;
 import endrov.data.EvObject;
-import endrov.data.EvPath;
 import endrov.data.EvSelection;
 import endrov.ev.*;
 import endrov.lineage.Lineage;
@@ -35,6 +34,7 @@ import endrov.mesh3d.Mesh3D;
 import endrov.mesh3d.Mesh3dModelExtension;
 import endrov.modelWindow.*;
 import endrov.modelWindow.gl.GLMaterialSelect;
+import endrov.modelWindow.gl.GLMaterialSolid;
 import endrov.modelWindow.gl.GLMeshVBO.MeshRenderSettings;
 import endrov.undo.UndoOpBasic;
 import endrov.util.*;
@@ -351,21 +351,25 @@ public class LineageModelExtension implements ModelWindowExtension
 					{
 					if(LineageCommonUI.currentHover!=LineageCommonUI.emptyHover && LineageCommonUI.currentHover!=null)
 						{
-						if(SwingUtilities.isLeftMouseButton(e))
+						//Require ctrl to be pressed or it is too easy to accidentally edit
+						if((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK)!=0)
 							{
-							//Start dragging
-							currentModifying=LineageCommonUI.currentHover;
-							currentOrigNuc=currentModifying.getParticle().clone();
-							hasReallyModified=false;
-							modifyingState=ModState.Dragging;
-							}
-						else if(SwingUtilities.isRightMouseButton(e))
-							{
-							//Start resizing
-							currentModifying=LineageCommonUI.currentHover;
-							currentOrigNuc=currentModifying.getParticle().clone();
-							hasReallyModified=false;
-							modifyingState=ModState.Resizing;
+							if(SwingUtilities.isLeftMouseButton(e) && (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK)!=0)
+								{
+								//Start dragging
+								currentModifying=LineageCommonUI.currentHover;
+								currentOrigNuc=currentModifying.getParticle().clone();
+								hasReallyModified=false;
+								modifyingState=ModState.Dragging;
+								}
+							else if(SwingUtilities.isRightMouseButton(e))
+								{
+								//Start resizing
+								currentModifying=LineageCommonUI.currentHover;
+								currentOrigNuc=currentModifying.getParticle().clone();
+								hasReallyModified=false;
+								modifyingState=ModState.Resizing;
+								}
 							}
 
 						}
@@ -434,13 +438,10 @@ public class LineageModelExtension implements ModelWindowExtension
 			else if(e.getSource()==miSelectVisible)
 				{
 				EvDecimal frame=w.getFrame();
-				//TODO replace with visible set
-				for(Map.Entry<EvPath, Lineage> entry:w.getSelectedData().getIdObjectsRecursive(Lineage.class).entrySet())
-					{
-					for(LineageSelParticle i:entry.getValue().interpolateParticles(frame).keySet())
+				for(Lineage lin:getVisibleLineages())
+					for(LineageSelParticle i:lin.interpolateParticles(frame).keySet())
 						EvSelection.select(i);
-					BasicWindow.updateWindows();
-					}
+				BasicWindow.updateWindows();
 				}
 			else if(e.getSource()==bAddExpPattern)
 				{
@@ -812,6 +813,7 @@ public class LineageModelExtension implements ModelWindowExtension
 			
 
 			//Meshs
+			gl.glEnable(GL2.GL_LIGHTING);
 			for(Lineage lin:getVisibleLineages())
 				{
 				for(String name:lin.particle.keySet())
@@ -829,16 +831,29 @@ public class LineageModelExtension implements ModelWindowExtension
 							{
 							renderSettings.outlineColor=EvColor.red;
 							}
+						else
+							renderSettings.drawWireframe=true;
 						
+						 
+						EvColor repColor=new EvColor("", Lineage.representativeColor(p.color));
 //						if(LineageCommonUI.currentHover.fst()==lin && LineageCommonUI.currentHover.snd().equals(name))
 						
-						Mesh3dModelExtension.displayMesh(w.view, gl, mesh, null, renderSettings);
+						GLMaterialSolid msolid=new GLMaterialSolid();
+						msolid.diffuse[0]=repColor.getRedFloat();
+						msolid.diffuse[1]=repColor.getGreenFloat();
+						msolid.diffuse[2]=repColor.getBlueFloat();
+						msolid.ambient[0]*=repColor.getRedFloat();
+						msolid.ambient[1]*=repColor.getGreenFloat();
+						msolid.ambient[2]*=repColor.getBlueFloat();
+
+						
+						Mesh3dModelExtension.displayMesh(w.view, gl, mesh, msolid, renderSettings);
 						}
 					}
 				}
 			
 			
-			
+			gl.glDisable(GL2.GL_LIGHTING);
 			if(traceSel)
 				for(LineageSelParticle pair:LineageCommonUI.getSelectedParticles())
 					{

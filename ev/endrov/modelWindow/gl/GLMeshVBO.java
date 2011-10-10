@@ -19,7 +19,7 @@ public class GLMeshVBO
 	public static class MeshRenderSettings
 		{
 		public boolean drawNormals=false;
-		public boolean drawSolid=true;
+		public boolean drawWireframe=false;
 		public EvColor outlineColor=null;
 		public float outlineWidth=5;
 		}
@@ -74,14 +74,14 @@ public class GLMeshVBO
 		material.set(gl);
 		
 		
-		if(settings.drawSolid)
-			{
-			gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertexCount);  
-			}
-		else
+		if(settings.drawWireframe)
 			{
 			for(int i=0;i<vertexCount;i+=3)
 				gl.glDrawArrays(GL.GL_LINE_LOOP, i, 3);
+			}
+		else
+			{
+			gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertexCount);  
 			}
 		
 	
@@ -89,7 +89,7 @@ public class GLMeshVBO
 		gl.glDisable(GL2.GL_LIGHTING);
 	
 		//Draw optional outline
-		if(settings.outlineColor!=null)
+		if(settings.outlineColor!=null && !settings.drawWireframe)
 			{
 			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 

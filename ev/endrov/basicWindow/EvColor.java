@@ -104,16 +104,28 @@ public class EvColor
 		{
 		return c.getRed()/255.0;
 		}
-	
 	public double getGreenDouble()
 		{
 		return c.getGreen()/255.0;
 		}
-	
 	public double getBlueDouble()
 		{
 		return c.getBlue()/255.0;
 		}
+
+	public float getRedFloat()
+		{
+		return (float)(c.getRed()/255.0);
+		}
+	public float getGreenFloat()
+		{
+		return (float)(c.getGreen()/255.0);
+		}
+	public float getBlueFloat()
+		{
+		return (float)(c.getBlue()/255.0);
+		}
+
 	
 	public Color getAWTColor()
 		{

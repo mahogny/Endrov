@@ -802,9 +802,8 @@ public class Lineage extends EvObject implements Cloneable
 		{
 		/** Name of children */
 		public final TreeSet<String> child=new TreeSet<String>();
-		/** Name of parent */
-//		public String parent=null;
-		
+
+		/** Name of parents */
 		public final TreeSet<String> parents=new TreeSet<String>();
 		
 		/** Pos key frames */
@@ -817,8 +816,6 @@ public class Lineage extends EvObject implements Cloneable
 		public SortedMap<EvDecimal, String> events=new TreeMap<EvDecimal, String>();
 		
 		public SortedMap<EvDecimal, Mesh3D> meshs=new TreeMap<EvDecimal, Mesh3D>();
-		
-		//idea: reserve x,y,z,r as special keywords, use expression system for all interpol?
 		
 		/** Override first frame of existence */
 		public EvDecimal overrideStart;
