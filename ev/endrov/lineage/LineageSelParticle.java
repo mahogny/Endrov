@@ -49,7 +49,7 @@ public class LineageSelParticle extends Tuple<Lineage,String> implements EvSelec
 
 	public void setColor(EvColor c)
 		{
-		getParticle().color=c.getAWTColor();
+		getParticle().overrideNucColor=c.getAWTColor();
 		}
 	
 	protected LineageSelParticle clone()

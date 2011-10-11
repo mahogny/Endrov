@@ -99,7 +99,7 @@ public class ModelView extends GLJPanel //GLCanvas
 	
 	public Color bgColor=EvColor.grayMedium.getAWTColor();
 	
-	private Map<Object,GLMeshVBO> meshs=new HashMap<Object, GLMeshVBO>();
+	private Map<Object,GLMeshVBO> vbos=new HashMap<Object, GLMeshVBO>();
 	private Set<Object> keepMeshs=new HashSet<Object>();
 	
 
@@ -110,7 +110,7 @@ public class ModelView extends GLJPanel //GLCanvas
 	 */
 	public GLMeshVBO getMesh(Object o)
 		{
-		GLMeshVBO vbo=meshs.get(o);
+		GLMeshVBO vbo=vbos.get(o);
 		if(vbo!=null)
 			keepMeshs.add(o);
 		return vbo;
@@ -121,7 +121,7 @@ public class ModelView extends GLJPanel //GLCanvas
 	 */
 	public void setMesh(Object o, GLMeshVBO m)
 		{
-		meshs.put(o, m);
+		vbos.put(o, m);
 		keepMeshs.add(o);
 		}
 	
@@ -130,13 +130,13 @@ public class ModelView extends GLJPanel //GLCanvas
 	 */
 	private void removeUnusedMesh(GL2 gl)
 		{
-		Map<Object, GLMeshVBO> copy=new HashMap<Object, GLMeshVBO>(meshs);
+		Map<Object, GLMeshVBO> copy=new HashMap<Object, GLMeshVBO>(vbos);
 		copy.keySet().removeAll(keepMeshs);
 		for(Object key:copy.keySet())
 			{
 			GLMeshVBO m=copy.get(key);
 			m.destroy(gl);
-			meshs.remove(key);
+			vbos.remove(key);
 			}
 		keepMeshs.clear();
 		}
@@ -222,6 +222,17 @@ public class ModelView extends GLJPanel //GLCanvas
 		 */
 		public void init(GLAutoDrawable drawable)
 			{
+			//Clear out previously registered objects - they have to be recreated
+			vbos.clear();
+			
+			//TODO
+			//TODO
+			//TODO also have to do the same with display lists & textures
+			//TODO
+			//TODO
+			
+			
+			System.out.println("----- opengl init -----------");
 			hasInited.clear();
 			
 			//Get debug info

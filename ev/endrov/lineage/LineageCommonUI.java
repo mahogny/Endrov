@@ -881,7 +881,7 @@ public class LineageCommonUI implements ActionListener
 				public void actionPerformed(ActionEvent e)
 					{
 					for (LineageSelParticle p : LineageCommonUI.getSelectedParticles())
-						p.getParticle().color = null;
+						p.getParticle().overrideNucColor = null;
 					BasicWindow.updateWindows();
 					}
 			});
@@ -900,7 +900,7 @@ public class LineageCommonUI implements ActionListener
 					for (LineageSelParticle p : LineageCommonUI.getSelectedParticles())
 						{
 						int pi = Math.abs(p.snd().hashCode())%colors.size();
-						p.getParticle().color = colors.get(pi).c;
+						p.getParticle().overrideNucColor = colors.get(pi).c;
 						}
 					BasicWindow.updateWindows();
 					}
@@ -924,7 +924,7 @@ public class LineageCommonUI implements ActionListener
 				EvColor c=new EvColor("Custom",awtc);
 				
 				for (LineageSelParticle p : LineageCommonUI.getSelectedParticles())
-					p.getParticle().color = c.c;
+					p.getParticle().overrideNucColor = c.c;
 				BasicWindow.updateWindows();
 				}
 			});
@@ -935,7 +935,7 @@ public class LineageCommonUI implements ActionListener
 			public void setColor(EvColor c)
 				{
 				for (LineageSelParticle p : LineageCommonUI.getSelectedParticles())
-					p.getParticle().color = c.c;
+					p.getParticle().overrideNucColor = c.c;
 				BasicWindow.updateWindows();
 				}
 		});

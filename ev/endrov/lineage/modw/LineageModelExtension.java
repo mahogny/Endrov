@@ -29,6 +29,7 @@ import endrov.lineage.LineageCommonUI;
 import endrov.lineage.LineageExp;
 import endrov.lineage.LineageSelParticle;
 import endrov.lineage.Lineage.InterpolatedParticle;
+import endrov.lineage.Lineage.MeshRenderMode;
 import endrov.lineage.util.LineageVoronoi;
 import endrov.mesh3d.Mesh3D;
 import endrov.mesh3d.Mesh3dModelExtension;
@@ -110,7 +111,29 @@ public class LineageModelExtension implements ModelWindowExtension
 
 		public JMenuItem miSelectVisible=new JMenuItem("Select visible particles"); 
 
+		
+		public JMenu miDefaultSelectMeshRender=new JMenu("Default mesh render mode (selected)");
+		public JMenu miDefaultNonselectMeshRender=new JMenu("Default mesh render mode (non-selected)");
+		public JMenu miThisMeshRender=new JMenu("This mesh render mode");
+		
+		public JMenuItem miDefaultSelectMeshRenderOff=new JMenuItem("Hidden");
+		public JMenuItem miDefaultSelectMeshRenderSolid=new JMenuItem("Solid");
+		public JMenuItem miDefaultSelectMeshRenderWireframe=new JMenuItem("Wireframe");
 
+		public JMenuItem miDefaultNonselectMeshRenderOff=new JMenuItem("Hidden");
+		public JMenuItem miDefaultNonselectMeshRenderSolid=new JMenuItem("Solid");
+		public JMenuItem miDefaultNonselectMeshRenderWireframe=new JMenuItem("Wireframe");
+		
+		public JMenuItem miThisMeshRenderNull=new JMenuItem("<default>");
+		public JMenuItem miThisMeshRenderOff=new JMenuItem("Hidden");
+		public JMenuItem miThisMeshRenderSolid=new JMenuItem("Solid");
+		public JMenuItem miThisMeshRenderWireframe=new JMenuItem("Wireframe");
+		
+		
+		private MeshRenderMode defaultSelectMeshRenderMode=MeshRenderMode.SOLID;
+		private MeshRenderMode defaultNonselectMeshRenderMode=MeshRenderMode.WIREFRAME;
+
+		
 		/**
 		 * How to show expression patterns
 		 */
@@ -229,7 +252,22 @@ public class LineageModelExtension implements ModelWindowExtension
 			mShowNucSize.add(miShowNucSize100);
 			mShowNucSize.add(miShowNucSizeCustom);
 
-
+			
+			miDefaultSelectMeshRender.add(miDefaultSelectMeshRenderOff);
+			miDefaultSelectMeshRender.add(miDefaultSelectMeshRenderSolid);
+			miDefaultSelectMeshRender.add(miDefaultSelectMeshRenderWireframe);
+			
+			miDefaultNonselectMeshRender.add(miDefaultNonselectMeshRenderOff);
+			miDefaultNonselectMeshRender.add(miDefaultNonselectMeshRenderSolid);
+			miDefaultNonselectMeshRender.add(miDefaultNonselectMeshRenderWireframe);
+			
+			miThisMeshRender.add(miThisMeshRenderNull);
+			miThisMeshRender.add(miThisMeshRenderOff);
+			miThisMeshRender.add(miThisMeshRenderSolid);
+			miThisMeshRender.add(miThisMeshRenderWireframe);
+			
+			
+			
 			//miNuc.add(NucCommonUI.makeSetColorMenu());
 			miNuc.add(mShowNames);
 			miNuc.add(mShowExp);
@@ -241,6 +279,9 @@ public class LineageModelExtension implements ModelWindowExtension
 			miNuc.add(miShowSelectedNuc);
 			miNuc.add(miHideSelectedNuc);
 			
+			miNuc.add(miDefaultSelectMeshRender);
+			miNuc.add(miDefaultNonselectMeshRender);
+			miNuc.add(miThisMeshRender);
 			
 			
 			miNuc.add(miShowDiv);
@@ -280,6 +321,16 @@ public class LineageModelExtension implements ModelWindowExtension
 			miSelectVisible.addActionListener(this);
 			bAddExpPattern.addActionListener(this);
 
+			miDefaultSelectMeshRenderOff.addActionListener(this);
+			miDefaultSelectMeshRenderSolid.addActionListener(this);
+			miDefaultSelectMeshRenderWireframe.addActionListener(this);
+			miDefaultNonselectMeshRenderOff.addActionListener(this);
+			miDefaultNonselectMeshRenderSolid.addActionListener(this);
+			miDefaultNonselectMeshRenderWireframe.addActionListener(this);
+			miThisMeshRenderNull.addActionListener(this);
+			miThisMeshRenderOff.addActionListener(this);
+			miThisMeshRenderSolid.addActionListener(this);
+			miThisMeshRenderWireframe.addActionListener(this);
 			
 			w.addModelWindowMouseListener(new ModelWindowMouseListener(){
 				public void mouseClicked(MouseEvent e)
@@ -423,6 +474,29 @@ public class LineageModelExtension implements ModelWindowExtension
 				nucMagnification=0.75;
 			else if(e.getSource()==miShowNucSize100)
 				nucMagnification=1;
+			
+			
+			else if(e.getSource()==miDefaultSelectMeshRenderOff)
+				setDefaultSelectMeshRenderMode(Lineage.MeshRenderMode.HIDDEN);
+			else if(e.getSource()==miDefaultSelectMeshRenderSolid)
+				setDefaultSelectMeshRenderMode(Lineage.MeshRenderMode.SOLID);
+			else if(e.getSource()==miDefaultSelectMeshRenderWireframe)
+				setDefaultSelectMeshRenderMode(Lineage.MeshRenderMode.WIREFRAME);
+			else if(e.getSource()==miDefaultNonselectMeshRenderOff)
+				setDefaultNonselectMeshRenderMode(Lineage.MeshRenderMode.HIDDEN);
+			else if(e.getSource()==miDefaultNonselectMeshRenderSolid)
+				setDefaultNonselectMeshRenderMode(Lineage.MeshRenderMode.SOLID);
+			else if(e.getSource()==miDefaultNonselectMeshRenderWireframe)
+				setDefaultNonselectMeshRenderMode(Lineage.MeshRenderMode.WIREFRAME);
+			else if(e.getSource()==miThisMeshRenderNull)
+				setThisMeshRenderMode(null);
+			else if(e.getSource()==miThisMeshRenderOff)
+				setThisMeshRenderMode(Lineage.MeshRenderMode.HIDDEN);
+			else if(e.getSource()==miThisMeshRenderSolid)
+				setThisMeshRenderMode(Lineage.MeshRenderMode.SOLID);
+			else if(e.getSource()==miThisMeshRenderWireframe)
+				setThisMeshRenderMode(Lineage.MeshRenderMode.WIREFRAME);
+			
 			else if(e.getSource()==miShowNucSizeCustom)
 				{
 				String inp=BasicWindow.showInputDialog("Enter magnification in percent", "100");
@@ -471,6 +545,21 @@ public class LineageModelExtension implements ModelWindowExtension
 			}
 		
 		
+		
+		public void setDefaultSelectMeshRenderMode(MeshRenderMode rm)
+			{
+			defaultSelectMeshRenderMode=rm;
+			}
+		public void setDefaultNonselectMeshRenderMode(MeshRenderMode rm)
+			{
+			defaultNonselectMeshRenderMode=rm;
+			}
+		public void setThisMeshRenderMode(MeshRenderMode rm)
+			{
+			for(LineageSelParticle sel:LineageCommonUI.getSelectedParticles())
+				sel.getParticle().overrrideRenderMode=rm;
+			}
+
 		public boolean canRender(EvObject ob)
 			{
 			return ob instanceof Lineage;
@@ -553,21 +642,21 @@ public class LineageModelExtension implements ModelWindowExtension
 					Mesh3D mesh=p.meshs.get(curFrame);
 					if(mesh!=null)
 						{
-						//Reserve select color
-						LineageSelParticle sel=new LineageSelParticle(lin, name);
-						int selectColor=w.view.reserveSelectColor(this);
-						selectColorMap.put(selectColor, sel);
-						w.view.setReserveColor(gl, selectColor);
-						
-						//Render mesh
-						Mesh3dModelExtension.displayMesh(w.view, gl, mesh, new GLMaterialSelect(selectColor), null);
+						LineageSelParticle psel=new LineageSelParticle(lin, name);
+						MeshRenderMode rendermode=getRenderMode(psel);
+						if(rendermode!=MeshRenderMode.HIDDEN)
+							{
+							//Reserve select color
+							LineageSelParticle sel=new LineageSelParticle(lin, name);
+							int selectColor=w.view.reserveSelectColor(this);
+							selectColorMap.put(selectColor, sel);
+							w.view.setReserveColor(gl, selectColor);
+							
+							//Render mesh
+							Mesh3dModelExtension.displayMesh(w.view, gl, mesh, new GLMaterialSelect(selectColor), null);
+							}
 						}
-					
-					
-					
 					}
-				
-				
 			
 			}
 		
@@ -637,7 +726,7 @@ public class LineageModelExtension implements ModelWindowExtension
 			if(traceColor!=null)
 				col=traceColor.c;
 			if(col==null)
-				col=Lineage.representativeColor(nuc.color);
+				col=Lineage.representativeColor(nuc.overrideNucColor);
 			return col;
 			}
 		
@@ -827,27 +916,31 @@ public class LineageModelExtension implements ModelWindowExtension
 						
 						LineageSelParticle psel=new LineageSelParticle(lin, name);
 						
+						MeshRenderMode rendermode=getRenderMode(psel);
 						if(EvSelection.isSelected(psel))
-							{
 							renderSettings.outlineColor=EvColor.red;
-							}
-						else
-							renderSettings.drawWireframe=true;
 						
-						 
-						EvColor repColor=new EvColor("", Lineage.representativeColor(p.color));
-//						if(LineageCommonUI.currentHover.fst()==lin && LineageCommonUI.currentHover.snd().equals(name))
-						
-						GLMaterialSolid msolid=new GLMaterialSolid();
-						msolid.diffuse[0]=repColor.getRedFloat();
-						msolid.diffuse[1]=repColor.getGreenFloat();
-						msolid.diffuse[2]=repColor.getBlueFloat();
-						msolid.ambient[0]*=repColor.getRedFloat();
-						msolid.ambient[1]*=repColor.getGreenFloat();
-						msolid.ambient[2]*=repColor.getBlueFloat();
+						if(rendermode!=MeshRenderMode.HIDDEN)
+							{
+							
+							if(rendermode==MeshRenderMode.WIREFRAME)
+								renderSettings.drawWireframe=true;
+							
+							EvColor repColor=new EvColor("", Lineage.representativeColor(p.overrideNucColor));
+//							if(LineageCommonUI.currentHover.fst()==lin && LineageCommonUI.currentHover.snd().equals(name))
+							
+							GLMaterialSolid msolid=new GLMaterialSolid();
+							msolid.diffuse[0]=repColor.getRedFloat();
+							msolid.diffuse[1]=repColor.getGreenFloat();
+							msolid.diffuse[2]=repColor.getBlueFloat();
+							msolid.ambient[0]*=repColor.getRedFloat();
+							msolid.ambient[1]*=repColor.getGreenFloat();
+							msolid.ambient[2]*=repColor.getBlueFloat();
 
+							
+							Mesh3dModelExtension.displayMesh(w.view, gl, mesh, msolid, renderSettings);
+							}
 						
-						Mesh3dModelExtension.displayMesh(w.view, gl, mesh, msolid, renderSettings);
 						}
 					}
 				}
@@ -900,6 +993,17 @@ public class LineageModelExtension implements ModelWindowExtension
 			gl.glPopAttrib();
 			}
 
+		
+		private MeshRenderMode getRenderMode(LineageSelParticle psel)
+			{
+			MeshRenderMode rm=psel.getParticle().overrrideRenderMode;
+			if(rm!=null)
+				return rm;
+			else if(EvSelection.isSelected(psel))
+				return defaultSelectMeshRenderMode;
+			else
+				return defaultNonselectMeshRenderMode;
+			}
 		
 		/** Keep track of what hover was before hover test started */
 		private LineageSelParticle lastHover=null;

@@ -843,8 +843,8 @@ public class LineageView extends JPanel
 					int thisEndX=cam.toScreenX(thisInternal.endX);
 
 					//Line and keyframes
-					if(nuc.color!=null)
-						g.setColor(nuc.color);
+					if(nuc.overrideNucColor!=null)
+						g.setColor(nuc.overrideNucColor);
 					else
 						g.setColor(Color.black);
 					g.drawLine(thisStartX, thisMidY, thisEndX, thisMidY);

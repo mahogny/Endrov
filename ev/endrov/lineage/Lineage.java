@@ -102,11 +102,31 @@ public class Lineage extends EvObject implements Cloneable
 			{
 			Element e=(Element)oc;
 			String name=e.getAttributeValue("name");
-			int r=e.getAttribute("r").getIntValue();
-			int g=e.getAttribute("g").getIntValue();
-			int b=e.getAttribute("b").getIntValue();
 			if(particle.containsKey(name))
-				particle.get(name).color=new Color(r,g,b);
+				{
+				Particle p=particle.get(name);
+				if(e.getAttribute("r")!=null)
+					{
+					int r=e.getAttribute("r").getIntValue();
+					int g=e.getAttribute("g").getIntValue();
+					int b=e.getAttribute("b").getIntValue();
+					p.overrideNucColor=new Color(r,g,b);
+					}
+
+				if(e.getAttribute("mr")!=null)
+					{
+					int r=e.getAttribute("mr").getIntValue();
+					int g=e.getAttribute("mg").getIntValue();
+					int b=e.getAttribute("mb").getIntValue();
+					p.overrideMeshColor=new Color(r,g,b);
+					}
+
+				if(e.getAttribute("rendermode")!=null)
+					{
+					p.overrrideRenderMode=MeshRenderMode.fromString(e.getAttributeValue("rendermode"));
+					}
+				
+				}
 			}
 		}
 
@@ -118,14 +138,31 @@ public class Lineage extends EvObject implements Cloneable
 		Element root=new Element("nuccolor");
 		Document doc=new Document(root);
 		for(Map.Entry<String, Particle> entry:particle.entrySet())
-			if(entry.getValue().color!=null)
 				{
-				Color c=entry.getValue().color;
 				Element e=new Element("coloring");
 				e.setAttribute("name",entry.getKey());
-				e.setAttribute("r",""+c.getRed());
-				e.setAttribute("g",""+c.getGreen());
-				e.setAttribute("b",""+c.getBlue());
+				
+				
+				Color cNuc=entry.getValue().overrideNucColor;
+				if(cNuc!=null)
+					{
+					e.setAttribute("r",""+cNuc.getRed());
+					e.setAttribute("g",""+cNuc.getGreen());
+					e.setAttribute("b",""+cNuc.getBlue());
+					}
+				
+				Color c=entry.getValue().overrideMeshColor;
+				if(c!=null)
+					{
+					e.setAttribute("mr",""+c.getRed());
+					e.setAttribute("mg",""+c.getGreen());
+					e.setAttribute("mb",""+c.getBlue());
+					}
+				
+				MeshRenderMode rm=entry.getValue().overrrideRenderMode;
+				if(rm!=null)
+					e.setAttribute("rendermode",rm.toString());
+				
 				root.addContent(e);
 				}
 		EvXmlUtil.writeXmlData(doc, filename);
@@ -789,7 +826,42 @@ public class Lineage extends EvObject implements Cloneable
 		else
 			return nucColor;
 		}
+
 	
+	/**
+	 * Render modes
+	 *
+	 */
+	public static enum MeshRenderMode
+		{
+		HIDDEN ("HIDDEN"),
+		SOLID ("SOLID"),
+		WIREFRAME ("WIREFRAME");
+		
+		private final String type;
+		
+		private MeshRenderMode(String type)
+			{
+			this.type=type;
+			}
+		
+		public static MeshRenderMode fromString(String s)
+			{
+			if(s.equals("HIDDEN"))
+				return HIDDEN;
+			else if(s.equals("SOLID"))
+				return SOLID;
+			else if(s.equals("WIREFRAME"))
+				return WIREFRAME;
+			else 
+				throw new RuntimeException("No such rendermode "+s);
+			}
+		
+		public String toString()
+			{
+			return type;
+			}
+		}
 	
 	/******************************************************************************************************
 	 *                               Class Particle                                                       *
@@ -810,8 +882,6 @@ public class Lineage extends EvObject implements Cloneable
 		public final SortedMap<EvDecimal, ParticlePos> pos=new TreeMap<EvDecimal, ParticlePos>();
 		/** Expression key frames */
 		public final SortedMap<String, LineageExp> exp=new TreeMap<String, LineageExp>();
-		/** Color */
-		public java.awt.Color color=null; //Not stored to disk, but kept here so the color is the same in all windows
 		/** Events */
 		public SortedMap<EvDecimal, String> events=new TreeMap<EvDecimal, String>();
 		
@@ -825,6 +895,13 @@ public class Lineage extends EvObject implements Cloneable
 		public String fate="";
 		/** Description of cell. null if none */
 		public String description=null;
+
+		/**
+		 * Display settings. Not stored to disk, but kept here so the color is the same in all windows
+		 **/
+		public java.awt.Color overrideNucColor=null;
+		public java.awt.Color overrideMeshColor=null;
+		public MeshRenderMode overrrideRenderMode=null;
 		
 		
 		@Override
@@ -848,7 +925,7 @@ public class Lineage extends EvObject implements Cloneable
 			n.overrideStart=overrideStart;
 			n.overrideEnd=overrideEnd;
 			n.fate=fate;
-			n.color=color;
+			n.overrideNucColor=overrideNucColor;
 			n.description=description;
 			return n;
 			}
@@ -948,7 +1025,7 @@ public class Lineage extends EvObject implements Cloneable
 			inter.frameBefore=frameBefore;
 			inter.isEnd = overrideEnd!=null && frame.equals(overrideEnd);  
 			inter.hasParent=!parents.isEmpty();
-			inter.colorNuc=color;
+			inter.colorNuc=overrideNucColor;
 			return inter;
 			}
 		
@@ -1023,7 +1100,7 @@ public class Lineage extends EvObject implements Cloneable
 				inter.frameBefore=frameBefore;
 				inter.frameAfter=frameAfter;
 				inter.hasParent=!parents.isEmpty();
-				inter.colorNuc=color;
+				inter.colorNuc=overrideNucColor;
 
 				//TODO interpolate?
 				inter.pos.ovaloidAxisLength=before.ovaloidAxisLength;
