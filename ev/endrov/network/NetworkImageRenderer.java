@@ -32,10 +32,9 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 	public ImageWindow w;
 	
 
-	private Vector3d forcedStartingPoint=null;
-	private SemiautoNetworkTracer lastAuto=null;
-	private WeakReference<EvStack> lastStack=new WeakReference<EvStack>(null);
-	private Vector3d[] previewPoints;
+	
+	
+	Vector3d[] previewPoints;
 
 	
 	public NetworkImageRenderer(ImageWindow w)
@@ -199,89 +198,6 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 		}
 	
 	
-	public boolean hasTracer()
-		{
-		return lastAuto!=null;
-		}
-	
-	public void setForcedStartingPoint(Vector3d v)
-		{
-		if(!EV.equalsHandlesNull(forcedStartingPoint,v))
-			{
-			forcedStartingPoint=v;
-			lastAuto=null;
-			lastStack=new WeakReference<EvStack>(null);
-			}
-		}
-
-	/**
-	 * Get the automatic tracer and ensure it is up to date
-	 */
-	public SemiautoNetworkTracer getAutoTracer(EvStack stack, Network.NetworkFrame nf)
-		{
-		//Reuse or start anew?
-		SemiautoNetworkTracer auto;
-		if(lastStack.get()==stack && lastAuto!=null)
-			auto=lastAuto;
-		else
-			{
-			lastStack=new WeakReference<EvStack>(stack);
-			lastAuto=auto=new SemiautoNetworkTracer();
-			}
-		
-		//Update costs. If there is a forced starting point then use it, otherwise use the network 
-		System.out.println("Calculating");
-		if(forcedStartingPoint==null)
-			auto.preprocess(new ProgressHandle(), stack, SemiautoNetworkTracer.startingPointsFromFrame(stack, nf));
-		else
-			{
-			System.out.println("--------------- calc from forced point ----");
-			Vector3d v=stack.transformWorldImage(forcedStartingPoint);
-			auto.preprocess(new ProgressHandle(), stack, Collections.singleton(new Vector3i((int)v.x,(int)v.y,(int)v.z)));
-			}
-		System.out.println("Calc done");
-		return auto;
-		}
-	
-	/**
-	 * Remove tracer and associated memory
-	 */
-	public void removeTracer()
-		{
-		lastStack=new WeakReference<EvStack>(null);
-		lastAuto=null;
-		previewPoints=null;
-		forcedStartingPoint=null;
-		}
-
-	
-	
-	/**
-	 * Calculate preview points. This should only be done when the mouse moves as the window might be redrawn for other reasons
-	 * @param e
-	 */
-	public void recalcTrace(MouseEvent e)
-		{
-		SemiautoNetworkTracer auto=lastAuto;
-		
-		EvStack stack=getCurrentStack();
-		if(stack!=null)
-			{
-			Vector3i toPosImage=getMousePosImage(stack, e);
-			List<Vector3i> points=auto.findPathTo(toPosImage.x, toPosImage.y, toPosImage.z);
-			if(points!=null)
-				{
-				previewPoints=new Vector3d[points.size()];
-				for(int i=0;i<points.size();i++)
-					{
-					Vector3i v=points.get(i);
-					previewPoints[i]=stack.transformImageWorld(new Vector3d(v.x,v.y,v.z));
-					}
-				}
-			}
-		else
-			previewPoints=null;
-		}
 	
 	
 	/******************************************************************************************************
@@ -295,7 +211,7 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 			public void newImageWindow(ImageWindow w)
 				{
 				NetworkImageRenderer r=new NetworkImageRenderer(w);
-				w.addImageWindowTool(new NetworkImageTool(w,r));
+				w.addImageWindowTool(new NetworkImageToolTracer(w,r));
 				w.addImageWindowRenderer(r);
 				}
 			});
@@ -303,5 +219,4 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 	
 	
 	
-
 	}

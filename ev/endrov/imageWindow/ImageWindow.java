@@ -556,7 +556,11 @@ public class ImageWindow extends BasicWindow
 		miToolNone.setSelected(currentTool==null);
 		List<JMenuItem> menuItems=new LinkedList<JMenuItem>();
 		for(final ImageWindowTool t:imageWindowTools)
-			menuItems.add(t.getMenuItem());
+			{
+			JMenuItem mi=t.getMenuItem();
+			if(mi!=null)
+				menuItems.add(mi);
+			}
 		Collections.sort(menuItems, new Comparator<JMenuItem>(){
 			public int compare(JMenuItem arg0, JMenuItem arg1)
 				{

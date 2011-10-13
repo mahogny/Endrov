@@ -11,17 +11,21 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.vecmath.*;
 import javax.swing.*;
 
 import endrov.basicWindow.*;
 import endrov.data.EvContainer;
+import endrov.ev.EV;
 import endrov.imageWindow.*;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
+import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 /**
@@ -29,10 +33,128 @@ import endrov.util.Vector3i;
  *
  * @author Johan Henriksson
  */
-public class NetworkImageTool implements ImageWindowTool, ActionListener
+public class NetworkImageToolTracer implements ImageWindowTool, ActionListener
 	{
 	private final ImageWindow w;
 	private final NetworkImageRenderer r;
+		
+	public boolean useAuto=false;
+
+	
+	
+
+
+	public static Vector<NetworkTracerFactory> tracers=new Vector<NetworkTracerFactory>();
+	static
+		{
+		tracers.add(NetworkTracerSemiauto.factory);
+		}
+	private NetworkTracerFactory tracerFactory=NetworkTracerSemiauto.factory;
+	
+	private Vector3d forcedStartingPoint=null;
+	private NetworkTracerInterface lastAuto=null;
+	private WeakReference<EvStack> lastStack=new WeakReference<EvStack>(null);
+
+	
+
+	public boolean hasTracer()
+		{
+		return lastAuto!=null;
+		}
+	
+	public void setForcedStartingPoint(Vector3d v)
+		{
+		if(!EV.equalsHandlesNull(forcedStartingPoint,v))
+			{
+			forcedStartingPoint=v;
+			lastAuto=null;
+			lastStack=new WeakReference<EvStack>(null);
+			}
+		}
+
+	
+	
+	/**
+	 * Get the automatic tracer and ensure it is up to date. If no tracer is enabled then returns null
+	 */
+	public NetworkTracerInterface getTracer(EvStack stack, Network.NetworkFrame nf)
+		{
+		//Reuse or start anew?
+		NetworkTracerInterface auto;
+		if(lastStack.get()==stack && lastAuto!=null)
+			auto=lastAuto;
+		else
+			{
+			if(tracerFactory==null)
+				return null;
+			else
+				{
+				lastStack=new WeakReference<EvStack>(stack);
+				lastAuto=auto=tracerFactory.create();
+				}
+			}
+		
+		//Update costs. If there is a forced starting point then use it, otherwise use the network 
+		System.out.println("Calculating");
+		if(forcedStartingPoint==null)
+			auto.preprocess(new ProgressHandle(), stack, NetworkTracerInterface.startingPointsFromFrame(stack, nf));
+		else
+			{
+			System.out.println("--------------- calc from forced point ----");
+			Vector3d v=stack.transformWorldImage(forcedStartingPoint);
+			auto.preprocess(new ProgressHandle(), stack, Collections.singleton(new Vector3i((int)v.x,(int)v.y,(int)v.z)));
+			}
+		System.out.println("Calc done");
+		return auto;
+		}
+	
+	/**
+	 * Remove tracer and associated memory
+	 */
+	public void removeTracer()
+		{
+		lastStack=new WeakReference<EvStack>(null);
+		lastAuto=null;
+		r.previewPoints=null;
+		forcedStartingPoint=null;
+		}
+
+	
+	
+	/**
+	 * Calculate preview points. This should only be done when the mouse moves as the window might be redrawn for other reasons
+	 * @param e
+	 */
+	public void recalcTrace(MouseEvent e)
+		{
+		NetworkTracerInterface auto=lastAuto;
+		
+		EvStack stack=r.getCurrentStack();
+		if(stack!=null)
+			{
+			Vector3i toPosImage=r.getMousePosImage(stack, e);
+			List<Vector3i> points=auto.findPathTo(toPosImage.x, toPosImage.y, toPosImage.z);
+			if(points!=null)
+				{
+				r.previewPoints=new Vector3d[points.size()];
+				for(int i=0;i<points.size();i++)
+					{
+					Vector3i v=points.get(i);
+					r.previewPoints[i]=stack.transformImageWorld(new Vector3d(v.x,v.y,v.z));
+					}
+				}
+			}
+		else
+			r.previewPoints=null;
+		}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	private WeakReference<Network> editingObject=new WeakReference<Network>(null);
 	private void setEditObject(Network lin)
@@ -40,7 +162,7 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 		editingObject=new WeakReference<Network>(lin);
 		}
 	
-	public NetworkImageTool(final ImageWindow w, NetworkImageRenderer r)
+	public NetworkImageToolTracer(final ImageWindow w, NetworkImageRenderer r)
 		{
 		this.w=w;
 		this.r=r;
@@ -49,8 +171,19 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 	
 	
 	
+	
 	private void fillMenu(JComponent menu)
 		{
+		
+		final JCheckBoxMenuItem miAuto=new JCheckBoxMenuItem("Semi-automatic",useAuto);
+		miAuto.addActionListener(new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				useAuto=miAuto.isSelected();
+				BasicWindow.updateWindows();
+				}
+			});
 		
 		
 		JMenuItem miExportToSWC=new JMenuItem("Export to SWC");
@@ -105,7 +238,7 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 				Network lin=new Network();
 				wims.get().addMetaObject(lin);
 				setEditObject(lin);
-				w.setTool(NetworkImageTool.this);
+				w.setTool(NetworkImageToolTracer.this);
 				}
 		});
 		menu.add(miNew);
@@ -127,11 +260,23 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 	
 	public void deselected()
 		{
-		r.removeTracer();
+		removeTracer();
 		}
 
-
 	public void mouseClicked(MouseEvent e, Component invoker)
+		{
+		if(useAuto)
+			mouseClickedTrace(e, invoker);
+		else
+			mouseClickedManual(e, invoker);
+		}
+	
+
+	public void mouseClickedManual(MouseEvent e, Component invoker)
+		{
+		}
+
+	public void mouseClickedTrace(MouseEvent e, Component invoker)
 		{
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
@@ -155,14 +300,14 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 					nf.putNewPoint(new Network.Point(posW.x,posW.y, posW.z, null));
 					
 					//Update tracer
-					r.getAutoTracer(stack, nf);
+					getTracer(stack, nf);
 					}
 				else
 					{
 					//TODO do not allow this to be done unless thread has calculated the tracer already
 					
 
-					SemiautoNetworkTracer auto=r.getAutoTracer(stack, nf);
+					NetworkTracerInterface auto=getTracer(stack, nf);
 					
 					Vector3i toPosImage=r.getMousePosImage(stack, e);
 					
@@ -183,8 +328,8 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 					nf.segments.add(segment);
 					
 					//Update tracer
-					r.setForcedStartingPoint(null);
-					r.getAutoTracer(stack, nf);
+					setForcedStartingPoint(null);
+					getTracer(stack, nf);
 					}
 				
 				
@@ -218,8 +363,8 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 						EvStack stack=r.getCurrentStack();
 						if(stack!=null)
 							{
-							r.setForcedStartingPoint(new Vector3d(xy.x,xy.y,z));
-							r.getAutoTracer(stack, nf);
+							setForcedStartingPoint(new Vector3d(xy.x,xy.y,z));
+							getTracer(stack, nf);
 							w.repaint();
 							}
 						}
@@ -235,8 +380,8 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 						EvStack stack=r.getCurrentStack();
 						if(stack!=null)
 							{
-							r.setForcedStartingPoint(null);
-							r.getAutoTracer(stack, nf);
+							setForcedStartingPoint(null);
+							getTracer(stack, nf);
 							w.repaint();
 							}
 						}
@@ -271,11 +416,25 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 		
 		}
 
+	
 	public void mouseMoved(MouseEvent e, int dx, int dy)
 		{
-		if(r.hasTracer())
+		if(useAuto)
+			mouseMovedTrace(e, dx, dy);
+		else
+			mouseMovedManual(e, dx, dy);
+		}
+
+	public void mouseMovedManual(MouseEvent e, int dx, int dy)
+		{
+		
+		}
+	
+	public void mouseMovedTrace(MouseEvent e, int dx, int dy)
+		{
+		if(hasTracer())
 			{
-			r.recalcTrace(e);
+			recalcTrace(e);
 			w.repaint();
 			}
 		}

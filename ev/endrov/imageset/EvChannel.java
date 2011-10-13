@@ -194,7 +194,6 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 	/** Displacement um */
 	public Vector3d defaultDisp=new Vector3d();
-	//public double defaultDispX = 0, defaultDispY = 0, defaultDispZ = 0;
 
 	/** Resolution um/px */
 	public Double defaultResX = null, defaultResY = null, defaultResZ = null;
