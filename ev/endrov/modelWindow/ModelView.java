@@ -26,6 +26,7 @@ import endrov.coordinateSystem.CoordinateSystem;
 import endrov.ev.*;
 import endrov.modelWindow.TransparentRender.RenderState;
 import endrov.modelWindow.gl.GLCamera;
+import endrov.modelWindow.gl.GLMaterial;
 import endrov.modelWindow.gl.GLMeshVBO;
 import endrov.util.EvDecimal;
 import endrov.util.EvMathUtil;
@@ -256,6 +257,7 @@ public class ModelView extends GLJPanel //GLCanvas
 			checkerr(gl);
 			
 	    renderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 72));
+
 
 	    //Number of clipping planes
 	    int[] queryArr=new int[1];
@@ -765,7 +767,8 @@ public class ModelView extends GLJPanel //GLCanvas
 	/**
 	 * Render text in 3D
 	 */
-	public void renderString(GL2 gl, List<TransparentRender> transparentRenderers, final float textScaleFactor, final String text)
+	public void renderString(GL2 gl, List<TransparentRender> transparentRenderers, final float textScaleFactor, final String text, 
+			final Color color)
 		{
 		final float[] matarray=new float[16]; //[col][row]
 		gl.glGetFloatv(GL2.GL_MODELVIEW_MATRIX, matarray, 0);
@@ -779,6 +782,8 @@ public class ModelView extends GLJPanel //GLCanvas
 			gl.glPushAttrib(GL2.GL_ENABLE_BIT);
 			gl.glPushMatrix();
 			gl.glLoadMatrixf(matarray, 0);
+
+			thisRenderer.setColor(color);
 			
 			thisRenderer.begin3DRendering();
 

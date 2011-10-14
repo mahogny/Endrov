@@ -72,6 +72,14 @@ public class Network extends EvObject
 			this.r = r;
 			}
 
+		public Point(Point p)
+			{
+			this.x=p.x;
+			this.y=p.y;
+			this.z=p.z;
+			this.r=p.r;
+			}
+		
 		public Vector3d toVector3d()
 			{
 			return new Vector3d(x,y,z);
@@ -81,6 +89,11 @@ public class Network extends EvObject
 		public int hashCode()
 			{
 			return (int)(1000*(x+y+z));
+			}
+		
+		public Point clone()
+			{
+			return new Point(this);
 			}
 		}
 	
@@ -97,6 +110,14 @@ public class Network extends EvObject
 		
 		public String type;
 		//TODO 
+		
+		public Segment clone()
+			{
+			Segment s=new Segment();
+			s.type=type;
+			s.points=new int[points.length];
+			return s;
+			}
 		}
 	
 	public static class NetworkFrame
@@ -129,6 +150,16 @@ public class Network extends EvObject
 			return putNewPoint(p);
 			}
 		
+		
+		public NetworkFrame clone()
+			{
+			NetworkFrame nf=new NetworkFrame();
+			for(int id:points.keySet())
+				nf.points.put(id, points.get(id).clone());
+			for(Segment s:segments)
+				nf.segments.add(s.clone());
+			return nf;
+			}
 		}
 
 	

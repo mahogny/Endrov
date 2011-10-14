@@ -116,6 +116,16 @@ public class GLMaterialSolid implements GLMaterial
 		
 		}
 	
+	
+	public static GLMaterialSolid fromColor(float colR, float colG, float colB)
+		{
+		GLMaterialSolid m=new GLMaterialSolid(
+				new float[]{colR, colG, colB}, //diffuse
+				new float[]{colR*0.01f, colG*0.01f, colB*0.01f}, //specular
+				new float[]{0,0,0}, //ambient
+				0.1f);
+		return m;
+		}
 	}
 	
 

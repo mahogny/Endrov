@@ -5,6 +5,7 @@
  */
 package endrov.chromacountkj;
 
+import java.awt.Color;
 import java.util.*;
 
 import javax.media.opengl.*;
@@ -14,6 +15,7 @@ import org.jdom.Element;
 
 import endrov.data.EvObject;
 import endrov.modelWindow.*;
+import endrov.modelWindow.gl.GLMaterialSolid;
 import endrov.util.EvDecimal;
 
 
@@ -23,6 +25,8 @@ import endrov.util.EvDecimal;
  */
 public class ChromaCountKJModelExtension implements ModelWindowExtension
 	{
+	
+	private static final Color colorText=Color.BLUE;
   
   public void newModelWindow(ModelWindow w)
 		{
@@ -102,7 +106,6 @@ public class ChromaCountKJModelExtension implements ModelWindowExtension
 		/**
 		 * Render label of one nucleus
 		 */
-		
 		private void renderOne(GL2 gl, ChromaCountKJ ia,List<TransparentRender> transparentRenderers)
 			{
 			//Save world coordinate
@@ -122,7 +125,7 @@ public class ChromaCountKJModelExtension implements ModelWindowExtension
 			//3d text at all? overlay rendering should be faster
 			float size=1; //(float)(0.005*nuc.pos.r) //TODO trouble! relate to camera distance 
 			String s=""+ia.group;
-			w.view.renderString(gl, transparentRenderers, size, s);
+			w.view.renderString(gl, transparentRenderers, size, s, colorText);
 
 
 			//Go back to world coordinates

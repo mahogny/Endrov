@@ -8,18 +8,15 @@ package endrov.network;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-import java.lang.ref.WeakReference;
 import java.util.*;
 
 import javax.vecmath.*;
 
 
-import endrov.ev.EV;
 import endrov.imageWindow.*;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
-import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
 
 /**
@@ -178,6 +175,12 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 		
 		Vector3d toPosImage=stack.transformWorldImage(new Vector3d(pressPosWorldXY.x, pressPosWorldXY.y, pressPosWorldZ));
 		return new Vector3i((int)toPosImage.x, (int)toPosImage.y, (int)toPosImage.z);
+		}
+	
+	Vector3d getMousePosWorld(MouseEvent e)
+		{
+		Vector2d u=w.transformVectorS2W(new Vector2d(e.getX(),e.getY()));
+		return new Vector3d(u.x, u.y, w.getZ().doubleValue());
 		}
 
 	/**

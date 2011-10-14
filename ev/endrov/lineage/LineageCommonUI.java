@@ -39,6 +39,7 @@ import endrov.data.EvSelection;
 import endrov.data.GuiEvDataIO;
 import endrov.ev.EvLog;
 import endrov.lineage.Lineage.InterpolatedParticle;
+import endrov.lineage.Lineage.MeshRenderMode;
 import endrov.lineage.Lineage.Particle;
 import endrov.lineage.expression.ParticleDialogIntegrate;
 import endrov.lineage.util.LineageMergeUtil;
@@ -73,6 +74,13 @@ public class LineageCommonUI implements ActionListener
 	public JMenuItem miPrintPos=new JMenuItem("Print positions");  
 	public JMenuItem miPrintCountParticlesAtFrame=new JMenuItem("Print particle count in frame");  
 	public JMenuItem miPrintCountParticlesUpToFrame=new JMenuItem("Print particle count up to frame");  
+
+	
+	public JMenu miThisMeshRender=new JMenu("Mesh render mode");
+	public JMenuItem miThisMeshRenderNull=new JMenuItem("<default>");
+	public JMenuItem miThisMeshRenderOff=new JMenuItem("Hidden");
+	public JMenuItem miThisMeshRenderSolid=new JMenuItem("Solid");
+	public JMenuItem miThisMeshRenderWireframe=new JMenuItem("Wireframe");
 
 	private JMenuItem miIntegrate=new JMenuItem("Integrate expression");
 	
@@ -123,6 +131,10 @@ public class LineageCommonUI implements ActionListener
 		miSelectParents.addActionListener(this);
 		miSelectAll.addActionListener(this);
 		miSelectAllSameName.addActionListener(this);
+		miThisMeshRenderNull.addActionListener(this);
+		miThisMeshRenderOff.addActionListener(this);
+		miThisMeshRenderSolid.addActionListener(this);
+		miThisMeshRenderWireframe.addActionListener(this);
 
 		miIntegrate.addActionListener(this);
 		//miMapModel.addActionListener(this);
@@ -139,6 +151,14 @@ public class LineageCommonUI implements ActionListener
 		menuLineage.add(miMergeParticles);
 		menuLineage.add(miRename);
 		menuLineage.add(LineageCommonUI.makeSetColorMenu());
+		
+		
+		menuLineage.add(miThisMeshRender);
+		
+
+		
+		
+		
 		menuLineage.add(miSetDesc);
 		menuLineage.add(miSetFate);
 		menuLineage.add(miSetOverrideStartFrame);
@@ -154,6 +174,10 @@ public class LineageCommonUI implements ActionListener
 		menuLineage.add(miIntegrate);
 		//menuLineage.add(miMapModel);
 		
+		miThisMeshRender.add(miThisMeshRenderNull);
+		miThisMeshRender.add(miThisMeshRenderOff);
+		miThisMeshRender.add(miThisMeshRenderSolid);
+		miThisMeshRender.add(miThisMeshRenderWireframe);
 
 
 		if(addAccel)
@@ -248,6 +272,14 @@ public class LineageCommonUI implements ActionListener
 			{
 			new ParticleDialogIntegrate();
 			}
+		else if(e.getSource()==miThisMeshRenderNull)
+			setThisMeshRenderMode(null);
+		else if(e.getSource()==miThisMeshRenderOff)
+			setThisMeshRenderMode(Lineage.MeshRenderMode.HIDDEN);
+		else if(e.getSource()==miThisMeshRenderSolid)
+			setThisMeshRenderMode(Lineage.MeshRenderMode.SOLID);
+		else if(e.getSource()==miThisMeshRenderWireframe)
+			setThisMeshRenderMode(Lineage.MeshRenderMode.WIREFRAME);
 		/*else if(e.getSource()==miMapModel)
 			{
 			mapModel();
@@ -255,6 +287,13 @@ public class LineageCommonUI implements ActionListener
 			
 		}
 	
+	
+	public void setThisMeshRenderMode(MeshRenderMode rm)
+		{
+		for(LineageSelParticle sel:LineageCommonUI.getSelectedParticles())
+			sel.getParticle().overrrideRenderMode=rm;
+		}
+
 	
 	/**
 		 * Selection of particles by mouse and keyboard

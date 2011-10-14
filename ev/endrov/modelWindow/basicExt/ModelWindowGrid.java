@@ -5,6 +5,7 @@
  */
 package endrov.modelWindow.basicExt;
 
+import java.awt.Color;
 import java.awt.event.*;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.ModelWindowExtension;
 import endrov.modelWindow.ModelWindowHook;
 import endrov.modelWindow.TransparentRender;
+import endrov.modelWindow.gl.GLMaterialSolid;
 import endrov.util.EvDecimal;
 
 /**
@@ -183,7 +185,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 					{
 					gl.glPushMatrix();
 					gl.glTranslated(0, i*gsize, 0);
-					w.view.renderString(gl, transparentRenderers, (float)(gsize*0.004), ""+i*gsize);
+					w.view.renderString(gl, transparentRenderers, (float)(gsize*0.004), ""+i*gsize, Color.BLUE);
 					gl.glPopMatrix();
 					}
 			}

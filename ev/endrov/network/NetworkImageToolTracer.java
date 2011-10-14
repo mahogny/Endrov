@@ -24,6 +24,7 @@ import endrov.data.EvContainer;
 import endrov.ev.EV;
 import endrov.imageWindow.*;
 import endrov.imageset.EvStack;
+import endrov.network.Network.NetworkFrame;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
@@ -407,9 +408,60 @@ public class NetworkImageToolTracer implements ImageWindowTool, ActionListener
 	
 	public void mousePressed(MouseEvent e)
 		{
-	
+		if(!useAuto)
+			mousePressedManual(e);
 		}
 
+	public void mousePressedManual(MouseEvent e)
+		{
+		final EvDecimal frame=w.getFrame();
+		final Network network=editingObject.get();
+		if(network!=null)
+			{
+			
+			}
+		
+		final Vector3d pos=r.getMousePosWorld(e);
+		//if(r.previewPoints!=null)
+
+		NetworkFrame nf=network.frame.get(frame);
+		final Integer closestID=getClosestPointID(nf, pos);
+		
+		//TODO could add an override start pos here
+			
+		new UndoOpNetworkReplaceFrame(frame, network, "Create point")
+			{
+			public void redo()
+				{
+				Network.Point p=new Network.Point(pos,null);
+				
+				//Add the point
+				NetworkFrame nf=network.frame.get(frame);
+				int newPointID=nf.putNewPoint(p);
+				
+				//Link to previous point
+				if(closestID==null)
+					{
+					Network.Segment s=new Network.Segment();
+					s.points=new int[]{closestID, newPointID};
+					nf.segments.add(s);
+					}
+				BasicWindow.updateWindows();
+				}
+			}.execute();
+		
+		
+
+			//Focus on this point, allow user to set radius
+			
+			//Let radius=0 be radius=null
+			
+			//To allow later resizing, use the same mechanism
+			
+			
+			// TODO Auto-generated method stub
+			
+		}
 	
 	public void mouseReleased(MouseEvent e)
 		{
@@ -425,9 +477,62 @@ public class NetworkImageToolTracer implements ImageWindowTool, ActionListener
 			mouseMovedManual(e, dx, dy);
 		}
 
+	
+	public Integer getClosestPointID(Network.NetworkFrame nf, Vector3d curPos)
+		{
+		Integer id=null;
+		double closestDist2=Double.MAX_VALUE;
+		for(Map.Entry<Integer, Network.Point> e:nf.points.entrySet())
+			{
+			Network.Point p=e.getValue();
+			double ddx=p.x-curPos.x;
+			double ddy=p.y-curPos.y;
+			double ddz=p.z-curPos.z;
+			double dist2=ddx*ddx+ddy*ddy+ddz*ddz;
+			if(dist2<closestDist2)
+				{
+				id=e.getKey();
+				closestDist2=dist2;
+				}
+			}
+		return id;
+		}
+	
 	public void mouseMovedManual(MouseEvent e, int dx, int dy)
 		{
+		r.previewPoints=null;
 		
+		EvDecimal frame=w.getFrame();
+		Network editNetwork=editingObject.get();
+		Network.NetworkFrame nf=editNetwork.frame.get(frame);
+		if(nf==null)
+			editNetwork.frame.put(frame,nf=new Network.NetworkFrame());
+		
+		if(!nf.points.isEmpty())
+			{
+			//Find closest point
+			Vector3d curPos=r.getMousePosWorld(e);
+			Network.Point closestPoint=null;
+			double closestDist2=Double.MAX_VALUE;
+			for(Network.Point p:nf.points.values())
+				{
+				double ddx=p.x-curPos.x;
+				double ddy=p.y-curPos.y;
+				double ddz=p.z-curPos.z;
+				double dist2=ddx*ddx+ddy*ddy+ddz*ddz;
+				if(dist2<closestDist2)
+					{
+					closestPoint=p;
+					closestDist2=dist2;
+					}
+				}
+			if(closestPoint!=null)
+				{
+				//From-To
+				r.previewPoints=new Vector3d[]{closestPoint.toVector3d(), curPos};
+				}
+			}
+		w.repaint();
 		}
 	
 	public void mouseMovedTrace(MouseEvent e, int dx, int dy)

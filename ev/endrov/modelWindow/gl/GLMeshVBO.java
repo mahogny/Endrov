@@ -18,6 +18,7 @@ public class GLMeshVBO
 	
 	public static class MeshRenderSettings
 		{
+		public boolean drawSolid=true;
 		public boolean drawNormals=false;
 		public boolean drawWireframe=false;
 		public EvColor outlineColor=null;
@@ -42,7 +43,8 @@ public class GLMeshVBO
 		gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
 		gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);  
 	
-		if(!useVBO/*vertices!=null*/)
+
+		if(!useVBO)
 			{
 			//Use vertex arrays
 			vertices.rewind();
@@ -62,28 +64,25 @@ public class GLMeshVBO
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normalsVBO);
 			gl.glNormalPointer(GL.GL_FLOAT, 0, 0);
 			}
-	
-		
 
 
 
-		
 
-		gl.glEnable(GL2.GL_CULL_FACE);
-	
-		material.set(gl);
-		
-		
-		if(settings.drawWireframe)
+
+		if(settings.drawSolid)
 			{
-			for(int i=0;i<vertexCount;i+=3)
-				gl.glDrawArrays(GL.GL_LINE_LOOP, i, 3);
+			gl.glEnable(GL2.GL_CULL_FACE);
+			material.set(gl);
+			if(settings.drawWireframe)
+				{
+				for(int i=0;i<vertexCount;i+=3)
+					gl.glDrawArrays(GL.GL_LINE_LOOP, i, 3);
+				}
+			else
+				{
+				gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertexCount);  
+				}
 			}
-		else
-			{
-			gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertexCount);  
-			}
-		
 	
 		gl.glDisable(GL2.GL_CULL_FACE);
 		gl.glDisable(GL2.GL_LIGHTING);
@@ -96,6 +95,17 @@ public class GLMeshVBO
 			gl.glDisable(GL2.GL_LIGHTING);
 			gl.glEnable(GL2.GL_CULL_FACE);
 
+			
+			gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE, new float[]{1.0f,1.0f,1.0f}, 0);
+			gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, new float[]{1.0f,1.0f,1.0f}, 0);
+			gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT, new float[]{1.0f,1.0f,1.0f}, 0);
+			gl.glMaterialf(GL2.GL_FRONT_AND_BACK, GL2.GL_SHININESS, 0);
+
+			
+			
+			
+			
+			
 			gl.glColor3d((float)settings.outlineColor.getRedDouble(),(float)settings.outlineColor.getGreenDouble(),(float)settings.outlineColor.getBlueDouble());
 			gl.glLineWidth(settings.outlineWidth);
 			//Back-facing polygons as wireframe
