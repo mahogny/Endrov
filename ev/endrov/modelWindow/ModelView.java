@@ -26,7 +26,6 @@ import endrov.coordinateSystem.CoordinateSystem;
 import endrov.ev.*;
 import endrov.modelWindow.TransparentRender.RenderState;
 import endrov.modelWindow.gl.GLCamera;
-import endrov.modelWindow.gl.GLMaterial;
 import endrov.modelWindow.gl.GLMeshVBO;
 import endrov.util.EvDecimal;
 import endrov.util.EvMathUtil;

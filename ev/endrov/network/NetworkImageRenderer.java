@@ -214,7 +214,7 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 			public void newImageWindow(ImageWindow w)
 				{
 				NetworkImageRenderer r=new NetworkImageRenderer(w);
-				w.addImageWindowTool(new NetworkImageToolTracer(w,r));
+				w.addImageWindowTool(new NetworkImageTool(w,r));
 				w.addImageWindowRenderer(r);
 				}
 			});

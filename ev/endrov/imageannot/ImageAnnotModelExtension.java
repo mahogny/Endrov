@@ -15,7 +15,6 @@ import org.jdom.Element;
 
 import endrov.data.EvObject;
 import endrov.modelWindow.*;
-import endrov.modelWindow.gl.GLMaterialSolid;
 import endrov.util.EvDecimal;
 
 

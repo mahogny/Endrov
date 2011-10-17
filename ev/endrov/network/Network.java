@@ -141,13 +141,22 @@ public class Network extends EvObject
 		
 		public int reusePoint(Point p)
 			{
+			Integer id=getPointIDByPos(p.x, p.y, p.z);
+			if(id!=null)
+				return id;
+			else
+				return putNewPoint(p);
+			}
+		
+		public Integer getPointIDByPos(double x, double y, double z)
+			{
 			for(Map.Entry<Integer, Point> e:points.entrySet())
 				{
 				Point op=e.getValue();
-				if(op.x==p.x && op.y==p.y && op.z==p.z)
+				if(op.x==x && op.y==y && op.z==z)
 					return e.getKey();
 				}
-			return putNewPoint(p);
+			return null;
 			}
 		
 		
