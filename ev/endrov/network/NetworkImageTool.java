@@ -208,6 +208,7 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 				BasicWindow.updateWindows();
 				}
 			});
+		menu.add(miAuto);
 		
 		
 		JMenuItem miExportToSWC=new JMenuItem("Export to SWC");
@@ -253,7 +254,7 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 				miEdit.setSelected(editingObject.get()==e.getValue());
 				miEdit.addActionListener(this);
 				menu.add(miEdit);
-				}		
+				}
 		
 		JMenuItem miNew=new JMenuItem("New object");
 		miNew.addActionListener(new ActionListener(){
@@ -576,6 +577,8 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 				final Vector3d pos=r.getMousePosWorld(e);
 				//if(r.previewPoints!=null)
 
+				System.out.println("pos world "+pos);
+				
 				NetworkFrame nf=network.frame.get(frame);
 				//final Integer closestID=getClosestPointID(nf, pos);
 				

@@ -137,7 +137,9 @@ public class NetworkIntensityRadiusHistogram
 						if(u>=0 && u<=1)
 							dist2=line.getStraightDist2(pos, u);
 						else
-							dist2=line.getDist2Endpoints(pos);
+							dist2=line.getDist2Endpoints(pos);   //TODO maybe not do this if it is not an interior point?
+						
+						
 						
 						if(dist2<closestDist2)
 							closestDist2=dist2;

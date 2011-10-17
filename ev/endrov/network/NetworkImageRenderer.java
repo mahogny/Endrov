@@ -179,7 +179,7 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 	
 	Vector3d getMousePosWorld(MouseEvent e)
 		{
-		Vector2d u=w.transformVectorS2W(new Vector2d(e.getX(),e.getY()));
+		Vector2d u=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 		return new Vector3d(u.x, u.y, w.getZ().doubleValue());
 		}
 

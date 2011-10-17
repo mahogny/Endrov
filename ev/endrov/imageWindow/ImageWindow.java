@@ -1109,13 +1109,20 @@ public class ImageWindow extends BasicWindow
 		return imagePanel.transformPointW2S(u);
 		}
 		
-	/** Transform screen coordinate to world coordinate */
+	/** 
+	 * Transform screen coordinate to world coordinate 
+	 * NOTE: This means panning is not included! 
+	 */
 	public Vector2d transformPointS2W(Vector2d u)
 		{
 		return imagePanel.transformPointS2W(u);
 		}
 
-	/** Transform screen vector to world vector */
+	/**
+	 * Transform screen vector to world vector.
+	 * NOTE: This means panning is not included! 
+	 * 
+	 */
 	public Vector2d transformVectorS2W(Vector2d u)
 		{
 		return imagePanel.transformVectorS2W(u);
