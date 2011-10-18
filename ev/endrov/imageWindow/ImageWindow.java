@@ -64,6 +64,7 @@ public class ImageWindow extends BasicWindow
 
 	private static ImageIcon iconLabelBrightness=new ImageIcon(FrameControlImage.class.getResource("labelBrightness.png"));
 	private static ImageIcon iconLabelContrast=new ImageIcon(FrameControlImage.class.getResource("labelContrast.png"));
+	private static ImageIcon iconLabelFitRange=new ImageIcon(FrameControlImage.class.getResource("labelFitRange.png"));
 	
 	
 	public static int snapDistance=10;
@@ -223,16 +224,14 @@ public class ImageWindow extends BasicWindow
 		static final long serialVersionUID=0;
 		
 		private final JRadioButton rSelect=new JRadioButton();
-		//private final EvComboObjectOne<EvChannel> comboChannel=new EvComboObjectOne<EvChannel>(new EvChannel(), true, false); 
 		private final EvComboChannel comboChannel=new EvComboChannel(false,false);
-		//private final JSlider sliderContrast=new JSlider(-10000,10000,0);
-		//private final JSlider sliderBrightness=new JSlider(-200,200,0);
 		
 		private final SnapBackSlider sliderContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -10000,10000);
 		private final SnapBackSlider sliderBrightness=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -200,200);
 		
 		private final EvComboColor comboColor=new EvComboColor(false, channelColorList, EvColor.white);
 		private final JImageButton bRemoveChannel=new JImageButton(BasicIcon.iconRemove,"Remove channel");
+		private final JImageButton bFitRange=new JImageButton(iconLabelFitRange,"Fit range");
 		
 		
 		
@@ -261,15 +260,15 @@ public class ImageWindow extends BasicWindow
 			add(EvSwingUtil.layoutLCR(
 					null,
 					brightnessPanel,
-					bRemoveChannel));
+					EvSwingUtil.layoutEvenHorizontal(bFitRange, bRemoveChannel)
+					));
 
 			
 			
 			comboColor.addActionListener(this);
-			//sliderContrast.addChangeListener(this);
-			//sliderBrightness.addChangeListener(this);
 			comboChannel.addActionListener(this);
 			bRemoveChannel.addActionListener(this);
+			bFitRange.addActionListener(this);
 			
 			sliderContrast.addSnapListener(this);
 			sliderBrightness.addSnapListener(this);
@@ -307,8 +306,42 @@ public class ImageWindow extends BasicWindow
 				updateImagePanel();
 			else if(e.getSource()==bRemoveChannel)
 				removeChannel(this);
+			else if(e.getSource()==bFitRange)
+				fitRange();
 			else
 				updateImagePanel();
+			}
+		
+		public void fitRange()
+			{
+			int index=channelWidget.indexOf(this);
+			
+			EvImage evim=imagePanel.images.get(index).getImage();
+			if(evim!=null)
+				{
+				//Find min and max intensity
+				EvPixels p=evim.getPixels(null);
+				double[] arr=p.convertToDouble(true).getArrayDouble();
+				int w=p.getWidth();
+				int h=p.getHeight();
+				double lowest=Double.MAX_VALUE;
+				double highest=Double.MIN_VALUE;
+				for(int i=0;i<w*h;i++)
+					{
+					if(arr[i]<lowest)
+						lowest=arr[i];
+					if(arr[i]>highest)
+						highest=arr[i];
+					}
+				
+				//Calculate optimal settings
+				contrast=255.0/(highest-lowest);
+				brightness=-lowest*contrast;
+				
+				System.out.println(contrast+"   "+brightness);
+				
+				updateImagePanel();
+				}
 			}
 		
 		public void stateChanged(ChangeEvent e)
@@ -319,13 +352,11 @@ public class ImageWindow extends BasicWindow
 		public double getContrast()
 			{
 			return contrast;
-//			return Math.pow(2,sliderContrast.getValue()/1000.0);
 			}
 		
 		public double getBrightness()
 			{
 			return brightness;
-//			return sliderBrightness.getValue();
 			}
 		
 		public EvColor getColor()

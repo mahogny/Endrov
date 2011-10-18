@@ -27,10 +27,6 @@ import endrov.util.Vector3i;
 public class NetworkImageRenderer implements ImageWindowRenderer
 	{
 	public ImageWindow w;
-	
-
-	
-	
 	Vector3d[] previewPoints;
 
 	
@@ -78,10 +74,13 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 						Vector2d pos=w.transformPointW2S(new Vector2d(p.x,p.y));
 						int x=(int)pos.x;
 						int y=(int)pos.y;
-						
-						int sr=(int)w.scaleW2s(pr);
-						
+						int sr=(int)pr;
 						g.drawOval(x-sr, y-sr, sr*2+1, sr*2+1);
+						if(p.z==w.getZ().doubleValue())
+							{
+							sr++;
+							g.drawOval(x-sr, y-sr, sr*2+1, sr*2+1);
+							}
 						}
 
 					}
@@ -138,7 +137,7 @@ public class NetworkImageRenderer implements ImageWindowRenderer
 	
 	
 	/**
-	 * Project sphere onto plane
+	 * Project sphere onto plane, returns size in pixels
 	 * @param r Radius
 	 * @param z Relative z
 	 * @return Projected radius in pixels

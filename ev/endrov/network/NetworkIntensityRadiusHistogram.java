@@ -14,9 +14,11 @@ import endrov.imageset.EvStack;
  */
 public class NetworkIntensityRadiusHistogram
 	{
-	public double[] hist;
-	public double histdr;
-
+	public double[] intensity;
+	public double intensityDr;
+	
+	public DoubleHistogram histIntensity;
+	
 	private static class Line
 		{
 		private double x1, y1, z1;
@@ -44,8 +46,6 @@ public class NetworkIntensityRadiusHistogram
 		
 		public double getU(Vector3d p)
 			{
-			// http://paulbourke.net/geometry/pointline/
-			//double u=((p.x-x1)*(x2-x1) + (p.y-y1)*(y2-y1) + (p.z-z1)*(z2-z1))/dist12;
 			return ((p.x-x1)*dx + (p.y-y1)*dy + (p.z-z1)*dz)/dist2;
 			}
 		
@@ -114,9 +114,13 @@ public class NetworkIntensityRadiusHistogram
 		
 		//How to discretize?
 		double maxr2=maxRadius*maxRadius;
-		double[] histSum=new double[histBins];
-		int[] histCount=new int[histBins];
-		double histdr=maxr2/histBins;
+		double[] intRadSum=new double[histBins];
+		int[] intRadCount=new int[histBins];
+		double histdr=maxRadius/histBins;
+		
+		
+		DoubleHistogram histIntensity=new DoubleHistogram();
+		//Map<Double,Integer> histIntensity=new HashMap<Double, Integer>();
 		
 		//For all pixels
 		for(int az=0;az<d;az++)
@@ -139,28 +143,42 @@ public class NetworkIntensityRadiusHistogram
 						else
 							dist2=line.getDist2Endpoints(pos);   //TODO maybe not do this if it is not an interior point?
 						
-						
-						
 						if(dist2<closestDist2)
 							closestDist2=dist2;
 						}
 					
-					//Sum up histogram
+					//Sum up
 					if(closestDist2<maxr2)
 						{
+						double intensity=arr[ay*w+ax];
+
+						//Intensity(r)
 						double dist=Math.sqrt(closestDist2);
 						int bin=(int)(dist/histdr);
-						histCount[bin]++;
-						histSum[bin]+=arr[ay*w+ax];
+						intRadCount[bin]++;
+						intRadSum[bin]+=intensity;
+						
+						//Histogram
+						histIntensity.count(intensity);
 						}
 					}
 			}
 		
 		//Create histogram
-		hist=new double[histBins];
+		intensity=new double[histBins];
 		for(int i=0;i<histBins;i++)
-			hist[i]=histSum[i]/histCount[i];
-		this.histdr=histdr;
+			intensity[i]=intRadSum[i]/intRadCount[i];
+		this.intensityDr=histdr;
+		
+		this.histIntensity=histIntensity;
 		}
+	
+	
+	
+	
+	//TODO batching for many frames?
+	
+	
+		
 	
 	}

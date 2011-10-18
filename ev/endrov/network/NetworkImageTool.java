@@ -14,6 +14,7 @@ import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.vecmath.*;
@@ -27,6 +28,7 @@ import endrov.imageWindow.*;
 import endrov.imageset.EvStack;
 import endrov.network.Network.NetworkFrame;
 import endrov.util.EvDecimal;
+import endrov.util.EvFileUtil;
 import endrov.util.Maybe;
 import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;
@@ -242,6 +244,79 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 		});
 		menu.add(miExportToSWC);
 		
+		
+		
+		
+		
+		
+		
+		
+		JMenuItem miMakeProfile=new JMenuItem("Make intensity-radius profile");
+		miMakeProfile.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				EvDecimal frame=w.getFrame();
+				Network editNetwork=editingObject.get();
+				if(editNetwork==null)
+					return;
+				Network.NetworkFrame nf=editNetwork.frame.get(frame);
+				EvStack stack=r.getCurrentStack();
+				if(nf==null || stack==null)
+					return;
+				
+				String sRadius=JOptionPane.showInputDialog("Radius (null for max)");
+				if(sRadius==null)
+					return;
+				
+				Double maxRadius;
+				if(sRadius.equals(""))
+					maxRadius=NetworkIntensityRadiusHistogram.maxRadius(nf);
+				else
+					maxRadius=Double.parseDouble(sRadius);
+				
+				String sBins=JOptionPane.showInputDialog("Number of bins (null for 100)");
+				if(sBins==null)
+					return;
+				int histBins=100;
+				if(!sBins.equals(""))
+					histBins=Integer.parseInt(sBins);
+				
+				NetworkIntensityRadiusHistogram hist=new NetworkIntensityRadiusHistogram(nf, stack, maxRadius, histBins);
+				
+				StringBuffer sbIntensityProf=new StringBuffer();
+				for(int i=0;i<hist.intensity.length;i++)
+					sbIntensityProf.append(""+(i*hist.intensityDr)+"\t"+hist.intensity[i]+"\n");
+				
+				
+				StringBuffer sbHist=new StringBuffer();
+				Map<Double,Integer> histIntensity=new TreeMap<Double, Integer>(hist.histIntensity.hist);
+				for(Map.Entry<Double, Integer> e2:histIntensity.entrySet())
+					sbHist.append(""+e2.getKey()+"\t"+e2.getValue()+"\n");
+				
+				
+				JFileChooser fc=new JFileChooser();
+				int ret=fc.showSaveDialog(w);
+				if(ret==JFileChooser.APPROVE_OPTION)
+					{
+					File f=fc.getSelectedFile();
+					try
+						{
+						EvFileUtil.writeFile(new File(f.getParentFile(),f.getName()+".prof.txt"), sbIntensityProf.toString());
+						EvFileUtil.writeFile(new File(f.getParentFile(),f.getName()+".hist.txt"), sbHist.toString());
+						}
+					catch (IOException e1)
+						{
+						BasicWindow.showErrorDialog("Error writing file: "+e1.getMessage());
+						e1.printStackTrace();
+						}
+					}
+				}
+		});
+		menu.add(miMakeProfile);
+		
+		
+		
+		
 		menu.add(new JSeparator());
 		
 		EvContainer ims=w.getRootObject();
@@ -297,7 +372,7 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 		}
 	
 
-	public void mouseClickedManual(MouseEvent e, Component invoker)
+	public void mouseClickedManual(final MouseEvent e, Component invoker)
 		{
 		if(SwingUtilities.isRightMouseButton(e))
 			{
@@ -340,6 +415,15 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 
 						});
 					
+					JMenuItem miResize=new JMenuItem("Resize");
+					miResize.addActionListener(new ActionListener()
+						{
+						public void actionPerformed(ActionEvent a)
+							{
+							resize(e);
+							}
+						});
+					
 					
 					JMenuItem miForceAnew=new JMenuItem("Start anew");
 					miForceAnew.addActionListener(new ActionListener()
@@ -357,6 +441,7 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 						});
 					
 					menu.add(miForcePoint);
+					menu.add(miResize);
 					menu.add(miForceAnew);
 					
 					}
@@ -372,7 +457,7 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 
 		}
 
-	public void mouseClickedTrace(MouseEvent e, Component invoker)
+	public void mouseClickedTrace(final MouseEvent e, Component invoker)
 		{
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
@@ -450,7 +535,6 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 			if(nf!=null)
 				{
 
-				//Could also use click and drag for this?
 				JMenuItem miForcePoint=new JMenuItem("Start from here");
 				miForcePoint.addActionListener(new ActionListener()
 					{
@@ -466,6 +550,15 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 						}
 					});
 				
+				
+				JMenuItem miResize=new JMenuItem("Resize");
+				miResize.addActionListener(new ActionListener()
+					{
+					public void actionPerformed(ActionEvent a)
+						{
+						resize(e);
+						}
+					});
 				
 
 				JMenuItem miForceNone=new JMenuItem("Start from closest point");
@@ -501,6 +594,7 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 
 				
 				menu.add(miForcePoint);
+				menu.add(miResize);
 				menu.add(miForceAnew);
 				menu.add(miForceNone);
 				}
@@ -511,23 +605,54 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 		}
 	
 	
+	private void resize(MouseEvent e)
+		{
+		EvDecimal frame=w.getFrame();
+		Network network=editingObject.get();
+		if(network!=null)
+			{
+
+			Vector3d pos=r.getMousePosWorld(e);
+
+			
+
+				NetworkFrame nf=network.frame.get(frame);
+				
+				Integer closestID=getClosestPointID(nf, pos);
+				if(closestID!=null)
+					{
+					
+					
+					
+					editingPoint=closestID;
+					
+					
+					//TODO what about undo??
+					}
+				
+			}
+		
+		
+		}
+	
 	
 	public void mouseDragged(MouseEvent e, int dx, int dy)
 		{
-		
+		tryMoveEditingPoint(dx,dy);
+		}
+	
+	
+	
+	private boolean tryMoveEditingPoint(int dx, int dy)
+		{
 		if(!useAuto)
 			{
-			
-			
-
-
 			////hmmm... final action should be save the last state? how does this fit together with undo?
 
 			final EvDecimal frame=w.getFrame();
 			final Network network=editingObject.get();
 			if(network!=null)
 				{
-
 				if(editingPoint!=null)
 					{
 
@@ -541,19 +666,14 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 					if(p.r<=0)
 						p.r=null;
 					w.repaint();
+					
+					return true;
 					}
-
 
 				}
 
-
-			
-			
-			
-			
 			}
-		
-		
+		return false;
 		}
 	
 	
@@ -680,49 +800,57 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 	
 	public void mouseMovedManual(MouseEvent e, int dx, int dy)
 		{
+		tryMoveEditingPoint(dx,dy);
+		
+		
 		r.previewPoints=null;
 		
-		EvDecimal frame=w.getFrame();
-		Network editNetwork=editingObject.get();
-		Network.NetworkFrame nf=editNetwork.frame.get(frame);
-		if(nf==null)
-			editNetwork.frame.put(frame,nf=new Network.NetworkFrame());
-		
-		Vector3d curPos=r.getMousePosWorld(e);
+		if(editingPoint==null)
+			{
 
-		
-		if(forcedStartingPoint!=null)
-			{
-			if(forcedStartingPoint.get()!=null)
+			EvDecimal frame=w.getFrame();
+			Network editNetwork=editingObject.get();
+			Network.NetworkFrame nf=editNetwork.frame.get(frame);
+			if(nf==null)
+				editNetwork.frame.put(frame,nf=new Network.NetworkFrame());
+			
+			Vector3d curPos=r.getMousePosWorld(e);
+
+			
+			if(forcedStartingPoint!=null)
 				{
-			//From-To
-				r.previewPoints=new Vector3d[]{forcedStartingPoint.get(), curPos};
-				}
-			}
-		else if(!nf.points.isEmpty())
-			{
-			//Find closest point
-			Network.Point closestPoint=null;
-			double closestDist2=Double.MAX_VALUE;
-			for(Network.Point p:nf.points.values())
-				{
-				double ddx=p.x-curPos.x;
-				double ddy=p.y-curPos.y;
-				double ddz=p.z-curPos.z;
-				double dist2=ddx*ddx+ddy*ddy+ddz*ddz;
-				if(dist2<closestDist2)
+				if(forcedStartingPoint.get()!=null)
 					{
-					closestPoint=p;
-					closestDist2=dist2;
+				//From-To
+					r.previewPoints=new Vector3d[]{forcedStartingPoint.get(), curPos};
 					}
 				}
-			if(closestPoint!=null)
+			else if(!nf.points.isEmpty())
 				{
-				//From-To
-				r.previewPoints=new Vector3d[]{closestPoint.toVector3d(), curPos};
+				//Find closest point
+				Network.Point closestPoint=null;
+				double closestDist2=Double.MAX_VALUE;
+				for(Network.Point p:nf.points.values())
+					{
+					double ddx=p.x-curPos.x;
+					double ddy=p.y-curPos.y;
+					double ddz=p.z-curPos.z;
+					double dist2=ddx*ddx+ddy*ddy+ddz*ddz;
+					if(dist2<closestDist2)
+						{
+						closestPoint=p;
+						closestDist2=dist2;
+						}
+					}
+				if(closestPoint!=null)
+					{
+					//From-To
+					r.previewPoints=new Vector3d[]{closestPoint.toVector3d(), curPos};
+					}
 				}
+			w.repaint();
 			}
-		w.repaint();
+		
 		}
 	
 	public void mouseMovedTrace(MouseEvent e, int dx, int dy)
