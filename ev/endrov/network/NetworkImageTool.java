@@ -64,7 +64,11 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 	private WeakReference<EvStack> lastStack=new WeakReference<EvStack>(null);
 
 	private Integer editingPoint=null;
-
+	private EditMode editMode=null;
+	private enum EditMode
+		{
+		Translate, Resize
+		}
 
 	public boolean hasTracer()
 		{
@@ -423,7 +427,16 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 						{
 						public void actionPerformed(ActionEvent a)
 							{
-							resize(e);
+							editPoint(e, EditMode.Resize);
+							}
+						});
+					
+					JMenuItem miMove=new JMenuItem("Move");
+					miMove.addActionListener(new ActionListener()
+						{
+						public void actionPerformed(ActionEvent a)
+							{
+							editPoint(e, EditMode.Translate);
 							}
 						});
 					
@@ -445,6 +458,7 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 					
 					menu.add(miForcePoint);
 					menu.add(miResize);
+					menu.add(miMove);
 					menu.add(miForceAnew);
 					
 					}
@@ -559,7 +573,15 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 					{
 					public void actionPerformed(ActionEvent a)
 						{
-						resize(e);
+						editPoint(e, EditMode.Resize);
+						}
+					});
+				JMenuItem miMove=new JMenuItem("Move");
+				miMove.addActionListener(new ActionListener()
+					{
+					public void actionPerformed(ActionEvent a)
+						{
+						editPoint(e, EditMode.Translate);
 						}
 					});
 				
@@ -608,7 +630,7 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 		}
 	
 	
-	private void resize(MouseEvent e)
+	private void editPoint(MouseEvent e, EditMode m)
 		{
 		EvDecimal frame=w.getFrame();
 		Network network=editingObject.get();
@@ -628,7 +650,8 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 					
 					
 					editingPoint=closestID;
-					
+					editMode=m;
+					ignoreOneEditPoint=true;
 					
 					//TODO what about undo??
 					}
@@ -645,9 +668,10 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 		}
 	
 	
+	private boolean ignoreOneEditPoint;
 	
 	private boolean tryMoveEditingPoint(int dx, int dy)
-		{
+		{		
 		if(!useAuto)
 			{
 			////hmmm... final action should be save the last state? how does this fit together with undo?
@@ -662,12 +686,32 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 					NetworkFrame nf=network.frame.get(frame);
 					Network.Point p=nf.points.get(editingPoint);
 					
-					if(p.r==null)
-						p.r=0.0;
-					double dist=w.s2wz(dy);//w.scaleS2w(Math.sqrt(dx*dx+dy*dy));
-					p.r+=dist;
-					if(p.r<=0)
-						p.r=null;
+					//This works around a bug/annoyance in swing
+					if(ignoreOneEditPoint)
+						{
+						ignoreOneEditPoint=false;
+						return true;
+						}
+
+					if(editMode==EditMode.Resize)
+						{
+					
+						if(p.r==null)
+							p.r=0.0;
+						double dist=w.scaleS2w(dy);
+						p.r+=dist;
+						if(p.r<=0)
+							p.r=null;
+						}
+					else if(editMode==EditMode.Translate)
+						{
+						Vector2d dist=w.transformVectorS2W(new Vector2d(dx,dy));
+						
+						//double distx=w.s2w(dx);
+						//double disty=w.s2wz(dy);
+						p.x+=dist.x;
+						p.y+=dist.y;
+						}
 					w.repaint();
 					
 					return true;
@@ -748,12 +792,12 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 							Network.Segment s=new Network.Segment();
 							s.points=new int[]{lastID, newPointID};
 							nf.segments.add(s);
-
 							}
 						
 						
 						//Start editing point
 						editingPoint=newPointID;
+						editMode=EditMode.Resize;
 						
 						//No longer force this point
 						forcedStartingPoint=null;
@@ -820,7 +864,6 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 	public void mouseMovedManual(MouseEvent e, int dx, int dy)
 		{
 		tryMoveEditingPoint(dx,dy);
-		
 		
 		r.previewPoints=null;
 		

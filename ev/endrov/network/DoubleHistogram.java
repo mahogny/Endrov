@@ -11,7 +11,7 @@ public class DoubleHistogram
 	
 	public void count(double val)
 		{
-		count(1);
+		count(val, 1);
 		}
 	public void count(double val, int c)
 		{
