@@ -46,7 +46,10 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 	public boolean useAuto=false;
 
 	
+	private boolean ignoreMouseRelease=false;
 	
+
+
 
 
 	public static Vector<NetworkTracerFactory> tracers=new Vector<NetworkTracerFactory>();
@@ -687,6 +690,13 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 	
 	public void mousePressedManual(MouseEvent e)
 		{
+		if(storeEditingPoint())
+			{
+			ignoreMouseRelease=true;
+			return;
+			}
+		
+		
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			final EvDecimal frame=w.getFrame();
@@ -758,14 +768,23 @@ public class NetworkImageTool implements ImageWindowTool, ActionListener
 	
 	public void mouseReleased(MouseEvent e)
 		{
-		//TODO store state here?
-		
-		editingPoint=null;
-		
-		
-		
-		
-		
+		if(ignoreMouseRelease)
+			ignoreMouseRelease=false;
+		else
+			storeEditingPoint();
+		}
+	
+	public boolean storeEditingPoint()
+		{
+		if(editingPoint!=null)
+			{
+			
+			//TODO store state here?
+			editingPoint=null;
+			return true;
+			}
+		else
+			return false;
 		}
 
 	

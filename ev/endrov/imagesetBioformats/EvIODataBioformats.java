@@ -681,17 +681,12 @@ public class EvIODataBioformats implements EvIOData
 					PositiveFloat resXf=retrieve.getPixelsPhysicalSizeX(0); //[um/px]
 					PositiveFloat resYf=retrieve.getPixelsPhysicalSizeY(0); //[um/px]
 					PositiveFloat resZf=retrieve.getPixelsPhysicalSizeZ(0); //[um/px]
-					
 					Double resX=1.0;
 					Double resY=1.0;
 					Double resZ=1.0;
-
-					
-					if(resXf!=null && resXf.getValue()!=0) resX=1.0;
-					if(resYf!=null && resYf.getValue()!=0) resY=1.0;
-					if(resZf!=null && resZf.getValue()!=0) resZ=1.0;
-
-					System.out.println("Detected resolution: "+resX+"    "+resY+"   "+resZ);
+					if(resXf!=null && resXf.getValue()!=0) resX=resXf.getValue();
+					if(resYf!=null && resYf.getValue()!=0) resY=resYf.getValue();
+					if(resZf!=null && resZf.getValue()!=0) resZ=resZf.getValue();
 
 					//Calculate which frame this is. Note that we only consider the time of the first plane!
 					EvDecimal frame=null;

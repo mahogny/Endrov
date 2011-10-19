@@ -70,7 +70,6 @@ public class ImageWindow extends BasicWindow
 	public static int snapDistance=10;
 	
 	
-
 	private static EvColor[] channelColorList=new EvColor[]{
 			EvColor.red,
 			EvColor.magenta,
@@ -337,8 +336,6 @@ public class ImageWindow extends BasicWindow
 				//Calculate optimal settings
 				contrast=255.0/(highest-lowest);
 				brightness=-lowest*contrast;
-				
-				System.out.println(contrast+"   "+brightness);
 				
 				updateImagePanel();
 				}
