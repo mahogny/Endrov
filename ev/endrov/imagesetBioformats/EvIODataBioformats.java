@@ -45,6 +45,8 @@ import endrov.util.Tuple;
 //metaretriever getPixelsBigEndian
 //in imageraeder, int getPixelType();
 //http://hudson.openmicroscopy.org.uk/job/LOCI/javadoc/loci/formats/FormatTools.html   types
+//http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/utils/ConvertToOmeTiff.java;hb=HEAD
+
 
 /**
  * Support for proprietary formats through LOCI Bioformats
@@ -163,7 +165,7 @@ public class EvIODataBioformats implements EvIOData
 
 				//TODO  use  hasDirtyChannels(d) in case file exists
 
-				// http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/utils/ConvertToOmeTiff.java;hb=HEAD
+				// 
 
 
 
@@ -667,9 +669,8 @@ public class EvIODataBioformats implements EvIOData
 				for(int curT=0;curT<sizeT;curT++)
 					{
 					
-					int imageIndexFirstPlane=imageReader.getIndex(0, curC, curT);
-					
-					System.out.println("index "+imageIndexFirstPlane);
+					//int imageIndexFirstPlane=imageReader.getIndex(0, curC, curT);
+					//System.out.println("index of first plane for this time point "+imageIndexFirstPlane);
 					
 					//Read resolution
 					//Note: values are optional!!!
@@ -703,7 +704,7 @@ public class EvIODataBioformats implements EvIOData
 						//Double deltaT=retrieve.getPlaneDeltaT(imageIndexFirstPlane, 0);
 						try
 							{
-							Double deltaT=retrieve.getPlaneDeltaT(0, 0);
+							Double deltaT=retrieve.getPlaneDeltaT(seriesIndex, imageReader.getIndex(0, curC, curT));
 							if(deltaT!=null)
 								frame=new EvDecimal(deltaT);
 							}
