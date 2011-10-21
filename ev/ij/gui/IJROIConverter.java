@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 
 import endrov.imageset.EvStack;
 import endrov.roi.ROI;
+import endrov.roi.primitive.BoxROI;
 import endrov.roi.primitive.EllipseROI;
 import endrov.roi.primitive.PolygonROI;
 import endrov.util.EvDecimal;
@@ -25,15 +26,21 @@ import endrov.util.EvDecimal;
  * @author Johan Henriksson
  *
  */
-public class IJROIConverter
+public abstract class IJROIConverter
 	{
+	
+	public abstract void gotROI(ROI roi);
+	
 	public IJROIConverter(File f, EvStack stack) throws IOException
 		{
 		ZipFile zf=new ZipFile(f);
 		
+		
+		
 		Enumeration<? extends ZipEntry> e=zf.entries();
 		while(e.hasMoreElements())
 			{
+			System.out.println("element");
 			ZipEntry ze=e.nextElement();
 			
 			InputStream is=zf.getInputStream(ze);
@@ -45,16 +52,33 @@ public class IJROIConverter
 			
 			ROI endrovRoi=null;
 			
-			if(roi instanceof ij.gui.EllipseRoi) //Note. have to check this before polygonroi
+			if(roi.type==ij.gui.Roi.RECTANGLE) //Note. have to check this before polygonroi
+				{
+				ij.gui.Roi r=roi;
+
+				Vector2d pUpperLeft=stack.transformImageWorld(new Vector2d(r.x, r.y));
+				Vector2d pLowerRight=stack.transformImageWorld(new Vector2d(r.x+r.width, r.y+r.height));
+
+				BoxROI er=new BoxROI();
+				endrovRoi=er;
+				er.regionX.start=new EvDecimal(pUpperLeft.x);
+				er.regionY.start=new EvDecimal(pUpperLeft.y);
+				er.regionX.end=new EvDecimal(pLowerRight.x);
+				er.regionY.end=new EvDecimal(pLowerRight.y);
+				}
+			else if(roi instanceof ij.gui.EllipseRoi) //Note. have to check this before polygonroi
 				{
 				ij.gui.EllipseRoi r=(ij.gui.EllipseRoi)roi;
-				
+
+				Vector2d pUpperLeft=stack.transformImageWorld(new Vector2d(r.x, r.y));
+				Vector2d pLowerRight=stack.transformImageWorld(new Vector2d(r.x+r.width, r.y+r.height));
+
 				EllipseROI er=new EllipseROI();
 				endrovRoi=er;
-				er.regionX.start=new EvDecimal(r.x);
-				er.regionY.start=new EvDecimal(r.x);
-				er.regionX.end=new EvDecimal(r.x+r.width);
-				er.regionY.end=new EvDecimal(r.y+r.height);
+				er.regionX.start=new EvDecimal(pUpperLeft.x);
+				er.regionY.start=new EvDecimal(pUpperLeft.y);
+				er.regionX.end=new EvDecimal(pLowerRight.x);
+				er.regionY.end=new EvDecimal(pLowerRight.y);
 				}
 			else if(roi instanceof ij.gui.FreehandRoi)
 				{
@@ -66,6 +90,8 @@ public class IJROIConverter
 				}
 			else if(roi instanceof ij.gui.ImageRoi)
 				{
+				//ij.gui.ImageRoi r=(ij.gui.ImageRoi)roi;
+
 				
 				}
 			else if(roi instanceof ij.gui.Line)
@@ -75,6 +101,9 @@ public class IJROIConverter
 			else if(roi instanceof ij.gui.OvalRoi)
 				{
 				//an oval is actually a strange construct!!! //http://en.wikipedia.org/wiki/Oval
+				
+				//best method to convert is probably to make a bitmap roi?
+				
 				}
 			else if(roi instanceof ij.gui.PointRoi)
 				{
@@ -90,7 +119,8 @@ public class IJROIConverter
 					endrovRoi=er;
 					for(int i=0;i<r.nPoints;i++)
 						{
-						er.contour.add(new Vector2d(r.xp2[i], r.yp2[i]));
+						Vector2d v=stack.transformImageWorld(new Vector2d(r.xp[i]+r.x, r.yp[i]+r.y));
+						er.contour.add(new Vector2d(v));
 						}
 					
 					/////r.xSpline  these are for spline... always valid? no. points always valid?
@@ -111,22 +141,17 @@ public class IJROIConverter
 				//Implemented through AWT Shape, union intersection etc
 				//Built up from segments (see makeshapefromarray), awt GeneralPath. messy!!!
 				
+				//could use awt and make a bitmap roi out of it
+				
 				
 				}
 			else
-				System.out.println("Skipping unsupported roi, "+roi.getClass());
+				System.out.println("Does not know about roi type "+roi.getClass()+" , "+roi.type);
 			
 			if(endrovRoi!=null)
-				{
-				
-				//roi.stroke;
-				//roi.strokeColor
-				//roi.name
-				//roi.fillColor
-				//roi.handleColor
-				//roi.lineWidth
-				
-				}
+				gotROI(endrovRoi);
+			else
+				System.out.println("Cannot convert roi of type "+roi.getClass());
 			///http://rsbweb.nih.gov/ij/developer/source/index.html
 			
 			//ROI roi=new ROIDecoder(b, ze.getName()).getROI(stack);

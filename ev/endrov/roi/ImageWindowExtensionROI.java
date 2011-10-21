@@ -7,11 +7,16 @@ package endrov.roi;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.IOException;
 
+import endrov.IJ.roi.ImageJroiImport;
 import endrov.basicWindow.*;
 import endrov.data.EvContainer;
+import endrov.data.EvData;
 import endrov.imageWindow.*;
+import endrov.imageset.EvChannel;
 import endrov.roi.window.*;
+import endrov.util.EvDecimal;
 
 /*
 	cut
@@ -33,10 +38,6 @@ public class ImageWindowExtensionROI implements ImageWindowExtension
 		{
 		JMenu miROI=new JMenu("ROI");
 		w.addMenubar(miROI);
-
-		//final ImageRendererROI renderer=new ImageRendererROI(w);
-		//w.addImageWindowRenderer(renderer);
-		
 		
 		w.addImageWindowTool(new ImageWindowToolROI(w));
 
@@ -47,10 +48,12 @@ public class ImageWindowExtensionROI implements ImageWindowExtension
 		JMenu miModify=new JMenu("Modify");
 		JMenu miComposite=new JMenu("Composite");
 		JMenu miAnalyze=new JMenu("Analyze");
+		JMenuItem miImportIJ=new JMenuItem("Import ImageJ");
 		BasicWindow.addMenuItemSorted(miROI, miNew, "roi_1new");
-		BasicWindow.addMenuItemSorted(miROI, miModify, "roi_modify");
-		BasicWindow.addMenuItemSorted(miROI, miComposite, "roi_composite");
-		BasicWindow.addMenuItemSorted(miROI, miAnalyze, "roi_analyze");
+		BasicWindow.addMenuItemSorted(miROI, miModify, "roi_2modify");
+		BasicWindow.addMenuItemSorted(miROI, miComposite, "roi_3composite");
+		BasicWindow.addMenuItemSorted(miROI, miAnalyze, "roi_4analyze");
+		BasicWindow.addMenuItemSorted(miROI, miImportIJ, "roi_5IJ");
 
 		//ROI Window
 		JMenuItem miROIWindow=new JMenuItem("ROI Window...");
@@ -101,6 +104,35 @@ public class ImageWindowExtensionROI implements ImageWindowExtension
 				BasicWindow.addMenuItemSorted(miComposite, miNewROIthis);
 				}
 			}
+		
+		//Import ImageJ
+		miImportIJ.addActionListener(new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				JFileChooser fc=new JFileChooser();
+				fc.setCurrentDirectory(EvData.getLastDataPath());
+				int ret=fc.showOpenDialog(w);
+				if(ret==JFileChooser.APPROVE_OPTION)
+					{
+					EvDecimal frame=w.getFrame();
+					EvChannel ch=w.getSelectedChannel();
+					frame=ch.closestFrame(frame);
+					
+					try
+						{
+						new ImageJroiImport(fc.getSelectedFile(), ch.getStack(frame), w.getImageset());
+						}
+					catch (IOException e1)
+						{
+						BasicWindow.showErrorDialog("Could not read file");
+						e1.printStackTrace();
+						}
+					}
+				
+				}
+			});
+		
 		
 		///////////////// todo ////////////////
 		
