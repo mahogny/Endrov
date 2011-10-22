@@ -32,6 +32,7 @@ public class EvOpMorphFillHolesBinary2D extends EvOpSlice1
 		{
 		int w=pixels.getWidth();
 		int h=pixels.getHeight();
+		pixels=pixels.convertToInt(true);
 
 		EvPixels markstack=new EvPixels(EvPixelsType.INT, w, h); 
 		
