@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowImageStats;
+package endrov.flowFourier;
 
 
 import java.awt.Color;
@@ -25,10 +25,10 @@ import endrov.imageset.AnyEvImage;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitConvGaussian2D extends FlowUnitBasic
+public class FlowUnitConvGaussian3D extends FlowUnitBasic
 	{
-	public static final String showName="Gaussian filter 2D";
-	private static final String metaType="convGaussian2D";
+	public static final String showName="Gaussian filter 3D";
+	private static final String metaType="convGaussian3D";
 	
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -36,7 +36,7 @@ public class FlowUnitConvGaussian2D extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvGaussian2D.class, null,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvGaussian3D.class, null,
 				"Gaussian filter (convolution): smoothens the image"));
 		}
 	
@@ -52,6 +52,7 @@ public class FlowUnitConvGaussian2D extends FlowUnitBasic
 		types.put("image", FlowType.ANYIMAGE);
 		types.put("sigmaX", FlowType.TNUMBER);
 		types.put("sigmaY", FlowType.TNUMBER);
+		types.put("sigmaZ", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -68,8 +69,9 @@ public class FlowUnitConvGaussian2D extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Number sigmaX=(Number)flow.getInputValue(this, exec, "sigmaX");
 		Number sigmaY=(Number)flow.getInputValue(this, exec, "sigmaY");
+		Number sigmaZ=(Number)flow.getInputValue(this, exec, "sigmaZ");
 		
-		lastOutput.put("out", new EvOpConvGaussian2D(sigmaX,sigmaY).exec1Untyped(exec.ph, a));
+		lastOutput.put("out", new EvOpConvGaussian3D(sigmaX,sigmaY,sigmaZ).exec1Untyped(exec.ph, a));
 		}
 
 	

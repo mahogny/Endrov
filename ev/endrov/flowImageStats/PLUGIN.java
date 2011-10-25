@@ -36,8 +36,6 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				FlowUnitConvGaussian2D.class,
-				FlowUnitConvGaussian3D.class,
 				FlowUnitBilateralFilter2D.class,
 				FlowUnitKuwaharaFilter.class,
 				FlowUnitKirschFilter2D.class,

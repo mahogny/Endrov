@@ -3,13 +3,10 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowImageStats;
+package endrov.flowFourier;
 
 import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.math.EvOpImageComplexMulImage;
-import endrov.flowFourier.EvOpFourierComplexInverse2D;
-import endrov.flowFourier.EvOpFourierRealForwardFull2D;
-import endrov.flowFourier.EvOpWrapImage2D;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.imageset.EvPixels;
 import endrov.util.ProgressHandle;

@@ -40,7 +40,10 @@ public class PLUGIN extends PluginDef
 				FlowUnitInverseFourier2D.class,
 				FlowUnitFourier3D.class,
 				FlowUnitInverseFourier3D.class,
-				
+
+				FlowUnitConvGaussian2D.class,
+				FlowUnitConvGaussian3D.class,
+
 				FlowUnitWrapImage2D.class,
 				FlowUnitWrapImage3D.class,
 				

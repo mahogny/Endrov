@@ -41,7 +41,7 @@ import endrov.util.Vector2i;
  */
 public class FlowUnitMorphConstKernel extends FlowUnitBasic
 	{
-	private static final int[] extent=new int[]{2,2,2,2}; //Extension left, right, up, down
+	private int[] extent=new int[]{2,2,2,2}; //Extension left, right, up, down
 	private static enum TypePixel{NONE,HIT,MISS}
 	
 	private HashSet<Vector2i> hitlist=new HashSet<Vector2i>();
