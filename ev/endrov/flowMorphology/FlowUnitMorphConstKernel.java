@@ -29,7 +29,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.Vector2i;
@@ -344,7 +344,7 @@ public class FlowUnitMorphConstKernel extends FlowUnitBasic
 			setSize(getMinimumSize());
 			invalidate();
 			revalidate();
-			((FlowPanel)getParent()).doFlowSwingLayout();
+			((FlowView)getParent()).doFlowSwingLayout();
 			getParent().repaint();
 			}
 		
@@ -364,7 +364,7 @@ public class FlowUnitMorphConstKernel extends FlowUnitBasic
 				misslist.remove(v);
 		}
 
-	public Component getGUIcomponent(final FlowPanel p)
+	public Component getGUIcomponent(final FlowView p)
 		{
 		return new TotalPanel();
 		}

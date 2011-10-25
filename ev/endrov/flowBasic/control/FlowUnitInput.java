@@ -21,7 +21,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 
 /**
  * Flow unit: input variable
@@ -56,7 +56,7 @@ public class FlowUnitInput extends FlowUnit
 		return d;
 		}
 	
-	public void paint(Graphics g, FlowPanel panel, Component comp)
+	public void paint(Graphics g, FlowView panel, Component comp)
 		{
 		Dimension d=getBoundingBox(comp, panel.getFlow());
 
@@ -118,7 +118,7 @@ public class FlowUnitInput extends FlowUnit
 		lastOutput.put("out", exec.listener.getInputObject(varName));
 		}
 
-	public Component getGUIcomponent(FlowPanel p){return null;}
+	public Component getGUIcomponent(FlowView p){return null;}
 	public int getGUIcomponentOffsetX(){return 0;}
 	public int getGUIcomponentOffsetY(){return 0;}
 

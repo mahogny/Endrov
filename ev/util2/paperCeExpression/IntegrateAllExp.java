@@ -113,7 +113,7 @@ public class IntegrateAllExp
 			String expName = "exp"; // Neutral name
 	
 			if (!data.getIdObjectsRecursive(EvChannel.class).containsKey(
-					new EvPath("im", channelName)))
+					new EvPath(data, "im", channelName)))
 				{
 				System.out.println("Does not contain any channel! "+f);
 				return false;

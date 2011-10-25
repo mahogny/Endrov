@@ -13,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,7 +57,10 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	//add blobID to EvObject? this would fix the rename issue
 	
 	private JComboBox combo=new JComboBox();
-	
+
+	//Empty item. This will allow comparison by pointer
+	private final ComboItem emptyItem=new ComboItem(null);
+
 	/**
 	 * This item might not be needed but might solve a race condition. Sometimes this widget
 	 * is updated and the current object taken. it has been null. I think the GUI might have
@@ -128,8 +130,6 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		}
 	
 	
-	//Empty item. This will allow comparison by pointer
-	private ComboItem emptyItem=new ComboItem(new LinkedList<String>(),null,null,null);
 	
 	/**
 	 * One entry in the combo box. The object it points to should only be null
@@ -138,43 +138,42 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	private static class ComboItem
 		{
 		private EvPath path;
+		/*
  		private WeakReference<EvContainer> ob; 
  		private WeakReference<EvContainer> parent; 
 		private WeakReference<EvData> data; 
-
+*/
 		public EvContainer getObject()
 			{
-			return ob.get();
+			if(path==null)
+				return null;
+			else
+				return path.getObject();
+			//return ob.get();
 			}
 		public EvData getData()
 			{
-			return data.get();
+			if(path==null)
+				return null;
+			else
+				return (EvData)path.getRoot();
+			//return data.get();
 			}
 		public EvPath getPath()
 			{
 			return path;
 			}
-		public EvPath getRelativePath()
+		public ComboItem(EvPath evpath)
 			{
-			LinkedList<String> list=new LinkedList<String>();
-			for(int i=1;i<path.path.length;i++)
-				list.add(path.path[i]);
-			return new EvPath(list.toArray(new String[]{}));
-			}
-		
-		public ComboItem(List<String> path, EvContainer ob, EvContainer parent, EvData data)
-			{
-			this.path=new EvPath(path);
-//			this.path=path.toArray(new String[0]);
-			this.ob=new WeakReference<EvContainer>(ob);
-			this.data=new WeakReference<EvData>(data);
-			this.parent=new WeakReference<EvContainer>(parent);
-//			System.out.println("new, path: "+path);
+			this.path=evpath;
 			}
 		
 		public String toString()
 			{
-			return path.toString();
+			if(path==null)
+				return "";
+			else
+				return path.toString(true);
 			}
 		
 		
@@ -203,12 +202,10 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 			//List EvData
 			for(EvData data:EvData.openedData)
 				{
-				LinkedList<String> paths=new LinkedList<String>();
-				paths.add("#"+data.getMetadataName());
 				if(includeObject(data))
-					combo.addItem(new ComboItem(paths,data,null, data));
+					combo.addItem(new ComboItem(new EvPath(data)));
 				if(showChildren)
-					updateListRec(data, paths, data);
+					updateListRec(data, new LinkedList<String>(), data);
 				}
 			}
 		else
@@ -242,9 +239,8 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 			{
 			EvContainer thisCont=entry.getValue();
 			contPath.addLast(entry.getKey());
-		//	System.out.println("Checking to include "+thisCont+ " "+includeObject(thisCont));
 			if(includeObject(thisCont))
-				combo.addItem(new ComboItem(contPath, thisCont,parent,data));
+				combo.addItem(new ComboItem(new EvPath(data, contPath)));
 			if(showChildren)
 				updateListRec(thisCont, contPath, data);
 			contPath.removeLast();
@@ -279,7 +275,6 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		{
 		if(root==null)
 			{
-			//ComboItem ci=(ComboItem)combo.getSelectedItem();
 			ComboItem ci=currentItem;
 			return ci.getData();
 			}
@@ -292,7 +287,6 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	 */
 	public EvContainer getSelectedObject()
 		{
-		//ComboItem ci=(ComboItem)combo.getSelectedItem();
 		ComboItem ci=currentItem;
 		//bug: I think ci was once null after unloading data. was nothing reselected?
 		if(ci==null)
@@ -310,33 +304,25 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 			{
 			System.out.println("ci null "+combo.getItemCount());
 			}
-		return ci.parent.get();
+		EvPath path=ci.getPath();
+		if(path==null)
+			return null;
+		else
+			return path.getParent().getObject();
 		}
 	
 	
 	public EvPath getSelectedPath()
 		{
-		//ComboItem ci=(ComboItem)combo.getSelectedItem();
 		ComboItem ci=currentItem;
 		//bug: I think ci was once null after unloading data. was nothing reselected?
 		if(ci==null)
 			{
 			System.out.println("ci null "+combo.getItemCount());
 			}
+		
 		return ci.getPath();
 		}
-	public EvPath getSelectedRelativePath()
-		{
-		//ComboItem ci=(ComboItem)combo.getSelectedItem();
-		ComboItem ci=currentItem;
-		//bug: I think ci was once null after unloading data. was nothing reselected?
-		if(ci==null)
-			{
-			System.out.println("ci null "+combo.getItemCount());
-			}
-		return ci.getRelativePath();
-		}
-	
 	
 	private Map<EvContainer,ComboItem> getItemMap()
 		{

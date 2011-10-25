@@ -11,7 +11,6 @@ import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.data.EvPath;
 import endrov.flow.Flow;
 import endrov.flow.FlowConn;
 import endrov.flowBasic.objects.FlowUnitObjectIO;
@@ -125,8 +124,8 @@ public class EvFLIPAcquisition extends EvAcquisition
 							FlowUnitSumIntensityROI unitCalc=new FlowUnitSumIntensityROI();
 							flow.units.add(unitCalc);
 							
-							FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
-							FlowUnitObjectIO unitGetRoiObserve=new FlowUnitObjectIO(new EvPath("roiObserve"));
+							FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO("ch");
+							FlowUnitObjectIO unitGetRoiObserve=new FlowUnitObjectIO("roiObserve");
 							FlowUnitShowGraph unitShowSeries=new FlowUnitShowGraph();
 							
 							flow.units.add(unitGetChan);

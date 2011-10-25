@@ -23,7 +23,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 import endrov.util.JMultilineLabel;
 import endrov.util.Maybe;
 
@@ -67,7 +67,7 @@ public class FlowUnitShow extends FlowUnit
 		return d;
 		}
 	
-	public void paint(Graphics g, FlowPanel panel, Component comp)
+	public void paint(Graphics g, FlowView panel, Component comp)
 		{
 		Dimension d=getBoundingBox(comp, panel.getFlow());
 		
@@ -144,10 +144,10 @@ public class FlowUnitShow extends FlowUnit
 	private static class ThisComponent extends JMultilineLabel
 		{
 		static final long serialVersionUID=0;
-		private FlowPanel p;
+		private FlowView p;
 		}
 	
-	public Component getGUIcomponent(final FlowPanel p)
+	public Component getGUIcomponent(final FlowView p)
 		{
 		final ThisComponent field=new ThisComponent();
 		field.setText("");

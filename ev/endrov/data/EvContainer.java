@@ -47,6 +47,7 @@ public class EvContainer
 		return metaObject.get(name);
 		}
 	
+	/*
 	public EvContainer getChild(EvPath path)
 		{
 		EvContainer c=this;
@@ -57,7 +58,7 @@ public class EvContainer
 				return null; //Or throw an exception?
 			}
 		return c;
-		}
+		}*/
 	
 	/**
 	 * Get the names of all children
@@ -173,7 +174,7 @@ public class EvContainer
 			{
 			curPath.addLast(e.getKey());
 			if(cl.isInstance(e.getValue()))
-				map.put(new EvPath(curPath),(E)e.getValue());
+				map.put(new EvPath(this, curPath),(E)e.getValue());
 			((EvContainer)e.getValue()).getIdObjectsRecursiveHelper(map, curPath, cl);
 			curPath.removeLast();
 			}

@@ -18,7 +18,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitContainer;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 
 /**
  * Flow unit: Map
@@ -84,7 +84,7 @@ public class FlowUnitMap extends FlowUnitContainer
 		//TODO flowunit
 		}
 
-	public Component getGUIcomponent(FlowPanel p){return null;}
+	public Component getGUIcomponent(FlowView p){return null;}
 	public int getGUIcomponentOffsetX(){return 0;}
 	public int getGUIcomponentOffsetY(){return 0;}
 

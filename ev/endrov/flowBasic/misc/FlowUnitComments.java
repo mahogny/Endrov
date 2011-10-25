@@ -23,7 +23,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -91,7 +91,7 @@ public class FlowUnitComments extends FlowUnitBasic
 		}
 
 	@Override
-	public Component getGUIcomponent(final FlowPanel p)
+	public Component getGUIcomponent(final FlowView p)
 		{
 		final JTextArea field=new JTextArea(var);
 		field.setBackground(bgColor);

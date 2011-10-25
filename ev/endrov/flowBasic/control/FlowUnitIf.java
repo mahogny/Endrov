@@ -22,7 +22,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 
 /**
  * Flow unit: input variable
@@ -45,7 +45,7 @@ public class FlowUnitIf extends FlowUnit
 		return new Polygon(new int[]{x,x+d.width,x}, new int[]{y,y+d.height/2,y+d.height},3);
 		}
 	
-	public void paint(Graphics g, FlowPanel panel, Component comp)
+	public void paint(Graphics g, FlowView panel, Component comp)
 		{
 		Dimension d=getBoundingBox(comp, panel.getFlow());
 
@@ -122,7 +122,7 @@ public class FlowUnitIf extends FlowUnit
 			lastOutput.put("out", flow.getInputValue(this, exec, "false"));
 		}
 	
-	public Component getGUIcomponent(FlowPanel p){return null;}
+	public Component getGUIcomponent(FlowView p){return null;}
 	public int getGUIcomponentOffsetX(){return 0;}
 	public int getGUIcomponentOffsetY(){return 0;}
 

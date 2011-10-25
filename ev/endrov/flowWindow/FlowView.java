@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flow.ui;
+package endrov.flowWindow;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -42,7 +42,7 @@ import endrov.util.Vector2i;
  * @author Johan Henriksson
  *
  */
-public class FlowPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener
+public class FlowView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener
 	{
 	static final long serialVersionUID=0;
 
@@ -50,7 +50,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	private static final int lineSnapDistance=10;
 
 	private Flow flow=new Flow();
-	private FlowExec flowExec=new FlowExec();
+	private FlowExec flowExec=new FlowExec(null, null);
 	private boolean enabled=false;
 	
 	private Map<Tuple<FlowUnit, String>, ConnPoint> connPoint=new HashMap<Tuple<FlowUnit,String>, ConnPoint>();
@@ -107,7 +107,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	/**
 	 * Constructor
 	 */
-	public FlowPanel()
+	public FlowView()
 		{
 		addMouseMotionListener(this);
 		addMouseListener(this);
@@ -127,10 +127,13 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			flow=new Flow();
 		if(flow!=this.flow || data!=flowExec.getData() || parent!=flowExec.getParent() || !path.equals(flowExec.getPath()))
 			{
-			flowExec=new FlowExec();
+			flowExec=new FlowExec(data, path);
+			//flowExec.setReferences();
+			/*
 			flowExec.setData(data);
 			flowExec.setParent(parent);
 			flowExec.setPath(path);
+			*/
 			}
 		this.flow = flow;
 		unitComponent.clear();
@@ -564,19 +567,13 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 								{
 								try
 									{
-	//								u.evaluate(flow);
-	
-									u.updateTopBottom(getFlow(),flowExec);
-	
+									flowExec.updateTopBottom(u);
 									System.out.println(flowExec);
-//									System.out.println(u.lastOutput);
 									}
 								catch (Exception e1)
 									{
 									e1.printStackTrace();
 									}
-								
-								
 								}
 						});
 	
@@ -637,7 +634,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 								newu.x=(int)connpoint.pos.x-dim.width-50;
 								newu.y=(int)connpoint.pos.y-dim.height/2;
 								
-								FlowPanel.this.repaint();
+								FlowView.this.repaint();
 								}
 							});
 							popup.add(mi);
@@ -667,7 +664,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 								newu.x=(int)connpoint.pos.x+50;
 								newu.y=(int)connpoint.pos.y-dim.height/2;
 								
-								FlowPanel.this.repaint();
+								FlowView.this.repaint();
 								}
 							});
 							popup.add(mi);
@@ -731,6 +728,10 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 
 
+	
+	
+	
+	
 	public void mouseEntered(MouseEvent e){}
 	public void mouseExited(MouseEvent e){}
 
@@ -1386,6 +1387,19 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			return lastArgName;
 		else
 			return m.keySet().iterator().next();
+		}
+
+
+	public void evaluateAll()
+		{
+		try
+			{
+			flowExec.evaluateAll();
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
 		}
 	
 	

@@ -6,8 +6,11 @@
 package endrov.flow;
 
 import java.lang.ref.WeakReference;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import endrov.data.EvContainer;
@@ -25,9 +28,6 @@ public class FlowExec
 	{
 	private WeakHashMap<FlowUnit, UnitState> unitStates=new WeakHashMap<FlowUnit, UnitState>();
 	private WeakReference<EvData> data=new WeakReference<EvData>(null);
-	private WeakReference<EvContainer> parent=new WeakReference<EvContainer>(null);
-	//It can be discussed if parent pointers should not be in the objects
-	
 	private EvPath currentPath;
 	
 	public ProgressHandle ph=new ProgressHandle(); //TODO connect it
@@ -36,15 +36,6 @@ public class FlowExec
 	 * Connection to outside world
 	 */
 	public FlowExecListener listener=new IgnorantListener();
-
-	/**
-	 * A connection to the outside using input/output objects
-	 */
-	public interface FlowExecListener
-		{
-		public Object getInputObject(String name);
-		public void setOutputObject(String name, Object ob);
-		}
 
 	/**
 	 * Listener that does nothing i.e. no connection to outside
@@ -58,51 +49,36 @@ public class FlowExec
 		public void setOutputObject(String name, Object ob)
 			{
 			System.out.println("output: "+name+"\t======>\t"+ob);
-			}		
+			}
 		}
 
+	
+	public FlowExec(EvData data2, EvPath path)
+		{
+		data=new WeakReference<EvData>(data2);
+		currentPath=path;
+		}
 
-	/**
-	 * Set Data pointer
-	 */
-	public void setData(EvData data)
-		{
-		this.data=new WeakReference<EvData>(data);
-		}
-	
-	/**
-	 * Set parent pointer
-	 */
-	public void setParent(EvContainer con)
-		{
-		this.parent=new WeakReference<EvContainer>(con);
-		}
-	
-	
-	/**
-	 * Set path
-	 */
-	public void setPath(EvPath path)
-		{
-		this.currentPath=path;
-		}
-	
 	public EvData getData()
 		{
 		return data.get();
 		}
 	
-	
 	public EvContainer getParent()
 		{
-		return parent.get();
+		return currentPath.getParent().getObject();
 		}
-	
 	
 	public EvPath getPath()
 		{
 		return currentPath;
 		}
+	
+	public Flow getFlow()
+		{
+		return (Flow)currentPath.getObject();
+		}
+	
 	
 	/**
 	 * State of a unit
@@ -151,18 +127,6 @@ public class FlowExec
 		return map;
 		}
 	
-	public String toString()
-		{
-		StringBuffer sb=new StringBuffer();
-		for(Map.Entry<FlowUnit, UnitState> e:unitStates.entrySet())
-			{
-			sb.append(" "+e.getKey()+"\n");
-			for(Map.Entry<String, Object> bind:e.getValue().lastOutputMap.entrySet())
-				sb.append("    "+bind.getKey()+"\t=>\t"+bind.getValue()+"\n");
-			}
-		return sb.toString();
-		}
-	
 	
 	/**
 	 * Get state for a unit. Hides dirty details and provides type matching
@@ -176,5 +140,74 @@ public class FlowExec
 		return (E)s.state;
 		}
 	
+	
+	
+	/**
+	 * Get the last units without further output
+	 */
+	private Collection<FlowUnit> getLeafNodes()
+		{
+		Flow f=getFlow();
+		Set<FlowUnit> units=new HashSet<FlowUnit>(f.units);
+		for(FlowConn c:f.conns)
+			if(units.remove(c.fromUnit));
+		return units;
+		}
+		
+	
+	
+	/**
+	 * Evaluate all units
+	 */
+	public void evaluateAll() throws Exception
+		{
+		Flow f=getFlow();
+		for(FlowUnit u:getLeafNodes())
+			updateTopBottom(f,u);
+		
+		//TODO this is BAD! it will force reevaluation of all units and will not work with loops. rewrite from scratch 
+		}
+
+
+	/**
+	 * Evaluate flow top-bottom with this component as the top
+	 */
+	public void updateTopBottom(FlowUnit u) throws Exception
+		{
+		updateTopBottom(getFlow(), u);
+		}
+	
+	/**
+	 * Evaluate flow top-bottom with this component as the top
+	 */
+	private void updateTopBottom(Flow flow, FlowUnit u) throws Exception
+		{
+		// TODO cache. how to say if a component is done?
+		Set<FlowUnit> toUpdate = new HashSet<FlowUnit>();
+		for (String arg : u.getTypesIn(flow).keySet())
+			toUpdate.add(flow.getInputUnit(u, arg));
+		for (FlowUnit uu : toUpdate)
+			if (uu!=null)
+				updateTopBottom(flow, uu);
+		u.evaluate(flow, this);
+		}
+	
+	
+	/**
+	 * Get execution state as string
+	 */
+	public String toString()
+		{
+		StringBuffer sb=new StringBuffer();
+		for(Map.Entry<FlowUnit, UnitState> e:unitStates.entrySet())
+			{
+			sb.append(" "+e.getKey()+"\n");
+			for(Map.Entry<String, Object> bind:e.getValue().lastOutputMap.entrySet())
+				sb.append("    "+bind.getKey()+"\t=>\t"+bind.getValue()+"\n");
+			}
+		return sb.toString();
+		}
+	
+
 	
 	}

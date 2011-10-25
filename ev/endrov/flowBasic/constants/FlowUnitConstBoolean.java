@@ -18,7 +18,7 @@ import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 
 /**
  * Flow unit: boolean constant
@@ -77,7 +77,7 @@ public class FlowUnitConstBoolean extends FlowUnitConst
 		}
 	
 	
-	public Component getGUIcomponent(final FlowPanel p)
+	public Component getGUIcomponent(final FlowView p)
 		{
 		final JCheckBox comp=new JCheckBox("",isVar());
 		comp.setOpaque(false);

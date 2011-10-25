@@ -53,7 +53,7 @@ public class DataObjectSelectMenu
 				mi.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e)
 						{
-						cb.select(data, new EvPath(path), obe);
+						cb.select(data, new EvPath(data, path), obe);
 						}
 				});
 				
