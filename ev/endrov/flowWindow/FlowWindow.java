@@ -31,6 +31,7 @@ import endrov.basicWindow.BasicWindowHook;
 import endrov.basicWindow.EvComboObjectOne;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
+import endrov.data.EvPath;
 import endrov.data.tree.DataTree;
 import endrov.data.tree.DataTreeElement;
 import endrov.ev.EV;
@@ -189,13 +190,12 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 		public void valueChanged(TreeSelectionEvent e)
 			{
 			DataTreeElement node = (DataTreeElement)e.getPath().getLastPathComponent();
-			if(node!=null && !node.isRoot && e!=null)
+			EvPath flowPath=objectCombo.getSelectedPath();
+			if(node!=null && !node.isRoot && e!=null && flowPath!=null)
 				{
-				FlowUnitObjectIO unit=new FlowUnitObjectIO(node.getPath());
+				String path=node.getPath().getStringPathRelativeTo(flowPath.getParent());
+				FlowUnitObjectIO unit=new FlowUnitObjectIO(path);
 				
-				//TODO relative path or absolute path
-				
-				System.out.println("path "+node.getPath());
 				if(unit!=null)
 					wthis.fp.setUnitToPlace(unit);
 				dataTree.setSelectionPath(null);
@@ -285,7 +285,7 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 		
 		dataTree.dataUpdated();
 		
-		fp.setFlow(objectCombo.getSelectedObject(), objectCombo.getData(), objectCombo.getRoot(),	objectCombo.getSelectedRelativePath());
+		fp.setFlow(objectCombo.getSelectedObject(), objectCombo.getData(), objectCombo.getRoot(),	objectCombo.getSelectedPath());
 		fp.repaint();
 		}
 	

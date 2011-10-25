@@ -37,11 +37,14 @@ public class DataTreeElement
 	
 	public EvContainer getLeaf()
 		{
-		return data.get().getChild(path);
+		return path.getObject();
+//		return data.get().getChild(path);
 		}
 
 	public EvPath getPath()
 		{
+		if(!isRoot && path==null)
+			throw new RuntimeException("inconsistency: path is null");
 		return path;
 		}
 
@@ -53,7 +56,10 @@ public class DataTreeElement
 	public DataTreeElement getChild(int index)
 		{
 		if(isRoot)
-			return new DataTreeElement(EvData.openedData.get(index),new EvPath());
+			{
+			EvData data=EvData.openedData.get(index);
+			return new DataTreeElement(data,new EvPath(data));
+			}
 		else
 			{
 			EvContainer c=getLeaf();
@@ -72,12 +78,15 @@ public class DataTreeElement
 	public String toString()
 		{
 		if(isRoot)
-			//return "<data>";
 			return "";
-		else if(path.path.length==0)
-			return data.get().toString();
 		else
-			return path.getLeafName();
+			{
+			String leaf=path.getLeafName();
+			if(leaf==null)
+				return data.get().toString();
+			else
+				return leaf;
+			}
 		}
 	
 	

@@ -11,7 +11,6 @@ import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.data.EvPath;
 import endrov.flow.Flow;
 import endrov.flow.FlowConn;
 import endrov.flowBasic.constants.FlowUnitConstEvDecimal;
@@ -111,8 +110,8 @@ public class EvFRAPAcquisition extends EvAcquisition
 						FlowUnitCalcFRAP unitCalc=new FlowUnitCalcFRAP();
 						flow.units.add(unitCalc);
 						
-						FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
-						FlowUnitObjectIO unitGetROI=new FlowUnitObjectIO(new EvPath("roi"));
+						FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO("ch");
+						FlowUnitObjectIO unitGetROI=new FlowUnitObjectIO("roi");
 						FlowUnitConstEvDecimal unitFrame=new FlowUnitConstEvDecimal(EvDecimal.ZERO);
 						FlowUnitShow unitShowLifetime=new FlowUnitShow();
 						FlowUnitShow unitShowMobile=new FlowUnitShow();

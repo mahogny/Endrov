@@ -39,7 +39,7 @@ public class CleanTBU
 				if(ch.getFrames().isEmpty() && ch.metaObject.isEmpty())
 					{
 					System.out.println("Would delete "+e.getKey());
-					EvContainer cont=e.getKey().getParent().getObject(data);
+					EvContainer cont=e.getKey().getParent().getObject();
 					
 					cont.metaObject.remove(e.getKey().getLeafName());
 					changed=true;

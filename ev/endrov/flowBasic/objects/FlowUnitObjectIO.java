@@ -19,7 +19,6 @@ import org.jdom.Element;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
-import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
 import endrov.flow.Flow;
@@ -66,9 +65,9 @@ public class FlowUnitObjectIO extends FlowUnit
 		{
 		}
 	
-	public FlowUnitObjectIO(EvPath path)
+	public FlowUnitObjectIO(String path)
 		{
-		nameOfObject=path.toString();
+		nameOfObject=path;
 		}
 	
 	public Dimension getBoundingBox(Component comp, Flow flow)
@@ -190,12 +189,13 @@ public class FlowUnitObjectIO extends FlowUnit
 			else
 				{
 				//TODO replace with new path system
-				EvData currentData=exec.getData();
+				//EvData currentData=exec.getData();
 				EvPath currentPath=exec.getPath().getParent();
 				
-				EvPath path=EvPath.parse(nameOfObject);
+				EvPath path=currentPath.getRelativePath(nameOfObject);
+				//EvPath path=EvPath.parse(nameOfObject);
 				String childName=path.getLeafName();
-				EvContainer parentContainer=path.getParent().getContainer(currentData, currentPath);
+				EvContainer parentContainer=path.getParent().getObject();
 				
 				System.out.println("Parent: "+parentContainer);
 				System.out.println("leaf: "+childName);
@@ -223,11 +223,10 @@ public class FlowUnitObjectIO extends FlowUnit
 			//obvalue=parent.metaObject.get(nameOfObject);
 			
 			//TODO replace with new path system
-			EvData currentData=exec.getData();
+			//EvData currentData=exec.getData();
 			EvPath currentPath=exec.getPath().getParent();
 
-			EvPath path=EvPath.parse(nameOfObject);
-			EvContainer c=path.getContainer(currentData, currentPath);
+			EvContainer c=currentPath.getRelativePath(nameOfObject).getObject();
 			
 			obvalue=c;
 			System.out.println("got "+c);

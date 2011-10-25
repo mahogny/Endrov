@@ -28,9 +28,6 @@ public class FlowExec
 	{
 	private WeakHashMap<FlowUnit, UnitState> unitStates=new WeakHashMap<FlowUnit, UnitState>();
 	private WeakReference<EvData> data=new WeakReference<EvData>(null);
-	/*
-	private WeakReference<EvContainer> parent=new WeakReference<EvContainer>(null);   //It can be discussed if parent pointers should not be in the objects
-	private WeakReference<Flow> flow=new WeakReference<Flow>(null);*/
 	private EvPath currentPath;
 	
 	public ProgressHandle ph=new ProgressHandle(); //TODO connect it
@@ -39,15 +36,6 @@ public class FlowExec
 	 * Connection to outside world
 	 */
 	public FlowExecListener listener=new IgnorantListener();
-
-	/**
-	 * A connection to the outside using input/output objects
-	 */
-	public interface FlowExecListener
-		{
-		public Object getInputObject(String name);
-		public void setOutputObject(String name, Object ob);
-		}
 
 	/**
 	 * Listener that does nothing i.e. no connection to outside
@@ -61,19 +49,14 @@ public class FlowExec
 		public void setOutputObject(String name, Object ob)
 			{
 			System.out.println("output: "+name+"\t======>\t"+ob);
-			}		
+			}
 		}
 
 	
-	public FlowExec(EvData data2, EvContainer parent2, EvPath path,	Flow flow)
+	public FlowExec(EvData data2, EvPath path)
 		{
 		data=new WeakReference<EvData>(data2);
-		//parent=new WeakReference<EvContainer>(parent2);
 		currentPath=path;
-		//this.flow=new WeakReference<Flow>(flow);
-		
-		System.out.println("the path is "+currentPath);
-		
 		}
 
 	public EvData getData()
@@ -83,9 +66,7 @@ public class FlowExec
 	
 	public EvContainer getParent()
 		{
-		return currentPath.getParent().getObject(data.get());
-		
-		//return parent.get();
+		return currentPath.getParent().getObject();
 		}
 	
 	public EvPath getPath()
@@ -95,7 +76,7 @@ public class FlowExec
 	
 	public Flow getFlow()
 		{
-		return (Flow)currentPath.getObject(data.get());
+		return (Flow)currentPath.getObject();
 		}
 	
 	

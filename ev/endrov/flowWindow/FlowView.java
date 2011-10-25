@@ -50,7 +50,7 @@ public class FlowView extends JPanel implements MouseListener, MouseMotionListen
 	private static final int lineSnapDistance=10;
 
 	private Flow flow=new Flow();
-	private FlowExec flowExec=new FlowExec(null, null, null, null);
+	private FlowExec flowExec=new FlowExec(null, null);
 	private boolean enabled=false;
 	
 	private Map<Tuple<FlowUnit, String>, ConnPoint> connPoint=new HashMap<Tuple<FlowUnit,String>, ConnPoint>();
@@ -127,7 +127,7 @@ public class FlowView extends JPanel implements MouseListener, MouseMotionListen
 			flow=new Flow();
 		if(flow!=this.flow || data!=flowExec.getData() || parent!=flowExec.getParent() || !path.equals(flowExec.getPath()))
 			{
-			flowExec=new FlowExec(data, parent, path, flow);
+			flowExec=new FlowExec(data, path);
 			//flowExec.setReferences();
 			/*
 			flowExec.setData(data);

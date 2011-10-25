@@ -7,8 +7,10 @@ package endrov.starter;
 
 import endrov.basicWindow.*;
 import endrov.data.EvData;
+import endrov.data.EvPath;
 import endrov.dbus.EndrovDBUS;
 import endrov.ev.*;
+import endrov.flow.FlowExec;
 import endrov.imageWindow.*;
 import endrov.util.RepeatingKeyEventsFixer;
 
@@ -34,6 +36,33 @@ public class MW
 	 */
 	public static void main(final String[] args)
 		{
+		for(int argi=0;argi<args.length;argi++)
+			{
+			if(args[argi].equals("--runflow"))
+				{
+				try
+					{
+					String fname=args[argi+1];
+					String flowname=args[argi+2];
+					
+					EvData data=EvData.loadFile(new File(fname));
+					EvPath path=EvPath.parse(data, flowname);
+					FlowExec flowExec=new FlowExec(data, path);
+
+					flowExec.evaluateAll();
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					System.exit(1);
+					}
+				
+				System.exit(0);
+				}
+			}
+		
+		
+		
 		//If there is a file to open, try send it to existing session
 		if(args.length!=0)
 			{
