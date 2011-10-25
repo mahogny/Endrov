@@ -21,7 +21,7 @@ import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
@@ -89,7 +89,7 @@ public class FlowUnitConstEvDecimal extends FlowUnitConst
 		}
 	
 	
-	public Component getGUIcomponent(final FlowPanel p)
+	public Component getGUIcomponent(final FlowView p)
 		{
 		final JTextField field=new JTextField(getVar().toString());
 		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));

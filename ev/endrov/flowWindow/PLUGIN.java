@@ -3,14 +3,15 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flow;
+package endrov.flowWindow;
 import endrov.ev.PluginDef;
+import endrov.flowWindow.FlowWindow;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Flows";
+		return "Flow window";
 		}
 
 	public String getAuthor()
@@ -35,7 +36,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{Flow.class};
+		return new Class[]{FlowWindow.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

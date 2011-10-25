@@ -82,7 +82,10 @@ public class EvPath implements Comparable<EvPath>
 		if(!list.isEmpty())
 			list.removeLast();
 		else
-			System.out.println("Unhandled case of getparent");
+			{
+			//System.out.println("path: Unhandled case of getparent, already at the root");
+			throw new RuntimeException("path: Unhandled case of getparent, already at the root");
+			}
 		return new EvPath(list.toArray(new String[]{}));
 		}
 	
@@ -131,7 +134,7 @@ public class EvPath implements Comparable<EvPath>
 	 * TODO Needs testing
 	 * @param currentData
 	 */
-	public EvContainer getContainer(EvData currentData)
+	public EvContainer getObject(EvData currentData)
 		{
 		return getContainer(currentData,new EvPath());
 		}

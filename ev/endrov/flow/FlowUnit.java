@@ -17,7 +17,7 @@ import java.util.*;
 
 import org.jdom.Element;
 
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 
 //think of how to do sub-flows later
 
@@ -55,7 +55,7 @@ public abstract class FlowUnit
 
 	public abstract Dimension getBoundingBox(Component comp, Flow flow);
 
-	public abstract void paint(Graphics g, FlowPanel panel, Component comp);
+	public abstract void paint(Graphics g, FlowView panel, Component comp);
 
 	/** Get types of flows in 
 	 * @param flow TODO*/
@@ -96,6 +96,7 @@ public abstract class FlowUnit
 	/**
 	 * Evaluate flow top-bottom with this component as the top
 	 */
+	/*
 	public void updateTopBottom(Flow flow, FlowExec exec) throws Exception
 		{
 		// TODO cache. how to say if a component is done?
@@ -106,7 +107,7 @@ public abstract class FlowUnit
 			if (u!=null)
 				u.updateTopBottom(flow, exec);
 		evaluate(flow, exec);
-		}
+		}*/
 
 	public abstract Collection<FlowUnit> getSubUnits(Flow flow);
 
@@ -119,7 +120,7 @@ public abstract class FlowUnit
 	/**
 	 * Color to use for border
 	 */
-	protected Color getBorderColor(FlowPanel p)
+	protected Color getBorderColor(FlowView p)
 		{
 		if (p.selectedUnits.contains(this))
 			return Color.MAGENTA;
@@ -149,7 +150,7 @@ public abstract class FlowUnit
 
 	public abstract void fromXML(Element e);
 
-	public abstract Component getGUIcomponent(FlowPanel p);
+	public abstract Component getGUIcomponent(FlowView p);
 
 	public abstract int getGUIcomponentOffsetX();
 
@@ -197,7 +198,7 @@ public abstract class FlowUnit
 	/**
 	 * Draw connectors for a box-like flow unit
 	 */
-	protected void helperDrawConnectors(Graphics g, FlowPanel panel, Component comp, Dimension d)
+	protected void helperDrawConnectors(Graphics g, FlowView panel, Component comp, Dimension d)
 		{
 		int cntIn=1;
 		if(cntIn<getTypesInCount(panel.getFlow())) cntIn=getTypesInCount(panel.getFlow());

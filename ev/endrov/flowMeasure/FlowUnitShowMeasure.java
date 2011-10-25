@@ -34,8 +34,8 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.ui.FlowPanel;
 import endrov.flowMeasure.ParticleMeasure.ParticleInfo;
+import endrov.flowWindow.FlowView;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
@@ -50,7 +50,7 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 	private static final String metaType="showMeasureParticle";
 	
 	
-	private WeakHashMap<FlowPanel, TotalPanel> listPanels=new WeakHashMap<FlowPanel, TotalPanel>();
+	private WeakHashMap<FlowView, TotalPanel> listPanels=new WeakHashMap<FlowView, TotalPanel>();
 	
 	
 	public FlowUnitShowMeasure()
@@ -86,7 +86,7 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			
 	
 	
-	public Component getGUIcomponent(final FlowPanel p)
+	public Component getGUIcomponent(final FlowView p)
 		{
 		TotalPanel t=listPanels.get(p);
 		if(t==null)

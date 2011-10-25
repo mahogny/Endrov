@@ -27,7 +27,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 import endrov.recording.CategoryInfo;
 
 /**
@@ -40,7 +40,7 @@ public class FlowUnitShowGraph extends FlowUnitBasic
 	private static final String metaType="showGraph";
 	
 	
-	private WeakHashMap<FlowPanel, TotalPanel> listPanels=new WeakHashMap<FlowPanel, TotalPanel>();
+	private WeakHashMap<FlowView, TotalPanel> listPanels=new WeakHashMap<FlowView, TotalPanel>();
 	
 	
 	public FlowUnitShowGraph()
@@ -77,7 +77,7 @@ public class FlowUnitShowGraph extends FlowUnitBasic
 			
 	
 	
-	public Component getGUIcomponent(final FlowPanel p)
+	public Component getGUIcomponent(final FlowView p)
 		{
 		TotalPanel t=listPanels.get(p);
 		if(t==null)

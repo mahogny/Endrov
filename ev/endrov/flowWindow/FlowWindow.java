@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flow.ui;
+package endrov.flowWindow;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -98,7 +98,7 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 	 *****************************************************************************************************/
 	
 	
-	private FlowPanel fp=new FlowPanel();
+	private FlowView fp=new FlowView();
 	
 	private JTree unitTree;
 	
@@ -269,6 +269,8 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 			fp.copy();
 		else if(e.getSource()==bPaste)
 			fp.paste();
+		else if(e.getSource()==bPlayOnce)
+			fp.evaluateAll();
 		}
 	
 	public void dataChangedEvent()
@@ -283,8 +285,7 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 		
 		dataTree.dataUpdated();
 		
-		fp.setFlow(objectCombo.getSelectedObject(), objectCombo.getData(), objectCombo.getRoot(), 
-				objectCombo.getSelectedRelativePath().getParent());
+		fp.setFlow(objectCombo.getSelectedObject(), objectCombo.getData(), objectCombo.getRoot(),	objectCombo.getSelectedRelativePath());
 		fp.repaint();
 		}
 	

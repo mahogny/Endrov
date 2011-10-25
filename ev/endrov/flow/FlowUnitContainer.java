@@ -11,7 +11,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.*;
 
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 
 /**
  * Flow unit of type container
@@ -31,7 +31,7 @@ public abstract class FlowUnitContainer extends FlowUnit
 		return d;
 		}
 	
-	public void paint(Graphics g, FlowPanel panel, Component comp)
+	public void paint(Graphics g, FlowView panel, Component comp)
 		{
 		g.setColor(getBorderColor(panel));
 		g.drawRect(x,y,contw,conth);
@@ -56,7 +56,7 @@ public abstract class FlowUnitContainer extends FlowUnit
 
 		}
 
-	private void drawConnThrough(Graphics g, FlowPanel panel, String argin, String argout, int x, int y)
+	private void drawConnThrough(Graphics g, FlowView panel, String argin, String argout, int x, int y)
 		{
 		panel.drawConnPointLeft(g, this, argin, x, y);
 		panel.drawConnPointRight(g, this, argout, x+2, y);

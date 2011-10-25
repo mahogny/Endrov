@@ -14,7 +14,7 @@ import java.util.Collections;
 
 import javax.swing.ImageIcon;
 
-import endrov.flow.ui.FlowPanel;
+import endrov.flowWindow.FlowView;
 import endrov.util.EvMathUtil;
 
 /**
@@ -121,7 +121,7 @@ public abstract class FlowUnitBasic extends FlowUnit
 	/**
 	 * Draw basic colored box with text and optional custom component
 	 */
-	public void paint(Graphics g, FlowPanel panel, Component comp)
+	public void paint(Graphics g, FlowView panel, Component comp)
 		{
 		g.setColor(Color.blue);
 		
@@ -176,7 +176,7 @@ public abstract class FlowUnitBasic extends FlowUnit
 	/**
 	 * Trivial implementation, can be overridden
 	 */
-	public Component getGUIcomponent(FlowPanel p)
+	public Component getGUIcomponent(FlowView p)
 		{
 		return null;
 		}

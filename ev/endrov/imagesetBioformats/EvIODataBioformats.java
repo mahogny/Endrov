@@ -211,7 +211,7 @@ public class EvIODataBioformats implements EvIOData
 					for (int imageIndex=0; imageIndex<evchanToId.size(); imageIndex++) 
 						{
 						EvPath pathToChan=evchanToId.get(imageIndex);
-						EvChannel ch=(EvChannel)pathToChan.getContainer(d);
+						EvChannel ch=(EvChannel)pathToChan.getObject(d);
 						System.out.println("getting ch "+ch+" for path "+evchanToId.get(imageIndex));
 
 
@@ -397,7 +397,7 @@ public class EvIODataBioformats implements EvIOData
 						{
 						writer.setSeries(imageIndex);
 
-						EvChannel ch=(EvChannel)evchanToId.get(imageIndex).getContainer(d);
+						EvChannel ch=(EvChannel)evchanToId.get(imageIndex).getObject(d);
 						int depth=ch.getStack(ch.getFirstFrame()).getDepth();
 
 						//For each frame
