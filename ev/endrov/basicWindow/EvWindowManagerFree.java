@@ -146,11 +146,7 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 	@Override
 	public void setBounds(Rectangle r)
 		{
-		System.out.println("set bounds for frame "+r);
-		//setVisible(false);
 		super.setBounds(r);
-		//invalidate();
-		//setVisible(true);
 		}
 	
 	}

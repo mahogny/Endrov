@@ -30,17 +30,13 @@ import endrov.modelWindow.gl.GLMeshVBO;
 import endrov.util.EvDecimal;
 import endrov.util.EvMathUtil;
 
-
-//NEED GLJPanel
-//GLCanvas fast
-
 //http://fivedots.coe.psu.ac.th/~ad/jg2/ch15/jogl1v4.pdf
 //talks about -Dsun.java2d.opengl=true, uses gljpanel
 
 /**
  * A panel for displaying the model
  */
-public class ModelView extends GLJPanel //GLCanvas
+public class ModelView extends GLJPanel
 	{
 	public static final long serialVersionUID=0;
 	
@@ -59,15 +55,23 @@ public class ModelView extends GLJPanel //GLCanvas
   caps.setAlphaBits(8);
 	}
 	
-	/** Number of clipping planes supported by this context */
+	/** 
+	 * Number of clipping planes supported by this context
+	 * 6 planes on NVidia macpro 
+	 */
 	public int numClipPlanesSupported;
-  //6 planes on NVidia macpro
-	/** Maximum 3D texture size, or null if not supported */
+	
+	/** 
+	 * Maximum 3D texture size, or null if not supported
+	 * 2048 on GeForce 8400 GS/PCI/SSE2 
+	 */
 	public Integer max3DTextureSize;
-	//2048 on GeForce 8400 GS/PCI/SSE2
-	/** Number of texture units, or null if multitexturing not supported */
+	
+	/**
+	 * Number of texture units, or null if multitexturing not supported
+	 * 4 on GeForce 8400 GS/PCI/SSE2 
+	 */
 	public Integer numTextureUnits;
-	//4 on GeForce 8400 GS/PCI/SSE2
 	
 	public boolean supportsNonPowerTwo;
 	public boolean supportsVBO;
@@ -80,7 +84,10 @@ public class ModelView extends GLJPanel //GLCanvas
 
 	/** Camera coordinates */
 	public GLCamera camera=new GLCamera();
+	
+	/** Field of view */
 	private final double FOV=45.0/180.0*Math.PI;	
+	
 	/** Current frame */
 	public EvDecimal frame=EvDecimal.ZERO;
 	
@@ -89,11 +96,12 @@ public class ModelView extends GLJPanel //GLCanvas
 	private double panspeed=1;
 
 	/** Scale to which everything should adapt */
-	//also panspeed?
 	private double representativeScale=1;
 	
 		
-	/** Current mouse coordinate */
+	/** 
+	 * Current mouse coordinate. Used to calculate hover position 
+	 */
 	public int mouseX=-1, mouseY=-1;	
 	public TextRenderer renderer;
 
@@ -368,13 +376,9 @@ public class ModelView extends GLJPanel //GLCanvas
 		 */
 		public void display(GLAutoDrawable drawable)
 			{
-			//System.out.println("render model");
 			if(force)
 				System.out.println("===forced set===");
 			force=false;
-
-			
-			
 			
 			//Adjust scale
 			BoundingBox totbb=new BoundingBox();
@@ -386,43 +390,21 @@ public class ModelView extends GLJPanel //GLCanvas
 					totbb.xmax-totbb.xmin,
 					totbb.ymax-totbb.ymin,
 					totbb.zmax-totbb.zmin);
-
 			if(representativeDist==0)
 				representativeDist=1;
 			
-			//TODO
-			
-			/*
-			//Adjust scale
-			double avdist=0;
-			int numdist=0;
-			for(ModelWindowHook h:window.modelWindowHooks)
-				for(double dist:h.adjustScale())
-					{
-					avdist+=dist;
-					numdist++;
-					}
-			avdist/=numdist;
-			*/
-			
 			//Select pan speed
 			panspeed=representativeDist/1000.0;
+			
 			//Select representative scale
 			double g=Math.pow(10, (int)Math.log10(representativeDist));
 			if(g<1) g=1;
 			representativeScale=g;
 
-			//Here it would be possible to auto-center the camera if it is totally out of range
-			
-			
+			//TODO Here it would be possible to auto-center the camera if it is totally out of range
 			
 			GL2 gl = drawable.getGL().getGL2();
-			//Store away unaffected matrix
-			//gl.glPushMatrix();
-			
-			checkerr(gl); //TODO upon start getting this
-			
-			
+			checkerr(gl); 
 			
 			window.crossHandler.resetCrossList();
 			
@@ -518,8 +500,6 @@ public class ModelView extends GLJPanel //GLCanvas
 
 				gl.glEnable(GL2.GL_LIGHTING);
 
-				
-				
 				//Render cross. could be an extension
 				window.crossHandler.displayCrossFinal(gl,window);
 				
@@ -557,15 +537,7 @@ public class ModelView extends GLJPanel //GLCanvas
 				if(currentRenderState!=null)
 					currentRenderState.deactivate(gl);
 				
-				}
-			
-			//Restore unaffected matrix
-			//gl.glPopMatrix();
-
-			if(!showSelectChannel)
-				{
-				//Axis rendering
-				//Overlays everything else, has to be done absolutely last
+				//Render axis. Overlays everything else, has to be done absolutely last
 				gl.glLoadIdentity();
 				if(renderAxisArrows)
 					renderAxisArrows(gl);
@@ -573,10 +545,10 @@ public class ModelView extends GLJPanel //GLCanvas
 			
 			checkerr(gl);
 			
+			//If any mesh was not used then remove it from memory
 			removeUnusedMesh(gl);
 			
 			checkerr(gl);
-			//System.out.println("end of render");
 			}
 
 		
@@ -707,10 +679,6 @@ public class ModelView extends GLJPanel //GLCanvas
 		mid.scale(1.0/center.size());
 
 		//Figure out required distance
-		
-//		return Collections.singleton((Double)maxr/Math.sin(FOV));
-
-		
 		double dist=0;
 		for(ModelWindowHook h:window.modelWindowHooks)
 			{
