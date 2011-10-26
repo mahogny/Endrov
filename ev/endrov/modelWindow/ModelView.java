@@ -73,6 +73,7 @@ public class ModelView extends GLJPanel //GLCanvas
 	public boolean supportsVBO;
 	public boolean supportsShaders;
 	public boolean supportsS3textures;
+	private boolean firstInit=true;
 	
 	/** Common data */
 	private ModelWindow window;
@@ -313,8 +314,9 @@ public class ModelView extends GLJPanel //GLCanvas
 			gl.isFunctionAvailable("glUseProgram");
 
 	    
-	    if(true)
+	    if(firstInit)
 	    	{
+	    	firstInit=false;
 	    	//crashed here, started working after syso. postpone swing?
 				EvLog.printLog("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
 				EvLog.printLog("GL_VENDOR: " + gl.glGetString(GL2.GL_VENDOR));
