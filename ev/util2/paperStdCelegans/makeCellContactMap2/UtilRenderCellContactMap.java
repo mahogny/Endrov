@@ -25,7 +25,7 @@ public class UtilRenderCellContactMap
 		{
 		try
 			{
-			EvLog.listeners.add(new EvLogStdout());
+			EvLog.addListener(new EvLogStdout());
 			EV.loadPlugins();
 
 			EvData dneighmaps=EvData.loadFile(new File("/Volumes/TBU_main03/userdata/newcellcontactsmap.ost"));

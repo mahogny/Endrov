@@ -29,7 +29,7 @@ public class MergeWormbaseMesh
 	
 	public static void main(String[] arg)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 
 		EvData dataLin=EvData.loadFile(new File("/Volumes/TBU_main06/wblineage/lin.ost"));

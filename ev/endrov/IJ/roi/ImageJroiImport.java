@@ -64,7 +64,7 @@ public class ImageJroiImport
 	
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 		
 		

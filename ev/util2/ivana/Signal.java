@@ -87,7 +87,7 @@ public class Signal
 	
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 		
 		doDirectory("/home/ivana/lab_data/lab_journal/2009/data2009_06/Nile_Red_20C/01062009_Nilered/AT2633/AT2633_NR/",

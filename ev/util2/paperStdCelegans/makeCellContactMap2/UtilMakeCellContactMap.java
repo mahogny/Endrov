@@ -126,7 +126,7 @@ public class UtilMakeCellContactMap
 		{
 		try
 			{
-			EvLog.listeners.add(new EvLogStdout());
+			EvLog.addListener(new EvLogStdout());
 			EV.loadPlugins();
 
 			NumberFormat percentFormat=NumberFormat.getInstance();

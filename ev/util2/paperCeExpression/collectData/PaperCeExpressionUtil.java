@@ -240,7 +240,7 @@ public class PaperCeExpressionUtil
 	 */
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 		
 		Set<String> argsSet=new HashSet<String>();

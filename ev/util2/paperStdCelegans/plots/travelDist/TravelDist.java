@@ -90,7 +90,7 @@ public class TravelDist
 	
 	public static void one(String linname)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 
 		
@@ -226,7 +226,7 @@ public class TravelDist
 	 */
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 	
 		one("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost");

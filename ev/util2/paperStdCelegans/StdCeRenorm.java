@@ -39,7 +39,7 @@ public class StdCeRenorm
 	 */
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost"));

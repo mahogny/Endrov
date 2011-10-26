@@ -30,15 +30,26 @@ public abstract class EvLog
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 
-	public static HashSet<EvLog> listeners=new HashSet<EvLog>();
+	private static HashSet<EvLog> listeners=new HashSet<EvLog>();
 
+	public static void addListener(EvLog log)
+		{
+		synchronized (listeners)
+			{
+			listeners.add(log);
+			}
+		}
+	
 	/**
 	 * Keep track of what has happen in memory in case one wants to look at it aposteriori
 	 */
 	public static MemoryLog memoryLog=new MemoryLog();
 	static
 	{
-	listeners.add(memoryLog);
+	synchronized (listeners)
+		{
+		listeners.add(memoryLog);
+		}
 	}
 	
 	/**
@@ -46,8 +57,11 @@ public abstract class EvLog
 	 */
 	public static void printDebug(String s)
 		{
-		for(EvLog l:listeners)
-			l.listenDebug(s);
+		synchronized (listeners)
+			{
+			for(EvLog l:listeners)
+				l.listenDebug(s);
+			}
 		}
 
 	/**
@@ -57,8 +71,11 @@ public abstract class EvLog
 	 */
 	public static void printError(String s, Exception e)
 		{
-		for(EvLog l:listeners)
-			l.listenError(s,e);
+		synchronized (listeners)
+			{
+			for(EvLog l:listeners)
+				l.listenError(s,e);
+			}
 		}
 
 	public static void printError(Exception e)
@@ -72,8 +89,11 @@ public abstract class EvLog
 	 */
 	public static void printLog(String s)
 		{
-		for(EvLog l:listeners)
-			l.listenLog(s);
+		synchronized (listeners)
+			{
+			for(EvLog l:listeners)
+				l.listenLog(s);
+			}
 		}
 
 	
@@ -87,5 +107,13 @@ public abstract class EvLog
 		e.printStackTrace(s2);
 		s2.flush();
 		return sw.toString();
+		}
+	
+	public static void removeListener(EvLog consoleLog)
+		{
+		synchronized (listeners)
+			{
+			listeners.remove(consoleLog);
+			}
 		}
 	}

@@ -13,7 +13,7 @@ public class DebugMakeGraph
 
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 

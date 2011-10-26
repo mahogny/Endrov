@@ -75,7 +75,7 @@ public class FixOSTendframe
 	 */
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 
 		for(File f:new File("/Volumes3/TBU_main01/ost4dgood/").listFiles())

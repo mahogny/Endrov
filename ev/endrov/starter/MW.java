@@ -74,8 +74,8 @@ public class MW
 		//This reduces the effect of one VERY annoying swing bug
 		new RepeatingKeyEventsFixer().install();
 
-		EvLog.listeners.add(new EvLogStdout());
-		EvLog.listeners.add(new EvLogFile(EvSystemUtil.getLogFileName()));
+		EvLog.addListener(new EvLogStdout());
+		EvLog.addListener(new EvLogFile(EvSystemUtil.getLogFileName()));
 
 		//Log.listeners.add(new SwingLog());
 

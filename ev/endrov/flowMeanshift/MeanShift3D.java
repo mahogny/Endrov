@@ -251,7 +251,7 @@ public class MeanShift3D
 	public static void main(String[] args)
 		{
 		//Init
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 		
 		ProgressHandle progh=new ProgressHandle();

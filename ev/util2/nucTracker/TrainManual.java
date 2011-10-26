@@ -41,7 +41,7 @@ public class TrainManual
 	 */
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 		
 		File trueDir =new File("/Volumes/TBU_main03/userdata/henriksson/traintrack/dic/images/true/");

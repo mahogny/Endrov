@@ -47,7 +47,7 @@ public class Main
 
 	public static void main(String[] args)
 			{
-			EvLog.listeners.add(new EvLogStdout());
+			EvLog.addListener(new EvLogStdout());
 			EV.loadPlugins();
 
 			Map<String,String> whichStage=new HashMap<String, String>();

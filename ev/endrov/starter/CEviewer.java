@@ -29,7 +29,7 @@ public class CEviewer
 	 */
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 
 		//Log.listeners.add(new SwingLog());
 

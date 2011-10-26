@@ -40,7 +40,7 @@ public class GetWormbaseLineage
 	
 	public static void main(String[] arg)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 
 		Map<String,WBCell> cells=new HashMap<String, WBCell>();

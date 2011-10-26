@@ -126,7 +126,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		public void windowActivated(WindowEvent e){}
 		public void windowClosed(WindowEvent e)
 			{
-			EvLog.listeners.remove(consoleLog);
+			EvLog.removeListener(consoleLog);
 			}
 		public void windowClosing(WindowEvent e){}
 		public void windowDeactivated(WindowEvent e)
@@ -227,7 +227,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		add(commandLine,BorderLayout.SOUTH);
 		
 		//Log handling
-		EvLog.listeners.add(consoleLog);
+		EvLog.addListener(consoleLog);
 		getEvw().addWindowListener(wlist);
 		history.append(EvLog.memoryLog.get());
 		

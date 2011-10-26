@@ -66,12 +66,12 @@ public class EvSplashScreen extends JFrame
 		setVisible(true);
 		toFront();
 		
-		EvLog.listeners.add(log);
+		EvLog.addListener(log);
 		}
 	
 	public void disableLog()
 		{
-		EvLog.listeners.remove(log);
+		EvLog.removeListener(log);
 		}
 	
 	

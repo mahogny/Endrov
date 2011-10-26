@@ -334,7 +334,7 @@ public class IntegrateAllExp
 
 	public static void main(String arg[])
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 		
 		if (arg.length>0)

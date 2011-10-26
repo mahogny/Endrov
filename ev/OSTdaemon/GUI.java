@@ -191,7 +191,7 @@ public class GUI extends JFrame implements ActionListener, WindowListener, Daemo
 	 */
 	public static void main(String[] arg)
 		{
-		EvLog.listeners.add(new EvLogStdout());
+		EvLog.addListener(new EvLogStdout());
 		String daemonConfig="OSTdaemon/config.txt";
 		if(arg.length>0)
 			daemonConfig=arg[0];
