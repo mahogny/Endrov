@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="endrov/macBinding/" kind="src" path="">
+	<classpathentry excluding="endrov/macBinding/|endrov/starter/NewStart.java|endrov/starter/OldStart.java" kind="src" path="">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="ev/libs/bin_linux"/>
 		</attributes>

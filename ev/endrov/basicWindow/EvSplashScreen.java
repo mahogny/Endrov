@@ -33,7 +33,8 @@ public class EvSplashScreen extends JFrame
 		}
 	
 	private JLabel logLabel=new JLabel("");
-	
+	private JLabel lversion=new JLabel("Version "+EvBuild.version);
+
 	private EvLog log=new EvLog(){
 		public void listenDebug(String s)
 			{
@@ -51,11 +52,20 @@ public class EvSplashScreen extends JFrame
 	
 	public EvSplashScreen()
 		{
+		Color white=new Color(1.0f,1.0f,1.0f);
+		setBackground(white);
+		setForeground(white);
 		add(new JLabel(iconSplash), BorderLayout.CENTER);
 		
+		logLabel.setOpaque(true);
+		lversion.setOpaque(true);
+		
 		JPanel p=new JPanel(new GridLayout(2,1));
-		p.add(new JLabel("Version "+EvBuild.version));
+		p.add(lversion);
 		p.add(logLabel);
+		
+		lversion.setBackground(white);
+		logLabel.setBackground(white);
 		
 		add(p, BorderLayout.SOUTH);
 				

@@ -188,6 +188,14 @@ public class NamebasedImageset implements EvIOData
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	
+	private static class FileInfo
+		{
+		File f;
+		int channelNum=0;
+		int slice=0;
+		int frame=0;
+		}
+		
 	/**
 	 * Class for building database. Has to be a class because java has immutable primitives
 	 */
@@ -199,13 +207,14 @@ public class NamebasedImageset implements EvIOData
 		
 		private int countFilesAdded=0;
 		
+		private Integer minZ=null;
+		
 		public void run(EvData data)
 			{
+			minZ=null;
 			Vector<String> channelVector=new Vector<String>();
 			try
 				{
-//				rebuildLog="";				
-				
 				File dir=basedir;
 				fileList=dir.listFiles();
 
@@ -225,47 +234,26 @@ public class NamebasedImageset implements EvIOData
 					data.metaObject.put("im", im);
 					}
 
-				
 				//Remove all channels
 				for(String s:im.getChannels().keySet())
 					im.metaObject.remove(s);
-				//Create new channels
-/*				for(String cname:channelVector)
-					im.getCreateChannel(cname);*/
-				
-/*				
-				//Create channels, remove unneeded (for rebuild)
-				for(String s:im.getChannels().keySet())
-					{
-					if(!channelVector.contains(s))
-						im.metaObject.remove(s);
-					}
-				//im.channelImages.keySet().retainAll(channelVector);
-				for(String cname:channelVector)
-					im.getCreateChannel(cname);
-					*/
-				/*
-				//Clear up old database
-				List<String> channelsToRemove=new LinkedList<String>(); 
-				for(Map.Entry<String, ChannelImages> entry:im.channelImages.entrySet())
-					{
-					entry.getValue().imageLoader.clear();
-					boolean exists=false;
-					for(String channelName:channelVector)
-						if(channelName.equals(entry.getKey()))
-							exists=true;
-					if(!exists)
-						channelsToRemove.add(entry.getKey());
-					}
-				for(String s:channelsToRemove)
-					im.channelImages.remove(s);
-				*/
-				
-				//Go through list of files
+
+
+				//Go through list of files, just to see what there is
+				List<FileInfo> files=new LinkedList<FileInfo>();
 				File f;
+				currentFile=0;
+				minZ=null;
 				while((f=nextFile())!=null)
-					buildAddFile(im,f,channelVector);
+					{
+					FileInfo info=parse(f);
+					if(info!=null)
+						files.add(info);
+					}
 				
+				//Add all the files
+				for(FileInfo info:files)
+					buildAddFile(im,info,channelVector);
 				}
 			catch (Exception e)
 				{
@@ -273,17 +261,20 @@ public class NamebasedImageset implements EvIOData
 				e.printStackTrace();
 				}
 			
-			rebuildLog.append("Total images indentified: "+countFilesAdded);
+			rebuildLog.append("Total images identified: "+countFilesAdded);
 			}
-	
-		private void buildAddFile(Imageset im, File f, List<String> channelVector) throws Exception
+		
+		
+		/**
+		 * Parse out information from filename. Return info if parse successful
+		 */
+		private FileInfo parse(File f) throws Exception
 			{
+			FileInfo info=new FileInfo();
+			info.f=f;
 			String filename=f.getName();
 			int i=0;
 			int j=0;
-			int channelNum=0;
-			int slice=0;
-			int frame=0;
 			while(i<fileConvention.length())
 				{
 				if(j==filename.length())
@@ -300,26 +291,24 @@ public class NamebasedImageset implements EvIOData
 						if(params.equals(""))
 							{
 							rebuildLog.append("Not matching "+filename+" Missing parameter "+type+", filename pos"+j+"\n");
-//							JOptionPane.showMessageDialog(null, "Not matching "+filename+" Missing parameter "+type+", filename pos"+j);
-							return;
+							return null;
 							}
 						else
 							{
 							j+=params.length();
 							int parami=Integer.parseInt(params);
 							if(type=='C')
-								channelNum=parami;
+								info.channelNum=parami;
 							else if(type=='F')
-								frame=parami;
+								info.frame=parami;
 							else if(type=='Z')
-								slice=parami;
+								info.slice=parami;
 							else if(type=='#')
 								;
 							else
 								{
 								rebuildLog.append("Unknown parameter: "+type+"\n");
-//								JOptionPane.showMessageDialog(null, "Unknown parameter: "+type);
-								return;
+								return null;
 								}
 							}
 						}
@@ -332,47 +321,60 @@ public class NamebasedImageset implements EvIOData
 				else
 					{
 					rebuildLog.append("Not matching: "+filename+" rulepos "+i+" namepos "+j+"\n");
-//					JOptionPane.showMessageDialog(null, "Not matching: "+filename+" rulepos "+i+" namepos "+j);
-					return;
+					return null;
 					}
 				}
 			
 			//If everything was matched, continue
 			if(j==filename.length())
 				{
-				if(channelNum>=channelVector.size())
-					throw new Exception("No channel for index "+channelNum+". Note that channels start counting from 0.\n"
-							+"If your channels start from 1 then give the first channel 0 an arbitrary name, it will not be used.");
-				String channelName=channelVector.get(channelNum);
-
-				//Get a place to put EVimage. Create holders if needed
-				EvChannel ch=im.getCreateChannel(channelName);
-				System.out.println(ch);
-				EvStack stack=ch.getStack(new EvDecimal(frame));
-				if(stack==null)
-					{
-					stack=new EvStack();
-					ch.putStack(new EvDecimal(frame), stack);
-					}
+				//Keep track of smallest Z seen
+				if(minZ==null || info.slice<minZ)
+					minZ=info.slice;
 				
-				//Plug EVimage
-				EvImage evim=new EvImage();
-				stack.setRes(resX,resY,resZ);
-				evim.io=new BasicSliceIO(f);
-				
-				stack.putInt(slice, evim);
-				
-				String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
-				System.out.println(newLogEntry);
-				rebuildLog.append(newLogEntry);
-				countFilesAdded++;
+				return info;
 				}
 			else
 				{
 				rebuildLog.append("Not matching: "+filename+" Premature end of filename\n");
-//				JOptionPane.showMessageDialog(null, "Not matching: "+filename+" Premature end of filename");
+				return null;
 				}
+			}
+		
+		/**
+		 * Add file to channels
+		 */
+		private void buildAddFile(Imageset im, FileInfo info, List<String> channelVector) throws Exception
+			{
+			if(info.channelNum>=channelVector.size())
+				throw new Exception("For "+info.f+", no channel for index "+info.channelNum+". Note that channels start counting from 0.\n"
+						+"If your channels start from 1 then give the first channel 0 an arbitrary name, it will not be used.");
 
+			
+			String channelName=channelVector.get(info.channelNum);
+
+			//Get a place to put EVimage. Create holders if needed
+			EvChannel ch=im.getCreateChannel(channelName);
+			System.out.println(ch);
+			EvStack stack=ch.getStack(new EvDecimal(info.frame));
+			if(stack==null)
+				{
+				stack=new EvStack();
+				ch.putStack(new EvDecimal(info.frame), stack);
+				}
+			
+			//Plug EVimage
+			EvImage evim=new EvImage();
+			stack.setRes(resX,resY,resZ);
+			evim.io=new BasicSliceIO(info.f);
+			
+			stack.putInt(info.slice-minZ, evim);
+			
+			String filename=info.f.getName();
+			String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+info.frame+" Sl: "+info.slice+"\n";
+			System.out.println(newLogEntry);
+			rebuildLog.append(newLogEntry);
+			countFilesAdded++;
 			}
 		
 		
