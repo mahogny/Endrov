@@ -62,15 +62,17 @@ public class ModelView extends GLJPanel //GLCanvas
 	/** Number of clipping planes supported by this context */
 	public int numClipPlanesSupported;
   //6 planes on NVidia macpro
-	/** Maximum 3D texture size */
-	public int max3DTextureSize;
+	/** Maximum 3D texture size, or null if not supported */
+	public Integer max3DTextureSize;
 	//2048 on GeForce 8400 GS/PCI/SSE2
-	/** Number of texture units */
-	public int numTextureUnits;
+	/** Number of texture units, or null if multitexturing not supported */
+	public Integer numTextureUnits;
 	//4 on GeForce 8400 GS/PCI/SSE2
 	
-	public boolean VBOsupported;
-	public boolean shaderSupported;
+	public boolean supportsNonPowerTwo;
+	public boolean supportsVBO;
+	public boolean supportsShaders;
+	public boolean supportsS3textures;
 	
 	/** Common data */
 	private ModelWindow window;
@@ -266,26 +268,41 @@ public class ModelView extends GLJPanel //GLCanvas
 	    checkerr(gl);
 
 	    //3D texture support
-	    gl.glGetIntegerv(GL2.GL_MAX_3D_TEXTURE_SIZE, queryArr, 0);
-	    max3DTextureSize=queryArr[0];
+	    boolean supportsTexture3D = gl.isExtensionAvailable("GL_EXT_texture_3d");
+	    if(supportsTexture3D)
+	    	{
+		    gl.glGetIntegerv(GL2.GL_MAX_3D_TEXTURE_SIZE, queryArr, 0);
+		    max3DTextureSize=queryArr[0];
+	    	}
+	    else
+	    	max3DTextureSize=null;
 
 	    checkerr(gl);
 
 	    //Texture units
-	    gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_UNITS, queryArr, 0);
-	    numTextureUnits=queryArr[0];
+	    boolean supportsMultiTexture = gl.isExtensionAvailable("GL_ARB_multitexture");
+	    if(supportsMultiTexture)
+	    	{
+		    gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_UNITS, queryArr, 0);
+		    numTextureUnits=queryArr[0];
+	    	}
+	    else
+	    	numTextureUnits=null;
 	    
 	    checkerr(gl);
 	    
+	    supportsNonPowerTwo = gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two");
+	    supportsS3textures = gl.isExtensionAvailable("GL_EXT_texture_compression_s3tc");
+	    
 	    //VBO support
-	    VBOsupported= 
+	    supportsVBO= 
 	    gl.isFunctionAvailable("glGenBuffersARB") &&
 	    gl.isFunctionAvailable("glBindBufferARB") &&
 	    gl.isFunctionAvailable("glBufferDataARB") &&
 	    gl.isFunctionAvailable("glDeleteBuffersARB");
 	    
 	    //Shader support
-	    shaderSupported=
+	    supportsShaders=
 			gl.isFunctionAvailable("glCreateShader") &&
 			gl.isFunctionAvailable("glShaderSource") &&
 			gl.isFunctionAvailable("glCompileShader") &&
@@ -306,7 +323,7 @@ public class ModelView extends GLJPanel //GLCanvas
 				EvLog.printLog("clipping planes supported: "+numClipPlanesSupported);
 				EvLog.printLog("max 3D texture size: "+max3DTextureSize);
 				EvLog.printLog("num texture units: "+numTextureUnits);
-				EvLog.printLog("VBO supported: "+VBOsupported);
+				EvLog.printLog("VBO supported: "+supportsVBO);
 	    	}
 	    
 	    checkerr(gl);

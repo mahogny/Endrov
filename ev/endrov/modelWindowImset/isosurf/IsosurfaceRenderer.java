@@ -61,7 +61,7 @@ public class IsosurfaceRenderer
 		this.vertb=vertb;
 		this.vertn=vertn;
 		this.indb=indb;
-		VBOsupported=view.VBOsupported;
+		VBOsupported=view.supportsVBO;
 		VBOsupported=false;
 		}
 	
