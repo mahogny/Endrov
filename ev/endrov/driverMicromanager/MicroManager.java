@@ -15,7 +15,6 @@ import mmcorej.PropertyBlock;
 import mmcorej.PropertyPair;
 
 import org.jdom.Element;
-import org.micromanager.MMStudioMainFrame.CoreEventCallback;
 import org.micromanager.conf.ConfiguratorDlg;
 
 import endrov.hardware.*;
