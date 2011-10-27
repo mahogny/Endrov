@@ -108,22 +108,19 @@ public class Start
 
 		//Collect jarfiles
 		jarfiles.add(path.getAbsolutePath());
-		collectJars(jarfiles, binfiles, new File(path,"libs"), platformExt);
+		collectJarsAndBins(jarfiles, binfiles, new File(path,"libs"), platformExt);
 
+		//Collect DLLs/equivalent from java.library.path
 		if(libpath!=null)
 			{
 			StringTokenizer stok=new StringTokenizer(libpath,File.pathSeparator);
 			while(stok.hasMoreTokens())
 				{
 				String s=stok.nextToken();
-				if(!s.equals("."))          //TODO: or path? 
+				if(!s.equals("."))          //TODO: or path?
 					{
+					//jarfiles.add(s);
 					binfiles.add(s);
-/*					File root=new File(s);
-					if(root.exists())
-						for(File f:root.listFiles())
-							if(f.getName().endsWith(".jar") || f.getName().endsWith(".zip")) //QTJava is .zip
-								jarfiles.add(f.getAbsolutePath());*/
 					}
 				}
 			}
@@ -175,7 +172,7 @@ public class Start
 	 * Get all jars and add them with path to vector. 
 	 * Recurses when it finds a directory ending with _inc.
 	 */
-	private static void collectJars(LinkedList<String> v,LinkedList<String> binfiles,File p, Collection<String> platformExt)
+	private static void collectJarsAndBins(LinkedList<String> v,LinkedList<String> binfiles,File p, Collection<String> platformExt)
 		{
 		if(p.exists())
 			for(File sub:p.listFiles())
@@ -185,8 +182,8 @@ public class Start
 				else if(sub.isFile() && (sub.getName().endsWith(".paths")))
 					{
 					//File containing list of jars or libraries to include.
-					//This is used on systems where jars are present already e.g. Debian
-					
+					//This is used on systems where jars are present already e.g. Debian, and packaging scripts
+					//can provide links. An alternative would be to let these tools provide symlinks instead
 					try
 						{
 						BufferedReader input =  new BufferedReader(new FileReader(sub));
@@ -196,7 +193,9 @@ public class Start
 							if(line.startsWith("j:"))
 								addJar(v,line.substring(2)); //j:
 							else if(line.startsWith("b:"))
+								{
 								binfiles.add(line.substring(2)); //b:
+								}
 							}
 						input.close();
 						}
@@ -206,15 +205,16 @@ public class Start
 						}
 					}
 				else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith(".") && !sub.getName().equals("unused"))
-					collectJars(v,binfiles, sub, platformExt);
+					collectJarsAndBins(v,binfiles, sub, platformExt);
 				else 
 					{
 					for(String oneExt:platformExt)
 						if(sub.isDirectory() && sub.getName().equals("bin_"+oneExt))
 							{
-							collectJars(v,binfiles, sub, platformExt);
+							collectJarsAndBins(v,binfiles, sub, platformExt);
 							String toadd=sub.getAbsolutePath();
 							binfiles.add(toadd);
+							addJar(v,toadd);
 							}
 					}
 				}
@@ -491,125 +491,6 @@ public class Start
 		}
 	
 	
-	
-	/*
-	 * ******************************************************************************************
-	 */
-	
-	/**
-	 * Run Endrov given command line. Run through class loader
-	 * 
-	 * * -- cannot change memory allocation here. CRITICAL
-	 * * ++ can change classloader, prepare for better plugin support
-	 * * ++ can hide many entries on command line
-	 * * ?? can change shared objects dir
-	 * 
-	 * 
-	 */
-	/*
-	public void runClassLoader(String[] argsa)
-		{
-		boolean hasSpecifiedLibdir=false;
-		boolean printCommand=false;
-		File javaenvFile=null;
-		File basedir=new File(".");
-		
-		int numNonflagArg=0;
-		List<String> args=new LinkedList<String>();
-		for(int argi=0;argi<argsa.length;argi++)
-			{
-			String curarg=argsa[argi];
-			
-			if(curarg.equals("--printcommand"))
-				printCommand=true;
-			else if(curarg.equals("--printjar"))
-				printJar=true;
-			else if(args.contains("--version"))
-				{
-				//Print current version. need to be put in starter jar to work
-				System.out.println("Endrov "+EvBuild.version);
-				System.exit(0);
-				}
-			else if(curarg.equals("--cp2"))
-				{
-				//Additional jars to add to classpath
-				jarfiles.add(argsa[argi+1]);
-				//cp2+=":"+;
-				argi++;
-				}
-			else if(curarg.equals("--libpath2"))
-				{
-				binfiles.add(argsa[argi+1]);
-				argi++;
-				}
-			else if(curarg.equals("--basedir"))
-				{
-				//Override current directory
-				basedir=new File(argsa[argi+1]);
-				argi++;
-				}
-			else if(curarg.equals("--main"))
-				{
-				//Start another main class
-				mainClass=argsa[argi+1];
-				argi++;
-				}
-			else if(curarg.equals("--javaenv"))
-				{
-				//Use another environment
-				javaenvFile=new File(argsa[argi+1]);
-				argi++;
-				}
-			else if(curarg.equals("--archinfo"))
-				{
-				//Show info about the system
-				System.out.println("This system runs OS:"+OS+" with java:"+javaver+" on arch:"+arch);
-				}
-			else
-				{
-				if(!curarg.startsWith("--"))
-					numNonflagArg++;
-				args.add(curarg);
-				}
-			}
-		
-		collectSystemInfo(basedir);
-		
-		
-
-		//Continue if java 1.5+
-		if(javaVerMajor>1 || (javaVerMajor==1 && javaVerMinor>=5))
-			{
-			try
-				{
-				LinkedList<URL> urls=new LinkedList<URL>();
-				for(String s:jarfiles)
-					urls.add(new File(s).toURI().toURL());
-
-
-				//Important: Must NOT use the system class loader - it will take over for current directory
-				//and fail to load JAR files
-//				URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),null);
-				//URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),new ResourceClassLoader());
-				System.out.println(binfiles);
-				ResourceClassLoader cload=new ResourceClassLoader(urls.toArray(new URL[]{}),binfiles, null, Start.class.getClassLoader());
-				System.out.println(cload);
-				
-				Class<?> cl=cload.loadClass(mainClass);
-				Method mMethod=cl.getMethod("main", String[].class);
-				mMethod.invoke(null, new Object[]{args.toArray(new String[]{})});
-				}
-			catch (Exception e)
-				{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				}
-			
-			}
-		else
-			JOptionPane.showMessageDialog(null, "Your version of Java is too old. It must be at least 1.5");
-		}
-	*/
 	
 
 	

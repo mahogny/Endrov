@@ -1,0 +1,1 @@
+popNextImage vs getLastImage? which one to use and when?

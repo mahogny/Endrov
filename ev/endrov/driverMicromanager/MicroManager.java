@@ -10,12 +10,14 @@ import java.util.*;
 
 import mmcorej.CMMCore;
 import mmcorej.DeviceType;
+import mmcorej.MMEventCallback;
 import mmcorej.PropertyBlock;
 import mmcorej.PropertyPair;
 
 import org.jdom.Element;
+import org.micromanager.MMStudioMainFrame.CoreEventCallback;
+import org.micromanager.conf.ConfiguratorDlg;
 
-import endrov.driverMicromanager.conf.ConfiguratorDlg;
 import endrov.hardware.*;
 import endrov.starter.EvSystemUtil;
 
@@ -28,6 +30,10 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 	{
 	
 	
+	public class CoreEventCallback extends MMEventCallback {
+		//TODO whole bunch of methods here to override
+	}
+	
 	CMMCore core;
 
 	
@@ -37,8 +43,13 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 		{
 		try
 			{
-			core=new CMMCore();
+
 			
+			core=new CMMCore();
+
+			CoreEventCallback cb_ = new CoreEventCallback();
+      core.registerCallback(cb_);
+
 			//core.enableStderrLog(true);
 			core.enableDebugLog(false);
 			
@@ -167,7 +178,6 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 			}
 		catch (Exception e)
 			{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			}
 		}

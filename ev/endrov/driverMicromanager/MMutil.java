@@ -109,7 +109,8 @@ public class MMutil
 			
 			}
 		else
-			arr=core.getRGB32Image();
+			throw new RuntimeException("color cam not supported");
+			//arr=core.getRGB32Image();
 
 		if(bpp!=1)
 			System.out.println("Got camera bpp "+bpp);
