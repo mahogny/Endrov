@@ -3,13 +3,10 @@ Endrov
 
 License
 --------------------------------------------------------------------
-This software falls under the BSD3 license. See LICENSE.txt
-
-What is Endrov?
---------------------------------------------------------------------
-Endrov is an application written at Karolinska Institute, primary for studying C.Elegans,
-later turned into a general purpose image analysis program.
-
+The license for most source files, unless otherwise stated, is the BSD3 license (see LICENSE.txt).
+Bundled libraries (jar-files) are all open source but under their own respective licenses. In particular,
+several libraries are under GPL. See upstream for more information. 
+ 
 User Guide
 --------------------------------------------------------------------
 For the sake of keeping things up to date, refer to our website for any documentation.
@@ -19,5 +16,5 @@ Contact
 --------------------------------------------------------------------
 Primary maintainer:
   Johan Henriksson
-  Karolinska Institutet/Södertörn college
-  johan.henriksson@ki.se
+  Karolinska Institutet
+  mahogny@areta.org
