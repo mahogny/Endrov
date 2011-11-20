@@ -8,28 +8,30 @@ package endrov.hardware;
  */
 public class EvDevicePropPath implements Comparable<EvDevicePropPath>
 	{
-	public EvDevicePath device;
-	public String property;
+	private EvDevicePath devicePath;
+	private String property;
+	
+	
 	
 	public EvDevicePropPath(EvDevicePath p, String propName)
 		{
-		this.device = p;
-		this.property = propName;
+		this.devicePath = p;
+		this.property=propName;
 		}
 
 	public int compareTo(EvDevicePropPath o)
 		{
-		int c=device.compareTo(o.device);
+		int c=devicePath.compareTo(o.devicePath);
 		if(c!=0)
 			return c;
 		else
-			return property.compareTo(o.property);
+			return getProperty().compareTo(o.getProperty());
 		}
 	
 	@Override
 	public String toString()
 		{
-		return device.toString()+"#"+property;
+		return devicePath.toString()+"#"+getProperty();
 		}
 	
 	@Override
@@ -38,9 +40,20 @@ public class EvDevicePropPath implements Comparable<EvDevicePropPath>
 		if(obj instanceof EvDevicePropPath)
 			{
 			EvDevicePropPath o=(EvDevicePropPath)obj;
-			return device.equals(o.device) && property.equals(o.property);
+			return devicePath.equals(o.devicePath) && getProperty().equals(o.getProperty());
 			}
 		else
 			return false;
+		}
+
+
+	public EvDevice getDevice()
+		{
+		return devicePath.getDevice();
+		}
+
+	public String getProperty()
+		{
+		return property;
 		}
 	}

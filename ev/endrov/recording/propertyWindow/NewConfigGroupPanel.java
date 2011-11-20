@@ -1,12 +1,9 @@
-package endrov.recording.controlWindow;
+package endrov.recording.propertyWindow;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -17,7 +14,6 @@ import javax.swing.JPanel;
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.hardware.EvHardwareConfigGroup;
-import endrov.recording.propertyWindow.DialogNewConfigGroup;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 
@@ -27,27 +23,17 @@ import endrov.util.JImageButton;
  * @author Johan Henriksson
  *
  */
-public class ConfigGroupPanel extends JPanel implements ActionListener
+public class NewConfigGroupPanel extends JPanel implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
-	private JButton bAddGroup=new JImageButton(BasicIcon.iconAdd, "New config group");
-	
-	private JPanel pGroups=new JPanel();
-	private HashMap<String,String> lastComboSetting=new HashMap<String, String>();
-	
-	/**
-	 * Configuration for one group
-	 */
-	private class StatesPanel extends JPanel implements ActionListener
-		{
-		private static final long serialVersionUID = 1L;
+
 		private JComboBox cState=new JComboBox();
 		private JButton bAddState=new JImageButton(BasicIcon.iconAdd, "New state for current config group");
 		private JButton bRemoveState=new JImageButton(BasicIcon.iconRemove, "Remove state from group");
 		private JButton bRemoveGroup=new JImageButton(BasicIcon.iconRemove, "Remove config group");
 		private String groupName;
 		
-		public StatesPanel(String groupName)
+		public NewConfigGroupPanel(String groupName)
 			{
 			this.groupName=groupName;
 			
@@ -60,12 +46,14 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 			DefaultComboBoxModel modelState=(DefaultComboBoxModel)cState.getModel();
 			modelState.removeAllElements();
 			EvHardwareConfigGroup group=EvHardwareConfigGroup.groups.get(groupName);
+			modelState.addElement("");
 			for(String stateName:group.states.keySet())
 				modelState.addElement(stateName);
 
+			/*
 			String lastState=lastComboSetting.get(groupName);
 			if(lastState!=null)
-				cState.setSelectedItem(lastState);
+				cState.setSelectedItem(lastState);*/
 
 			bRemoveGroup.addActionListener(this);
 			bAddState.addActionListener(this);
@@ -90,7 +78,7 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 				if(stateName!=null)
 					{
 					EvHardwareConfigGroup.groups.get(groupName).captureCurrentState(stateName);
-					lastComboSetting.put(groupName, stateName);
+					//lastComboSetting.put(groupName, stateName);
 					BasicWindow.updateWindows();
 					}
 				}
@@ -105,63 +93,18 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 			else if(e.getSource()==cState)
 				{
 				String stateName=(String)cState.getSelectedItem();
-				lastComboSetting.put(groupName, stateName);
+				//lastComboSetting.put(groupName, stateName);
 				EvHardwareConfigGroup.groups.get(groupName).getState(stateName).activate();
 				}
 			
 			
 			}
 		
-		}
-
-	
-
-	
-	
-	public ConfigGroupPanel()
-		{
-		makeLayout();
-
-		bAddGroup.addActionListener(this);
 		
-		setBorder(BorderFactory.createTitledBorder("Meta states"));
-		setLayout(new BorderLayout());
-		add(pGroups,BorderLayout.CENTER);
-		add(bAddGroup,BorderLayout.WEST);
-		}
-
-	
-	private void makeLayout()
-		{
-		int numGroups=EvHardwareConfigGroup.groups.size();
-		pGroups.removeAll();
-		pGroups.setLayout(new GridLayout(numGroups,1));
-		for(String groupName:EvHardwareConfigGroup.groups.keySet())
-			{
-			StatesPanel p=new StatesPanel(groupName);
-			pGroups.add(p);
-			}
-		revalidate();
-		}
-
-
-
-	public void actionPerformed(ActionEvent e)
-		{
-		if(e.getSource()==bAddGroup)
-			{
-			new DialogNewConfigGroup();
-			}
-		
-		
-		}
-
-
 
 
 	public void dataChangedEvent()
 		{
-		makeLayout();
 		
 		}
 
