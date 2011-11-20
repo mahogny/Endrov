@@ -26,6 +26,8 @@ public class EvHardwareConfigGroup
 	 */
 	public static Map<String,EvHardwareConfigGroup> groups=new TreeMap<String, EvHardwareConfigGroup>();
 	
+	
+	
 	/**
 	 * Which properties should be included in this group. Only used as an aid to create new states, since
 	 * a group have no states when created and the list must be stored somewhere
@@ -54,8 +56,8 @@ public class EvHardwareConfigGroup
 			System.out.println("Activate");
 			for(Map.Entry<EvDevicePropPath, String> e:propMap.entrySet())
 				{
-				EvDevice dev=e.getKey().device.getDevice();
-				String prop=e.getKey().property;
+				EvDevice dev=e.getKey().getDevice();
+				String prop=e.getKey().getProperty();
 				dev.setPropertyValue(prop, e.getValue());
 				}
 			}
@@ -76,7 +78,7 @@ public class EvHardwareConfigGroup
 		{
 		State st=new State();
 		for(EvDevicePropPath p:propsToInclude)
-			st.propMap.put(p, p.device.getDevice().getPropertyValue(p.property));
+			st.propMap.put(p, p.getDevice().getPropertyValue(p.getProperty()));
 		states.put(name,st);
 		}
 
@@ -154,8 +156,8 @@ public class EvHardwareConfigGroup
 					for(EvDevicePropPath ve:group.propsToInclude)
 						{
 						Element eSetting=new Element("setting");
-						eSetting.setAttribute("device", ve.device.toString());
-						eSetting.setAttribute("property", ve.property);
+						eSetting.setAttribute("device", ve.toString());
+						eSetting.setAttribute("property", ve.getProperty());
 						eInc.addContent(eSetting);
 						}
 					eGroup.addContent(eInc);
@@ -170,8 +172,8 @@ public class EvHardwareConfigGroup
 						for(Map.Entry<EvDevicePropPath,String> ve:state.propMap.entrySet())
 							{
 							Element eSetting=new Element("setting");
-							eSetting.setAttribute("device", ve.getKey().device.toString());
-							eSetting.setAttribute("property", ve.getKey().property);
+							eSetting.setAttribute("device", ve.getKey().toString());
+							eSetting.setAttribute("property", ve.getKey().getProperty());
 							eSetting.setAttribute("value", ve.getValue());
 							eState.addContent(eSetting);
 							}

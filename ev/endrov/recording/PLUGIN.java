@@ -16,6 +16,7 @@ import endrov.recording.frapWindow.FlowUnitCalcFRAP;
 import endrov.recording.frapWindow.FlowUnitShowGraph;
 import endrov.recording.frapWindow.RecWindowFRAP;
 import endrov.recording.lightpathWindow.LightpathWindow;
+import endrov.recording.propertyWindow.PropertyWindow;
 import endrov.recording.recmetBurst.EvBurstAcquisition;
 import endrov.recording.recmetBurst.RecWindowBurst;
 import endrov.recording.recmetMultidim.RecWindowMultiDim;
@@ -52,6 +53,8 @@ public class PLUGIN extends PluginDef
 		return new Class[]{
 				RecControlWindow.class,CamWindow.class, RecordingResource.class,
 				RecWindowMultiDim.class,
+				
+				PropertyWindow.class,
 				
 				RecWindowBurst.class,
 				RecWindowFRAP.class,

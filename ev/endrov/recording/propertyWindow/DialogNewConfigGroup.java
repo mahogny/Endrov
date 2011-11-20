@@ -1,4 +1,4 @@
-package endrov.recording.controlWindow;
+package endrov.recording.propertyWindow;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
