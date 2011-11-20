@@ -224,7 +224,7 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvBur
 				{
 				public void createMenus(BasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("Burst acquisition",new ImageIcon(getClass().getResource("tangoCamera.png")));
+					JMenuItem mi=new JMenuItem("Acquire: Burst",new ImageIcon(getClass().getResource("tangoCamera.png")));
 					mi.addActionListener(this);
 					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}

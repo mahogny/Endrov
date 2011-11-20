@@ -50,7 +50,7 @@ public class GeneralObserver<E>
 	 */
 	public synchronized Set<E> getListeners()
 		{
-		Set<E> s=weak.keySet();
+		Set<E> s=new HashSet<E>(weak.keySet());
 		s.addAll(strong);
 		//this should be a copy which is important; it cannot be modified during iteration.
 		return s;

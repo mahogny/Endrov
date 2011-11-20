@@ -12,9 +12,9 @@ import endrov.ev.GeneralObserver;
  * 
  * @author Johan Henriksson
  */
-public class EvDeviceObserver extends GeneralObserver<EvDeviceObserver.Listener>
+public class EvDeviceObserver extends GeneralObserver<EvDeviceObserver.DeviceListener>
 	{
-	public static interface Listener
+	public static interface DeviceListener
 		{
 		public void devicePropertyChange(Object source, EvDevice dev);
 		}
@@ -24,7 +24,7 @@ public class EvDeviceObserver extends GeneralObserver<EvDeviceObserver.Listener>
 	 */
 	public void emit(Object source, EvDevice dev)
 		{
-		for(Listener l:getListeners())
+		for(DeviceListener l:getListeners())
 			l.devicePropertyChange(source, dev);
 		}
 

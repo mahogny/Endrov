@@ -195,11 +195,11 @@ public class ITKCorvus extends EvDeviceProvider implements EvDevice
 		
 		
 		public EvDeviceObserver event=new EvDeviceObserver();
-		public void addListener(EvDeviceObserver.Listener listener)
+		public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.addWeakListener(listener);
 			}
-		public void removeListener(EvDeviceObserver.Listener listener)
+		public void removeDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.remove(listener);
 			}
@@ -286,11 +286,11 @@ public class ITKCorvus extends EvDeviceProvider implements EvDevice
 	public void openConfigureDialog(){}
 	
 	public EvDeviceObserver event=new EvDeviceObserver();
-	public void addListener(EvDeviceObserver.Listener listener)
+	public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 		{
 		event.addWeakListener(listener);
 		}
-	public void removeListener(EvDeviceObserver.Listener listener)
+	public void removeDeviceListener(EvDeviceObserver.DeviceListener listener)
 		{
 		event.remove(listener);
 		}

@@ -38,9 +38,9 @@ public class RecWidgetComboMetastate extends JComboBox
 		
 		if(currentMetastate!=null)
 			{
-			EvHardwareConfigGroup g=EvHardwareConfigGroup.groups.get(currentMetastate);
+			EvHardwareConfigGroup g=EvHardwareConfigGroup.getConfigGroup(currentMetastate);
 			if(g!=null)
-				for(String s:g.states.keySet())
+				for(String s:g.getStateNames())
 					modelState.addElement(s);
 			repaint();
 			}
@@ -49,7 +49,7 @@ public class RecWidgetComboMetastate extends JComboBox
 	public EvHardwareConfigGroup getConfigGroup()
 		{
 		String name=getConfigGroupName();
-		return EvHardwareConfigGroup.groups.get(name);
+		return EvHardwareConfigGroup.getConfigGroup(name);
 		}
 	
 	public String getConfigGroupName()

@@ -67,7 +67,7 @@ public class RecControlWindow extends BasicWindow
 	
 	public WeakHashMap<EvComboObject,Object> listComboObject=new WeakHashMap<EvComboObject, Object>();
 	
-	private ConfigGroupPanel cp=new ConfigGroupPanel();
+	private OldConfigGroupPanel cp=new OldConfigGroupPanel();
 	
 	public RecControlWindow()
 		{
@@ -175,7 +175,7 @@ public class RecControlWindow extends BasicWindow
 	 * Shutter *
 	 *****************************************************************************************************/
 
-	public class ShutterPanel implements ActionListener, EvDeviceObserver.Listener
+	public class ShutterPanel implements ActionListener, EvDeviceObserver.DeviceListener
 		{
 		static final long serialVersionUID = 0;
 		private JToggleButton b = new JImageToggleButton(iconShutterClosed,
@@ -226,7 +226,7 @@ public class RecControlWindow extends BasicWindow
 	 * State device *
 	 *****************************************************************************************************/
 
-	public class StateDevicePanel implements ActionListener, EvDeviceObserver.Listener
+	public class StateDevicePanel implements ActionListener, EvDeviceObserver.DeviceListener
 		{
 		// Cannot separate out generic state devices from filters
 
@@ -276,7 +276,7 @@ public class RecControlWindow extends BasicWindow
 	 * Camera *
 	 *****************************************************************************************************/
 
-	public class CameraPanel extends JPanel implements ActionListener, EvDeviceObserver.Listener
+	public class CameraPanel extends JPanel implements ActionListener, EvDeviceObserver.DeviceListener
 		{
 		// TODO: build a function to decompose not only menus but entire swing
 		// components?
@@ -328,7 +328,17 @@ public class RecControlWindow extends BasicWindow
 					}
 				else //if (pt.hasRange)
 					{
-					final JNumericField b=new JNumericField(Double.parseDouble(hw.getPropertyValue(propName)));
+					double doubleval=0;
+					try
+						{
+						doubleval=Double.parseDouble(hw.getPropertyValue(propName));
+						}
+					catch (NumberFormatException e1)
+						{
+						e1.printStackTrace();
+						}
+					
+					final JNumericField b=new JNumericField(doubleval);
 					final Color defaultBG=b.getBackground();
 					comp = b;
 					// Override: Exposure, Gain
@@ -501,7 +511,7 @@ public class RecControlWindow extends BasicWindow
 			{
 			public void createMenus(BasicWindow w)
 				{
-				JMenuItem mi=new JMenuItem("Control",new ImageIcon(getClass().getResource("iconWindow.png")));
+				JMenuItem mi=new JMenuItem("Old Control",new ImageIcon(getClass().getResource("iconWindow.png")));
 				mi.addActionListener(this);
 				BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 				}

@@ -43,15 +43,14 @@ public class RecWidgetComboMetastateGroup extends JComboBox
 		{
 		DefaultComboBoxModel modelState=(DefaultComboBoxModel)getModel();
 		modelState.removeAllElements();
-		for(String groupName:EvHardwareConfigGroup.groups.keySet())
+		for(String groupName:EvHardwareConfigGroup.getConfigGroups().keySet())
 			modelState.addElement(groupName);
 		repaint();
 		}
 	
 	public EvHardwareConfigGroup getConfigGroup()
 		{
-		String name=getConfigGroupName();
-		return EvHardwareConfigGroup.groups.get(name);
+		return EvHardwareConfigGroup.getConfigGroup(getConfigGroupName());
 		}
 	
 	public String getConfigGroupName()

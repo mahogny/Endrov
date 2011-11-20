@@ -27,10 +27,11 @@ public class RecWidgetTimes extends JPanel
 	
 	private SpinnerSimpleEvFrame spFreqDt=new SpinnerSimpleEvFrame();
 	
-	private JRadioButton rbFreqDt=new JRadioButton("∆t",true);
+	private JRadioButton rbFreqDt=new JRadioButton("∆t", true);
 	private JRadioButton rbMaxSpeed=new JRadioButton("Maximum rate");
+	private JRadioButton rbOnTrigger=new JRadioButton("On trigger");
 	
-	private JRadioButton rbNumFrames=new JRadioButton("#t");
+	private JRadioButton rbNumFrames=new JRadioButton("#f");
 	private JRadioButton rbTotT=new JRadioButton("∑∆t");
 	private JRadioButton rbOneT=new JRadioButton("Once",true);
 	private ButtonGroup bgTotalTimeGroup=new ButtonGroup();
@@ -40,18 +41,25 @@ public class RecWidgetTimes extends JPanel
 		
 	public RecWidgetTimes()
 		{
-		rbNumFrames.setToolTipText("Specify number of frames to capture");
-		rbTotT.setToolTipText("Specify total acquisition time");
+		rbFreqDt.setToolTipText("Time between frames");
+		rbMaxSpeed.setToolTipText("Images are acquired as fast as possible");
+		rbOnTrigger.setToolTipText("Images are captured when triggered externally");
+		rbNumFrames.setToolTipText("Specifies number of frames to capture");
+		rbTotT.setToolTipText("Images are acquired until total time has passed");
 		rbOneT.setToolTipText("Acquire a single time point");
+		
+		
+		bgRateGroup.add(rbFreqDt);
+		bgRateGroup.add(rbMaxSpeed);
+		bgRateGroup.add(rbOnTrigger);
+		
 		bgTotalTimeGroup.add(rbNumFrames);
 		bgTotalTimeGroup.add(rbTotT);
 		bgTotalTimeGroup.add(rbOneT);
-		bgRateGroup.add(rbFreqDt);
-		bgRateGroup.add(rbMaxSpeed);
+		
 		spFreqDt.setFrame("1s");
 
 		
-		rbFreqDt.setToolTipText("Time between frames");
 		
 		setLayout(new GridLayout(1,1));
 		
@@ -64,6 +72,7 @@ public class RecWidgetTimes extends JPanel
 										rbFreqDt, spFreqDt
 								),
 								rbMaxSpeed,
+								rbOnTrigger,
 								new JLabel("Number:"),
 								EvSwingUtil.layoutTableCompactWide(
 										rbNumFrames, spNumFrames,

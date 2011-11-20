@@ -185,7 +185,7 @@ public class RecWindowFRAP extends BasicWindow
 				{
 				public void createMenus(BasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("FRAP acquisition",new ImageIcon(getClass().getResource("tangoCamera.png")));
+					JMenuItem mi=new JMenuItem("Acquire: FRAP",new ImageIcon(getClass().getResource("tangoCamera.png")));
 					mi.addActionListener(this);
 					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}

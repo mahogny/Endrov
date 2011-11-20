@@ -163,7 +163,7 @@ public class RecWindowQuickBleach extends BasicWindow implements ActionListener,
 				{
 				public void createMenus(BasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("Quick bleach",new ImageIcon(getClass().getResource("tangoCamera.png")));
+					JMenuItem mi=new JMenuItem("Quick bleach",new ImageIcon(getClass().getResource("iconBleach.png")));
 					mi.addActionListener(this);
 					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}

@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.camWindow;
+package endrov.recording.liveWindow;
 
 
 
@@ -38,6 +38,7 @@ import endrov.recording.CameraImage;
 import endrov.recording.HWAutoFocus;
 import endrov.recording.HWCamera;
 import endrov.recording.RecordingResource;
+import endrov.recording.resolution.ResolutionManager;
 import endrov.roi.GeneralToolROI;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
@@ -52,7 +53,7 @@ import endrov.util.Vector2i;
  * Camera live-feed window
  * @author Johan Henriksson 
  */
-public class CamWindow extends BasicWindow implements ActionListener, ImageWindowInterface
+public class LiveWindow extends BasicWindow implements ActionListener, ImageWindowInterface
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -60,16 +61,16 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 	static final long serialVersionUID=0;
 	
 	
-	public static final ImageIcon iconAutoFocus=new ImageIcon(CamWindow.class.getResource("jhAutoFocus.png"));
-	public static final ImageIcon iconCameraToROI=new ImageIcon(CamWindow.class.getResource("jhCameraToROI.png"));
-	public static final ImageIcon iconEllipseROI=new ImageIcon(CamWindow.class.getResource("jhEllipse.png"));
-	public static final ImageIcon iconFreehandROI=new ImageIcon(CamWindow.class.getResource("jhFreehand.png"));
-	public static final ImageIcon iconGoToROI=new ImageIcon(CamWindow.class.getResource("jhGoToROI.png"));
-	public static final ImageIcon iconLineROI=new ImageIcon(CamWindow.class.getResource("jhLine.png"));
-	public static final ImageIcon iconPointROI=new ImageIcon(CamWindow.class.getResource("jhPoint.png"));
-	public static final ImageIcon iconPolygonROI=new ImageIcon(CamWindow.class.getResource("jhPolygon.png"));
-	public static final ImageIcon iconRectROI=new ImageIcon(CamWindow.class.getResource("jhRect.png"));
-	public static final ImageIcon iconSelectROI=new ImageIcon(CamWindow.class.getResource("jhSelect.png"));
+	public static final ImageIcon iconAutoFocus=new ImageIcon(LiveWindow.class.getResource("jhAutoFocus.png"));
+	public static final ImageIcon iconCameraToROI=new ImageIcon(LiveWindow.class.getResource("jhCameraToROI.png"));
+	public static final ImageIcon iconEllipseROI=new ImageIcon(LiveWindow.class.getResource("jhEllipse.png"));
+	public static final ImageIcon iconFreehandROI=new ImageIcon(LiveWindow.class.getResource("jhFreehand.png"));
+	public static final ImageIcon iconGoToROI=new ImageIcon(LiveWindow.class.getResource("jhGoToROI.png"));
+	public static final ImageIcon iconLineROI=new ImageIcon(LiveWindow.class.getResource("jhLine.png"));
+	public static final ImageIcon iconPointROI=new ImageIcon(LiveWindow.class.getResource("jhPoint.png"));
+	public static final ImageIcon iconPolygonROI=new ImageIcon(LiveWindow.class.getResource("jhPolygon.png"));
+	public static final ImageIcon iconRectROI=new ImageIcon(LiveWindow.class.getResource("jhRect.png"));
+	public static final ImageIcon iconSelectROI=new ImageIcon(LiveWindow.class.getResource("jhSelect.png"));
 
 	
 	
@@ -90,7 +91,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 
 	private JCheckBox tAutoRange=new JCheckBox("Auto", true);
 	private JButton bSetFullRange=new JButton("Full");
-	private CameraHistogramViewRanged histoView=new CameraHistogramViewRanged();
+	private LiveHistogramViewRanged histoView=new LiveHistogramViewRanged();
 	private JCheckBox tUpdateView=new JCheckBox("Update", true);
 	private JCheckBox tLive=new JCheckBox("Live", false);
 	private JButton bSnap=new JButton("Snap");
@@ -107,7 +108,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 	/**
 	 * Surface for the image
 	 */
-	private CamWindowImageView drawArea=new CamWindowImageView()
+	private LiveWindowImageView drawArea=new LiveWindowImageView()
 		{
 		private static final long serialVersionUID = 1L;
 		public int getUpper(){return histoView.upper;}
@@ -115,8 +116,8 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		//TODO rgb
 		public EvPixels[] getImage()
 			{
-			if(CamWindow.this.lastCameraImage!=null)
-				return CamWindow.this.lastCameraImage;
+			if(LiveWindow.this.lastCameraImage!=null)
+				return LiveWindow.this.lastCameraImage;
 			else
 				return null;
 			}
@@ -295,18 +296,18 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 			}
 		}
 	
-	public CamWindow()
+	public LiveWindow()
 		{
 		this(new Rectangle(400,300));
 		}
 	
 	
-	public CamWindow(Rectangle bounds)
+	public LiveWindow(Rectangle bounds)
 		{
 		toolButtons.addAll(Arrays.asList(/*bEllipseROI,bFreehandROI,bLineROI,bPointROI,bPolygonROI,bRectROI,*/bSelectROI));
 
 		bSelectROI.setSelected(true);
-		setTool(new GeneralToolROI(CamWindow.this));
+		setTool(new GeneralToolROI(LiveWindow.this));
 		
 		bSelectROI.addActionListener(new ActionListener()
 			{public void actionPerformed(ActionEvent e)
@@ -314,7 +315,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 				if(((JToggleButton)e.getSource()).isSelected())
 					{
 					//ImageRendererROI renderer=getRendererClass(ImageRendererROI.class);
-					setTool(new GeneralToolROI(CamWindow.this));
+					setTool(new GeneralToolROI(LiveWindow.this));
 					
 					//setTool(new GeneralToolDragCreateROI(CamWindow.this,rt.makeInstance(),renderer));
 					}
@@ -340,7 +341,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 						if(((JToggleButton)e.getSource()).isSelected())
 							{
 							ImageRendererROI renderer=getRendererClass(ImageRendererROI.class);
-							setTool(new GeneralToolDragCreateROI(CamWindow.this,rt.makeInstance(),renderer));
+							setTool(new GeneralToolDragCreateROI(LiveWindow.this,rt.makeInstance(),renderer));
 							}
 						}});
 				
@@ -433,7 +434,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 			b.addActionListener(this);
 		
 		//Window overall things
-		setTitleEvWindow("Camera");
+		setTitleEvWindow("Live view");
 		packEvWindow();
 		setVisibleEvWindow(true);
 		setBoundsEvWindow(bounds);
@@ -562,40 +563,6 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 	
 
 	
-
-	/******************************************************************************************************
-	 * Plugin declaration
-	 *****************************************************************************************************/
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
-				}
-			class Hook implements BasicWindowHook, ActionListener
-			{
-			public void createMenus(BasicWindow w)
-				{
-				JMenuItem mi=new JMenuItem("Camera",new ImageIcon(getClass().getResource("tangoCamera.png")));
-				mi.addActionListener(this);
-				BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
-				}
-
-			public void actionPerformed(ActionEvent e) 
-				{
-				new CamWindow();
-				}
-
-			public void buildMenu(BasicWindow w){}
-			}
-			});
-		
-		}
-	
-	
 	
 	
 	
@@ -647,7 +614,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		{
 		HWCamera cam=getCurrentCamera();
 		if(cam!=null)
-			return RecordingResource.getCurrentTotalMagnification(cam);
+			return ResolutionManager.getCurrentTotalMagnification(cam);
 		else
 			return 1;
 		}
@@ -758,6 +725,41 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 			
 		}
 		
+
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				}
+			class Hook implements BasicWindowHook, ActionListener
+			{
+			public void createMenus(BasicWindow w)
+				{
+				JMenuItem mi=new JMenuItem("Live view",new ImageIcon(getClass().getResource("tangoCamera.png")));
+				mi.addActionListener(this);
+				BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+				}
+
+			public void actionPerformed(ActionEvent e) 
+				{
+				new LiveWindow();
+				}
+
+			public void buildMenu(BasicWindow w){}
+			}
+			});
+		
+		}
+	
 	
 	
 	}

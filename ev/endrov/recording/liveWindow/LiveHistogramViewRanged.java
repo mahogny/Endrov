@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.camWindow;
+package endrov.recording.liveWindow;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -27,7 +27,7 @@ import endrov.imageset.EvPixels;
  * @author Johan Henriksson
  *
  */
-public class CameraHistogramViewRanged extends CameraHistogramView implements MouseListener, MouseMotionListener
+public class LiveHistogramViewRanged extends LiveHistogramView implements MouseListener, MouseMotionListener
 	{
 	private static final long serialVersionUID = 1L;
 
@@ -37,7 +37,7 @@ public class CameraHistogramViewRanged extends CameraHistogramView implements Mo
 	private Color rangeBarColor=Color.RED;
 	
 	
-	public CameraHistogramViewRanged()
+	public LiveHistogramViewRanged()
 		{
 		addMouseListener(this);
 		addMouseMotionListener(this);

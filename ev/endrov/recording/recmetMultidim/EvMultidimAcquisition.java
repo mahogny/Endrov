@@ -24,6 +24,7 @@ import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
 import endrov.recording.HWCamera;
 import endrov.recording.RecordingResource;
+import endrov.recording.resolution.ResolutionManager;
 import endrov.recording.widgets.RecSettingsChannel;
 import endrov.recording.widgets.RecSettingsDimensionsOrder;
 import endrov.recording.widgets.RecSettingsPositions;
@@ -136,8 +137,8 @@ public class EvMultidimAcquisition extends EvAcquisition
 					ch.putStack(currentFrame, stack);
 					
 					stack.setRes(
-						RecordingResource.getCurrentTotalMagnification(cam),
-						RecordingResource.getCurrentTotalMagnification(cam),
+						ResolutionManager.getCurrentTotalMagnification(cam),
+						ResolutionManager.getCurrentTotalMagnification(cam),
 						dz.multiply(currentChannel.zInc).doubleValue()
 					);
 					stack.setDisplacement(new Vector3d(
@@ -178,7 +179,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 					currentChannel=ch;
 
 					//TODO test with proper groups
-					EvHardwareConfigGroup.groups.get(channel.metaStateGroup).states.get(ch.name).activate();
+					EvHardwareConfigGroup.getConfigGroup(channel.metaStateGroup).getState(ch.name).activate();
 					
 					recurse.exec();
 					}

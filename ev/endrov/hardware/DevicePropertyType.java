@@ -14,12 +14,12 @@ import java.util.*;
 public class DevicePropertyType
 	{
 	public boolean readOnly=false;
+	public boolean isBoolean=false;
+	public boolean isString=false;
 	public TreeSet<String> categories=new TreeSet<String>();
 	
 	public boolean hasRange=false;
 	public double rangeLower, rangeUpper;
-	
-	public boolean isBoolean=false;
 	
 	
 	
@@ -33,6 +33,14 @@ public class DevicePropertyType
 		return p;
 		}
 
+	
+	public static DevicePropertyType getEditableStringState()
+		{
+		DevicePropertyType p=new DevicePropertyType();
+		p.isString=true;
+		return p;
+		}
+	
 	public static DevicePropertyType getEditableIntState(int min,int max)
 		{
 		DevicePropertyType p=new DevicePropertyType();

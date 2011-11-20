@@ -56,4 +56,9 @@ public class EvDevicePropPath implements Comparable<EvDevicePropPath>
 		{
 		return property;
 		}
+
+	public String getDeviceName()
+		{
+		return devicePath.toString();
+		}
 	}

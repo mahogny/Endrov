@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.camWindow;
+package endrov.recording.liveWindow;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -21,7 +21,7 @@ import endrov.imageset.EvPixelsType;
  * @author Johan Henriksson
  *
  */
-public class CameraHistogramView extends JPanel
+public class LiveHistogramView extends JPanel
 	{
 	private static final long serialVersionUID = 1L;
 

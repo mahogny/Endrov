@@ -15,7 +15,7 @@ import endrov.hardware.EvDevice;
  * @author Johan Henriksson
  *
  */
-public interface HWState extends EvDevice, HWMagnifier
+public interface HWState extends EvDevice
 	{
 
 	public List<String> getStateNames();

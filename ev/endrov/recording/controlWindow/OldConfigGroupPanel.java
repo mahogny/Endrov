@@ -27,7 +27,7 @@ import endrov.util.JImageButton;
  * @author Johan Henriksson
  *
  */
-public class ConfigGroupPanel extends JPanel implements ActionListener
+public class OldConfigGroupPanel extends JPanel implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
 	private JButton bAddGroup=new JImageButton(BasicIcon.iconAdd, "New config group");
@@ -59,8 +59,8 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 			
 			DefaultComboBoxModel modelState=(DefaultComboBoxModel)cState.getModel();
 			modelState.removeAllElements();
-			EvHardwareConfigGroup group=EvHardwareConfigGroup.groups.get(groupName);
-			for(String stateName:group.states.keySet())
+			EvHardwareConfigGroup group=EvHardwareConfigGroup.getConfigGroup(groupName);
+			for(String stateName:group.getStateNames())
 				modelState.addElement(stateName);
 
 			String lastState=lastComboSetting.get(groupName);
@@ -80,7 +80,7 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 				{
 				if(BasicWindow.showConfirmDialog("Do you really want to remove the group "+groupName+"?"))
 					{
-					EvHardwareConfigGroup.groups.remove(groupName);
+					//EvHardwareConfigGroup.groups.remove(groupName);  //TODO this class to be deleted
 					BasicWindow.updateWindows();
 					}
 				}
@@ -89,7 +89,7 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 				String stateName=JOptionPane.showInputDialog(this, "Current state will be saved in group. Name?");
 				if(stateName!=null)
 					{
-					EvHardwareConfigGroup.groups.get(groupName).captureCurrentState(stateName);
+					EvHardwareConfigGroup.getConfigGroup(groupName).captureCurrentStateAsNew(stateName);
 					lastComboSetting.put(groupName, stateName);
 					BasicWindow.updateWindows();
 					}
@@ -98,7 +98,7 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 				{
 				if(BasicWindow.showConfirmDialog("Do you really want to remove the state "+cState.getSelectedItem()+"?"))
 					{
-					EvHardwareConfigGroup.groups.get(groupName).states.remove(cState.getSelectedItem());
+					EvHardwareConfigGroup.getConfigGroup(groupName).removeState((String)cState.getSelectedItem());
 					BasicWindow.updateWindows();
 					}
 				}
@@ -106,7 +106,7 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 				{
 				String stateName=(String)cState.getSelectedItem();
 				lastComboSetting.put(groupName, stateName);
-				EvHardwareConfigGroup.groups.get(groupName).getState(stateName).activate();
+				EvHardwareConfigGroup.getConfigGroup(groupName).getState(stateName).activate();
 				}
 			
 			
@@ -118,7 +118,7 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 
 	
 	
-	public ConfigGroupPanel()
+	public OldConfigGroupPanel()
 		{
 		makeLayout();
 
@@ -133,10 +133,10 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 	
 	private void makeLayout()
 		{
-		int numGroups=EvHardwareConfigGroup.groups.size();
+		int numGroups=EvHardwareConfigGroup.getConfigGroups().size();
 		pGroups.removeAll();
 		pGroups.setLayout(new GridLayout(numGroups,1));
-		for(String groupName:EvHardwareConfigGroup.groups.keySet())
+		for(String groupName:EvHardwareConfigGroup.getConfigGroups().keySet())
 			{
 			StatesPanel p=new StatesPanel(groupName);
 			pGroups.add(p);

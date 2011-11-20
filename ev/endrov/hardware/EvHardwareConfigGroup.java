@@ -1,5 +1,6 @@
 package endrov.hardware;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -10,6 +11,8 @@ import org.jdom.Element;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.ev.EV;
+import endrov.ev.EvLog;
+import endrov.ev.GeneralObserver;
 import endrov.ev.PersonalConfig;
 
 
@@ -21,12 +24,50 @@ import endrov.ev.PersonalConfig;
  */
 public class EvHardwareConfigGroup
 	{
+	/******************************************************************************************************
+	 *                               Static                                                               *
+	 *****************************************************************************************************/
+
+	
 	/**
 	 * Config groups
 	 */
-	public static Map<String,EvHardwareConfigGroup> groups=new TreeMap<String, EvHardwareConfigGroup>();
+	private static Map<String,EvHardwareConfigGroup> groups=Collections.synchronizedMap(new TreeMap<String, EvHardwareConfigGroup>());
 	
 	
+	public static void putConfigGroup(String name, EvHardwareConfigGroup hwg)
+		{
+		groups.put(name, hwg);
+		updateAllListeners();
+		}
+
+	public static void removeConfigGroup(String name)
+		{
+		groups.remove(name);
+		updateAllListeners();
+		}
+	
+	public static Map<String,EvHardwareConfigGroup> getConfigGroups()
+		{
+		return groups;
+		}
+
+	public static EvHardwareConfigGroup getConfigGroup(String name)
+		{
+		return groups.get(name);
+		}
+	
+	private static void updateAllListeners()
+		{
+		for(GroupsChangedListener l:groupsChangedListeners.getListeners())
+			l.hardwareGroupsChanged();
+		}
+	
+	
+	/******************************************************************************************************
+	 *                               Instance                                                             *
+	 *****************************************************************************************************/
+
 	
 	/**
 	 * Which properties should be included in this group. Only used as an aid to create new states, since
@@ -37,7 +78,19 @@ public class EvHardwareConfigGroup
 	/**
 	 * The states
 	 */
-	public Map<String, State> states=new TreeMap<String, State>();
+	private Map<String, State> states=new TreeMap<String, State>();
+	
+	/**
+	 * Get the name of all states
+	 * @return
+	 */
+	public Set<String> getStateNames()
+		{
+		return new TreeSet<String>(states.keySet());
+		}
+	
+	
+	
 	
 	/**
 	 * One state
@@ -58,7 +111,11 @@ public class EvHardwareConfigGroup
 				{
 				EvDevice dev=e.getKey().getDevice();
 				String prop=e.getKey().getProperty();
-				dev.setPropertyValue(prop, e.getValue());
+				System.out.println(e.getKey()+" => "+e.getValue());
+				if(dev!=null)
+					dev.setPropertyValue(prop, e.getValue());
+				else
+					EvLog.printError("No such device, "+e.getKey(), null);
 				}
 			}
 		}
@@ -72,17 +129,33 @@ public class EvHardwareConfigGroup
 		}
 	
 	/**
+	 * Remove one state
+	 */
+	public void removeState(String name)
+		{
+		states.remove(name);
+		updateAllListeners();
+		}
+	
+	/**
 	 * Store current state as a new state
 	 */
-	public void captureCurrentState(String name)
+	public void captureCurrentStateAsNew(String name)
 		{
 		State st=new State();
 		for(EvDevicePropPath p:propsToInclude)
 			st.propMap.put(p, p.getDevice().getPropertyValue(p.getProperty()));
 		states.put(name,st);
+		updateAllListeners();
 		}
 
 	
+	
+	public final static GeneralObserver<GroupsChangedListener> groupsChangedListeners=new GeneralObserver<GroupsChangedListener>(); 
+	public interface GroupsChangedListener
+		{
+		public void hardwareGroupsChanged();
+		}
 	
 	
 	/******************************************************************************************************
@@ -156,7 +229,7 @@ public class EvHardwareConfigGroup
 					for(EvDevicePropPath ve:group.propsToInclude)
 						{
 						Element eSetting=new Element("setting");
-						eSetting.setAttribute("device", ve.toString());
+						eSetting.setAttribute("device", ve.getDeviceName());
 						eSetting.setAttribute("property", ve.getProperty());
 						eInc.addContent(eSetting);
 						}
@@ -172,7 +245,7 @@ public class EvHardwareConfigGroup
 						for(Map.Entry<EvDevicePropPath,String> ve:state.propMap.entrySet())
 							{
 							Element eSetting=new Element("setting");
-							eSetting.setAttribute("device", ve.getKey().toString());
+							eSetting.setAttribute("device", ve.getKey().getDeviceName());
 							eSetting.setAttribute("property", ve.getKey().getProperty());
 							eSetting.setAttribute("value", ve.getValue());
 							eState.addContent(eSetting);

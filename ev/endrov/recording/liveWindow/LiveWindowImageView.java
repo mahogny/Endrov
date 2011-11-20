@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.camWindow;
+package endrov.recording.liveWindow;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -29,6 +29,7 @@ import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageset.EvPixels;
 import endrov.recording.HWCamera;
 import endrov.recording.RecordingResource;
+import endrov.recording.resolution.ResolutionManager;
 import endrov.util.Vector2i;
 
 /**
@@ -37,7 +38,7 @@ import endrov.util.Vector2i;
  * @author Johan Henriksson
  *
  */
-public abstract class CamWindowImageView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener
+public abstract class LiveWindowImageView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener
 	{
 	static final long serialVersionUID=0;
 	
@@ -60,7 +61,7 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 		this.toolButtons = toolButtons;
 	}
 */	
-	public CamWindowImageView()
+	public LiveWindowImageView()
 		{
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -243,7 +244,7 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 			for(Map.Entry<EvDevicePath,HWCamera> cams:EvHardware.getDeviceMapCast(HWCamera.class).entrySet())
 				{
 				HWCamera camera = cams.getValue();
-				resMagX=resMagY=RecordingResource.getCurrentTotalMagnification(camera);
+				resMagX=resMagY=ResolutionManager.getCurrentTotalMagnification(camera);
 				foundCamera=true;
 				break;
 				}

@@ -25,6 +25,7 @@ import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
 import endrov.recording.HWImageScanner;
 import endrov.recording.RecordingResource;
+import endrov.recording.resolution.ResolutionManager;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
 
@@ -230,8 +231,8 @@ public class EvFRAPAcquisition extends EvAcquisition
 			EvStack stack=new EvStack();//.getCreateFrame(curFrame);
 			ch.putStack(curFrame, stack);
 			stack.setRes(
-					RecordingResource.getCurrentTotalMagnification(cam),
-					RecordingResource.getCurrentTotalMagnification(cam),
+					ResolutionManager.getCurrentTotalMagnification(cam),
+					ResolutionManager.getCurrentTotalMagnification(cam),
 					1
 				);
 			stack.setDisplacement(new Vector3d(

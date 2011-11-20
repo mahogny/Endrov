@@ -28,8 +28,8 @@ public interface EvDevice
 	/**
 	 * Add a listener for updates. The pointer to the listener is weak
 	 */
-	public void addListener(EvDeviceObserver.Listener listener);
-	public void removeListener(EvDeviceObserver.Listener listener);
+	public void addDeviceListener(EvDeviceObserver.DeviceListener listener);
+	public void removeDeviceListener(EvDeviceObserver.DeviceListener listener);
 	
 	
 	

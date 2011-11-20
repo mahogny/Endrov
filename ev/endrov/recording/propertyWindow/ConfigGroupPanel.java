@@ -7,12 +7,14 @@ import java.awt.event.ActionListener;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.icon.BasicIcon;
+import endrov.hardware.EvDevice;
+import endrov.hardware.EvDevicePropPath;
 import endrov.hardware.EvHardwareConfigGroup;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
@@ -23,7 +25,7 @@ import endrov.util.JImageButton;
  * @author Johan Henriksson
  *
  */
-public class NewConfigGroupPanel extends JPanel implements ActionListener
+public class ConfigGroupPanel extends JPanel implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
 
@@ -33,22 +35,49 @@ public class NewConfigGroupPanel extends JPanel implements ActionListener
 		private JButton bRemoveGroup=new JImageButton(BasicIcon.iconRemove, "Remove config group");
 		private String groupName;
 		
-		public NewConfigGroupPanel(String groupName)
+		public ConfigGroupPanel(String groupName)
 			{
 			this.groupName=groupName;
 			
 			setLayout(new BorderLayout());
-			add(EvSwingUtil.layoutLCR(bRemoveGroup,new JLabel(groupName+" "),null), BorderLayout.WEST);
-			add(cState, BorderLayout.CENTER);
-			add(EvSwingUtil.layoutEvenHorizontal(bAddState,bRemoveState),
-					BorderLayout.EAST);
+//			add(EvSwingUtil.layoutLCR(bRemoveGroup,new JLabel(groupName+" "),null), BorderLayout.WEST);
+			add(bRemoveGroup, BorderLayout.WEST);
 			
-			DefaultComboBoxModel modelState=(DefaultComboBoxModel)cState.getModel();
-			modelState.removeAllElements();
-			EvHardwareConfigGroup group=EvHardwareConfigGroup.groups.get(groupName);
-			modelState.addElement("");
-			for(String stateName:group.states.keySet())
-				modelState.addElement(stateName);
+			EvHardwareConfigGroup group=EvHardwareConfigGroup.getConfigGroup(groupName);
+
+			
+			if(group.propsToInclude.size()==1)
+				{
+				//If it is a single device then allow direct control of it
+				EvDevicePropPath devicePropPath=group.propsToInclude.iterator().next();
+				EvDevice device=devicePropPath.getDevice();
+				if(device!=null)
+					{
+					String property=devicePropPath.getProperty();
+					JComponent propcomp=PropertyWindow.createComponentForProperty(device, property);
+					if(propcomp!=null)
+						add(propcomp, BorderLayout.CENTER);
+					else
+						System.out.println("Problem with "+devicePropPath);
+					}
+				else
+					System.out.println("Device does not exist "+devicePropPath);
+				}
+			else
+				{
+				add(cState, BorderLayout.CENTER);
+				add(EvSwingUtil.layoutEvenHorizontal(bAddState,bRemoveState),
+						BorderLayout.EAST);
+				
+				DefaultComboBoxModel modelState=(DefaultComboBoxModel)cState.getModel();
+				modelState.removeAllElements();
+				modelState.addElement("");
+				for(String stateName:group.getStateNames())
+					modelState.addElement(stateName);
+				}
+			
+			
+			
 
 			/*
 			String lastState=lastComboSetting.get(groupName);
@@ -68,7 +97,7 @@ public class NewConfigGroupPanel extends JPanel implements ActionListener
 				{
 				if(BasicWindow.showConfirmDialog("Do you really want to remove the group "+groupName+"?"))
 					{
-					EvHardwareConfigGroup.groups.remove(groupName);
+					EvHardwareConfigGroup.removeConfigGroup(groupName);
 					BasicWindow.updateWindows();
 					}
 				}
@@ -77,24 +106,25 @@ public class NewConfigGroupPanel extends JPanel implements ActionListener
 				String stateName=JOptionPane.showInputDialog(this, "Current state will be saved in group. Name?");
 				if(stateName!=null)
 					{
-					EvHardwareConfigGroup.groups.get(groupName).captureCurrentState(stateName);
+					EvHardwareConfigGroup.getConfigGroup(groupName).captureCurrentStateAsNew(stateName);
 					//lastComboSetting.put(groupName, stateName);
 					BasicWindow.updateWindows();
 					}
 				}
 			else if(e.getSource()==bRemoveState)
 				{
-				if(BasicWindow.showConfirmDialog("Do you really want to remove the state "+cState.getSelectedItem()+"?"))
-					{
-					EvHardwareConfigGroup.groups.get(groupName).states.remove(cState.getSelectedItem());
-					BasicWindow.updateWindows();
-					}
+				if(cState.getSelectedIndex()!=0)
+					if(BasicWindow.showConfirmDialog("Do you really want to remove the state "+cState.getSelectedItem()+"?"))
+						{
+						EvHardwareConfigGroup.getConfigGroup(groupName).removeState((String)cState.getSelectedItem());
+						BasicWindow.updateWindows();
+						}
 				}
 			else if(e.getSource()==cState)
 				{
 				String stateName=(String)cState.getSelectedItem();
 				//lastComboSetting.put(groupName, stateName);
-				EvHardwareConfigGroup.groups.get(groupName).getState(stateName).activate();
+				EvHardwareConfigGroup.getConfigGroup(groupName).getState(stateName).activate();
 				}
 			
 			

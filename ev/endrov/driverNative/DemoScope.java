@@ -102,15 +102,7 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 		public Boolean getPropertyValueBoolean(String prop){return null;}
 		public void setPropertyValue(String prop, boolean value){}
 		public void setPropertyValue(String prop, String value){}
-		public double getResMagX()
-			{
-			return 1;
-			}
-		public double getResMagY()
-			{
-			return 1;
-			}
-		
+	
 		public boolean hasConfigureDialog(){return false;}
 		public void openConfigureDialog(){}
 		
@@ -147,11 +139,11 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 		
 		
 		public EvDeviceObserver event=new EvDeviceObserver();
-		public void addListener(EvDeviceObserver.Listener listener)
+		public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.addWeakListener(listener);
 			}
-		public void removeListener(EvDeviceObserver.Listener listener)
+		public void removeDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.remove(listener);
 			}
@@ -202,11 +194,11 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 		public void openConfigureDialog(){}
 
 		public EvDeviceObserver event=new EvDeviceObserver();
-		public void addListener(EvDeviceObserver.Listener listener)
+		public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.addWeakListener(listener);
 			}
-		public void removeListener(EvDeviceObserver.Listener listener)
+		public void removeDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.remove(listener);
 			}
@@ -289,11 +281,11 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 
 
 	public EvDeviceObserver event=new EvDeviceObserver();
-	public void addListener(EvDeviceObserver.Listener listener)
+	public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 		{
 		event.addWeakListener(listener);
 		}
-	public void removeListener(EvDeviceObserver.Listener listener)
+	public void removeDeviceListener(EvDeviceObserver.DeviceListener listener)
 		{
 		event.remove(listener);
 		}

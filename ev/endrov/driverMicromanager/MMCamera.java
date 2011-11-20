@@ -259,11 +259,11 @@ public class MMCamera /*extends MMDeviceAdapter*/ implements HWCamera
 	
 
 	public EvDeviceObserver event=new EvDeviceObserver();
-	public void addListener(EvDeviceObserver.Listener listener)
+	public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 		{
 		event.addWeakListener(listener);
 		}
-	public void removeListener(EvDeviceObserver.Listener listener)
+	public void removeDeviceListener(EvDeviceObserver.DeviceListener listener)
 		{
 		event.remove(listener);
 		}

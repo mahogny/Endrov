@@ -215,15 +215,6 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			return resolution;
 			}
 		
-		public double getResMagX()
-			{
-			return getRes();
-			}
-
-		public double getResMagY()
-			{
-			return getRes();
-			}
 
 		public boolean hasConfigureDialog()
 			{
@@ -301,11 +292,11 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		
 		
 		public EvDeviceObserver event=new EvDeviceObserver();
-		public void addListener(EvDeviceObserver.Listener listener)
+		public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.addWeakListener(listener);
 			}
-		public void removeListener(EvDeviceObserver.Listener listener)
+		public void removeDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.remove(listener);
 			}
@@ -535,11 +526,11 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 		
 		public EvDeviceObserver event=new EvDeviceObserver();
-		public void addListener(EvDeviceObserver.Listener listener)
+		public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.addWeakListener(listener);
 			}
-		public void removeListener(EvDeviceObserver.Listener listener)
+		public void removeDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.remove(listener);
 			}
@@ -615,11 +606,11 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 	
 		
 		public EvDeviceObserver event=new EvDeviceObserver();
-		public void addListener(EvDeviceObserver.Listener listener)
+		public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.addWeakListener(listener);
 			}
-		public void removeListener(EvDeviceObserver.Listener listener)
+		public void removeDeviceListener(EvDeviceObserver.DeviceListener listener)
 			{
 			event.remove(listener);
 			}
@@ -871,11 +862,11 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 	
 	public EvDeviceObserver event=new EvDeviceObserver();
-	public void addListener(EvDeviceObserver.Listener listener)
+	public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 		{
 		event.addWeakListener(listener);
 		}
-	public void removeListener(EvDeviceObserver.Listener listener)
+	public void removeDeviceListener(EvDeviceObserver.DeviceListener listener)
 		{
 		event.remove(listener);
 		}

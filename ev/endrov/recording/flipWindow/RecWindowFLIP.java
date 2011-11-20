@@ -203,7 +203,7 @@ public class RecWindowFLIP extends BasicWindow
 				{
 				public void createMenus(BasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("FLIP acquisition",new ImageIcon(getClass().getResource("tangoCamera.png")));
+					JMenuItem mi=new JMenuItem("Acquire: FLIP",new ImageIcon(getClass().getResource("tangoCamera.png")));
 					mi.addActionListener(this);
 					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}

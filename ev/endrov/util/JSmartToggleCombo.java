@@ -77,7 +77,10 @@ public class JSmartToggleCombo extends JPanel
 				{
 				final int fi=i;
 				//JToggleButton b=new SmallJToggleButton(names.get(i));
-				JToggleButton b=new JToggleButton(names.get(i));
+				String label=names.get(i);
+				if(label.equals(""))
+					label=" ";
+				JToggleButton b=new JToggleButton(label);
 				fixMargin(b);
 				if(i==0)
 					b.setSelected(true);

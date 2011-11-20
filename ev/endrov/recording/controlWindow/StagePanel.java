@@ -109,7 +109,7 @@ public class StagePanel implements ActionListener
 	/******************************************************************
 	 * Inner class: one axis
 	 ******************************************************************/
-	public class OneAxisPanel extends JPanel implements MouseListener,MouseMotionListener, EvDeviceObserver.Listener
+	public class OneAxisPanel extends JPanel implements MouseListener,MouseMotionListener, EvDeviceObserver.DeviceListener
 		{
 		private static final long serialVersionUID=0;
 		private int axisid;
@@ -127,7 +127,7 @@ public class StagePanel implements ActionListener
 			{
 			addMouseListener(this);
 			addMouseMotionListener(this);
-			hw.addListener(this);
+			hw.addDeviceListener(this);
 			}
 		
 		/** Get position as x in 10^x */

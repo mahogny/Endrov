@@ -18,6 +18,7 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.keyBinding.JInputManager;
+import endrov.recording.resolution.ResolutionManager;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
 import endrov.roi.LineIterator.LineRange;
@@ -39,25 +40,15 @@ public class RecordingResource
 	 */
 	public static Object acquisitionLock=new Object();
 
-	/**
-	 * TODO
-	 * guess magnification by looking at state label
-	 */
+
+	private static EvData data=new EvData();
 	
-	public static double magFromLabel(String s)
+	
+	public static EvData getData()
 		{
-		return 1;
+		return data;
 		}
 
-	/**
-	 * Get the total magnification for the entire light path, coming into a given camera
-	 * [um/px]
-	 */
-	public static double getCurrentTotalMagnification(HWCamera cam)
-		{
-		return cam.getResMagX();
-		}
-	
 	
 	public static double getCurrentStageX()
 		{
@@ -143,14 +134,6 @@ public class RecordingResource
 		}
 
 	
-	private static EvData data=new EvData();
-	
-	
-	public static EvData getData()
-		{
-		return data;
-		}
-
 	
 	/**
 	 * Make a ROI mask for image scanners.
@@ -167,7 +150,7 @@ public class RecordingResource
 		EvImage image=new EvImage(p);
 		EvStack stack=new EvStack();
 
-		double res=getCurrentTotalMagnification(scanner);
+		double res=ResolutionManager.getCurrentTotalMagnification(scanner);
 		stack.setRes(res,res,1);
 		
 		String channel="foo";
@@ -232,6 +215,8 @@ public class RecordingResource
 	
 	/**
 	 * Move any device with right axis names
+	 * 
+	 * TODO micromanager core property-like way of doing it?
 	 */
 	public static void setStagePos(Map<String, Double> axisPos)
 		{

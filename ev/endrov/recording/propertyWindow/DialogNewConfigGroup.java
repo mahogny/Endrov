@@ -188,8 +188,7 @@ public class DialogNewConfigGroup extends JFrame implements ActionListener
 				for(EvDevicePropPath p:setUse)
 					group.propsToInclude.add(p);
 				
-				EvHardwareConfigGroup.groups.put(name, group);
-				BasicWindow.updateWindows();
+				EvHardwareConfigGroup.putConfigGroup(name, group);
 				
 				dispose();
 				}
