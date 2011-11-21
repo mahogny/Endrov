@@ -12,13 +12,13 @@ import endrov.hardware.EvHardwareConfigGroup;
  * @author Johan Henriksson
  *
  */
-public class RecWidgetComboMetastate extends JComboBox
+public class RecWidgetComboConfigGroupStates extends JComboBox
 	{
 	private static final long serialVersionUID = 1L;
 
 	public String currentMetastate=null;
 	
-	public RecWidgetComboMetastate()
+	public RecWidgetComboConfigGroupStates()
 		{
 		//makeLayout();
 		}

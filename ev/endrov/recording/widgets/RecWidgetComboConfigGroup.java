@@ -15,13 +15,13 @@ import endrov.hardware.EvHardwareConfigGroup;
  * @author Johan Henriksson
  *
  */
-public class RecWidgetComboMetastateGroup extends JComboBox
+public class RecWidgetComboConfigGroup extends JComboBox
 	{
 	private static final long serialVersionUID = 1L;
 
-	private WeakHashMap<RecWidgetComboMetastate, Object> listeners=new WeakHashMap<RecWidgetComboMetastate, Object>();
+	private WeakHashMap<RecWidgetComboConfigGroupStates, Object> listeners=new WeakHashMap<RecWidgetComboConfigGroupStates, Object>();
 
-	public RecWidgetComboMetastateGroup()
+	public RecWidgetComboConfigGroup()
 		{
 		makeLayout();
 		
@@ -30,7 +30,7 @@ public class RecWidgetComboMetastateGroup extends JComboBox
 			public void actionPerformed(ActionEvent e)
 				{
 				String s=(String)getSelectedItem();
-				for(RecWidgetComboMetastate l:listeners.keySet())
+				for(RecWidgetComboConfigGroupStates l:listeners.keySet())
 					l.setMetastateGroup(s);
 				}
 			});
@@ -60,7 +60,7 @@ public class RecWidgetComboMetastateGroup extends JComboBox
 
 	
 	
-	public void registerWeakMetastateGroup(RecWidgetComboMetastate e)
+	public void registerWeakMetastateGroup(RecWidgetComboConfigGroupStates e)
 		{
 		listeners.put(e,null);
 		e.setMetastateGroup((String)getSelectedItem());

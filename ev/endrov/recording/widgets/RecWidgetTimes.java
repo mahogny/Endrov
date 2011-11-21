@@ -14,6 +14,9 @@ import javax.swing.JRadioButton;
 
 import endrov.basicWindow.SpinnerSimpleEvFrame;
 import endrov.basicWindow.SpinnerSimpleInteger;
+import endrov.hardware.EvDevice;
+import endrov.hardware.EvDevicePath;
+import endrov.recording.HWTrigger;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -39,6 +42,16 @@ public class RecWidgetTimes extends JPanel
 	private SpinnerSimpleInteger spNumFrames=new SpinnerSimpleInteger(1,1,10000000,1);
 	private SpinnerSimpleEvFrame spSumTime=new SpinnerSimpleEvFrame();
 		
+	private RecWidgetComboDevice comboTriggerDevice=new RecWidgetComboDevice()
+		{
+		private static final long serialVersionUID = 1L;
+		protected boolean includeDevice(EvDevicePath path, EvDevice device)
+			{
+			return device instanceof HWTrigger;
+			}
+		};
+	
+	
 	public RecWidgetTimes()
 		{
 		rbFreqDt.setToolTipText("Time between frames");
@@ -59,10 +72,7 @@ public class RecWidgetTimes extends JPanel
 		
 		spFreqDt.setFrame("1s");
 
-		
-		
 		setLayout(new GridLayout(1,1));
-		
 		
 		add(
 				EvSwingUtil.withTitledBorder("Time",
@@ -73,6 +83,7 @@ public class RecWidgetTimes extends JPanel
 								),
 								rbMaxSpeed,
 								rbOnTrigger,
+								comboTriggerDevice,
 								new JLabel("Number:"),
 								EvSwingUtil.layoutTableCompactWide(
 										rbNumFrames, spNumFrames,
