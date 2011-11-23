@@ -32,7 +32,7 @@ public class RecWidgetTimes extends JPanel
 	
 	private JRadioButton rbFreqDt=new JRadioButton("∆t", true);
 	private JRadioButton rbMaxSpeed=new JRadioButton("Maximum rate");
-	private JRadioButton rbOnTrigger=new JRadioButton("On trigger");
+	private JRadioButton rbOnTrigger=new JRadioButton("On trigger:");
 	
 	private JRadioButton rbNumFrames=new JRadioButton("#f");
 	private JRadioButton rbTotT=new JRadioButton("∑∆t");

@@ -13,6 +13,7 @@ import mmcorej.DeviceType;
 import mmcorej.MMEventCallback;
 import mmcorej.PropertyBlock;
 import mmcorej.PropertyPair;
+import mmcorej.PropertySetting;
 
 import org.jdom.Element;
 import org.micromanager.conf.ConfiguratorDlg;
@@ -146,9 +147,12 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 			
 			/**
 			 * Read property blocks
+			 * 
+			 * Currently not used
 			 */
 			for(String blockName:MMutil.convVector(core.getAvailablePropertyBlocks()))
 				{
+				System.out.println("block: "+blockName);
 				PropertyBlock b=core.getPropertyBlockData(blockName);
 				HashMap<String, String> prop=new HashMap<String, String>(); 
 				try
@@ -165,15 +169,41 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 					System.out.println("This should never happen");
 					}
 
-				if(hw.containsKey(blockName))
-					{
-					/**
-					 * Associate with device, somehow
-					 */
-					
-					}
-				
+				System.out.println("Property blocks: "+prop);
 				}
+			
+			
+			/**
+			 * Convert micromanager config groups into endrov config groups.
+			 * These groups cannot control non-micromanager devices
+			 * 
+			 */
+			for(String configGroupName:core.getAvailableConfigGroups())
+				{
+				EvHardwareConfigGroup hwg=new EvHardwareConfigGroup();
+				for(String configGroupStateName:core.getAvailableConfigs(configGroupName))
+					{
+					mmcorej.Configuration config=core.getConfigState(configGroupName, configGroupStateName);
+					EvHardwareConfigGroup.State state=new EvHardwareConfigGroup.State();
+					for(int i=0;i<config.size();i++)
+						{
+						PropertySetting umSetting=config.getSetting(i);
+						String propName=umSetting.getPropertyName();
+						String value=umSetting.getPropertyValue();
+						String mmDevName=umSetting.getDeviceLabel();
+						EvDevicePath evDevice=new EvDevicePath(new String[]{"um",mmDevName});
+						EvDevicePropPath evPropPath=new EvDevicePropPath(evDevice, propName);
+						hwg.propsToInclude.add(evPropPath);
+						state.propMap.put(evPropPath, value);
+						}
+					hwg.putState(configGroupStateName,state);
+					}
+				EvHardwareConfigGroup.putConfigGroup(configGroupName, hwg);
+				}
+			
+			
+			
+			
 			}
 		catch (Exception e)
 			{

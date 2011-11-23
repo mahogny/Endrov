@@ -148,6 +148,12 @@ public class EvHardwareConfigGroup
 		states.put(name,st);
 		updateAllListeners();
 		}
+	
+	public void putState(String name, State state)
+		{
+		states.put(name,state);
+		updateAllListeners();
+		}
 
 	
 	
