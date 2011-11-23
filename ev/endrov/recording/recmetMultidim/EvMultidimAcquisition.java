@@ -179,7 +179,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 					currentChannel=ch;
 
 					//TODO test with proper groups
-					EvHardwareConfigGroup.getConfigGroup(channel.metaStateGroup).getState(ch.name).activate();
+					EvHardwareConfigGroup.getConfigGroup(channel.configGroup).getState(ch.name).activate();
 					
 					recurse.exec();
 					}

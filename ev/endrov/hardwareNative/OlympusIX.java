@@ -18,7 +18,6 @@ import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDeviceProvider;
 import endrov.recording.HWSerial;
 import endrov.recording.HWShutter;
-import endrov.recording.RecordingResource;
 import endrov.recording.VirtualSerial;
 
 

@@ -49,12 +49,12 @@ public class RecWidgetChannel extends JPanel implements ActionListener
 	private JButton bAdd=new JImageButton(BasicIcon.iconAdd,"Add channel to list");
 
 
-	private RecWidgetComboMetastateGroup cMetaStateGroup=new RecWidgetComboMetastateGroup();
+	private RecWidgetComboConfigGroup cConfigGroup=new RecWidgetComboConfigGroup();
 
 	
 	private class OneChannelWidget implements ActionListener
 		{
-		RecWidgetComboMetastate comboChannel=new RecWidgetComboMetastate();
+		RecWidgetComboConfigGroupStates comboChannel=new RecWidgetComboConfigGroupStates();
 		SpinnerSimpleEvDecimal spExposure=new SpinnerSimpleEvDecimal(new EvDecimal(100));
 		JCheckBox chLightCompensate=new JCheckBox();
 		JButton bUp=new JImageButton(BasicIcon.iconButtonUp,"Move toward first in order");
@@ -114,7 +114,7 @@ public class RecWidgetChannel extends JPanel implements ActionListener
 		{
 		setBorder(BorderFactory.createTitledBorder("Channnels"));
 		setLayout(new BorderLayout());
-		add(EvSwingUtil.layoutLCR(EvSwingUtil.withLabel("Meta states group: ", cMetaStateGroup),null,null),BorderLayout.NORTH);
+		add(EvSwingUtil.withLabel("Config group: ", cConfigGroup),BorderLayout.NORTH);
 		
 		add(p,BorderLayout.CENTER);
 		addChannel();
@@ -126,14 +126,14 @@ public class RecWidgetChannel extends JPanel implements ActionListener
 	
 	public void dataChangedEvent()
 		{
-		cMetaStateGroup.makeLayout();
+		cConfigGroup.makeLayout();
 		}
 	
 	
 	private void addChannel()
 		{
 		OneChannelWidget row=new OneChannelWidget();
-		cMetaStateGroup.registerWeakMetastateGroup(row.comboChannel);
+		cConfigGroup.registerWeakMetastateGroup(row.comboChannel);
 		entrylist.add(row);
 		}
 	
@@ -249,7 +249,7 @@ public class RecWidgetChannel extends JPanel implements ActionListener
 	public RecSettingsChannel getSettings()
 		{
 		RecSettingsChannel settings=new RecSettingsChannel();
-		settings.metaStateGroup=cMetaStateGroup.getConfigGroupName();
+		settings.configGroup=cConfigGroup.getConfigGroupName();
 		for(OneChannelWidget e:entrylist)
 			{
 			RecSettingsChannel.OneChannel ch=new RecSettingsChannel.OneChannel();

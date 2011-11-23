@@ -1,6 +1,3 @@
-/**
- * 
- */
 package endrov.recording.widgets;
 
 import endrov.util.EvDecimal;
