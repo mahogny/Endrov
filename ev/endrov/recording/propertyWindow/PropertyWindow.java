@@ -108,7 +108,6 @@ public class PropertyWindow extends BasicWindow implements ActionListener, EvHar
 
 		for(Map.Entry<String, EvHardwareConfigGroup> e:EvHardwareConfigGroup.getConfigGroups().entrySet())
 			{
-			//EvHardwareConfigGroup hwg=e.getValue();
 			String groupName=e.getKey();
 
 			c.gridx=0;
