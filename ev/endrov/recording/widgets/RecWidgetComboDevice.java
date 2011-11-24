@@ -30,5 +30,10 @@ public abstract class RecWidgetComboDevice extends JComboBox
 			}
 		}
 	
+	public EvDevicePath getSelectedDevice()
+		{
+		return (EvDevicePath)getSelectedItem();
+		}
+	
 	protected abstract boolean includeDevice(EvDevicePath path, EvDevice device);
 	}

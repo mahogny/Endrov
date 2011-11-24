@@ -78,7 +78,6 @@ public class RecWidgetSlices extends JPanel implements ActionListener
 		
 		bSetStartZ.addActionListener(this);
 		bSetEndZ.addActionListener(this);
-	
 		}
 	
 	

@@ -1,6 +1,7 @@
 package endrov.recording.recmetMultidim;
 
 import java.util.Iterator;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.JMenu;
 import javax.vecmath.Vector3d;
@@ -23,7 +24,9 @@ import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
 import endrov.recording.HWCamera;
+import endrov.recording.HWTrigger;
 import endrov.recording.RecordingResource;
+import endrov.recording.HWTrigger.TriggerListener;
 import endrov.recording.resolution.ResolutionManager;
 import endrov.recording.widgets.RecSettingsChannel;
 import endrov.recording.widgets.RecSettingsDimensionsOrder;
@@ -70,7 +73,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 	/**
 	 * Thread to perform acquisition
 	 */
-	public class AcqThread extends Thread implements EvAcquisition.AcquisitionThread
+	public class AcqThread extends Thread implements EvAcquisition.AcquisitionThread, TriggerListener
 		{
 		private EvMultidimAcquisition settings;
 		private boolean toStop=true;
@@ -231,6 +234,8 @@ public class EvMultidimAcquisition extends EvAcquisition
 				}
 			
 			}
+		
+		private Semaphore semTrigger=new Semaphore(0);
 
 		/**
 		 * Only makes sure to wait until the next frame
@@ -245,59 +250,71 @@ public class EvMultidimAcquisition extends EvAcquisition
 					currentFrame=EvDecimal.ZERO;
 					recurse.exec();
 					}
+				else if(times.tType==TimeType.TRIGGER)
+					{
+					for(;;)
+						{
+						//Wait for triggerer or for user to request a stop
+						int numPermit=semTrigger.drainPermits();
+						System.out.println(numPermit);
+						
+						if(toStop)
+							return;
+						
+						recurse.exec();
+						}
+					}
+				else if(times.freq==null)
+					{
+					//Run at maximum rate - best effort
+					long startTime=System.currentTimeMillis();
+					for(int i=0;;i++)
+						{
+						long thisTime=System.currentTimeMillis();
+						currentFrame=new EvDecimal(thisTime-startTime).divide(1000);
+						currentFrameCount=i;
+
+						if((times.tType==RecSettingsTimes.TimeType.NUMT && i==times.numT) ||
+								(times.tType==TimeType.SUMT && currentFrame.greaterEqual(currentFrame)) ||
+								toStop)
+							return;
+
+						recurse.exec();
+						}
+					}
 				else
 					{
-					if(times.freq==null)
-						{
-						//Run at maximum rate - best effort
-						long startTime=System.currentTimeMillis();
-						for(int i=0;;i++)
-							{
-							long thisTime=System.currentTimeMillis();
-							currentFrame=new EvDecimal(thisTime-startTime).divide(1000);
-							currentFrameCount=i;
-							
-							if((times.tType==RecSettingsTimes.TimeType.NUMT && i==times.numT) ||
-									(times.tType==TimeType.SUMT && currentFrame.greaterEqual(currentFrame)) ||
-									toStop)
-								return;
+					//Run at fixed controlled rate
+					EvDecimal dt=times.freq;
+					int numt;
 
-							recurse.exec();
-							}
-						}
+					if(times.tType==RecSettingsTimes.TimeType.NUMT)
+						numt=times.numT;
 					else
-						{
-						//Run at fixed controlled rate
-						EvDecimal dt=times.freq;
-						int numt;
-						
-						if(times.tType==RecSettingsTimes.TimeType.NUMT)
-							numt=times.numT;
-						else
-							numt=times.sumTime.divide(dt).intValue();
-						
-						for(int at=0;at<numt;at++)
-							{
-							long timeBefore=System.currentTimeMillis();
-							currentFrameCount=at;
-							currentFrame=dt.multiply(at);
+						numt=times.sumTime.divide(dt).intValue();
 
-							recurse.exec();
-							
-							//Wait until next frame
-							long timeAfter;
-							do
-								{
-								timeAfter=System.currentTimeMillis();
-								if(toStop)
-									return;
-								}while((new EvDecimal(timeAfter-timeBefore)).less(dt.multiply(1000)));
-							}
-						
+					for(int at=0;at<numt;at++)
+						{
+						long timeBefore=System.currentTimeMillis();
+						currentFrameCount=at;
+						currentFrame=dt.multiply(at);
+
+						recurse.exec();
+
+						//Wait until next frame
+						long timeAfter;
+						do
+							{
+							timeAfter=System.currentTimeMillis();
+							if(toStop)
+								return;
+							}while((new EvDecimal(timeAfter-timeBefore)).less(dt.multiply(1000)));
 						}
-					
-					
+
 					}
+
+
+
 				
 				}
 			}
@@ -339,11 +356,19 @@ public class EvMultidimAcquisition extends EvAcquisition
 		public void tryStop()
 			{
 			toStop=true;
+			semTrigger.release();
 			}
 		
 		private AcqThread(EvMultidimAcquisition settings)
 			{
 			this.settings=settings;
+			
+			if(settings.times.trigger!=null)
+				{
+				HWTrigger triggerDevice=(HWTrigger)settings.times.trigger.getDevice();
+				triggerDevice.addTriggerListener(this);
+				}
+			
 			}
 
 		
@@ -478,6 +503,14 @@ public class EvMultidimAcquisition extends EvAcquisition
 				start();
 				}
 			}
+
+
+		public void triggered()
+			{
+			semTrigger.release();
+			}
+
+
 		
 		}
 	
@@ -510,7 +543,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 	@Override
 	public String getMetaTypeDesc()
 		{
-		return "Burst acquisition";
+		return "Acquisition: Multidim";
 		}
 
 

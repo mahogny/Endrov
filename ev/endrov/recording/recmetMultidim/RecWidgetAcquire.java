@@ -46,7 +46,7 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 	private JLabel labelStatus=new JLabel(" ");
 	private EvAcquisition.AcquisitionThread thread;
 
-	private EvComboObject objectCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
+	private EvComboObject comboStorageLocation=new EvComboObject(new LinkedList<EvObject>(), true, false)
 		{
 		private static final long serialVersionUID = 1L;
 		public boolean includeObject(EvContainer cont)
@@ -62,7 +62,7 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 		add(
 				EvSwingUtil.layoutCompactVertical(
 						EvSwingUtil.layoutTableCompactWide(
-								new JLabel("Store in: "), objectCombo,
+								new JLabel("Store in: "), comboStorageLocation,
 								new JLabel("Name: "), tStoreName, 
 								new JLabel("Status: "), labelStatus),
 								bStartStop
@@ -83,17 +83,23 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 				}
 			else
 				{
-				if(objectCombo.getSelectedObject()==null)
+				if(comboStorageLocation.getSelectedObject()==null)
 					BasicWindow.showErrorDialog("Need to select a place to store the acquisition (e.g. File -> New)");
 				else
 					{
-					EvAcquisition acq=getAcquisition();
-					acq.setStoreLocation(objectCombo.getSelectedObject(), tStoreName.getText());
-					getAcquisitionSettings();
-					thread=acq.startAcquisition();
+					try
+						{
+						EvAcquisition acq=getAcquisition();
+						acq.setStoreLocation(comboStorageLocation.getSelectedObject(), tStoreName.getText());
+						getAcquisitionSettings();
+						thread=acq.startAcquisition();
+						bStartStop.setIcon(BasicIcon.iconPlayStop);
+						}
+					catch (Exception e1)
+						{
+						BasicWindow.showErrorDialog(e1.getMessage());
+						}
 					}
-
-				bStartStop.setIcon(BasicIcon.iconPlayStop);
 				}
 			
 			}
@@ -129,7 +135,7 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 	/**
 	 * Store settings in acquisition object. Return if successful
 	 */
-	public abstract boolean getAcquisitionSettings();
+	public abstract boolean getAcquisitionSettings() throws Exception;
 
 	public void setStoreName(String string)
 		{
@@ -138,7 +144,7 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 
 	public void dataChangedEvent()
 		{
-		objectCombo.updateList();
+		comboStorageLocation.updateList();
 		}
 
 	

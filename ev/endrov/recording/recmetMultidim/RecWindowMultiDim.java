@@ -55,7 +55,7 @@ public class RecWindowMultiDim extends BasicWindow
 			return acq;
 			}
 		@Override
-		public boolean getAcquisitionSettings()
+		public boolean getAcquisitionSettings() throws Exception
 			{
 			acq.order=worder.getSettings();
 			acq.channel=wchans.getSettings();

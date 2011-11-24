@@ -311,7 +311,7 @@ public class EvFRAPAcquisition extends EvAcquisition
 	@Override
 	public String getMetaTypeDesc()
 		{
-		return "FRAP acquisition";
+		return "Acquisition: FRAP";
 		}
 
 

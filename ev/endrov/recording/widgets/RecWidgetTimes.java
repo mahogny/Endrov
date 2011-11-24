@@ -17,6 +17,7 @@ import endrov.basicWindow.SpinnerSimpleInteger;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
 import endrov.recording.HWTrigger;
+import endrov.recording.widgets.RecSettingsTimes.TimeType;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -97,7 +98,7 @@ public class RecWidgetTimes extends JPanel
 	/**
 	 * Get settings from widget
 	 */
-	public RecSettingsTimes getSettings()
+	public RecSettingsTimes getSettings() throws Exception
 		{
 		RecSettingsTimes settings=new RecSettingsTimes();
 		if(rbNumFrames.isSelected())
@@ -109,6 +110,13 @@ public class RecWidgetTimes extends JPanel
 			{
 			settings.tType=RecSettingsTimes.TimeType.SUMT;
 			settings.sumTime=spSumTime.getDecimalValue();
+			}
+		else if(rbOnTrigger.isSelected())
+			{
+			settings.tType=TimeType.TRIGGER;
+			settings.trigger=comboTriggerDevice.getSelectedDevice();
+			if(settings.trigger==null)
+				throw new Exception("No trigger device selected");
 			}
 		else
 			{
