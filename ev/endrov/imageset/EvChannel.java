@@ -91,6 +91,8 @@ public class EvChannel extends EvObject implements AnyEvImage
 	
 	public void putStack(EvDecimal frame, EvStack stack)
 		{
+		if(frame==null)
+			throw new RuntimeException("frame is null");
 		imageLoader.put(frame, new MemoizeXImmediate<EvStack>(stack));
 		}
 

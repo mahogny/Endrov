@@ -252,16 +252,30 @@ public class EvMultidimAcquisition extends EvAcquisition
 					}
 				else if(times.tType==TimeType.TRIGGER)
 					{
+					currentFrameCount=0;
+					currentFrame=EvDecimal.ZERO;
+					long startTimeMillis=System.currentTimeMillis();
 					for(;;)
 						{
 						//Wait for triggerer or for user to request a stop
-						int numPermit=semTrigger.drainPermits();
-						System.out.println(numPermit);
-						
+						try
+							{
+							semTrigger.acquire();
+							semTrigger.drainPermits();
+							}
+						catch (InterruptedException e)
+							{
+							}
 						if(toStop)
 							return;
 						
 						recurse.exec();
+						
+						//Calculate next frame
+						long currentTimeMillis=System.currentTimeMillis();
+						long dt=currentTimeMillis-startTimeMillis;
+						currentFrame=new EvDecimal(dt).divide(1000);
+						currentFrameCount++;
 						}
 					}
 				else if(times.freq==null)
@@ -351,12 +365,6 @@ public class EvMultidimAcquisition extends EvAcquisition
 		public boolean isRunning()
 			{
 			return !toStop || isAlive();
-			}
-		
-		public void tryStop()
-			{
-			toStop=true;
-			semTrigger.release();
 			}
 		
 		private AcqThread(EvMultidimAcquisition settings)
@@ -482,7 +490,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 			
 			
 			
-			//System.out.println("---------stop-----------");
+			System.out.println("---------stop-----------");
 			toStop=false;
 			for(EvAcquisition.AcquisitionListener l:listeners)
 				l.acqStopped();
@@ -491,6 +499,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 		
 		public void stopAcquisition()
 			{
+			semTrigger.release();
 			toStop=true;
 			}
 		

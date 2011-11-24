@@ -165,17 +165,17 @@ public class EvContainer
 	public <E> SortedMap<EvPath, E> getIdObjectsRecursive(Class<E> cl)
 		{
 		TreeMap<EvPath, E> map=new TreeMap<EvPath, E>();
-		getIdObjectsRecursiveHelper(map, new LinkedList<String>(), cl);
+		getIdObjectsRecursiveHelper(this, map, new LinkedList<String>(), cl);
 		return map;
 		}
-	@SuppressWarnings("unchecked") private <E> void getIdObjectsRecursiveHelper(Map<EvPath, E> map, LinkedList<String> curPath, Class<E> cl)
+	@SuppressWarnings("unchecked") private <E> void getIdObjectsRecursiveHelper(EvContainer root, Map<EvPath, E> map, LinkedList<String> curPath, Class<E> cl)
 		{
 		for(Map.Entry<String, EvObject> e:metaObject.entrySet())
 			{
 			curPath.addLast(e.getKey());
 			if(cl.isInstance(e.getValue()))
-				map.put(new EvPath(this, curPath),(E)e.getValue());
-			((EvContainer)e.getValue()).getIdObjectsRecursiveHelper(map, curPath, cl);
+				map.put(new EvPath(root, curPath),(E)e.getValue());
+			((EvContainer)e.getValue()).getIdObjectsRecursiveHelper(root, map, curPath, cl);
 			curPath.removeLast();
 			}
 		}

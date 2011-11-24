@@ -1,6 +1,7 @@
 package endrov.hardwareNative;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -158,10 +159,8 @@ public class DevicePipeTrigger implements HWTrigger
 							
 							//Tell listeners
 							if(active && c!=-1)
-								{
 								for(TriggerListener l:triggerListeners)
 									l.triggered();
-								}
 							}
 						catch (IOException e)
 							{
@@ -174,6 +173,17 @@ public class DevicePipeTrigger implements HWTrigger
 						}
 					while(active && c!=-1);
 					fr.close();
+					}
+				catch (FileNotFoundException e)
+					{
+					System.out.println("File not found: "+f);
+					try
+						{
+						Thread.sleep(1000);
+						}
+					catch (InterruptedException e1)
+						{
+						}
 					}
 				catch (IOException e)
 					{

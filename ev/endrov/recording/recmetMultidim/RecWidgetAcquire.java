@@ -22,6 +22,7 @@ import endrov.basicWindow.EvComboObject;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvContainer;
 import endrov.data.EvObject;
+import endrov.ev.EvLog;
 import endrov.recording.EvAcquisition;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
@@ -79,6 +80,7 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 			{
 			if(thread!=null)
 				{
+				EvLog.printLog("Stopping acquisition");
 				thread.stopAcquisition();
 				}
 			else
@@ -92,11 +94,13 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 						EvAcquisition acq=getAcquisition();
 						acq.setStoreLocation(comboStorageLocation.getSelectedObject(), tStoreName.getText());
 						getAcquisitionSettings();
+						EvLog.printLog("Starting acquisition");
 						thread=acq.startAcquisition();
 						bStartStop.setIcon(BasicIcon.iconPlayStop);
 						}
 					catch (Exception e1)
 						{
+						EvLog.printError("Failed to run acquisition: "+e1.getMessage(),null);
 						BasicWindow.showErrorDialog(e1.getMessage());
 						}
 					}
