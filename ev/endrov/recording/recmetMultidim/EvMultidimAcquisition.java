@@ -14,6 +14,7 @@ import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.flowBasic.math.EvOpImageAddImage;
 import endrov.flowBasic.math.EvOpImageDivScalar;
+import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.hardware.EvHardwareConfigGroup;
 import endrov.imageset.EvChannel;
@@ -23,11 +24,11 @@ import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
-import endrov.recording.HWCamera;
-import endrov.recording.HWTrigger;
 import endrov.recording.RecordingResource;
-import endrov.recording.HWTrigger.TriggerListener;
-import endrov.recording.resolution.ResolutionManager;
+import endrov.recording.ResolutionManager;
+import endrov.recording.device.HWCamera;
+import endrov.recording.device.HWTrigger;
+import endrov.recording.device.HWTrigger.TriggerListener;
 import endrov.recording.widgets.RecSettingsChannel;
 import endrov.recording.widgets.RecSettingsDimensionsOrder;
 import endrov.recording.widgets.RecSettingsPositions;
@@ -79,7 +80,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 		private boolean toStop=true;
 
 		private Imageset imset=new Imageset();
-		private HWCamera cam=null;
+		private EvDevicePath cam=null;
 		private int currentFrameCount;
 		private EvDecimal currentFrame;
 		
@@ -113,20 +114,22 @@ public class EvMultidimAcquisition extends EvAcquisition
 			@Override
 			public void exec()
 				{
+				HWCamera thecam=(HWCamera)cam.getDevice();
+				
 				//Check if this frame should be included
 				if(currentChannel.z0>=currentZCount &&
 						(currentZCount-currentChannel.z0)%currentChannel.zInc==0 &&
 						currentFrameCount%currentChannel.tinc==0)
 					{
 					//Snap image, average if needed
-					CameraImage camIm=cam.snap();
+					CameraImage camIm=thecam.snap();
 					EvPixels pix=camIm.getPixels()[0];
 					if(currentChannel.averaging!=1)
 						{
 						ProgressHandle ph=new ProgressHandle();
 						for(int i=1;i<currentChannel.averaging;i++)
 							{
-							camIm=cam.snap();
+							camIm=thecam.snap();
 							EvPixels pix2=camIm.getPixels()[0];
 							pix=new EvOpImageAddImage().exec1(ph, pix,pix2);
 							}
@@ -139,9 +142,11 @@ public class EvMultidimAcquisition extends EvAcquisition
 					EvStack stack=new EvStack();//.getCreateFrame(currentFrame);
 					ch.putStack(currentFrame, stack);
 					
+					ResolutionManager.Resolution res=ResolutionManager.getCurrentResolutionNotNull(cam);
+					
 					stack.setRes(
-						ResolutionManager.getCurrentTotalMagnification(cam),
-						ResolutionManager.getCurrentTotalMagnification(cam),
+						res.x,
+						res.y,
 						dz.multiply(currentChannel.zInc).doubleValue()
 					);
 					stack.setDisplacement(new Vector3d(
@@ -385,7 +390,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 		public void run()
 			{
 			//TODO need to choose camera, at least!
-			Iterator<HWCamera> itcam=EvHardware.getDeviceMapCast(HWCamera.class).values().iterator();
+			Iterator<EvDevicePath> itcam=EvHardware.getDeviceMapCast(HWCamera.class).keySet().iterator();
 			if(itcam.hasNext())
 				cam=itcam.next();
 			

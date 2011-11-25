@@ -5,7 +5,7 @@
  */
 package endrov.hardwareMicromanager;
 
-import endrov.recording.HWStage;
+import endrov.recording.device.HWStage;
 
 
 /**

@@ -1,6 +1,7 @@
 package endrov.recording.flipWindow;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.JMenu;
 import javax.vecmath.Vector3d;
@@ -14,6 +15,7 @@ import endrov.data.EvObject;
 import endrov.flow.Flow;
 import endrov.flow.FlowConn;
 import endrov.flowBasic.objects.FlowUnitObjectIO;
+import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
@@ -21,10 +23,10 @@ import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
-import endrov.recording.HWImageScanner;
 import endrov.recording.RecordingResource;
+import endrov.recording.ResolutionManager;
+import endrov.recording.device.HWImageScanner;
 import endrov.recording.frapWindow.FlowUnitShowGraph;
-import endrov.recording.resolution.ResolutionManager;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
 
@@ -90,10 +92,15 @@ public class EvFLIPAcquisition extends EvAcquisition
 			acqLoop: 
 			do
 				{
-				Iterator<HWImageScanner> itcam=EvHardware.getDeviceMapCast(HWImageScanner.class).values().iterator();
+				Map<EvDevicePath, HWImageScanner> cams=EvHardware.getDeviceMapCast(HWImageScanner.class);
+				Iterator<EvDevicePath> itcam=cams.keySet().iterator();
+				EvDevicePath campath=null;
 				HWImageScanner cam=null;
 				if(itcam.hasNext())
-					cam=itcam.next();
+					{
+					campath=itcam.next();
+					cam=cams.get(campath);
+					}
 				
 				//Check that there are enough parameters
 				if(cam!=null && container!=null)
@@ -157,7 +164,7 @@ public class EvFLIPAcquisition extends EvAcquisition
 						try
 							{
 							//Acquire image before bleaching
-							snapOneImage(imset, cam, curFrame);
+							snapOneImage(imset, campath, cam, curFrame);
 							BasicWindow.updateWindows();
 							
 							//Acquire images as the intensity recovers
@@ -176,7 +183,7 @@ public class EvFLIPAcquisition extends EvAcquisition
 								double stageY=RecordingResource.getCurrentStageY();
 								String normalExposureTime=cam.getPropertyValue("Exposure");
 								cam.setPropertyValue("Exposure", ""+bleachTime);
-								int[] roiArray=RecordingResource.makeScanningROI(cam, copyRoiBleach, stageX, stageY);
+								int[] roiArray=RecordingResource.makeScanningROI(campath, cam, copyRoiBleach, stageX, stageY);
 								cam.scan(null, null, roiArray);
 								cam.setPropertyValue("Exposure", normalExposureTime);
 								
@@ -184,7 +191,7 @@ public class EvFLIPAcquisition extends EvAcquisition
 									break acqLoop;
 
 								//Acquire an image for quantification
-								snapOneImage(imset, cam, curFrame);
+								snapOneImage(imset, campath, cam, curFrame);
 								BasicWindow.updateWindows();
 								yield(settings.rate.doubleValue()/10);
 								
@@ -234,18 +241,18 @@ public class EvFLIPAcquisition extends EvAcquisition
 			}
 		
 			
-		private void snapOneImage(Imageset imset, HWImageScanner cam, EvDecimal curFrame)
+		private void snapOneImage(Imageset imset, EvDevicePath campath, HWImageScanner cam, EvDecimal curFrame)
 			{
 			CameraImage camIm=cam.snap();
 			EvImage evim=new EvImage(camIm.getPixels()[0]);
 			
 			EvChannel ch=imset.getCreateChannel("ch");
-			EvStack stack=new EvStack();//.getCreateFrame(curFrame);
+			EvStack stack=new EvStack();
 			ch.putStack(curFrame, stack);
-			stack.setRes(
-					ResolutionManager.getCurrentTotalMagnification(cam),
-					ResolutionManager.getCurrentTotalMagnification(cam),
-					1);
+			
+			ResolutionManager.Resolution res=ResolutionManager.getCurrentResolutionNotNull(campath);
+			
+			stack.setRes(res.x,res.y,1);
 
 			stack.setDisplacement(new Vector3d(
 					RecordingResource.getCurrentStageX(),

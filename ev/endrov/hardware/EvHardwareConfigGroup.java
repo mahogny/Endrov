@@ -118,6 +118,25 @@ public class EvHardwareConfigGroup
 					EvLog.printError("No such device, "+e.getKey(), null);
 				}
 			}
+
+		/**
+		 * Check if this is the current state
+		 */
+		public boolean isCurrent()
+			{
+			//Check if all property values are correct
+			for(Map.Entry<EvDevicePropPath, String> e:propMap.entrySet())
+				{
+				EvDevice device=e.getKey().getDevice();
+				String propName=e.getKey().getProperty();
+				String curPropVal=device.getPropertyValue(propName);
+
+				if(!curPropVal.equals(e.getValue()))
+					return false;
+				}
+			return true;
+			}
+			
 		}
 
 	/**

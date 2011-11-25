@@ -1,0 +1,72 @@
+http://www.ibm.com/developerworks/linux/library/l-r1/
+http://www.ibm.com/developerworks/linux/library/l-r2/
+www.ats.ucla.edu/stat/r/library/interface.pdf		C interface
+www.stat.auckland.ac.nz/~paul/Talks/Tokyo/recent.pdf     S3 vs S4  good!!! and more
+
+
+
+
+class()
+names()
+summary()
+
+
+============ S3 =======================
+
+S3 methods: a.b   function a, class b
+dispatches on first argument
+
+
+
+
+S3method()   exports an s3 method
+
+foo <- function () { return()}
+
+
+=========== S4 =======================
+
+
+export()
+exportClasses
+exportMethods
+
+
+
+=============== name spaces ==============
+
+note differences in export for s3/s4
+
+pkg::method
+pkg:::method    if hidden
+
+
+
+
+
+
+
+=========================
+
+Databases - the DBI package!
+
+
+
+
+============= next gen seq =====================
+
+ChIPpeakAnno: a Bioconductor package to annotate ChIP-seq and ChIP-chip data
+article contains overview of packages!!
+GFF ranges are in this package
+	source("http://bioconductor.org/biocLite.R")
+	biocLite("ChIPpeakAnno")
+
+
+IRanges - Infrastructure for manipulating intervals on sequences
+http://www.bioconductor.org/packages/2.5/bioc/html/IRanges.html
+	has RangedData
+
+biomaRt
+connect to Ensembl
+
+

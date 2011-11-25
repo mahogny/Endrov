@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording;
+package endrov.hardwareNative;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -17,6 +17,7 @@ import javax.swing.*;
 
 import endrov.hardware.DevicePropertyType;
 import endrov.hardware.EvDeviceObserver;
+import endrov.hardware.HWSerial;
 import endrov.util.EvSwingUtil;
 
 /**

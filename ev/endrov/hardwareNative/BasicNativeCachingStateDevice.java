@@ -8,7 +8,7 @@ package endrov.hardwareNative;
 import java.util.*;
 
 import endrov.hardware.DevicePropertyType;
-import endrov.recording.HWState;
+import endrov.recording.device.HWState;
 
 /**
  * Device mapping state to property "state". State will be cached.

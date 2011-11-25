@@ -23,13 +23,11 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
 import endrov.hardware.EvDevicePath;
-import endrov.hardware.EvHardware;
 import endrov.imageWindow.GeneralTool;
 import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageset.EvPixels;
-import endrov.recording.HWCamera;
 import endrov.recording.RecordingResource;
-import endrov.recording.resolution.ResolutionManager;
+import endrov.recording.ResolutionManager;
 import endrov.util.Vector2i;
 
 /**
@@ -51,6 +49,8 @@ public abstract class LiveWindowImageView extends JPanel implements MouseListene
 	public abstract Vector2i getOffset();
 	public abstract int getLower();
 	public abstract int getUpper();
+		
+	public abstract EvDevicePath getCameraPath();
 		
 	
 	public JToggleButton[] toolButtons;
@@ -238,27 +238,22 @@ public abstract class LiveWindowImageView extends JPanel implements MouseListene
 			}
 		else if(SwingUtilities.isRightMouseButton(e))
 			{
-			double resMagX = 1; //[um/px]
-			double resMagY = 1;
-			boolean foundCamera=false;
-			for(Map.Entry<EvDevicePath,HWCamera> cams:EvHardware.getDeviceMapCast(HWCamera.class).entrySet())
+			EvDevicePath campath=getCameraPath();
+			if(campath!=null)
 				{
-				HWCamera camera = cams.getValue();
-				resMagX=resMagY=ResolutionManager.getCurrentTotalMagnification(camera);
-				foundCamera=true;
-				break;
-				}
-			if(!foundCamera)
-				System.out.println("no camera to move");
-			else
-				{
+				ResolutionManager.Resolution res=ResolutionManager.getCurrentResolutionNotNull(campath);
+				
+
 				Map<String, Double> diff=new HashMap<String, Double>();
-				diff.put("x",dx*resMagX);
-				diff.put("y",dy*resMagY);
+				diff.put("x",dx*res.x);
+				diff.put("y",dy*res.y);
 				RecordingResource.setRelStagePos(diff);
 				repaint();
 				//TODO update manual view
+				
 				}
+			else
+				System.out.println("No camera to move");
 			}
 		}
 	public void mouseMoved(MouseEvent e)

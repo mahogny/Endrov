@@ -19,7 +19,7 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.EvChannel;
-import endrov.recording.CategoryInfo;
+import endrov.recording.flow.CategoryInfo;
 import endrov.roi.ROI;
 
 /**

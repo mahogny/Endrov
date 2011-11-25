@@ -1,0 +1,1 @@
+window to easily work with multiple resolutions

@@ -5,7 +5,7 @@
  */
 package endrov.hardwareMicromanager;
 
-import endrov.recording.HWShutter;
+import endrov.recording.device.HWShutter;
 
 
 /**

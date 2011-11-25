@@ -5,7 +5,7 @@
  */
 package endrov.hardwareMicromanager;
 
-import endrov.recording.*;
+import endrov.hardware.HWSerial;
 
 //could preload list of properties
 

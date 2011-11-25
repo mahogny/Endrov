@@ -35,10 +35,10 @@ import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
-import endrov.recording.HWAutoFocus;
-import endrov.recording.HWCamera;
 import endrov.recording.RecordingResource;
-import endrov.recording.resolution.ResolutionManager;
+import endrov.recording.ResolutionManager;
+import endrov.recording.device.HWAutoFocus;
+import endrov.recording.device.HWCamera;
 import endrov.roi.GeneralToolROI;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
@@ -126,7 +126,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 			{
 			double dx=getStageX()-lastImageStagePos.x;
 			double dy=getStageY()-lastImageStagePos.y;
-			return new Vector2i((int)(dx/getCameraResolution()), (int)(dy/getCameraResolution()));
+			return new Vector2i((int)(dx/getCameraResolution().x), (int)(dy/getCameraResolution().y));
 			}
 		
 		protected void paintComponent(java.awt.Graphics g)
@@ -160,6 +160,11 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 				
 				*/
 			
+			}
+		@Override
+		public EvDevicePath getCameraPath()
+			{
+			return getCurrentCameraPath();
 			}
 		};
 	
@@ -530,6 +535,11 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 			return null;
 		}
 
+	private EvDevicePath getCurrentCameraPath()
+		{
+		return (EvDevicePath)cameraCombo.getSelectedItem();
+		}
+	
 	/**
 	 * Take one picture from the camera	
 	 */
@@ -610,13 +620,16 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 	/**
 	 * [um/px]
 	 */
-	public double getCameraResolution()
+	public ResolutionManager.Resolution getCameraResolution()
 		{
+		return ResolutionManager.getCurrentResolutionNotNull(getCurrentCameraPath());
+		/*
 		HWCamera cam=getCurrentCamera();
 		if(cam!=null)
 			return ResolutionManager.getCurrentTotalMagnification(cam);
 		else
 			return 1;
+			*/
 		}
 	
 	public double getStageX() // um
@@ -636,22 +649,22 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 
 	public double scaleS2w(double s)
 		{
-		return s*getCameraResolution();
+		return s*getCameraResolution().x;
 		}
 
 	public double scaleW2s(double w)
 		{
-		return w/getCameraResolution();
+		return w/getCameraResolution().x;
 		}
 
 	public Vector2d transformPointS2W(Vector2d v)
 		{
-		return new Vector2d(v.x*getCameraResolution()-getStageX(), v.y*getCameraResolution()-getStageY()); 
+		return new Vector2d(v.x*getCameraResolution().x-getStageX(), v.y*getCameraResolution().y-getStageY()); 
 		}
 
 	public Vector2d transformPointW2S(Vector2d v)
 		{
-		return new Vector2d((v.x+getStageX())/getCameraResolution(), (v.y+getStageY())/getCameraResolution());
+		return new Vector2d((v.x+getStageX())/getCameraResolution().x, (v.y+getStageY())/getCameraResolution().y);
 		}
 
 	public double w2sz(double z)

@@ -7,7 +7,7 @@ package endrov.hardwareMicromanager;
 
 import java.util.*;
 
-import endrov.recording.*;
+import endrov.recording.device.HWState;
 
 //could preload list of properties
 

@@ -3,9 +3,8 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording;
+package endrov.hardware;
 
-import endrov.hardware.EvDevice;
 
 public interface HWSerial extends EvDevice
 	{

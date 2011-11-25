@@ -18,7 +18,9 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.keyBinding.JInputManager;
-import endrov.recording.resolution.ResolutionManager;
+import endrov.recording.device.HWAutoFocus;
+import endrov.recording.device.HWImageScanner;
+import endrov.recording.device.HWStage;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
 import endrov.roi.LineIterator.LineRange;
@@ -139,7 +141,7 @@ public class RecordingResource
 	 * Make a ROI mask for image scanners.
 	 * offset is in [um]
 	 */
-	public static int[] makeScanningROI(HWImageScanner scanner, ROI roi, double stageX, double stageY)
+	public static int[] makeScanningROI(EvDevicePath scannerpath, HWImageScanner scanner, ROI roi, double stageX, double stageY)
 		{
 		int w=scanner.getWidth();
 		int h=scanner.getHeight();
@@ -150,8 +152,8 @@ public class RecordingResource
 		EvImage image=new EvImage(p);
 		EvStack stack=new EvStack();
 
-		double res=ResolutionManager.getCurrentTotalMagnification(scanner);
-		stack.setRes(res,res,1);
+		ResolutionManager.Resolution res=ResolutionManager.getCurrentResolutionNotNull(scannerpath);
+		stack.setRes(res.x,res.y,1);
 		
 		String channel="foo";
 		EvDecimal frame=EvDecimal.ZERO;

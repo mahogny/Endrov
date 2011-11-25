@@ -12,7 +12,7 @@ import java.util.TreeMap;
 
 import endrov.hardware.DevicePropertyType;
 import endrov.hardware.EvDeviceObserver.DeviceListener;
-import endrov.recording.HWTrigger;
+import endrov.recording.device.HWTrigger;
 
 /**
  * Device: Software triggerer based on unix pipes

@@ -11,8 +11,8 @@ import java.util.TreeMap;
 
 import endrov.hardware.DevicePropertyType;
 import endrov.hardware.EvDeviceObserver;
-import endrov.recording.HWCamera;
 import endrov.recording.CameraImage;
+import endrov.recording.device.HWCamera;
 import endrov.util.EvDecimal;
 
 /**

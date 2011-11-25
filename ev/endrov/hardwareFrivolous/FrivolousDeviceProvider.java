@@ -34,9 +34,9 @@ import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDeviceProvider;
 import endrov.hardware.EvHardware;
 import endrov.recording.CameraImage;
-import endrov.recording.HWAutoFocus;
-import endrov.recording.HWImageScanner;
-import endrov.recording.HWStage;
+import endrov.recording.device.HWAutoFocus;
+import endrov.recording.device.HWImageScanner;
+import endrov.recording.device.HWStage;
 import endrov.util.EvSwingUtil;
 
 /**

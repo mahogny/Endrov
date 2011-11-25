@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.hardware.EvHardwareConfigGroup;
-import endrov.recording.propertyWindow.DialogNewConfigGroup;
+import endrov.recording.propertyWindow.NewConfigGroupWindow;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 
@@ -150,7 +150,7 @@ public class OldConfigGroupPanel extends JPanel implements ActionListener
 		{
 		if(e.getSource()==bAddGroup)
 			{
-			new DialogNewConfigGroup();
+			new NewConfigGroupWindow();
 			}
 		
 		

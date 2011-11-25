@@ -7,7 +7,7 @@ package endrov.hardwareMicromanager;
 
 import java.io.IOException;
 
-import endrov.recording.*;
+import endrov.recording.device.HWAutoFocus;
 
 //could preload list of properties
 

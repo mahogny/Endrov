@@ -21,8 +21,8 @@ import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDeviceProvider;
 import endrov.recording.CameraImage;
-import endrov.recording.HWCamera;
-import endrov.recording.HWStage;
+import endrov.recording.device.HWCamera;
+import endrov.recording.device.HWStage;
 import endrov.util.EvMathUtil;
 
 /**

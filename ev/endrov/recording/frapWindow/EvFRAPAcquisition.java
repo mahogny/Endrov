@@ -1,6 +1,7 @@
 package endrov.recording.frapWindow;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.JMenu;
 import javax.vecmath.Vector3d;
@@ -16,6 +17,7 @@ import endrov.flow.FlowConn;
 import endrov.flowBasic.constants.FlowUnitConstEvDecimal;
 import endrov.flowBasic.control.FlowUnitShow;
 import endrov.flowBasic.objects.FlowUnitObjectIO;
+import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
@@ -23,9 +25,9 @@ import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
-import endrov.recording.HWImageScanner;
 import endrov.recording.RecordingResource;
-import endrov.recording.resolution.ResolutionManager;
+import endrov.recording.ResolutionManager;
+import endrov.recording.device.HWImageScanner;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
 
@@ -84,10 +86,15 @@ public class EvFRAPAcquisition extends EvAcquisition
 				acqLoop: 
 				do
 					{
-					Iterator<HWImageScanner> itcam=EvHardware.getDeviceMapCast(HWImageScanner.class).values().iterator();
+					Map<EvDevicePath, HWImageScanner> cams=EvHardware.getDeviceMapCast(HWImageScanner.class);
+					Iterator<EvDevicePath> itcam=cams.keySet().iterator();
+					EvDevicePath campath=null;
 					HWImageScanner cam=null;
 					if(itcam.hasNext())
-						cam=itcam.next();
+						{
+						campath=itcam.next();
+						cam=cams.get(campath);
+						}
 					
 					//Check that there are enough parameters
 					if(cam!=null && container!=null)
@@ -159,7 +166,7 @@ public class EvFRAPAcquisition extends EvAcquisition
 								l.newAcquisitionStatus("Snap reference");
 							
 							//Acquire image before bleaching
-							snapOneImage(imset, cam, curFrame);
+							snapOneImage(imset, campath, cam, curFrame);
 							BasicWindow.updateWindows();
 
 							for(EvAcquisition.AcquisitionListener l:listeners)
@@ -173,7 +180,7 @@ public class EvFRAPAcquisition extends EvAcquisition
 							double stageY=RecordingResource.getCurrentStageY();
 							String normalExposureTime=cam.getPropertyValue("Exposure");
 							cam.setPropertyValue("Exposure", ""+bleachTime);
-							int[] roiArray=RecordingResource.makeScanningROI(cam, copyROI, stageX, stageY);
+							int[] roiArray=RecordingResource.makeScanningROI(campath, cam, copyROI, stageX, stageY);
 							cam.scan(null, null, roiArray);
 							cam.setPropertyValue("Exposure", normalExposureTime);
 							curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
@@ -192,7 +199,7 @@ public class EvFRAPAcquisition extends EvAcquisition
 								
 								curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
 								
-								snapOneImage(imset, cam, curFrame);
+								snapOneImage(imset, campath, cam, curFrame);
 								BasicWindow.updateWindows();
 								
 								waitInTotal(startTime, settings.rate.doubleValue());
@@ -222,7 +229,7 @@ public class EvFRAPAcquisition extends EvAcquisition
 			
 			}
 			
-		private void snapOneImage(Imageset imset, HWImageScanner cam, EvDecimal curFrame)
+		private void snapOneImage(Imageset imset, EvDevicePath campath, HWImageScanner cam, EvDecimal curFrame)
 			{
 			CameraImage camIm=cam.snap();
 			EvImage evim=new EvImage(camIm.getPixels()[0]);
@@ -230,11 +237,9 @@ public class EvFRAPAcquisition extends EvAcquisition
 			EvChannel ch=imset.getCreateChannel("ch");
 			EvStack stack=new EvStack();//.getCreateFrame(curFrame);
 			ch.putStack(curFrame, stack);
-			stack.setRes(
-					ResolutionManager.getCurrentTotalMagnification(cam),
-					ResolutionManager.getCurrentTotalMagnification(cam),
-					1
-				);
+			
+			ResolutionManager.Resolution res=ResolutionManager.getCurrentResolutionNotNull(campath);
+			stack.setRes(res.x,res.y,1);
 			stack.setDisplacement(new Vector3d(
 					RecordingResource.getCurrentStageX(),
 					RecordingResource.getCurrentStageY(),

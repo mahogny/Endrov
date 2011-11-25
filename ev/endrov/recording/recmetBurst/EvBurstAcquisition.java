@@ -18,8 +18,8 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
-import endrov.recording.HWCamera;
 import endrov.recording.RecordingResource;
+import endrov.recording.device.HWCamera;
 import endrov.util.EvDecimal;
 
 /**

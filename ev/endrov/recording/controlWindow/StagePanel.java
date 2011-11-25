@@ -21,7 +21,7 @@ import javax.swing.JToggleButton;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDevicePath;
-import endrov.recording.HWStage;
+import endrov.recording.device.HWStage;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageToggleButton;
 

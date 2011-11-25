@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.*;
 
 import mmcorej.CMMCore;
+import mmcorej.Configuration;
 import mmcorej.DeviceType;
 import mmcorej.MMEventCallback;
 import mmcorej.PropertyBlock;
@@ -19,6 +20,8 @@ import org.jdom.Element;
 import org.micromanager.conf.ConfiguratorDlg;
 
 import endrov.hardware.*;
+import endrov.recording.ResolutionManager;
+import endrov.recording.ResolutionManager.ResolutionState;
 import endrov.starter.EvSystemUtil;
 
 /**
@@ -115,6 +118,7 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 			Collection<String> isCamera=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.CameraDevice));
 			Collection<String> isState=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.StateDevice));
 			
+			
 			//Register all devices
 			for(String devName:MMutil.convVector(core.getLoadedDevices()))
 				{
@@ -142,7 +146,6 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 				
 				hw.put(devName,adp);
 				}
-			
 			
 			
 			/**
@@ -184,24 +187,31 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 				for(String configGroupStateName:core.getAvailableConfigs(configGroupName))
 					{
 					mmcorej.Configuration config=core.getConfigState(configGroupName, configGroupStateName);
-					EvHardwareConfigGroup.State state=new EvHardwareConfigGroup.State();
-					for(int i=0;i<config.size();i++)
-						{
-						PropertySetting umSetting=config.getSetting(i);
-						String propName=umSetting.getPropertyName();
-						String value=umSetting.getPropertyValue();
-						String mmDevName=umSetting.getDeviceLabel();
-						EvDevicePath evDevice=new EvDevicePath(new String[]{"um",mmDevName});
-						EvDevicePropPath evPropPath=new EvDevicePropPath(evDevice, propName);
-						hwg.propsToInclude.add(evPropPath);
-						state.propMap.put(evPropPath, value);
-						}
-					hwg.putState(configGroupStateName,state);
+					convertConfigState(hwg, configGroupStateName, config);
 					}
 				EvHardwareConfigGroup.putConfigGroup(configGroupName, hwg);
 				}
 			
-			
+			/**
+			 * Convert micromanager pixel size configurations
+			 */
+			for(String pixelSizeName:core.getAvailablePixelSizeConfigs())
+				{
+				Configuration conf=core.getPixelSizeConfigData(pixelSizeName);
+				double umRes=core.getPixelSizeUmByID(pixelSizeName);
+
+				//Assign resolution to the first available camera
+				if(!isCamera.isEmpty())
+					{
+					EvDevicePath campath=mmDeviceToEndrov(isCamera.iterator().next());
+				
+					ResolutionState resState=new ResolutionState();
+					resState.state=convertConfigState(conf);
+					resState.cameraRes=new ResolutionManager.Resolution(umRes, umRes);
+					
+					ResolutionManager.getCreateResolutionStatesMap(campath).put(pixelSizeName, resState);
+					}
+				}
 			
 			
 			}
@@ -209,6 +219,41 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 			{
 			e.printStackTrace();
 			}
+		}
+	
+	
+	private static void convertConfigState(EvHardwareConfigGroup hwg, String configGroupStateName, Configuration conf) throws Exception
+		{
+		EvHardwareConfigGroup.State state=convertConfigState(conf);
+		hwg.propsToInclude.addAll(state.propMap.keySet());
+		hwg.putState(configGroupStateName,state);
+		}
+	
+	
+	private static EvHardwareConfigGroup.State convertConfigState(Configuration conf) throws Exception
+		{
+		EvHardwareConfigGroup.State state=new EvHardwareConfigGroup.State();
+		for(int i=0;i<conf.size();i++)
+			{
+			PropertySetting umSetting=conf.getSetting(i);
+			String propName=umSetting.getPropertyName();
+			String value=umSetting.getPropertyValue();
+			String mmDevName=umSetting.getDeviceLabel();
+			EvDevicePropPath evPropPath=mmDevicePropToEndrov(mmDevName, propName);
+			state.propMap.put(evPropPath, value);
+			}
+		return state;
+		}
+		
+	
+	private static EvDevicePath mmDeviceToEndrov(String mmDevName)
+		{
+		return new EvDevicePath(new String[]{"um",mmDevName});
+		}
+	
+	private static EvDevicePropPath mmDevicePropToEndrov(String mmDevName, String propName)
+		{
+		return new EvDevicePropPath(mmDeviceToEndrov(mmDevName), propName);
 		}
 	
 	

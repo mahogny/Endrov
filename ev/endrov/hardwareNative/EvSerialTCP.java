@@ -14,7 +14,7 @@ import java.util.TreeMap;
 
 import endrov.hardware.DevicePropertyType;
 import endrov.hardware.EvDeviceObserver;
-import endrov.recording.HWSerial;
+import endrov.hardware.HWSerial;
 
 /**
  * Serial communication over TCP/IP

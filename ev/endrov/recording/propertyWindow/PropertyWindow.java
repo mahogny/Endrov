@@ -182,7 +182,7 @@ public class PropertyWindow extends BasicWindow implements ActionListener, EvHar
 		{
 		if(e.getSource()==bNewGroup)
 			{
-			new DialogNewConfigGroup();
+			new NewConfigGroupWindow();
 			}
 		}
 	

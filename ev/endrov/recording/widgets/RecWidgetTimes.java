@@ -16,7 +16,7 @@ import endrov.basicWindow.SpinnerSimpleEvFrame;
 import endrov.basicWindow.SpinnerSimpleInteger;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
-import endrov.recording.HWTrigger;
+import endrov.recording.device.HWTrigger;
 import endrov.recording.widgets.RecSettingsTimes.TimeType;
 import endrov.util.EvSwingUtil;
 
