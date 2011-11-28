@@ -1,5 +1,6 @@
 package endrov.hardware;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -137,6 +138,15 @@ public class EvHardwareConfigGroup
 			return true;
 			}
 			
+		
+		public static State recordCurrent(Collection<EvDevicePropPath> propsToInclude)
+			{
+			State state=new State();
+			for(EvDevicePropPath p:propsToInclude)
+				state.propMap.put(p, p.getDevice().getPropertyValue(p.getProperty()));
+			return state;
+			}
+		
 		}
 
 	/**

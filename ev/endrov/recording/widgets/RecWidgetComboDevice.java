@@ -19,8 +19,10 @@ public abstract class RecWidgetComboDevice extends JComboBox
 		}
 	
 	
-	private void updateOptions()
+	public void updateOptions()
 		{
+		//TODO should reselect old entry
+		
 		DefaultComboBoxModel model=(DefaultComboBoxModel)getModel();
 		model.removeAllElements();
 		for(Map.Entry<EvDevicePath, EvDevice> e:EvHardware.getDeviceMap().entrySet())
@@ -36,4 +38,6 @@ public abstract class RecWidgetComboDevice extends JComboBox
 		}
 	
 	protected abstract boolean includeDevice(EvDevicePath path, EvDevice device);
+
+
 	}

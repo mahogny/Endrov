@@ -101,4 +101,11 @@ public class EvDevicePath implements Comparable<EvDevicePath>
 		System.out.println(a);
 		}
 	
+	
+	public String getLeafName()
+		{
+		return path[path.length-1];
+		}
+	
+	
 	}

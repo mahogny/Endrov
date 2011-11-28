@@ -19,6 +19,7 @@ import endrov.recording.propertyWindow.PropertyWindow;
 import endrov.recording.recmetBurst.EvBurstAcquisition;
 import endrov.recording.recmetBurst.RecWindowBurst;
 import endrov.recording.recmetMultidim.RecWindowMultiDim;
+import endrov.recording.resolutionConfigWindow.ResolutionConfigWindow;
 
 public class PLUGIN extends PluginDef
 	{
@@ -52,6 +53,7 @@ public class PLUGIN extends PluginDef
 		return new Class[]{
 				RecControlWindow.class,LiveWindow.class, RecordingResource.class,
 				RecWindowMultiDim.class,
+				ResolutionConfigWindow.class,
 				
 				PropertyWindow.class,
 				
