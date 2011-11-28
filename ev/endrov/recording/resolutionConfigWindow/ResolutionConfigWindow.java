@@ -135,53 +135,50 @@ public class ResolutionConfigWindow extends BasicWindow implements ActionListene
 		if(e.getSource()==bEnter)
 			{
 			
-				try
-					{
-					//Get resolution
-					String sResX=JOptionPane.showInputDialog("Resolution X [um/px]?");
-					if(sResX==null)
-						return;
-					double resX=Double.parseDouble(sResX);
-					String sResY=JOptionPane.showInputDialog("Resolution Y [um/px]?");
-					if(sResY==null)
-						return;
-					double resY=Double.parseDouble(sResY);
-					
-					//Find all names in use
-					Set<String> usedNames=new HashSet<String>();
-					for(EvDevicePath campath2:ResolutionManager.resolutions.keySet())
-						usedNames.addAll(ResolutionManager.resolutions.get(campath2).keySet());
-					
-					//Generate an unused name
-					String name;
-					int resi=0;
-					do
-						{
-						name=campath.getLeafName()+" "+resi;
-						resi++;
-						} while(usedNames.contains(name));
-
-					name=JOptionPane.showInputDialog("Name of resolution?",name);
-					if(name==null)
-						return;
-					
-					//Create the resolution state
-					ResolutionState rstate=new ResolutionState();
-					rstate.cameraRes=new ResolutionManager.Resolution(resX, resY);
-					rstate.state=State.recordCurrent(wProperties.getSelectedProperties());
-					ResolutionManager.getCreateResolutionStatesMap(campath).put(name, rstate);
-					
-					generateList();
-					}
-				catch (NumberFormatException e1)
-					{
-					BasicWindow.showErrorDialog("Invalid number");
+			try
+				{
+				//Get resolution
+				String sResX=JOptionPane.showInputDialog("Resolution X [um/px]?");
+				if(sResX==null)
 					return;
-					}
+				double resX=Double.parseDouble(sResX);
+				String sResY=JOptionPane.showInputDialog("Resolution Y [um/px]?");
+				if(sResY==null)
+					return;
+				double resY=Double.parseDouble(sResY);
 				
-			
-			
-			
+				//Find all names in use
+				Set<String> usedNames=new HashSet<String>();
+				for(EvDevicePath campath2:ResolutionManager.resolutions.keySet())
+					usedNames.addAll(ResolutionManager.resolutions.get(campath2).keySet());
+				
+				//Generate an unused name
+				String name;
+				int resi=0;
+				do
+					{
+					name=campath.getLeafName()+" "+resi;
+					resi++;
+					} while(usedNames.contains(name));
+
+				name=JOptionPane.showInputDialog("Name of resolution?",name);
+				if(name==null)
+					return;
+				
+				//Create the resolution state
+				ResolutionState rstate=new ResolutionState();
+				rstate.cameraRes=new ResolutionManager.Resolution(resX, resY);
+				rstate.state=State.recordCurrent(wProperties.getSelectedProperties());
+				ResolutionManager.getCreateResolutionStatesMap(campath).put(name, rstate);
+				
+				generateList();
+				}
+			catch (NumberFormatException e1)
+				{
+				BasicWindow.showErrorDialog("Invalid number");
+				return;
+				}
+				
 			
 			}
 		else if(e.getSource()==bDetect)

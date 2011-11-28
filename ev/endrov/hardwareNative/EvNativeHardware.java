@@ -36,7 +36,8 @@ public class EvNativeHardware extends EvDeviceProvider implements EvDevice
 		
 		hardwareProvided.put("pipetrigger", DevicePipeTrigger.class);
 
-		hw.put("pipetrigger", new DevicePipeTrigger());
+		hw.put("pipetrigger1", new DevicePipeTrigger());
+		hw.put("pipetrigger2", new DevicePipeTrigger());
 
 		}
 		

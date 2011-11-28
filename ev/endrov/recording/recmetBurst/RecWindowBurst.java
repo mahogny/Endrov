@@ -19,6 +19,10 @@ import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.hardware.EvDevice;
+import endrov.hardware.EvDevicePath;
+import endrov.recording.device.HWTrigger;
+import endrov.recording.widgets.RecWidgetComboDevice;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
@@ -34,14 +38,31 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvBur
 	static final long serialVersionUID=0;
 
 	
-	private JCheckBox cDuration=new JCheckBox("Duration");
+	private JCheckBox cDuration=new JCheckBox("Duration: ");
 	private SpinnerSimpleEvDecimal spDuration=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spRate=new SpinnerSimpleEvDecimal();
 	private JComboBox cDurationUnit=new JComboBox(new Object[]{"Frames","Seconds"});
 	private JComboBox cRateUnit=new JComboBox(new Object[]{"Hz","ms"});
 	private JButton bStartStop=new JButton("Start");
 	private JCheckBox cSwapEarly=new JCheckBox("Early swap to disk"); 
-	private JLabel labelStatus=new JLabel("Status: Stopped");
+	
+	private JCheckBox cbTriggerOn=new JCheckBox("Trigger on: ");
+	private JCheckBox cbTriggerOff=new JCheckBox("Trigger off: ");
+	
+	private static class RecWidgetComboDeviceTrigger extends RecWidgetComboDevice
+		{
+		private static final long serialVersionUID = 1L;
+		protected boolean includeDevice(EvDevicePath path, EvDevice device)
+			{
+			return device instanceof HWTrigger;
+			}
+		}
+
+	private RecWidgetComboDeviceTrigger comboTriggerDeviceOn=new RecWidgetComboDeviceTrigger();
+	private RecWidgetComboDeviceTrigger comboTriggerDeviceOff=new RecWidgetComboDeviceTrigger();
+	
+		
+	
 	
 	private EvBurstAcquisition acq=new EvBurstAcquisition();
 	private EvBurstAcquisition.AcqThread thread;
@@ -90,33 +111,37 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvBur
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutEvenVertical(
 				
-				
-				
 				EvSwingUtil.layoutLCR(
-						cDuration,
-						spDuration,
-						cDurationUnit
-						),
+					cDuration,
+					spDuration,
+					cDurationUnit
+					),
 
 				EvSwingUtil.layoutLCR(
-						new JLabel("Rate"),
-						spRate,
-						cRateUnit
-						),
+					new JLabel("Rate"),
+					spRate,
+					cRateUnit
+					),
+						
+				EvSwingUtil.layoutLCR(
+					cbTriggerOn,
+					comboTriggerDeviceOn,
+					null
+					),	
+					
+				EvSwingUtil.layoutLCR(
+					cbTriggerOff,
+					comboTriggerDeviceOff,
+					null
+					),		
 						
 				cSwapEarly,
 				
 				EvSwingUtil.layoutLCR(
-						null,
-						labelStatus,
-						null
-						),
-				
-				EvSwingUtil.layoutLCR(
-						objectCombo,
-						tChannelName,
-						bStartStop
-						)
+					objectCombo,
+					tChannelName,
+					bStartStop
+					)
 				
 				
 				),
@@ -158,6 +183,11 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvBur
 				
 				acq.earlySwap=cSwapEarly.isSelected();
 				acq.container=objectCombo.getSelectedObject();
+				
+				if(cbTriggerOn.isSelected())
+					acq.deviceTriggerOn=comboTriggerDeviceOn.getSelectedDevice();
+				if(cbTriggerOff.isSelected())
+					acq.deviceTriggerOff=comboTriggerDeviceOff.getSelectedDevice();
 		
 				thread=acq.startAcquisition();
 				//thread.startAcquisition();
