@@ -79,15 +79,16 @@ public class MMutil
 		//System.out.println("bpp "+bpp+"   #comp "+numComponent+"    bitdepth "+bitdepth);
 		
 		//Micromanager supports pixels packed in a special way
+		/*
 		String p=core.getProperty(device, "PixelType");
 		if(p.equals("32bitRGB"))
-			numComponent=3;
+			numComponent=3;*/
 		//Might want to handle this in a totally different way
 		
 		core.snapImage();
 
 		Object arr;
-		if(core.getNumberOfComponents()==1)
+		if(core.getNumberOfComponents()==1) //Gray-scale
 			{
 			arr=core.getImage();//core.getLastImage();//;
 

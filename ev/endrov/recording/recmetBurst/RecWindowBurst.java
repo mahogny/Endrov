@@ -111,41 +111,41 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvBur
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutEvenVertical(
 				
-				EvSwingUtil.layoutLCR(
-					cDuration,
-					spDuration,
-					cDurationUnit
-					),
-
-				EvSwingUtil.layoutLCR(
-					new JLabel("Rate"),
-					spRate,
-					cRateUnit
-					),
-						
-				EvSwingUtil.layoutLCR(
-					cbTriggerOn,
-					comboTriggerDeviceOn,
-					null
-					),	
-					
-				EvSwingUtil.layoutLCR(
-					cbTriggerOff,
-					comboTriggerDeviceOff,
-					null
-					),		
-						
-				cSwapEarly,
-				
-				EvSwingUtil.layoutLCR(
-					objectCombo,
-					tChannelName,
-					bStartStop
-					)
-				
-				
+			EvSwingUtil.layoutLCR(
+				cDuration,
+				spDuration,
+				cDurationUnit
 				),
-				BorderLayout.CENTER);
+
+			EvSwingUtil.layoutLCR(
+				new JLabel("Rate"),
+				spRate,
+				cRateUnit
+				),
+					
+			EvSwingUtil.layoutLCR(
+				cbTriggerOn,
+				comboTriggerDeviceOn,
+				null
+				),	
+				
+			EvSwingUtil.layoutLCR(
+				cbTriggerOff,
+				comboTriggerDeviceOff,
+				null
+				),		
+					
+			cSwapEarly,
+			
+			EvSwingUtil.layoutLCR(
+				objectCombo,
+				tChannelName,
+				bStartStop
+				)
+			
+			
+			),
+			BorderLayout.CENTER);
 		
 		bStartStop.addActionListener(this);
 		
