@@ -39,6 +39,7 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 	
 	CMMCore core;
 
+	private static CoreEventCallback cb_ ;
 	
 	File configFile;
 	
@@ -50,7 +51,7 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 			
 			core=new CMMCore();
 
-			CoreEventCallback cb_ = new CoreEventCallback();
+			cb_= new CoreEventCallback();
       core.registerCallback(cb_);
 
 			//core.enableStderrLog(true);
