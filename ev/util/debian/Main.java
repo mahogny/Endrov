@@ -159,7 +159,7 @@ public class Main
 
 			pkgs.add(new DebPackage("qhull-bin",new String[]{},new String[]{}));
 			
-			pkgs.add(DebPackage.recommends("micromanager",new String[]{},new String[]{"umanager_inc"})); //rely on inc-file to add jar files
+			pkgs.add(DebPackage.recommends("micromanager-ij",new String[]{},new String[]{"umanager_inc"})); //rely on inc-file to add jar files
 
 			//JAI, seems to work without
 			//the filter system might need some operations, not sure
