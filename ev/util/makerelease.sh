@@ -36,7 +36,7 @@ echo $timestamp > endrov/ev/timestamp.txt
 cd ..
 rm $name.zip
 zip -r $name.zip $name
-mkdirs -p release/
+mkdir -p release/
 mv $name.zip release/
 
 #linecount
