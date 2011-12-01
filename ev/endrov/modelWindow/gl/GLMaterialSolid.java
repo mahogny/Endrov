@@ -28,18 +28,21 @@ public class GLMaterialSolid implements GLMaterial
 	 */
 	public GLMaterialSolid()
 		{
-		this(null, null, null, 0);
+		this(null, null, null, null);
 		}
 	
 	/**
-	 * Create a material. All vectors have 4 elements 
+	 * Create a material. All vectors have 4 elements. null means use GL default
 	 */
-	public GLMaterialSolid(float[] diffuse, float[] specular, float[] ambient,	float shininess)
+	public GLMaterialSolid(float[] diffuse, float[] specular, float[] ambient, Float shininess)
 		{
 		this.diffuse = diffuse;
 		this.specular = specular;
 		this.ambient = ambient;
-		this.shininess = shininess;
+		if(shininess!=null)
+			this.shininess = shininess;
+		else
+			this.shininess = 0;
 	
 		//Use GL default colors if none specified
 		if(this.diffuse==null)

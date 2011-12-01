@@ -41,6 +41,18 @@ public class EvSelectObject<E> implements EvSelectable
 		return new EvSelectObject<E>(mesh);
 		}
 
+	@Override
+	public boolean equals(Object obj)
+		{
+		if(obj instanceof EvSelectObject<?>)
+			return ((EvSelectObject<?>)obj).mesh==mesh;
+		else
+			return false;
+		}
 	
+	public E getObject()
+		{
+		return mesh;
+		}
 	
 	}

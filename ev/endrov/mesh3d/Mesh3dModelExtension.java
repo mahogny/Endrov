@@ -16,7 +16,9 @@ import org.jdom.Element;
 import com.sun.opengl.util.BufferUtil;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.basicWindow.EvColor;
 import endrov.data.EvObject;
+import endrov.data.EvSelection;
 import endrov.modelWindow.*;
 import endrov.modelWindow.gl.GLMaterial;
 import endrov.modelWindow.gl.GLMaterialSelect;
@@ -102,9 +104,6 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		 */
 		public void displaySelect(GL glin)
 			{
-			//GL2 gl=glin.getGL2();
-//			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
-			
 			Collection<Mesh3D> meshs=getVisibleObjects();
 			
 		//TODO what about meshs that have changed?
@@ -117,16 +116,8 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 
 				displayMesh(w.view, glin, mesh, new GLMaterialSelect(color), null);
 				}
-				
-			//gl.glPopAttrib();
-			
 			}
 		
-		
-		
-		
-		//private Map<Mesh3D, GLMeshVBO> vbos=new HashMap<Mesh3D, GLMeshVBO>();
-
 		/**
 		 * Render graphics
 		 */
@@ -139,7 +130,18 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			//Render all meshs
 			for(Mesh3D mesh:meshs)
 				{
-				displayMesh(w.view, glin, mesh, null, null);
+				SelMesh3D selmesh=new SelMesh3D(mesh);
+				
+				GLMeshVBO.MeshRenderSettings renderSettings=new GLMeshVBO.MeshRenderSettings();
+				GLMaterial overridematerial=null;
+				
+				if(currentHover.equals(selmesh))
+					renderSettings.outlineColor=EvColor.magenta;
+
+				if(EvSelection.isSelected(selmesh))
+					overridematerial=new GLMaterialSolid(new float[]{1.0f,0.0f,0.0f,1.0f},null,null,null);
+				
+				displayMesh(w.view, glin, mesh, overridematerial, renderSettings);
 				}
 			
 			
@@ -208,16 +210,15 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			}
 
 		
-		SelMesh3D lastHover;
-		SelMesh3D currentHover;
-		SelMesh3D emptyHover=new SelMesh3D(null);
+		public static final SelMesh3D emptyHover=new SelMesh3D(null);
+		SelMesh3D lastHover=emptyHover;
+		SelMesh3D currentHover=emptyHover;
 		
 		public void hoverInit(int pixelid)
 			{
-			//Update hover
+			//Called before hover test
 			lastHover=currentHover;
 			currentHover=emptyHover;
-//			LineageCommonUI.currentHover=LineageCommonUI.emptyHover;
 			}
 
 		public void hover(int pixelid)
