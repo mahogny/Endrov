@@ -51,7 +51,8 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				RecControlWindow.class,LiveWindow.class, RecordingResource.class,
+				LiveWindow.class, 
+				RecordingResource.class,
 				RecWindowMultiDim.class,
 				ResolutionConfigWindow.class,
 				
