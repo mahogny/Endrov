@@ -5,9 +5,12 @@
  */
 package endrov.data;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 
 import endrov.basicWindow.EvColor;
+import endrov.ev.GeneralObserver;
 
 /**
  * Common selection system. Does not attempt to update windows, this is the
@@ -20,7 +23,23 @@ public class EvSelection
 	{
 	public static HashSet<EvSelectable> selected=new HashSet<EvSelectable>();
 	
+	
+	public static final EvSelectable noSelection=new EvSelectable(){
+		public void setColor(EvColor c)
+			{
+			}
+	};
+	
+	public static EvSelectable currentHover=noSelection;
 
+	
+	public static interface EvSelectionListener
+		{
+		public void selectionChanged();
+		}
+	
+	public static final GeneralObserver<EvSelectionListener> selectionObserver=new GeneralObserver<EvSelectionListener>();
+	
 	/**
 	 * Common operations on selectable objects. This class is the reason for a common
 	 * selection system. It also exists to ensure some type safety. 
@@ -32,6 +51,11 @@ public class EvSelection
 		{
 		/**
 		 * Set color of selected object
+		 * 
+		 * 
+		 * not so easy because of the databrowser! object-level selection requires objects to have this method.
+		 * I find this rather GUI-ish
+		 * 
 		 */
 		public void setColor(EvColor c);
 		
@@ -71,11 +95,16 @@ public class EvSelection
 	
 	public static void selectOnly(EvSelectable... o)
 		{
+		selectOnly(Arrays.asList(o));
+		}
+
+	public static void selectOnly(Collection<EvSelectable> o)
+		{
 		selected.clear();
 		for(EvSelectable t:o)
 			selected.add(t);
 		}
-	
+
 	public static void unselectAll()
 		{
 		selected.clear();

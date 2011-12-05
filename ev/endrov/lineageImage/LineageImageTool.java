@@ -162,7 +162,8 @@ public class LineageImageTool implements ImageWindowTool, ActionListener
 		if(SwingUtilities.isLeftMouseButton(e) && !r.getVisibleParticles().isEmpty())
 			{
 			if(!ignoreLeftClick)
-				LineageCommonUI.mouseSelectParticle(LineageCommonUI.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+				LineageCommonUI.mouseSelectObject(EvSelection.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+				//LineageCommonUI.mouseSelectParticle(LineageCommonUI.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 			ignoreLeftClick=false;
 			}
 		else if(SwingUtilities.isRightMouseButton(e))
@@ -227,7 +228,8 @@ public class LineageImageTool implements ImageWindowTool, ActionListener
 					{
 					//Also select?
 					holdRadiusMouse=true;
-					LineageCommonUI.mouseSelectParticle(r.iconsForParticle, false);
+					LineageCommonUI.mouseSelectObject(r.iconsForParticle, false);
+					//mouseSelectParticle(r.iconsForParticle, false);
 					startModifying(r.iconsForParticle);
 					}
 				ignoreLeftClick=true;
@@ -239,15 +241,15 @@ public class LineageImageTool implements ImageWindowTool, ActionListener
 					actionBringToZ(r.iconsForParticle);
 				ignoreLeftClick=true;
 				}
-			else if(LineageCommonUI.currentHover!=LineageCommonUI.emptyHover)
+			else if(LineageCommonUI.getHoveredParticle()!=null)
 				{
 				//Move a particle
-				if(r.interpParticle.containsKey(LineageCommonUI.currentHover))
+				if(r.interpParticle.containsKey(EvSelection.currentHover))
 					{
 					//Also select?
 					holdTranslateMouse=true;
-					LineageCommonUI.mouseSelectParticle(LineageCommonUI.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
-					startModifying(LineageCommonUI.currentHover);
+					LineageCommonUI.mouseSelectObject(EvSelection.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+					startModifying((LineageSelParticle)EvSelection.currentHover);
 					}
 				ignoreLeftClick=true;
 				}			
@@ -338,13 +340,13 @@ public class LineageImageTool implements ImageWindowTool, ActionListener
 	public void keyPressed(KeyEvent e)
 		{
 		EvDecimal curFrame=w.getFrame();
-		Lineage lin=LineageCommonUI.currentHover.fst();
+		Lineage lin=LineageCommonUI.getHoveredParticleLineage();//LineageCommonUI.currentHover.fst();
 
 		if(lin!=null && (KeyBinding.get(Lineage.KEY_TRANSLATE).typed(e) || KeyBinding.get(Lineage.KEY_CHANGE_RADIUS).typed(e)))
 			{
 			//Translate or change radius
-			if(r.modifyingParticleSelected==null && LineageCommonUI.currentHover!=LineageCommonUI.emptyHover && r.interpParticle.containsKey(LineageCommonUI.currentHover))
-				startModifying(LineageCommonUI.currentHover);
+			if(r.modifyingParticleSelected==null && LineageCommonUI.getHoveredParticle()!=null && r.interpParticle.containsKey(EvSelection.currentHover))
+				startModifying(LineageCommonUI.getHoveredParticleSelectedOrNull());
 			}
 		else if(r.modifyingParticleSelected!=null)
 			{
@@ -352,9 +354,10 @@ public class LineageImageTool implements ImageWindowTool, ActionListener
 			if(lin!=null && KeyBinding.get(Lineage.KEY_DIVIDENUC).typed(e))
 				{
 				//Divide particle
-				Lineage.Particle n=LineageCommonUI.currentHover.getParticle();
-				if(n!=null && r.interpParticle.containsKey(LineageCommonUI.currentHover))
-					LineageCommonUI.actionDivideParticle(lin,LineageCommonUI.currentHover.snd(), curFrame);
+				//Lineage.Particle n=getHoveredParticle();
+				LineageSelParticle sel=LineageCommonUI.getHoveredParticleSelectedOrNull();
+				if(sel!=null && r.interpParticle.containsKey(sel))
+					LineageCommonUI.actionDivideParticle(lin,LineageCommonUI.getHoveredParticleSelectedOrNull().snd(), curFrame);
 				}
 			else if(KeyBinding.get(Lineage.KEY_SETZ).typed(e))
 				{
@@ -369,16 +372,18 @@ public class LineageImageTool implements ImageWindowTool, ActionListener
 			else if(lin!=null && KeyBinding.get(Lineage.KEY_SETEND).typed(e))
 				{
 				//Set end frame
-				Lineage.Particle n=lin.particle.get(LineageCommonUI.currentHover.snd());
-				if(n!=null)
-					LineageCommonUI.actionSetEndFrame(Collections.singleton(LineageCommonUI.currentHover), curFrame);
+				//Lineage.Particle n=getHoveredParticle();//lin.particle.get(LineageCommonUI.currentHover.snd());
+				LineageSelParticle sel=LineageCommonUI.getHoveredParticleSelectedOrNull();
+				if(sel!=null)
+					LineageCommonUI.actionSetEndFrame(Collections.singleton(sel), curFrame);
 				}
 			else if(lin!=null && KeyBinding.get(Lineage.KEY_SETSTART).typed(e))
 				{
-				//Set end frame
-				Lineage.Particle n=lin.particle.get(LineageCommonUI.currentHover.snd());
-				if(n!=null)
-					LineageCommonUI.actionSetStartFrame(Collections.singleton(LineageCommonUI.currentHover), curFrame);
+				//Set start frame
+				//Lineage.Particle n=lin.particle.get(LineageCommonUI.currentHover.snd());
+				LineageSelParticle sel=LineageCommonUI.getHoveredParticleSelectedOrNull();
+				if(sel!=null)
+					LineageCommonUI.actionSetStartFrame(Collections.singleton(sel), curFrame);
 				}
 			else if(lin!=null && KeyBinding.get(Lineage.KEY_SETPARENT).typed(e))
 				{

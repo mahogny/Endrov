@@ -56,10 +56,8 @@ public class LineageModelExtension implements ModelWindowExtension
 		w.modelWindowHooks.add(new NucModelWindowHook(w));
 		}
 	
-	static class NucModelWindowHook implements ModelWindowHook, ActionListener, ModelView.GLSelectListener
+	static class NucModelWindowHook implements ModelWindowHook, ActionListener, ModelWindowMouseListener
 		{
-		private final HashMap<Integer,LineageSelParticle> selectColorMap=new HashMap<Integer,LineageSelParticle>();
-		//private final HashMap<LineageSelParticle, Integer> selectColorMap2=new HashMap<LineageSelParticle, Integer>();
 		private Vector<Map<LineageSelParticle, Lineage.InterpolatedParticle>> interpNuc=new Vector<Map<LineageSelParticle, Lineage.InterpolatedParticle>>();
 		final ModelWindow w;
 		public void fillModelWindowMenus()
@@ -318,105 +316,115 @@ public class LineageModelExtension implements ModelWindowExtension
 			miDefaultNonselectMeshRenderSolid.addActionListener(this);
 			miDefaultNonselectMeshRenderWireframe.addActionListener(this);
 			
-			w.addModelWindowMouseListener(new ModelWindowMouseListener(){
-				public void mouseClicked(MouseEvent e)
+			w.addModelWindowMouseListener(this);
+			}
+		
+		
+		
+		public void mouseClicked(MouseEvent e)
+			{
+			//Left-clicking a particle selects it
+			if(SwingUtilities.isLeftMouseButton(e))
+				LineageCommonUI.mouseSelectObject(EvSelection.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+			else if(SwingUtilities.isRightMouseButton(e))
+				{
+				if(LineageCommonUI.getHoveredParticle()!=null)
 					{
-					//Left-clicking a particle selects it
-					if(SwingUtilities.isLeftMouseButton(e))
-						LineageCommonUI.mouseSelectParticle(LineageCommonUI.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+					//Popup menu
+					JPopupMenu menu=new JPopupMenu();
+					new LineageCommonUI(w, w).addToMenu(menu, false);
+					w.createPopupMenu(menu, e);
+					}
+				}
+			}
+		
+		
+		public boolean mouseDragged(MouseEvent e, int dx, int dy)
+			{
+			if(modifyingState==ModState.Dragging || modifyingState==ModState.Resizing)
+				{
+				hasReallyModified=true;
+				
+				//Get nuc coordinate
+				EvDecimal curFrame=w.getFrame();
+				Lineage.Particle nuc=currentModifying.getParticle();
+				Lineage.InterpolatedParticle interp=nuc.interpolatePos(curFrame);
+				
+				if(interp!=null)
+					{
+					if(modifyingState==ModState.Dragging)
+						{
+						//Find movement vector
+						Vector3d moveVecWorld=w.view.getMouseMoveVector(dx, dy, interp.pos.getPosCopy());
+						
+						//Move particle
+						Lineage.ParticlePos nucPos=interp.pos.clone();
+						nucPos.x+=moveVecWorld.x;
+						nucPos.y+=moveVecWorld.y;
+						nucPos.z+=moveVecWorld.z;
+						nuc.pos.put(curFrame, nucPos);
+						
+						return true;
+						}
+					else if(modifyingState==ModState.Resizing)
+						{
+						//Resize particle
+						Lineage.ParticlePos nucPos=interp.pos.clone();
+						nucPos.r*=Math.exp(dy*0.01);
+						nuc.pos.put(curFrame, nucPos);
+						
+						return true;
+						}
+					}
+				return false;
+				}
+			else
+				return false;
+			}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mouseMoved(MouseEvent e){}
+		
+		
+		public void mousePressed(MouseEvent e)
+			{
+			if(LineageCommonUI.getHoveredParticle()!=null)
+				{
+				//Require ctrl to be pressed or it is too easy to accidentally edit
+				if((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK)!=0)
+					{
+					if(SwingUtilities.isLeftMouseButton(e) && (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK)!=0)
+						{
+						//Start dragging
+						currentModifying=LineageCommonUI.getHoveredParticleSelectedOrNull();
+						currentOrigNuc=currentModifying.getParticle().clone();
+						hasReallyModified=false;
+						modifyingState=ModState.Dragging;
+						}
 					else if(SwingUtilities.isRightMouseButton(e))
 						{
-						if(LineageCommonUI.currentHover!=LineageCommonUI.emptyHover)
-							{
-							//Popup menu
-							JPopupMenu menu=new JPopupMenu();
-							new LineageCommonUI(w, w).addToMenu(menu, false);
-							w.createPopupMenu(menu, e);
-							}
+						//Start resizing
+						currentModifying=LineageCommonUI.getHoveredParticleSelectedOrNull();
+						currentOrigNuc=currentModifying.getParticle().clone();
+						hasReallyModified=false;
+						modifyingState=ModState.Resizing;
 						}
 					}
-				
-				
-				public boolean mouseDragged(MouseEvent e, int dx, int dy)
-					{
-					if(modifyingState==ModState.Dragging || modifyingState==ModState.Resizing)
-						{
-						hasReallyModified=true;
-						
-						//Get nuc coordinate
-						EvDecimal curFrame=w.getFrame();
-						Lineage.Particle nuc=currentModifying.getParticle();
-						Lineage.InterpolatedParticle interp=nuc.interpolatePos(curFrame);
-						
-						if(interp!=null)
-							{
-							if(modifyingState==ModState.Dragging)
-								{
-								//Find movement vector
-								Vector3d moveVecWorld=w.view.getMouseMoveVector(dx, dy, interp.pos.getPosCopy());
-								
-								//Move particle
-								Lineage.ParticlePos nucPos=interp.pos.clone();
-								nucPos.x+=moveVecWorld.x;
-								nucPos.y+=moveVecWorld.y;
-								nucPos.z+=moveVecWorld.z;
-								nuc.pos.put(curFrame, nucPos);
-								
-								return true;
-								}
-							else if(modifyingState==ModState.Resizing)
-								{
-								//Resize particle
-								Lineage.ParticlePos nucPos=interp.pos.clone();
-								nucPos.r*=Math.exp(dy*0.01);
-								nuc.pos.put(curFrame, nucPos);
-								
-								return true;
-								}
-							}
-						return false;
-						}
-					else
-						return false;
-					}
-				public void mouseEntered(MouseEvent e){}
-				public void mouseExited(MouseEvent e){}
-				public void mouseMoved(MouseEvent e){}
-				
-				
-				public void mousePressed(MouseEvent e)
-					{
-					if(LineageCommonUI.currentHover!=LineageCommonUI.emptyHover && LineageCommonUI.currentHover!=null)
-						{
-						//Require ctrl to be pressed or it is too easy to accidentally edit
-						if((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK)!=0)
-							{
-							if(SwingUtilities.isLeftMouseButton(e) && (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK)!=0)
-								{
-								//Start dragging
-								currentModifying=LineageCommonUI.currentHover;
-								currentOrigNuc=currentModifying.getParticle().clone();
-								hasReallyModified=false;
-								modifyingState=ModState.Dragging;
-								}
-							else if(SwingUtilities.isRightMouseButton(e))
-								{
-								//Start resizing
-								currentModifying=LineageCommonUI.currentHover;
-								currentOrigNuc=currentModifying.getParticle().clone();
-								hasReallyModified=false;
-								modifyingState=ModState.Resizing;
-								}
-							}
 
-						}
-					}
-				public void mouseReleased(MouseEvent e)
-					{
-					commitModifyingNuc();
-					}
-			});
+				}
 			}
+		public void mouseReleased(MouseEvent e)
+			{
+			commitModifyingNuc();
+			}
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
@@ -560,7 +568,7 @@ public class LineageModelExtension implements ModelWindowExtension
 		 */
 		public void displayInit(GL gl)
 			{
-			selectColorMap.clear();
+			//selectColorMap.clear();
 			//selectColorMap2.clear();
 
 			interpNuc.clear();
@@ -599,8 +607,8 @@ public class LineageModelExtension implements ModelWindowExtension
 					if(entry.getValue().isVisible())
 						{
 						//Reserve color
-						int selectColor=w.view.reserveSelectColor(this);
-						selectColorMap.put(selectColor, entry.getKey());
+						int selectColor=w.view.reserveSelectColor(entry.getKey());
+//						selectColorMap.put(selectColor, entry.getKey());
 						w.view.setReserveColor(gl, selectColor);
 						
 						//Render
@@ -622,8 +630,9 @@ public class LineageModelExtension implements ModelWindowExtension
 							{
 							//Reserve select color
 							LineageSelParticle sel=new LineageSelParticle(lin, name);
-							int selectColor=w.view.reserveSelectColor(this);
-							selectColorMap.put(selectColor, sel);
+							int selectColor=w.view.reserveSelectColor(sel);
+//							int selectColor=w.view.reserveSelectColor(this);
+//							selectColorMap.put(selectColor, sel);
 							w.view.setReserveColor(gl, selectColor);
 							
 							//Render mesh
@@ -989,29 +998,33 @@ public class LineageModelExtension implements ModelWindowExtension
 			}
 		
 		/** Keep track of what hover was before hover test started */
-		private LineageSelParticle lastHover=null;
+		//private EvSelectable lastHover=null;
 		
 		/** 
 		 * Called when hover test starts
 		 */
+		/*
 		public void hoverInit(int pixelid)
 			{
 			//Update hover
-			lastHover=LineageCommonUI.currentHover;
-			LineageCommonUI.currentHover=LineageCommonUI.emptyHover;
-			}
+			lastHover=EvSelection.currentHover;
+			EvSelection.currentHover=EvSelection.noSelection;
+			}*/
+		
 		/**
 		 * Called when particle hovered 
 		 */
+		/*
 		public void hover(int pixelid)
 			{
-			LineageCommonUI.currentHover=selectColorMap.get(pixelid);
-			if(!LineageCommonUI.currentHover.equals(lastHover))
+			EvSelection.currentHover=selectColorMap.get(pixelid);
+			if(!EvSelection.currentHover.equals(lastHover))
 				{
 				System.out.println("nuc rerend for hover");
 				BasicWindow.updateWindows(w);
 				}
 			}
+			*/
 
 		
 
@@ -1301,7 +1314,7 @@ public class LineageModelExtension implements ModelWindowExtension
       gl.glScalef(-1,-1,-1); //remove later
 
 			
-      boolean shouldDrawText=LineageCommonUI.currentHover.equals(nucPair) 
+      boolean shouldDrawText=EvSelection.currentHover.equals(nucPair) 
   		|| miShowNamesAll.isSelected() 
   		|| (EvSelection.isSelected(nucPair) && miShowNamesSelected.isSelected());
       
@@ -1546,9 +1559,13 @@ public class LineageModelExtension implements ModelWindowExtension
 			EvDecimal first=null;
 			for(Lineage lin:w.getVisibleObjects(Lineage.class))
 				{
-				EvDecimal f=lin.firstFrameOfLineage(true).fst();
-				if(f!=null && (first==null || f.less(first)))
-					first=f;
+				Tuple<EvDecimal, String> ret=lin.firstFrameOfLineage(true);
+				if(ret!=null)
+					{
+					EvDecimal f=ret.fst();
+					if(f!=null && (first==null || f.less(first)))
+						first=f;
+					}
 				}
 			return first;
 			}
@@ -1557,9 +1574,13 @@ public class LineageModelExtension implements ModelWindowExtension
 			EvDecimal last=null;
 			for(Lineage lin:w.getVisibleObjects(Lineage.class))
 				{
-				EvDecimal f=lin.lastFrameOfLineage(true).fst();
-				if(f!=null && (last==null || f.greater(last)))
-					last=f;
+				Tuple<EvDecimal, String> ret=lin.lastFrameOfLineage(true);
+				if(ret!=null)
+					{
+					EvDecimal f=ret.fst();
+					if(f!=null && (last==null || f.greater(last)))
+						last=f;
+					}
 				}
 			return last;
 			}

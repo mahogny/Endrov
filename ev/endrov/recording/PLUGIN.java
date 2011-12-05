@@ -6,7 +6,6 @@
 package endrov.recording;
 import endrov.ev.PluginDef;
 import endrov.recording.bleachWindow.RecWindowQuickBleach;
-import endrov.recording.controlWindow.RecControlWindow;
 import endrov.recording.flipWindow.EvFLIPAcquisition;
 import endrov.recording.flipWindow.FlowUnitSumIntensityROI;
 import endrov.recording.flipWindow.RecWindowFLIP;

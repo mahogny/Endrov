@@ -12,9 +12,9 @@ import javax.vecmath.*;
 
 import endrov.basicWindow.*;
 import endrov.data.EvSelection;
+import endrov.data.EvSelection.EvSelectable;
 import endrov.imageWindow.*;
 import endrov.lineage.Lineage;
-import endrov.lineage.LineageCommonUI;
 import endrov.lineage.LineageSelParticle;
 import endrov.undo.UndoOpBasic;
 import endrov.util.EvDecimal;
@@ -84,9 +84,9 @@ public class LineageImageRenderer implements ImageWindowRenderer
 		
 		
 		//Update hover
-		LineageSelParticle lastHover=LineageCommonUI.currentHover;			
+		EvSelectable lastHover=EvSelection.currentHover;
 		if(w.mouseInWindow)
-			LineageCommonUI.currentHover=LineageCommonUI.emptyHover;
+			EvSelection.currentHover=EvSelection.noSelection;
 	
 		EvDecimal currentFrame=w.getFrame();
 		
@@ -102,7 +102,7 @@ public class LineageImageRenderer implements ImageWindowRenderer
 			drawParticle(g,nucPair,nuc,currentFrame);
 			}
 
-		if(!lastHover.equals(LineageCommonUI.currentHover))
+		if(!lastHover.equals(EvSelection.currentHover))
 			BasicWindow.updateWindows(w);
 		}
 	
@@ -248,10 +248,10 @@ public class LineageImageRenderer implements ImageWindowRenderer
 				
 				//Update hover
 				if(w.mouseInWindow && (w.mouseCurX-so.x)*(w.mouseCurX-so.x) + (w.mouseCurY-so.y)*(w.mouseCurY-so.y)<sor*sor)
-					LineageCommonUI.currentHover=sel;
+					EvSelection.currentHover=sel;
 				
 				//Draw name. maybe this should be done last?
-				if(LineageCommonUI.currentHover.equals(sel) || EvSelection.isSelected(sel))
+				if(EvSelection.currentHover.equals(sel) || EvSelection.isSelected(sel))
 					{
 					String showString=nucName;
 					String eventName=sel.getParticle().events.get(currentFrame);

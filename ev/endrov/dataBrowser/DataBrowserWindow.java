@@ -23,6 +23,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
 import org.jdom.Element;
@@ -41,7 +43,7 @@ import endrov.ev.EV;
  * @author Johan Henriksson
  *
  */
-public class DataBrowserWindow extends BasicWindow implements MouseListener
+public class DataBrowserWindow extends BasicWindow implements MouseListener, TreeSelectionListener
 	{
 	private static final long serialVersionUID = 1L;
 
@@ -60,6 +62,8 @@ public class DataBrowserWindow extends BasicWindow implements MouseListener
 		
 		
 		tree.addMouseListener(this);
+		
+		tree.addTreeSelectionListener(this);
 		
 		setTitleEvWindow("Data Browser");
 		
@@ -250,11 +254,6 @@ public class DataBrowserWindow extends BasicWindow implements MouseListener
 				}
 			
 
-			
-			
-			
-			
-			
 			}
 		}
 
@@ -272,6 +271,24 @@ public class DataBrowserWindow extends BasicWindow implements MouseListener
 
 	public void mouseReleased(MouseEvent e)
 		{
+		}
+
+	
+	public void valueChanged(TreeSelectionEvent e)
+		{
+		/*
+		//Find all selected
+		HashSet<EvSelectable> sels=new HashSet<EvSelectable>(); 
+		for(TreePath p:tree.getSelectionPaths())
+			{
+			DataBrowserTree.Node n=(DataBrowserTree.Node)p.getLastPathComponent();
+			sels.add(new EvSelectObject<EvContainer>(n.con));
+			}
+		
+		//Compare with current global selection
+		if(!EvSelection.selected.equals(sels))
+			EvSelection.selectOnly(sels);
+			*/
 		}
 
 	}

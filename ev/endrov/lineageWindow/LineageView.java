@@ -1135,7 +1135,7 @@ public class LineageView extends JPanel
 				//System.out.println("here "+nucname+"   "+SwingUtilities.isLeftMouseButton(e)+"  "+currentLin);
 				//long startTime=System.currentTimeMillis();
 				if(SwingUtilities.isLeftMouseButton(e))
-					LineageCommonUI.mouseSelectParticle(new LineageSelParticle(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+					LineageCommonUI.mouseSelectObject(new LineageSelParticle(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 				//System.out.println("time "+(System.currentTimeMillis()-startTime));
 				}
 			}

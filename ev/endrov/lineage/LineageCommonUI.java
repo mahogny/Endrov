@@ -37,6 +37,7 @@ import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.data.EvSelection;
 import endrov.data.GuiEvDataIO;
+import endrov.data.EvSelection.EvSelectable;
 import endrov.ev.EvLog;
 import endrov.lineage.Lineage.InterpolatedParticle;
 import endrov.lineage.Lineage.MeshRenderMode;
@@ -95,12 +96,13 @@ public class LineageCommonUI implements ActionListener
 	/**
 	 * There is only one empty selection. This allows == for checking
 	 */
-	public static final LineageSelParticle emptyHover=new LineageSelParticle(null,"");
+	//public static final LineageSelParticle emptyHover=new LineageSelParticle(null,"");
 	
 	/**
 	 * Currently hovered cell
 	 */
-	public static LineageSelParticle currentHover=LineageCommonUI.emptyHover;
+	//public static EvSelection.EvSelectable currentHover=LineageCommonUI.emptyHover;
+	//public static LineageSelParticle currentHover=LineageCommonUI.emptyHover;
 	
 	
 	
@@ -295,11 +297,36 @@ public class LineageCommonUI implements ActionListener
 		}
 
 	
-	/**
+	public static LineageSelParticle getHoveredParticleSelectedOrNull()
+		{
+		if(EvSelection.currentHover instanceof LineageSelParticle)
+			return ((LineageSelParticle)EvSelection.currentHover);
+		else
+			return null;
+		}
+
+	public static Lineage getHoveredParticleLineage()
+		{
+		if(EvSelection.currentHover instanceof LineageSelParticle)
+			return ((LineageSelParticle)EvSelection.currentHover).fst();
+		else
+			return null;
+		}
+
+	public static Lineage.Particle getHoveredParticle()
+		{
+		if(EvSelection.currentHover instanceof LineageSelParticle)
+			return ((LineageSelParticle)EvSelection.currentHover).getParticle();
+		else
+			return null;
+		}
+
+		/**
 		 * Selection of particles by mouse and keyboard
 		 * @param sel Which particles, never null
 		 * @param shift True if shift-key held
 		 */
+	/*
 		public static void mouseSelectParticle(LineageSelParticle sel, boolean shift)
 			{
 			String nucname=sel.snd();
@@ -318,6 +345,30 @@ public class LineageCommonUI implements ActionListener
 				{
 				EvSelection.unselectAll();
 				if(!nucname.equals(""))
+					EvSelection.select(sel);
+				}
+			BasicWindow.updateWindows();
+			}*/
+		
+		
+		public static void mouseSelectObject(EvSelectable sel, boolean shift)
+			{
+			//String nucname=sel.snd();
+			//Shift-key used to select multiple
+			if(shift)
+				{
+				if(!sel.equals(EvSelection.noSelection))
+					{
+					if(EvSelection.isSelected(sel))
+						EvSelection.unselect(sel);
+					else
+						EvSelection.select(sel);
+					}
+				}
+			else
+				{
+				EvSelection.unselectAll();
+				if(!sel.equals(EvSelection.noSelection))
 					EvSelection.select(sel);
 				}
 			BasicWindow.updateWindows();
@@ -353,9 +404,9 @@ public class LineageCommonUI implements ActionListener
 	public static HashSet<LineageSelParticle> getSelectedOrHoveredParticle()
 		{
 		HashSet<LineageSelParticle> sels=new HashSet<LineageSelParticle>();
-		if(currentHover!=emptyHover)
+		if(getHoveredParticle()!=null)
 			{
-			LineageSelParticle sel=currentHover;
+			LineageSelParticle sel=(LineageSelParticle)EvSelection.currentHover;
 			if(sel.fst().particle.containsKey(sel.snd()))
 				sels.add(sel);
 			}
@@ -691,7 +742,7 @@ public class LineageCommonUI implements ActionListener
 						keep(nucPair.fst(), nucPair.snd());
 						n.overrideEnd=frame;
 						if(frame!=null)
-							nucPair.fst().removePosAfter(LineageCommonUI.currentHover.snd(), frame, false); 
+							nucPair.fst().removePosAfter(nucPair.snd(), frame, false); 
 						}
 					}
 				BasicWindow.updateWindows();
@@ -734,7 +785,7 @@ public class LineageCommonUI implements ActionListener
 						keep(nucPair.fst(), nucPair.snd());
 						n.overrideStart=frame;
 						if(frame!=null)
-							nucPair.fst().removePosBefore(LineageCommonUI.currentHover.snd(), frame, false);  
+							nucPair.fst().removePosBefore(nucPair.snd(), frame, false);  
 						}
 					}
 				BasicWindow.updateWindows();

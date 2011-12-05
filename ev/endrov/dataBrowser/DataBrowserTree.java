@@ -43,7 +43,7 @@ public class DataBrowserTree extends JTree implements TreeModel
 	 *
 	 */
 	
-	public static class Node //implements Transferable
+	public static class Node 
 		{
 		Node parent;
 		EvContainer con;
@@ -94,7 +94,6 @@ public class DataBrowserTree extends JTree implements TreeModel
 
 					//Recurse
 					n.updateChildren();
-					
 					}
 				}
 			else
@@ -128,7 +127,6 @@ public class DataBrowserTree extends JTree implements TreeModel
 		{
 		root.updateChildren();
 		setModel(this);
-	
 		
 		setCellRenderer(new DefaultTreeCellRenderer(){
 			private static final long serialVersionUID = 1L;

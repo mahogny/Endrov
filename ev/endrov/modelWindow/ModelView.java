@@ -21,8 +21,10 @@ import javax.vecmath.Vector3d;
 
 import com.sun.opengl.util.awt.TextRenderer;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.EvColor;
 import endrov.coordinateSystem.CoordinateSystem;
+import endrov.data.EvSelection;
 import endrov.ev.*;
 import endrov.modelWindow.TransparentRender.RenderState;
 import endrov.modelWindow.gl.GLCamera;
@@ -114,7 +116,12 @@ public class ModelView extends GLJPanel
 	private Set<Object> keepMeshs=new HashSet<Object>();
 	
 
-	
+
+	private final HashMap<Integer,EvSelection.EvSelectable> selectColorMap=new HashMap<Integer,EvSelection.EvSelectable>();
+	public void addSelectColor(int id, EvSelection.EvSelectable select)
+		{
+		selectColorMap.put(id, select);
+		}
 	
 	/**
 	 * Get a cached mesh. If the mesh is not get:ed every rendering loop it will be removed
@@ -167,24 +174,27 @@ public class ModelView extends GLJPanel
 	 * Listener for select changes. hoverinit is always called first once, then hover with the id
 	 * if it is hovered
 	 */
+	/*
 	public interface GLSelectListener
 		{
 		public void hoverInit(int id);
 		public void hover(int id);
-		}
+		}*/
 	
 	private int selectColorNum;
-	private final HashMap<Integer,GLSelectListener> selectColorExtensionMap=new HashMap<Integer,GLSelectListener>();
+	//private final HashMap<Integer,GLSelectListener> selectColorExtensionMap=new HashMap<Integer,GLSelectListener>();
 	private void resetSelectColor()
 		{
 		selectColorNum=0;
-		selectColorExtensionMap.clear();
+	//	selectColorExtensionMap.clear();
 		}
-	public int reserveSelectColor(GLSelectListener ext)
+	public int reserveSelectColor(EvSelection.EvSelectable sel)
+//	public int reserveSelectColor(GLSelectListener ext)
 		{
 		//Obtain unique color. 
 		selectColorNum++;
-		selectColorExtensionMap.put(selectColorNum, ext);
+		selectColorMap.put(selectColorNum, sel);
+	//	selectColorExtensionMap.put(selectColorNum, ext);
 		return selectColorNum;
 		}
 	public void setReserveColor(GL gl, int selectColorNum)
@@ -437,8 +447,9 @@ public class ModelView extends GLJPanel
 			//Skip this step if mouse isn't even within the window
 			if(mouseX>=0 && mouseY>=0)
 				{
-				for(Map.Entry<Integer,GLSelectListener> sel:selectColorExtensionMap.entrySet())
-					sel.getValue().hoverInit(sel.getKey());
+				selectColorMap.clear();
+				//for(Map.Entry<Integer,GLSelectListener> sel:selectColorExtensionMap.entrySet())
+					//sel.getValue().hoverInit(sel.getKey());
 					
 				//This could later be replaced by line-sphere intersection. it would be
 				//a bit more cpu-intensive but cheap gfx-wise
@@ -473,8 +484,20 @@ public class ModelView extends GLJPanel
 //				System.out.println("curhover "+colR+" "+colG+" "+colB+" %% "+mouseX+" "+mouseY+" && "+pixelid);
 
 				//Update hover
-				if(selectColorExtensionMap.containsKey(pixelid))
-					selectColorExtensionMap.get(pixelid).hover(pixelid);
+				EvSelection.EvSelectable lastHover=EvSelection.currentHover;
+				EvSelection.currentHover=selectColorMap.get(pixelid);
+				if(EvSelection.currentHover==null)
+					EvSelection.currentHover=EvSelection.noSelection;
+					
+				if(!EvSelection.currentHover.equals(lastHover))
+					{
+					System.out.println("nuc rerend for hover");
+					BasicWindow.updateWindows(window);
+					}
+				
+				
+//				if(selectColorExtensionMap.containsKey(pixelid))
+	//				selectColorExtensionMap.get(pixelid).hover(pixelid);
 				}
 
 			/////////////////////////////////

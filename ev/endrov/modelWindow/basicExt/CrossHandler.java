@@ -13,6 +13,8 @@ import javax.media.opengl.GL2;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector3d;
 
+import endrov.data.EvSelectObject;
+import endrov.data.EvSelection;
 import endrov.modelWindow.ModelView;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.ModelWindowMouseListener;
@@ -46,8 +48,6 @@ public class CrossHandler
 		}
 
 	private LinkedList<Cross> crossList=new LinkedList<Cross>();
-	private Integer crossListStartId=0;
-	private Integer crossHoverId=null;
 	
 	
 	public void addCross(Vector3d v, CrossListener listener)
@@ -63,20 +63,31 @@ public class CrossHandler
 		}
 	
 
-	/**
-	 * Feedback from listening 
-	 */
-	private ModelView.GLSelectListener crossListener=new ModelView.GLSelectListener()
+	
+	
+	public class EvSelectCross extends EvSelectObject<Cross>
 		{
-		public void hover(int id)
+		private int axis;
+		public EvSelectCross(Cross mesh, int axis)
 			{
-			crossHoverId=id;
+			super(mesh);
+			this.axis=axis;
 			}
-		public void hoverInit(int id)
+		
+		@Override
+		public boolean equals(Object obj)
 			{
-			crossHoverId=null;
+			if(obj instanceof EvSelectCross)
+				{
+				EvSelectCross o=(EvSelectCross)obj;
+				return o.axis==axis && o.getObject()==getObject();
+				}
+			else
+				return false;
 			}
-		};
+		
+		}
+	
 	
 	/**
 	 * Display for selection
@@ -84,18 +95,18 @@ public class CrossHandler
 	public void displayCrossSelect(GL glin, ModelWindow w)
 		{
 		GL2 gl=glin.getGL2();
-		crossListStartId=null;
+		//crossListStartId=null;
 		ModelView view=w.view;
 		gl.glPushAttrib(GL2.GL_ENABLE_BIT);
 		for(int i=0;i<view.numClipPlanesSupported;i++)
 			gl.glDisable(GL2.GL_CLIP_PLANE0+i);
 		for(Cross c:crossList)
 			{
-			int col1=view.reserveSelectColor(crossListener);
-			int col2=view.reserveSelectColor(crossListener);
-			int col3=view.reserveSelectColor(crossListener);
-			if(crossListStartId==null)
-				crossListStartId=col1;
+			int col1=view.reserveSelectColor(new EvSelectCross(c, 0));
+			int col2=view.reserveSelectColor(new EvSelectCross(c, 1));
+			int col3=view.reserveSelectColor(new EvSelectCross(c, 2));
+			//if(crossListStartId==null)
+			//	crossListStartId=col1;
 			float size=crossSizeFactor*(float)w.view.getRepresentativeScale();
 			
 			gl.glPushMatrix();
@@ -178,13 +189,23 @@ public class CrossHandler
 		public void mouseExited(MouseEvent e){listener=null;}
 		public void mousePressed(MouseEvent e)
 			{
-			if(crossHoverId!=null && SwingUtilities.isLeftMouseButton(e))
+			if(EvSelection.currentHover!=null && EvSelection.currentHover instanceof EvSelectCross)
 				{
-				int i=crossHoverId-crossListStartId;
-				listener=crossList.get(i/3).listener;
-				axis=i%3;
-				System.out.println("press");
+				EvSelectCross crossSel=(EvSelectCross)EvSelection.currentHover;
+				
+				if(SwingUtilities.isLeftMouseButton(e))
+					{
+					listener=crossSel.getObject().listener;
+					//int i=crossHoverId-crossListStartId;
+					//listener=crossList.get(i/3).listener;
+					axis=crossSel.axis;
+					//axis=i%3;
+					System.out.println("press");
+					}
 				}
+			
+			
+			
 			}
 		public void mouseReleased(MouseEvent e){listener=null;}
 		};

@@ -5,10 +5,14 @@
  */
 package endrov.mesh3d;
 
+import java.awt.event.MouseEvent;
 import java.nio.FloatBuffer;
 import java.util.*;
 
 import javax.media.opengl.*;
+import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
@@ -38,11 +42,12 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		w.modelWindowHooks.add(new NucModelWindowHook(w));
 		}
 	
-	static class NucModelWindowHook implements ModelWindowHook, ModelView.GLSelectListener
+	private static class NucModelWindowHook implements ModelWindowHook, ModelWindowMouseListener
 		{
 		final ModelWindow w;
 		public void fillModelWindowMenus()
 			{
+			w.addModelWindowMouseListener(this);
 			}
 		
 
@@ -66,10 +71,6 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			}
 
 		
-		//public Set<WeakReference<Mesh3D>> lastVisible=new HashSet<WeakReference<Mesh3D>>();
-		//private static class Bounds
-		//WeakHashMap<Mesh3D, Bounds>
-		
 		
 		public Collection<Mesh3D> getVisibleObjects()
 			{
@@ -89,14 +90,12 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 
 		
 		
-		private final HashMap<Integer,SelMesh3D> selectColorMap=new HashMap<Integer,SelMesh3D>();
 		
 		/**
 		 * Prepare for rendering
 		 */
 		public void displayInit(GL gl)
 			{
-			selectColorMap.clear();
 			}
 		
 		/**
@@ -111,8 +110,8 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			//Render all meshs
 			for(Mesh3D mesh:meshs)
 				{
-				int color=w.view.reserveSelectColor(this);
-				selectColorMap.put(color, new SelMesh3D(mesh));
+				int color=w.view.reserveSelectColor(new SelMesh3D(mesh));
+				//selectColorMap.put(color, new SelMesh3D(mesh));
 
 				displayMesh(w.view, glin, mesh, new GLMaterialSelect(color), null);
 				}
@@ -135,7 +134,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				GLMeshVBO.MeshRenderSettings renderSettings=new GLMeshVBO.MeshRenderSettings();
 				GLMaterial overridematerial=null;
 				
-				if(currentHover.equals(selmesh))
+				if(EvSelection.currentHover.equals(selmesh))
 					renderSettings.outlineColor=EvColor.magenta;
 
 				if(EvSelection.isSelected(selmesh))
@@ -210,30 +209,68 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			}
 
 		
-		public static final SelMesh3D emptyHover=new SelMesh3D(null);
-		SelMesh3D lastHover=emptyHover;
-		SelMesh3D currentHover=emptyHover;
-		
-		public void hoverInit(int pixelid)
-			{
-			//Called before hover test
-			lastHover=currentHover;
-			currentHover=emptyHover;
-			}
 
-		public void hover(int pixelid)
+		
+		public static SelMesh3D getHoveredMesh()
 			{
-			System.out.println("tryhover "+pixelid);
-			
-			currentHover=selectColorMap.get(pixelid);
-			if(!currentHover.equals(lastHover))
+			System.out.println("Hovered: "+EvSelection.currentHover);
+			if(EvSelection.currentHover instanceof SelMesh3D)
+				return (SelMesh3D)EvSelection.currentHover;
+			else
+				return null;
+			}
+		
+		public void mouseClicked(MouseEvent e)
+			{
+			//Left-clicking a particle selects it
+			if(SwingUtilities.isLeftMouseButton(e))
 				{
-				System.out.println("mesh rerend");
-				BasicWindow.updateWindows(w);
 				
 				
 				}
-			System.out.println("Now hovering "+currentHover);
+			else if(SwingUtilities.isRightMouseButton(e))
+				{
+				if(getHoveredMesh()!=null)
+					{
+					JPopupMenu menu=new JPopupMenu();
+					
+					JMenu miSetColor=new JMenu("Set color");
+					menu.add(miSetColor);
+					EvColor.addColorMenuEntries(miSetColor, new EvColor.ColorMenuListener()
+						{
+						public void setColor(EvColor c)
+							{
+							Mesh3D mesh=getHoveredMesh().getObject();
+							GLMaterial mat=GLMaterialSolid.fromColor(c.getRedFloat(), c.getGreenFloat(), c.getBlueFloat());
+							for(Mesh3D.Face f:mesh.faces)
+								f.material=mat;
+							BasicWindow.updateWindows();
+							}
+						});
+					
+					w.createPopupMenu(menu, e);
+					}
+				}
+			
+			}
+		public boolean mouseDragged(MouseEvent e, int dx, int dy)
+			{
+			return false;
+			}
+		public void mouseEntered(MouseEvent e)
+			{
+			}
+		public void mouseExited(MouseEvent e)
+			{
+			}
+		public void mouseMoved(MouseEvent e)
+			{
+			}
+		public void mousePressed(MouseEvent e)
+			{
+			}
+		public void mouseReleased(MouseEvent e)
+			{
 			}
 			
 

@@ -38,7 +38,7 @@ public class NetworkModelExtension implements ModelWindowExtension
 		w.modelWindowHooks.add(new NetworkModelWindowHook(w));
 		}
 	
-	static class NetworkModelWindowHook implements ModelWindowHook, ActionListener, ModelView.GLSelectListener
+	static class NetworkModelWindowHook implements ModelWindowHook, ActionListener
 		{
 		final ModelWindow w;
 		public void fillModelWindowMenus()
@@ -317,13 +317,14 @@ public class NetworkModelExtension implements ModelWindowExtension
 		/** Keep track of what hover was before hover test started */
 		//private NucSel lastHover=null;
 		/** Called when hover test starts */
+		/*
 		public void hoverInit(int pixelid)
 			{
-			}
+			}*/
 		/** Called when hovered */
-		public void hover(int pixelid)
+		/*public void hover(int pixelid)
 			{
-			}
+			}*/
 
 		/**
 		 * Adjust the scale
