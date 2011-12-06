@@ -49,6 +49,7 @@ public class LineageWindow extends BasicWindow
 	public static final ImageIcon iconShowLabel=new ImageIcon(LineageWindow.class.getResource("jhShowLabel.png"));
 	public static final ImageIcon iconShowFrameLines=new ImageIcon(LineageWindow.class.getResource("jhShowFrameLines.png"));
 	public static final ImageIcon iconShowVerticalTree=new ImageIcon(LineageWindow.class.getResource("jhShowVerticalTree.png"));
+	public static final ImageIcon iconShowCurFrame=new ImageIcon(LineageWindow.class.getResource("jhShowCurFrame.png"));
 
 	public static final ImageIcon iconSelectByName=new ImageIcon(LineageWindow.class.getResource("jhSelectByName.png"));
 
@@ -60,8 +61,8 @@ public class LineageWindow extends BasicWindow
 	private JButton buttonGoToRoot=new JImageButton(iconShowRoot,"Go to root");
 	private JButton buttonGoToSelected=new JImageButton(iconShowSelected,"Go to selected");
 	private JButton buttonZoomAll=new JImageButton(iconZoomAll,"Fit everything into screen");
-	//private JButton buttonSelectByName=new JImageButton(iconSelectByName,"Select by name of cell, or tissue. Regular expression possible");
 	private JToggleButton buttonShowFrameLines=new JImageToggleButton(iconShowFrameLines,"Show frame lines",true);
+	private JToggleButton buttonShowCurFrame=new JImageToggleButton(iconShowCurFrame,"Show current frame", true);
 	private JToggleButton buttonShowKeyFrames=new JImageToggleButton(iconShowKeyFrames,"Show key frames");
 	private JToggleButton buttonShowEvents=new JImageToggleButton(iconShowEvents,"Show events");
 	private JToggleButton buttonShowLabels=new JImageToggleButton(iconShowLabel,"Show labels",true);
@@ -71,7 +72,7 @@ public class LineageWindow extends BasicWindow
 		{
 		public void stateChanged(ChangeEvent e)
 			{
-			view.setFrame(frameControl.getFrame().doubleValue());
+			view.setCurrentFrame(frameControl.getFrame().doubleValue());
 			}
 		});
 	
@@ -186,6 +187,7 @@ public class LineageWindow extends BasicWindow
 		buttonGoToSelected.addActionListener(this);
 		buttonZoomAll.addActionListener(this);
 		buttonShowFrameLines.addActionListener(this);
+		buttonShowCurFrame.addActionListener(this);
 		buttonShowKeyFrames.addActionListener(this);
 		buttonShowEvents.addActionListener(this);
 		buttonShowLabels.addActionListener(this);
@@ -236,7 +238,7 @@ public class LineageWindow extends BasicWindow
 		c.gridx++;
 		bottomUpper.add(EvSwingUtil.layoutEvenHorizontal(
 				buttonGoToRoot, buttonGoToSelected, buttonZoomAll,
-				buttonShowVerticalTree, buttonShowFrameLines, buttonShowKeyFrames, buttonShowEvents, buttonShowLabels
+				buttonShowVerticalTree, buttonShowFrameLines, buttonShowCurFrame, buttonShowKeyFrames, buttonShowEvents, buttonShowLabels
 				),c);
 		c.gridx++;
 		
@@ -295,6 +297,7 @@ public class LineageWindow extends BasicWindow
 	private void copyShowSettings()
 		{
 		view.showFrameLines=buttonShowFrameLines.isSelected();
+		view.showCurframeLine=buttonShowCurFrame.isSelected();
 		view.showKeyFrames=buttonShowKeyFrames.isSelected();
 		view.showEvents=buttonShowEvents.isSelected();
 		view.showLabel=buttonShowLabels.isSelected();
@@ -313,11 +316,7 @@ public class LineageWindow extends BasicWindow
 			view.goToSelected();
 		else if(e.getSource()==buttonZoomAll)
 			view.zoomAll();
-/*		else if(e.getSource()==miExportImage)
-			{
-			view.saveToDisk();
-			}*/
-		else if(e.getSource()==buttonShowFrameLines || e.getSource()==buttonShowKeyFrames || e.getSource()==buttonShowEvents ||  
+		else if(e.getSource()==buttonShowFrameLines || e.getSource()==buttonShowCurFrame || e.getSource()==buttonShowKeyFrames || e.getSource()==buttonShowEvents ||  
 				e.getSource()==buttonShowLabels || e.getSource()==buttonShowVerticalTree)
 			{
 			copyShowSettings();
@@ -690,8 +689,8 @@ public class LineageWindow extends BasicWindow
 	
 	public EvDecimal getFrame()
 		{
-		System.out.println("Frame: "+view.getFrame());
-		return view.getFrame();
+		System.out.println("Frame: "+view.getCameraFrame());
+		return view.getCameraFrame();
 		}
 
 	public EvContainer getSelectedData()

@@ -51,12 +51,15 @@ public class LineageView extends JPanel
 	/////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// State ///////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
-	
+
+	private double currentFrame=0;
+
 	public Lineage currentLin=null;
 
 	//public double expScale=1;
 	
 	public boolean showFrameLines=true;
+	public boolean showCurframeLine=true;
 	public boolean showKeyFrames=true;
 	public boolean showEvents=true;
 	public boolean showExpLine=true;
@@ -244,10 +247,6 @@ public class LineageView extends JPanel
 		LineageState linstate=getLinState(lin);
 		Vector2d uv=xyToUV(new Vector2d(mx,my));
 		return new EvDecimal(linstate.cam.toWorldX(uv.x));
-/*		if(showHorizontalTree)
-			return new EvDecimal(linstate.cam.toWorldX(mx));
-		else
-			return new EvDecimal(linstate.cam.toWorldX(my));*/
 		}
 	
 	
@@ -259,7 +258,6 @@ public class LineageView extends JPanel
 		{
 		Lineage lin=getLineage();
 		LineageState linstate=getLinState(lin);
-	//	Vector2d duv=xyToUV(new Vector2d(dx,dy));
 		
 		if(showHorizontalTree)
 			{
@@ -271,8 +269,6 @@ public class LineageView extends JPanel
 			linstate.cam.cameraX-=linstate.cam.scaleScreenDistX(dy);
 			linstate.cam.cameraY+=linstate.cam.scaleScreenDistY(dx);
 			}
-//		linstate.cam.cameraX-=linstate.cam.scaleScreenDistX(duv.x);
-//		linstate.cam.cameraY-=linstate.cam.scaleScreenDistY(duv.y);
 		}
 
 
@@ -335,7 +331,7 @@ public class LineageView extends JPanel
 	/**
 	 * Set frame position
 	 */
-	public void setFrame(double frame)
+	public void setCameraFrame(double frame)
 		{
 		Lineage lin=getLineage();
 		LineageState linstate=getLinState(lin);
@@ -347,13 +343,12 @@ public class LineageView extends JPanel
 	/**
 	 * Get frame position
 	 */
-	public EvDecimal getFrame()
+	public EvDecimal getCameraFrame()
 		{
 		Lineage lin=getLineage();
 		LineageState linstate=getLinState(lin);
 		double worldx=linstate.cam.toWorldX(getRotatedWidthHeight().fst()/2);
 		return new EvDecimal(worldx);
-//		return EvDecimal.ZERO;
 		}
 	
 
@@ -559,7 +554,7 @@ public class LineageView extends JPanel
 			height=getWidth();
 			}
 
-		//paint everything
+		//Paint everything
 		paintToGraphics((Graphics2D)h, true, lin, linstate, width, height);
 
 		//Rotate image part 2
@@ -656,10 +651,8 @@ public class LineageView extends JPanel
 		{
 		if(alreadyLayout.contains(nucName))
 			{
-			throw new RuntimeException("Invalid call, "+nucName+" already has layout");
 			//Should never be called
-//			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!! "+nucName);
-			//return -1;
+			throw new RuntimeException("Invalid call, "+nucName+" already has layout");
 			}
 		else
 			{
@@ -686,16 +679,7 @@ public class LineageView extends JPanel
 					}
 				else
 					{
-					//This is for drawing the link only. Could move rendering code here!
-					//layoutTreeRecursive(lin, nucName, childName, linstate, 0, null, alreadyLayout, hpainter);
-					
-//					System.out.println("already laid out: "+childName);
-
 					ParticleState childInternal=linstate.getParticleState(childName);
-					//ParticleState thisInternal=linstate.getParticleState(nucName);
-					
-					//ParticleState psChild=linstate.getParticleState(nucName);
-					//ParticleState psParent=linstate.getParticleState(recurseFromParent);
 					
 					final double fromX=childInternal.startX;
 					final double fromY=childInternal.centerY;
@@ -705,7 +689,6 @@ public class LineageView extends JPanel
 					final double midX=(fromX+toX)/2;// - (toY-fromY)*0.3;
 					final double midY=(fromY+toY)/2;// + (toX-fromX)*0.3;
 					
-					//final Lineage.Particle nuc=lin.particle.get(nucName);
 					
 					/*HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(
 							Math.min(fromX,toX), Math.min(fromY, toY), 
@@ -716,11 +699,6 @@ public class LineageView extends JPanel
 					public void paint(Graphics g, double width, double height, Camera cam)
 						{
 						g.setColor(Color.GREEN);
-						/*
-						if(nuc.color!=null) //should use parents color actually
-							g.setColor(nuc.color);
-						else
-							g.setColor(Color.black);*/
 						g.drawLine(cam.toScreenX(fromX), cam.toScreenY(fromY), cam.toScreenX(midX), cam.toScreenY(midY));
 						g.drawLine(cam.toScreenX(midX), cam.toScreenY(midY), cam.toScreenX(toX), cam.toScreenY(toY));
 						}
@@ -766,9 +744,6 @@ public class LineageView extends JPanel
 					fontHeightAvailable=maxy-miny;
 					}
 				
-				
-				//if(thisInternal.centerY<displacement)
-					//System.out.println("eeeeek "+thisInternal.centerY+"  "+displacement+"   "+childrenToLayout.size()+"   "+childrenToLayout);
 				}
 			else
 				{
@@ -882,10 +857,7 @@ public class LineageView extends JPanel
 							}
 						}
 					if(!nuc.child.isEmpty())
-						{
 						drawExpanderSymbol(g, nucName, thisEndX, thisMidY, thisInternal.isExpanded, spaceAvailable);
-						}
-					
 					
 					//Label
 					if(getShowLabel())
@@ -907,9 +879,6 @@ public class LineageView extends JPanel
 			for(final ExpRenderSetting expsetting:listExpRenderSettings)
 				{
 				final LineageExp nucexp=nuc.exp.get(expsetting.expname1);
-				//System.out.println("get exp "+expsetting.expname1+" "+nucexp);
-				
-				//System.out.println("have "+expsetting.expname1);
 				
 				if(nucexp!=null && !nucexp.level.isEmpty())
 					{
@@ -991,8 +960,6 @@ public class LineageView extends JPanel
 							public void paint(Graphics g, double width, double height, Camera cam)
 								{
 								int thisMidY=cam.toScreenY(thisInternal.centerY);
-								//int thisStartX=cam.toScreenX(thisInternal.startX);
-								//int thisEndX=cam.toScreenX(thisInternal.endX);
 								
 								float scale=(float)(double)expsetting.scale1;
 								float colR=(float)expsetting.color.getRedDouble();
@@ -1005,7 +972,7 @@ public class LineageView extends JPanel
 									{
 									int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
 									double level=ve.getValue()*scale;
-									Color nextCol=new Color(clamp01((float)(colR*level)),clamp01((float)(colG*level)),clamp01((float)(colB*level)));
+									Color nextCol=new Color(EvMathUtil.clamp01f((float)(colR*level)),EvMathUtil.clamp01f((float)(colG*level)),EvMathUtil.clamp01f((float)(colB*level)));
 									g.setColor(nextCol);
 									if(hasLastCoord)
 										g.drawLine(lastX, thisMidY, x, thisMidY);
@@ -1026,7 +993,6 @@ public class LineageView extends JPanel
 							public void paint(Graphics g, double width, double height, Camera cam)
 								{
 								int thisMidY=cam.toScreenY(thisInternal.centerY);
-								//int thisStartX=cam.toScreenX(thisInternal.startX);
 								int thisEndX=cam.toScreenX(thisInternal.endX);
 								
 								int y1=thisMidY+expanderSize+2;
@@ -1054,24 +1020,7 @@ public class LineageView extends JPanel
 			return y2;
 			}
 		}
-	
-	public static float clamp01(float x)
-		{
-		if(x<0)
-			return 0;
-		else if(x>1)
-			return 1f;
-		else
-			return x;
-		}
-	
-	/////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////// Click positions /////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////////////////
 
-	
-
-	
 	/** List of all mouse click handlers */
 	LinkedList<ClickRegion> regionClickList=new LinkedList<ClickRegion>();
 	
@@ -1093,8 +1042,7 @@ public class LineageView extends JPanel
 	public ClickRegion getClickRegion(MouseEvent e)
 		{
 		int mousex,mousey;
-		//NucLineage lin=getLineage();
-		if(/*getLinState(lin).*/showHorizontalTree)
+		if(showHorizontalTree)
 			{
 			mousex=e.getX();
 			mousey=e.getY();
@@ -1132,11 +1080,8 @@ public class LineageView extends JPanel
 			{
 			if(currentLin!=null)
 				{
-				//System.out.println("here "+nucname+"   "+SwingUtilities.isLeftMouseButton(e)+"  "+currentLin);
-				//long startTime=System.currentTimeMillis();
 				if(SwingUtilities.isLeftMouseButton(e))
 					LineageCommonUI.mouseSelectObject(new LineageSelParticle(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
-				//System.out.println("time "+(System.currentTimeMillis()-startTime));
 				}
 			}
 		public String getHoverString()
@@ -1258,12 +1203,9 @@ public class LineageView extends JPanel
 			//Use sane interval
 			int numSubDiv=2;
 			int pow=(int)Math.round(Math.log(impreciseDeltaFrame.doubleValue())/Math.log(numSubDiv));
-			//System.out.println("pow "+pow);
 			EvDecimal dF;
 			if(pow>=0)
-				{
 				dF=new EvDecimal(numSubDiv).pow(pow);
-				}
 			else 
 				{
 				pow=(int)Math.round(Math.log(impreciseDeltaFrame.doubleValue())/Math.log(10));
@@ -1286,8 +1228,14 @@ public class LineageView extends JPanel
 				g.rotate(Math.PI/2);
 				g.translate(-x, -textY);
 				}
+			}
+		
+		
+		//Current frame
+		if(showCurframeLine)
+			{
 			g.setColor(curFrameLineColor);
-			int curFrameX=width/2;
+			int curFrameX=linstate.cam.toScreenX(currentFrame);
 			g.drawLine(curFrameX, 0, curFrameX, height);
 			}
 		}
@@ -1374,6 +1322,14 @@ public class LineageView extends JPanel
 			//Make it clickable
 			regionClickList.add(new ClickRegionExpander(name, x-expanderSize, y-expanderSize, 2*expanderSize,2*expanderSize));
 			}
+		}
+	
+	
+	
+	public void setCurrentFrame(double frame)
+		{
+		currentFrame=frame;
+		repaint();
 		}
 	
 	

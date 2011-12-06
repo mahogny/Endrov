@@ -307,6 +307,17 @@ public class EvMathUtil
 				frac.multiply(nextY));
 		}
 
+	public static float clamp01f(float x)
+		{
+		if(x<0)
+			return 0;
+		else if(x>1)
+			return 1f;
+		else
+			return x;
+		}
+
+
 	public static int nextPoisson(Random r, double lambda) 
 		{
 		double elambda = Math.exp(-1*lambda);
