@@ -11,11 +11,11 @@ import javax.media.opengl.GL2;
  * @author Johan Henriksson
  *
  */
-public class GLMaterialSelect implements GLMaterial
+public class EvGLMaterialSelect implements EvGLMaterial
 	{
 	private final int id;
 	
-	public GLMaterialSelect(int id)
+	public EvGLMaterialSelect(int id)
 		{
 		this.id=id;
 		}

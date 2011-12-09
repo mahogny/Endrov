@@ -23,7 +23,7 @@ import endrov.modelWindow.BoundingBox;
 import endrov.modelWindow.ModelView;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
-import endrov.modelWindow.gl.GLCamera;
+import endrov.modelWindow.gl.EvGLCamera;
 
 //possible optimization: if there are several objects in need of VBO, these lists need to be merged.
 //we add another class then, like Shader, VertexList, with automatic VBO<->VArray support.
@@ -130,7 +130,7 @@ public class IsosurfaceRenderer
 	/**
 	 * Render surface
 	 */
-	public void render(GL glin,List<TransparentRender> transparentRenderers, GLCamera cam, final float red, final float green, final float blue, final float trans)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, EvGLCamera cam, final float red, final float green, final float blue, final float trans)
 		{
 		GL2 gl=glin.getGL2();
 		

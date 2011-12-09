@@ -15,7 +15,7 @@ import endrov.data.*;
 import endrov.imageWindow.ImageWindow;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.ModelWindowExtension;
-import endrov.modelWindow.gl.GLCamera;
+import endrov.modelWindow.gl.EvGLCamera;
 import endrov.util.*;
 
 import org.jdom.*;
@@ -74,7 +74,7 @@ public class Bookmark extends EvObject
 	 *****************************************************************************************************/
 
 	public EvDecimal frame, z;
-	public GLCamera modelCamera;
+	public EvGLCamera modelCamera;
 	
 
 	public String getMetaTypeDesc()
@@ -114,7 +114,7 @@ public class Bookmark extends EvObject
 		Element eModelCamera=e.getChild("modelcamera");
 		if(eModelCamera!=null)
 			{
-			modelCamera=new GLCamera();
+			modelCamera=new EvGLCamera();
 			modelCamera.fromElement(eModelCamera);
 			}
 		

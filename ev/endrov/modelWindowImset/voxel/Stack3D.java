@@ -7,7 +7,6 @@ package endrov.modelWindowImset.voxel;
 
 import java.awt.*;
 import java.awt.image.*;
-import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.List;
 
@@ -20,8 +19,9 @@ import endrov.modelWindow.ModelView;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
-import endrov.modelWindow.gl.GLCamera;
-import endrov.modelWindow.gl.GLShader;
+import endrov.modelWindow.gl.EvGLTexture3D;
+import endrov.modelWindow.gl.EvGLCamera;
+import endrov.modelWindow.gl.EvGLShader;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
@@ -48,70 +48,12 @@ public class Stack3D extends StackRendererInterface
 		{
 		public int texW, texH, texD; //Texture size
 		//need starting position
-		public Texture3D tex; //could be multiple textures, interleaved
+		public EvGLTexture3D tex; //could be multiple textures, interleaved
 		public double realw, realh, reald; //size [um]
 		
 		public boolean needLoadGL=false;
 		public StackRendererInterface.ChanProp prop;
 		}
-	
-	/**
-	 * Class to upload and manage 3D textures
-	 */
-	private static class Texture3D
-		{
-		public Integer id;
-		public ByteBuffer b=null;
-		public int width, height, depth;
-		public synchronized void allocate(int width, int height, int depth)
-			{
-			if(b==null)
-				{
-				b=ByteBuffer.allocate(width*height*depth);
-				this.width=width;
-				this.height=height;
-				this.depth=depth;
-				}
-			}
-		/** Upload texture to GL2. can be called multiple times, action is only taken first time */
-		public void upload(GL glin)
-			{
-			GL2 gl=glin.getGL2();
-			if(id==null)
-				{
-				int ids[]=new int[1];
-				gl.glGenTextures(1, ids, 0);
-				id=ids[0];
-				bind(gl);
-
-				System.out.println("size "+width+" "+height+" "+depth+" "+id);
-
-				gl.glEnable( GL2.GL_TEXTURE_3D ); //does it have to be on here?
-				gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
-				gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
-				gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
-				gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
-				gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL2.GL_TEXTURE_WRAP_R, GL2.GL_CLAMP);
-				//gl.glTexImage3D(GL2.GL_TEXTURE_3D, 0, GL2.GL_ALPHA, width, height, depth, 0, GL2.GL_ALPHA, GL2.GL_UNSIGNED_BYTE, b);
-				gl.glTexImage3D(GL2.GL_TEXTURE_3D, 0, GL2.GL_ALPHA, width, height, depth, 0, GL2.GL_ALPHA, GL2.GL_UNSIGNED_BYTE, b.rewind());
-//				System.out.println("error "+new GLU().gluErrorString(gl.glGetError()));
-				gl.glDisable( GL2.GL_TEXTURE_3D );
-				}
-			}
-		public void dispose(GL gl)
-			{
-			int texlist[]={id};
-			gl.glDeleteTextures(1, texlist, 0);
-			}
-		public void bind(GL gl)
-			{
-			//here we can do all the multitexturing stuff! clever caching should be enough that different stack
-			//renderers need not know about each other
-			gl.glBindTexture(GL2.GL_TEXTURE_3D, id);
-			}
-		}
-	
-	
 	
 	/**
 	 * Dispose all stacks. Need GL context, forced by parameter.
@@ -127,7 +69,7 @@ public class Stack3D extends StackRendererInterface
 		}
 	
 	
-	public boolean newCreate(ProgressHandle progh, ProgressMeter pm, EvDecimal frame, List<StackRendererInterface.ChannelSelection> chsel2,ModelWindow w)
+	public boolean newCreate(ProgressHandle progh, ProgressMeter pm, EvDecimal frame, List<StackRendererInterface.ChannelSelection> chsel2, ModelWindow w)
 		{
 		//im. cache safety issues
 		Collection<StackRendererInterface.ChannelSelection> channels=chsel2;
@@ -138,20 +80,19 @@ public class Stack3D extends StackRendererInterface
 			//For every Z
 			EvDecimal cframe=chsel.ch.closestFrame(frame);
 			EvStack stack=chsel.ch.getStack(cframe);
-			Texture3D texture=new Texture3D();
 			
 			
 			int skipcount=0;
 			if(stack!=null)
 				{
 				VoxelStack os=new VoxelStack();
-				os.tex=texture;
 				os.texW=stack.getWidth();
 				os.texH=stack.getHeight();
 				os.texD=stack.getDepth();//ceilPower2(stack.getDepth());
 
 				os.prop=chsel.prop;
-				texture.allocate(os.texW, os.texH, os.texD);
+				
+				EvGLTexture3D texture=os.tex=EvGLTexture3D.allocate(os.texW, os.texH, os.texD, w.view);
 
 				//Size of the stack
 				//TODO support rotated stacks
@@ -170,7 +111,7 @@ public class Stack3D extends StackRendererInterface
 					if(skipcount>=skipForward)
 						{
 						skipcount=0;
-						int progressSlices=az*1000/(channels.size()*stack.getDepth());//az.multiply(1000).intValue()/(channels.size()*stack.getDepth());
+						int progressSlices=az*1000/(channels.size()*stack.getDepth());
 						int progressChan=1000*curchannum/channels.size();
 						pm.set(progressSlices+progressChan);
 						
@@ -178,8 +119,6 @@ public class Stack3D extends StackRendererInterface
 						EvImage evim=stack.getInt(az);
 						EvPixels p=evim.getPixels(progh);
 						BufferedImage bim=p.quickReadOnlyAWT();   //TODO this is BAD; handle more types
-
-
 
 						//Load bitmap, scale down
 						BufferedImage sim=new BufferedImage(os.texW,os.texH,BufferedImage.TYPE_BYTE_GRAY); 
@@ -439,7 +378,7 @@ public class Stack3D extends StackRendererInterface
 	/**
 	 * Render the place through one voxel stack given plane
 	 */
-	private void renderPlane(GL2 gl, GLCamera cam, VoxelStack os, Plane p)
+	private void renderPlane(GL2 gl, EvGLCamera cam, VoxelStack os, Plane p)
 		{
 		//color
 		Color tempColor=os.prop.color;
@@ -625,7 +564,7 @@ public class Stack3D extends StackRendererInterface
 		for(VoxelStack os:texSlices)
 				if(os.needLoadGL)
 					{
-					os.tex.upload(gl);
+					os.tex.prepare(gl);
 					os.needLoadGL=false;
 					}
 		}
@@ -636,7 +575,7 @@ public class Stack3D extends StackRendererInterface
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL glin,List<TransparentRender> transparentRenderers, GLCamera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, EvGLCamera cam, boolean solidColor, boolean drawEdges, boolean mixColors, ModelView view)
 		{
 		GL2 gl=glin.getGL2();
 
@@ -647,13 +586,13 @@ public class Stack3D extends StackRendererInterface
 
 		//Draw voxels
 		for(VoxelStack os:texSlices)
-			renderVoxelStack(gl, transparentRenderers, cam, os, solidColor, mixColors);
+			renderVoxelStack(gl, transparentRenderers, cam, os, solidColor, mixColors, view);
 		}
 	
 	/**
 	 * TODO move to voxext?
 	 */
-	private GLShader shader3d=null;
+	private EvGLShader shader3d=null;
 	
 	
 	public abstract class Stack3DRenderState implements TransparentRender.RenderState{}
@@ -661,7 +600,8 @@ public class Stack3D extends StackRendererInterface
 	/**
 	 * Render all planes through a voxel stack
 	 */
-	private void renderVoxelStack(GL2 gl,List<TransparentRender> transparentRenderers, final GLCamera cam, final VoxelStack os, final boolean solidColor, final boolean mixColors)
+	private void renderVoxelStack(GL2 gl,List<TransparentRender> transparentRenderers, final EvGLCamera cam, final VoxelStack os, final boolean solidColor, final boolean mixColors,
+			ModelView view)
 		{
 		//TODO Figure out color
 //		final Color color=new Color(1.0f,1.0f,1.0f);
@@ -670,7 +610,7 @@ public class Stack3D extends StackRendererInterface
 
 		//Load shader
 		if(shader3d==null)
-			shader3d=new GLShader(gl,Stack3D.class.getResource("3dvert.glsl"),Stack3D.class.getResource("3dfrag.glsl"));
+			shader3d=new EvGLShader(gl,Stack3D.class.getResource("3dvert.glsl"),Stack3D.class.getResource("3dfrag.glsl"), view);
 
 		//Get direction of camera as vector, and z-position
 		Vector3d camv=cam.rotateVector(0, 0, 1);
@@ -700,6 +640,7 @@ public class Stack3D extends StackRendererInterface
 					//int texUnit=0;  //NEW
 					//gl.glActiveTexture(GL2.GL_TEXTURE0 + texUnit); //NEW
 				os.tex.bind(gl);
+				shader3d.prepareShader(gl);
 				shader3d.use(gl);
 				
 				int posContrast=shader3d.getUniformLocation(gl, "contrast");

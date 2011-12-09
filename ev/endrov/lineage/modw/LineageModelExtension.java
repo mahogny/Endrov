@@ -34,9 +34,9 @@ import endrov.lineage.util.LineageVoronoi;
 import endrov.mesh3d.Mesh3D;
 import endrov.mesh3d.Mesh3dModelExtension;
 import endrov.modelWindow.*;
-import endrov.modelWindow.gl.GLMaterialSelect;
-import endrov.modelWindow.gl.GLMaterialSolid;
-import endrov.modelWindow.gl.GLMeshVBO.MeshRenderSettings;
+import endrov.modelWindow.gl.EvGLMaterialSelect;
+import endrov.modelWindow.gl.EvGLMaterialSolid;
+import endrov.modelWindow.gl.EvGLMeshVBO.MeshRenderSettings;
 import endrov.undo.UndoOpBasic;
 import endrov.util.*;
 
@@ -636,7 +636,7 @@ public class LineageModelExtension implements ModelWindowExtension
 							w.view.setReserveColor(gl, selectColor);
 							
 							//Render mesh
-							Mesh3dModelExtension.displayMesh(w.view, gl, mesh, new GLMaterialSelect(selectColor), null);
+							Mesh3dModelExtension.displayMesh(w.view, gl, mesh, new EvGLMaterialSelect(selectColor), null);
 							}
 						}
 					}
@@ -659,7 +659,7 @@ public class LineageModelExtension implements ModelWindowExtension
 				//gl.glColor3d(colR,colG,colB);
 //				gl.glColor3d(1, 1, 1);
 				
-				GLMaterialSolid m=new GLMaterialSolid(
+				EvGLMaterialSolid m=new EvGLMaterialSolid(
 						new float[]{colR, colG, colB}, //diffuse
 						new float[]{colR*0.1f, colG*0.1f, colB*0.1f}, //spec
 						new float[]{colR, colG, colB}, //amb
@@ -920,7 +920,7 @@ public class LineageModelExtension implements ModelWindowExtension
 							EvColor repColor=new EvColor("", Lineage.representativeColor(p.overrideNucColor));
 //							if(LineageCommonUI.currentHover.fst()==lin && LineageCommonUI.currentHover.snd().equals(name))
 							
-							GLMaterialSolid msolid=new GLMaterialSolid();
+							EvGLMaterialSolid msolid=new EvGLMaterialSolid();
 							msolid.diffuse[0]=repColor.getRedFloat();
 							msolid.diffuse[1]=repColor.getGreenFloat();
 							msolid.diffuse[2]=repColor.getBlueFloat();
@@ -1266,7 +1266,7 @@ public class LineageModelExtension implements ModelWindowExtension
 
       
       
-			GLMaterialSolid m=GLMaterialSolid.fromColor(colR, colG, colB);
+			EvGLMaterialSolid m=EvGLMaterialSolid.fromColor(colR, colG, colB);
 			m.set(gl);
       
       //gl.glColor3d(1,1,1);

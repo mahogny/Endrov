@@ -13,7 +13,7 @@ import endrov.basicWindow.EvColor;
  * @author Johan Henriksson
  *
  */
-public class GLMeshVBO
+public class EvGLMeshVBO
 	{
 	
 	public static class MeshRenderSettings
@@ -37,7 +37,7 @@ public class GLMeshVBO
 	
 	
 	
-	public void render(GL2 gl, GLMaterial material, MeshRenderSettings settings)
+	public void render(GL2 gl, EvGLMaterial material, MeshRenderSettings settings)
 		{
 		gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 		gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);

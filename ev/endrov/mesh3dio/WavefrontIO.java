@@ -19,8 +19,8 @@ import endrov.data.RecentReference;
 import endrov.data.EvData.FileIOStatusCallback;
 import endrov.ev.EvLog;
 import endrov.mesh3d.Mesh3D;
-import endrov.modelWindow.gl.GLMaterial;
-import endrov.modelWindow.gl.GLMaterialSolid;
+import endrov.modelWindow.gl.EvGLMaterial;
+import endrov.modelWindow.gl.EvGLMaterialSolid;
 import endrov.util.Tuple;
 
 /**
@@ -46,10 +46,10 @@ public class WavefrontIO implements EvIOData
 		
 		//There are reflection modes as well, see http://en.wikipedia.org/wiki/Wavefront_.obj_file
 		
-		public GLMaterial toGLmaterial()
+		public EvGLMaterial toGLmaterial()
 			{
 			//What about transparency?
-			GLMaterial m=new GLMaterialSolid(diffuse, specular, ambient, (float)specularWeight);
+			EvGLMaterial m=new EvGLMaterialSolid(diffuse, specular, ambient, (float)specularWeight);
 			return m;
 			}
 		}
@@ -57,7 +57,7 @@ public class WavefrontIO implements EvIOData
 	//Map<String, Material> materials=new HashMap<String, Material>();
 	
 	
-	public static void readMaterials(File f, Map<String, GLMaterial> glmaterials) throws IOException
+	public static void readMaterials(File f, Map<String, EvGLMaterial> glmaterials) throws IOException
 		{
 		Material current=null;
 		BufferedReader br=new BufferedReader(new FileReader(f));
@@ -144,9 +144,9 @@ public class WavefrontIO implements EvIOData
 		Map<String,Mesh3D> meshes=new HashMap<String, Mesh3D>(); 
 		Mesh3D currentMesh=null;
 		
-		Map<String, GLMaterial> glmaterials=new HashMap<String, GLMaterial>();
+		Map<String, EvGLMaterial> glmaterials=new HashMap<String, EvGLMaterial>();
 		
-		GLMaterial currentMaterial=new GLMaterialSolid();
+		EvGLMaterial currentMaterial=new EvGLMaterialSolid();
 		
 		String line;
 		while((line=br.readLine())!=null)

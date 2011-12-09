@@ -18,14 +18,15 @@ import com.sun.opengl.util.texture.*;
 
 import endrov.imageset.*;
 import endrov.modelWindow.BoundingBox;
+import endrov.modelWindow.ModelView;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
-import endrov.modelWindow.gl.GLCamera;
-import endrov.modelWindow.gl.GLShader;
+import endrov.modelWindow.gl.EvGLCamera;
+import endrov.modelWindow.gl.EvGLShader;
 
 //if one ever wish to build it in the background:
 //GLContext glc=view.getContext();
@@ -231,8 +232,8 @@ public class Stack2D extends StackRendererInterface
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL glin,List<TransparentRender> transparentRenderers, GLCamera cam,
-			final boolean solidColor, final boolean drawEdges, final boolean mixColors)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, EvGLCamera cam,
+			final boolean solidColor, final boolean drawEdges, final boolean mixColors, ModelView view)
 		{
 		GL2 gl=glin.getGL2();
 		if(isBuilt())
@@ -265,6 +266,7 @@ public class Stack2D extends StackRendererInterface
 						gl.glBlendFunc(GL2.GL_SRC_COLOR, GL2.GL_ONE_MINUS_SRC_COLOR);
 					gl.glEnable(GL2.GL_BLEND);
 					gl.glDepthMask(false);
+					//prepare shader
 					//shader2d.use(gl); //currently not needed
 					}
 				}
@@ -308,13 +310,13 @@ public class Stack2D extends StackRendererInterface
 	/**
 	 * TODO move to voxext?
 	 */
-	private GLShader shader2d=null;
+	private EvGLShader shader2d=null;
 	
 	
 	/**
 	 * Render list of slices
 	 */
-	public void render(GL glin,List<TransparentRender> transparentRenderers, GLCamera cam, TransparentRender.RenderState renderstate, LinkedList<List<OneSlice>> list)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, EvGLCamera cam, TransparentRender.RenderState renderstate, LinkedList<List<OneSlice>> list)
 		{
 		//Get direction of camera as vector, and z-position
 		Vector3d camv=cam.rotateVector(0, 0, 1);

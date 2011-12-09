@@ -353,7 +353,7 @@ public class VoxelExtension implements ModelWindowExtension
 				
 				//Render current stack
 				if(currentStackRenderer!=null)
-					currentStackRenderer.render(gl,transparentRenderers,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected());
+					currentStackRenderer.render(gl,transparentRenderers,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected(), w.view);
 				}
 			catch (Exception e)
 				{

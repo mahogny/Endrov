@@ -13,7 +13,7 @@ import org.jdom.Element;
 import endrov.util.EvXmlUtil;
 
 
-public class GLCamera
+public class EvGLCamera
 	{
 	/** Camera position */
 	public Vector3d pos=new Vector3d(0.0,2.0,-15.0);
@@ -26,12 +26,12 @@ public class GLCamera
 	
 	
 	
-	public GLCamera()
+	public EvGLCamera()
 		{
 		mat.setIdentity();
 		}
 	
-	public GLCamera(GLCamera cam)
+	public EvGLCamera(EvGLCamera cam)
 		{
 		pos.set(cam.pos);
 		center.set(cam.center);

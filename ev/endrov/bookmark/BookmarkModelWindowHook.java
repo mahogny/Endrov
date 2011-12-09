@@ -26,7 +26,7 @@ import endrov.modelWindow.BoundingBox;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.ModelWindowHook;
 import endrov.modelWindow.TransparentRender;
-import endrov.modelWindow.gl.GLCamera;
+import endrov.modelWindow.gl.EvGLCamera;
 import endrov.undo.UndoOpPutObject;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
@@ -90,7 +90,7 @@ public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 						{
 						w.setFrame(m.frame);
 						if(m.modelCamera!=null)
-							w.view.camera=new GLCamera(m.modelCamera);
+							w.view.camera=new EvGLCamera(m.modelCamera);
 						w.repaint();
 						}
 					});
@@ -140,7 +140,7 @@ public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 			{
 			Bookmark b=new Bookmark();
 			b.frame=w.getFrame();
-			b.modelCamera=new GLCamera(w.view.camera);
+			b.modelCamera=new EvGLCamera(w.view.camera);
 			new UndoOpPutObject("Add bookmark "+name, b, container, name);
 			}
 		}

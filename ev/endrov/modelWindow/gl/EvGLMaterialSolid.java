@@ -11,7 +11,7 @@ import org.jdom.Element;
  * @author Johan Henriksson
  *
  */
-public class GLMaterialSolid implements GLMaterial
+public class EvGLMaterialSolid implements EvGLMaterial
 	{
 	public static final String metadataType="materialsolid";
 
@@ -26,7 +26,7 @@ public class GLMaterialSolid implements GLMaterial
 	/**
 	 * Default OpenGL material
 	 */
-	public GLMaterialSolid()
+	public EvGLMaterialSolid()
 		{
 		this(null, null, null, null);
 		}
@@ -34,7 +34,7 @@ public class GLMaterialSolid implements GLMaterial
 	/**
 	 * Create a material. All vectors have 4 elements. null means use GL default
 	 */
-	public GLMaterialSolid(float[] diffuse, float[] specular, float[] ambient, Float shininess)
+	public EvGLMaterialSolid(float[] diffuse, float[] specular, float[] ambient, Float shininess)
 		{
 		this.diffuse = diffuse;
 		this.specular = specular;
@@ -93,7 +93,7 @@ public class GLMaterialSolid implements GLMaterial
 		}
 	
 	
-	public static GLMaterialSolid fromXML(Element e)
+	public static EvGLMaterialSolid fromXML(Element e)
 		{
 		try
 			{
@@ -109,7 +109,7 @@ public class GLMaterialSolid implements GLMaterial
 				}
 			float shininess=e.getAttribute("shin").getFloatValue();
 			
-			return new GLMaterialSolid(diffuse, specular, ambient, shininess);
+			return new EvGLMaterialSolid(diffuse, specular, ambient, shininess);
 			}
 		catch (DataConversionException e1)
 			{
@@ -120,9 +120,9 @@ public class GLMaterialSolid implements GLMaterial
 		}
 	
 	
-	public static GLMaterialSolid fromColor(float colR, float colG, float colB)
+	public static EvGLMaterialSolid fromColor(float colR, float colG, float colB)
 		{
-		GLMaterialSolid m=new GLMaterialSolid(
+		EvGLMaterialSolid m=new EvGLMaterialSolid(
 				new float[]{colR, colG, colB}, //diffuse
 				new float[]{colR*0.01f, colG*0.01f, colB*0.01f}, //specular
 				new float[]{0,0,0}, //ambient

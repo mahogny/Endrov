@@ -27,8 +27,10 @@ import endrov.coordinateSystem.CoordinateSystem;
 import endrov.data.EvSelection;
 import endrov.ev.*;
 import endrov.modelWindow.TransparentRender.RenderState;
-import endrov.modelWindow.gl.GLCamera;
-import endrov.modelWindow.gl.GLMeshVBO;
+import endrov.modelWindow.gl.EvGLCamera;
+import endrov.modelWindow.gl.EvGLMeshVBO;
+import endrov.modelWindow.gl.EvGLShader;
+import endrov.modelWindow.gl.EvGLTexture3D;
 import endrov.util.EvDecimal;
 import endrov.util.EvMathUtil;
 
@@ -85,7 +87,7 @@ public class ModelView extends GLJPanel
 	private ModelWindow window;
 
 	/** Camera coordinates */
-	public GLCamera camera=new GLCamera();
+	public EvGLCamera camera=new EvGLCamera();
 	
 	/** Field of view */
 	private final double FOV=45.0/180.0*Math.PI;	
@@ -112,7 +114,7 @@ public class ModelView extends GLJPanel
 	
 	public Color bgColor=EvColor.grayMedium.getAWTColor();
 	
-	private Map<Object,GLMeshVBO> vbos=new HashMap<Object, GLMeshVBO>();
+	private Map<Object,EvGLMeshVBO> vbos=new HashMap<Object, EvGLMeshVBO>();
 	private Set<Object> keepMeshs=new HashSet<Object>();
 	
 
@@ -126,9 +128,9 @@ public class ModelView extends GLJPanel
 	/**
 	 * Get a cached mesh. If the mesh is not get:ed every rendering loop it will be removed
 	 */
-	public GLMeshVBO getMesh(Object o)
+	public EvGLMeshVBO getMesh(Object o)
 		{
-		GLMeshVBO vbo=vbos.get(o);
+		EvGLMeshVBO vbo=vbos.get(o);
 		if(vbo!=null)
 			keepMeshs.add(o);
 		return vbo;
@@ -137,7 +139,7 @@ public class ModelView extends GLJPanel
 	/**
 	 * Cache mesh until later
 	 */
-	public void setMesh(Object o, GLMeshVBO m)
+	public void setMesh(Object o, EvGLMeshVBO m)
 		{
 		vbos.put(o, m);
 		keepMeshs.add(o);
@@ -148,11 +150,11 @@ public class ModelView extends GLJPanel
 	 */
 	private void removeUnusedMesh(GL2 gl)
 		{
-		Map<Object, GLMeshVBO> copy=new HashMap<Object, GLMeshVBO>(vbos);
+		Map<Object, EvGLMeshVBO> copy=new HashMap<Object, EvGLMeshVBO>(vbos);
 		copy.keySet().removeAll(keepMeshs);
 		for(Object key:copy.keySet())
 			{
-			GLMeshVBO m=copy.get(key);
+			EvGLMeshVBO m=copy.get(key);
 			m.destroy(gl);
 			vbos.remove(key);
 			}
@@ -243,6 +245,13 @@ public class ModelView extends GLJPanel
 		 */
 		public void init(GLAutoDrawable drawable)
 			{
+			//Make sure that shaders are reloaded
+			for(EvGLShader shader:shaders.keySet())
+				shader.needReinit();
+			for(EvGLTexture3D tex:textures3d.keySet())
+				tex.needReinit();
+			
+			
 			//Clear out previously registered objects - they have to be recreated
 			vbos.clear();
 			
@@ -1070,6 +1079,20 @@ public class ModelView extends GLJPanel
 				dy*b/z,
 				0);
 		return camera.rotateVector(moveVecCamera);
+		}
+
+	
+	private WeakHashMap<EvGLShader, Object> shaders=new WeakHashMap<EvGLShader, Object>();
+	private WeakHashMap<EvGLTexture3D, Object> textures3d=new WeakHashMap<EvGLTexture3D, Object>();
+	
+	public void registerShader(EvGLShader shader)
+		{
+		shaders.put(shader, null);
+		}
+	
+	public void registerTexture(EvGLTexture3D obj)
+		{
+		textures3d.put(obj, null);
 		}
 	}
 

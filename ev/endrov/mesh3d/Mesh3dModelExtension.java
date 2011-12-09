@@ -24,10 +24,10 @@ import endrov.basicWindow.EvColor;
 import endrov.data.EvObject;
 import endrov.data.EvSelection;
 import endrov.modelWindow.*;
-import endrov.modelWindow.gl.GLMaterial;
-import endrov.modelWindow.gl.GLMaterialSelect;
-import endrov.modelWindow.gl.GLMaterialSolid;
-import endrov.modelWindow.gl.GLMeshVBO;
+import endrov.modelWindow.gl.EvGLMaterial;
+import endrov.modelWindow.gl.EvGLMaterialSelect;
+import endrov.modelWindow.gl.EvGLMaterialSolid;
+import endrov.modelWindow.gl.EvGLMeshVBO;
 import endrov.util.*;
 
 
@@ -113,7 +113,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				int color=w.view.reserveSelectColor(new SelMesh3D(mesh));
 				//selectColorMap.put(color, new SelMesh3D(mesh));
 
-				displayMesh(w.view, glin, mesh, new GLMaterialSelect(color), null);
+				displayMesh(w.view, glin, mesh, new EvGLMaterialSelect(color), null);
 				}
 			}
 		
@@ -131,14 +131,14 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				{
 				SelMesh3D selmesh=new SelMesh3D(mesh);
 				
-				GLMeshVBO.MeshRenderSettings renderSettings=new GLMeshVBO.MeshRenderSettings();
-				GLMaterial overridematerial=null;
+				EvGLMeshVBO.MeshRenderSettings renderSettings=new EvGLMeshVBO.MeshRenderSettings();
+				EvGLMaterial overridematerial=null;
 				
 				if(EvSelection.currentHover.equals(selmesh))
 					renderSettings.outlineColor=EvColor.magenta;
 
 				if(EvSelection.isSelected(selmesh))
-					overridematerial=new GLMaterialSolid(new float[]{1.0f,0.0f,0.0f,1.0f},null,null,null);
+					overridematerial=new EvGLMaterialSolid(new float[]{1.0f,0.0f,0.0f,1.0f},null,null,null);
 				
 				displayMesh(w.view, glin, mesh, overridematerial, renderSettings);
 				}
@@ -241,7 +241,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 						public void setColor(EvColor c)
 							{
 							Mesh3D mesh=getHoveredMesh().getObject();
-							GLMaterial mat=GLMaterialSolid.fromColor(c.getRedFloat(), c.getGreenFloat(), c.getBlueFloat());
+							EvGLMaterial mat=EvGLMaterialSolid.fromColor(c.getRedFloat(), c.getGreenFloat(), c.getBlueFloat());
 							for(Mesh3D.Face f:mesh.faces)
 								f.material=mat;
 							BasicWindow.updateWindows();
@@ -282,20 +282,20 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		
 
 
-	public static void displayMesh(ModelView view, GL glin, Mesh3D mesh, GLMaterial overrideMaterial, GLMeshVBO.MeshRenderSettings renderSettings)
+	public static void displayMesh(ModelView view, GL glin, Mesh3D mesh, EvGLMaterial overrideMaterial, EvGLMeshVBO.MeshRenderSettings renderSettings)
 		{
 		if(renderSettings==null)
-			renderSettings=new GLMeshVBO.MeshRenderSettings();
+			renderSettings=new EvGLMeshVBO.MeshRenderSettings();
 		
 		GL2 gl=glin.getGL2();
 		gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 		
 		//Upload to card if needed
-		GLMeshVBO vbo=view.getMesh(mesh);
+		EvGLMeshVBO vbo=view.getMesh(mesh);
 		if(vbo==null)
 			view.setMesh(mesh, vbo=buildVBO(gl, mesh));
 		
-		GLMaterial material=overrideMaterial;
+		EvGLMaterial material=overrideMaterial;
 		if(material==null)
 			{
 
@@ -304,7 +304,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				material=mesh.faces.iterator().next().material;
 			
 			if(material==null)
-				material=new GLMaterialSolid();
+				material=new EvGLMaterialSolid();
 			}
 		
 		
@@ -317,9 +317,9 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 	
 	
 	
-	private static GLMeshVBO buildVBO(GL gl, Mesh3D mesh)
+	private static EvGLMeshVBO buildVBO(GL gl, Mesh3D mesh)
 		{
-		GLMeshVBO vbo=new GLMeshVBO();
+		EvGLMeshVBO vbo=new EvGLMeshVBO();
 
 		int vertexCount=mesh.faces.size()*3;
 

@@ -19,7 +19,6 @@ import javax.media.opengl.GL2;
 
 
 import com.sun.opengl.util.BufferUtil;
-
 import endrov.modelWindow.ModelView;
 
 //www.typhoonlabs.com/tutorials/glsl/Chapter_5.pdf
@@ -27,18 +26,19 @@ import endrov.modelWindow.ModelView;
 /**
  * GLSL shader
  * 
- * 
- * 
  * TODO replace by http://download.java.net/media/jogl/jogl-2.x-docs/com/sun/opengl/util/glsl/ShaderState.html
  * it has all the goodies already!
  * 
  * @author Johan Henriksson
  */
-public class GLShader
+public class EvGLShader
 	{
 	private Integer idf;
 	private Integer idv;
-	private int prog;
+	private Integer prog;
+
+	private URL srcv, srcf;
+	private boolean needInit;
 	
 	private String uploadURL(GL glin, int thisid, URL src, String type) throws IOException
 		{
@@ -54,45 +54,68 @@ public class GLShader
 		return fsrc;
 		}
 	
+	
 	/**
 	 * Create a shader. srcv and srcf can be null.
 	 * use .class.getResource(...) to obtain URL.
 	 */
-	public GLShader(GL glin, URL srcv, URL srcf)
+	public EvGLShader(GL glin, URL srcv, URL srcf, ModelView view)
 		{
-		GL2 gl=glin.getGL2();
-		try
+		this.srcv=srcv;
+		this.srcf=srcf;
+		needInit=true;
+		prepareShader(glin);
+		view.registerShader(this);
+		}
+	
+	public void needReinit()
+		{
+		needInit=true;
+		idv=null;
+		idf=null;
+		prog=null;
+		}
+	
+	public void prepareShader(GL glin)
+		{
+		if(needInit)
 			{
-			ModelView.checkerr(gl);
-			if(srcv!=null)
+			GL2 gl=glin.getGL2();
+			try
 				{
-				idv=gl.glCreateShader(GL2.GL_VERTEX_SHADER);
-				uploadURL(gl, idv, srcv,"v");
+				ModelView.checkerr(gl);
+				if(srcv!=null)
+					{
+					idv=gl.glCreateShader(GL2.GL_VERTEX_SHADER);
+					uploadURL(gl, idv, srcv,"v");
+					}
+				if(srcf!=null)
+					{
+					idf=gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
+					uploadURL(gl, idf, srcf,"f");
+					}
+				if(srcv==null && srcf==null)
+					throw new RuntimeException("Tried to create shaded with neither vertex nor fragment program");
+				
+				ModelView.checkerr(gl);
+				prog = gl.glCreateProgram();
+				ModelView.checkerr(gl);
+				if(idv!=null)	gl.glAttachShader(prog, idv);
+				if(idf!=null)	gl.glAttachShader(prog, idf);
+				ModelView.checkerr(gl);
+				gl.glLinkProgram(prog);
+				ModelView.checkerr(gl);
+				gl.glValidateProgram(prog);
+				ModelView.checkerr(gl);
+				System.out.println("prog "+prog+" "+idv+" "+idf);
+				
+				needInit=false;
 				}
-			if(srcf!=null)
+			catch (IOException e)
 				{
-				idf=gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
-				uploadURL(gl, idf, srcf,"f");
+				System.out.println("Couldn't read sources "+srcv+" "+srcf);
+				e.printStackTrace();
 				}
-			if(srcv==null && srcf==null)
-				throw new RuntimeException("Tried to create shaded with neither vertex nor fragment program");
-			
-			ModelView.checkerr(gl);
-			prog = gl.glCreateProgram();
-			ModelView.checkerr(gl);
-			if(idv!=null)	gl.glAttachShader(prog, idv);
-			if(idf!=null)	gl.glAttachShader(prog, idf);
-			ModelView.checkerr(gl);
-			gl.glLinkProgram(prog);
-			ModelView.checkerr(gl);
-			gl.glValidateProgram(prog);
-			ModelView.checkerr(gl);
-			System.out.println("prog "+prog+" "+idv+" "+idf);
-			}
-		catch (IOException e)
-			{
-			System.out.println("Could read sources "+srcv+" "+srcf);
-			e.printStackTrace();
 			}
 		}
 
@@ -154,7 +177,8 @@ public class GLShader
 		GL2 gl=glin.getGL2();
 		if(idv!=null)	{gl.glDetachShader(prog, idv); gl.glDeleteShader(idv);}
 		if(idf!=null)	{gl.glDetachShader(prog, idf); gl.glDeleteShader(idf);}
-		gl.glDeleteProgram(prog);
+		if(prog!=null)
+			gl.glDeleteProgram(prog);
 		}
 
 	/**

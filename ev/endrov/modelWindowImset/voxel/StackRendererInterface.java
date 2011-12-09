@@ -14,12 +14,13 @@ import javax.vecmath.Vector3d;
 
 import endrov.imageset.EvChannel;
 import endrov.modelWindow.BoundingBox;
+import endrov.modelWindow.ModelView;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
-import endrov.modelWindow.gl.GLCamera;
+import endrov.modelWindow.gl.EvGLCamera;
 
 /**
  * General interface to any stack renderer
@@ -74,8 +75,8 @@ public abstract class StackRendererInterface
 	//TODO this does not work! might select a channel multiple times!!!!
 	public abstract boolean newCreate(ProgressHandle progh, ProgressMeter pm, EvDecimal frame, List<StackRendererInterface.ChannelSelection> chsel,ModelWindow w);
 	public abstract void loadGL(GL gl);
-	public abstract void render(GL gl,List<TransparentRender> transparentRenderers, GLCamera cam,
-			boolean solidColor, boolean drawEdges, boolean mixColors);
+	public abstract void render(GL gl,List<TransparentRender> transparentRenderers, EvGLCamera cam,
+			boolean solidColor, boolean drawEdges, boolean mixColors, ModelView view);
 	public abstract void clean(GL gl);
 
 	protected boolean stopBuildThread=false;

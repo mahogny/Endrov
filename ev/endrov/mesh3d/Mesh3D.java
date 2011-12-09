@@ -19,8 +19,8 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.modelWindow.BoundingBox;
-import endrov.modelWindow.gl.GLMaterial;
-import endrov.modelWindow.gl.GLMaterialSolid;
+import endrov.modelWindow.gl.EvGLMaterial;
+import endrov.modelWindow.gl.EvGLMaterialSolid;
 
 /**
  * 3D meshes
@@ -70,7 +70,7 @@ public class Mesh3D extends EvObject
 		public Integer smoothGroup;
 //		public String group; //Note. Same string, must be possible to compare with ==
 		
-		public GLMaterial material;
+		public EvGLMaterial material;
 		}
 	
 	public List<Face> faces=new ArrayList<Face>();
@@ -226,7 +226,7 @@ public class Mesh3D extends EvObject
 		
 		try
 			{
-			HashMap<Integer,GLMaterial> materials=new HashMap<Integer, GLMaterial>();
+			HashMap<Integer,EvGLMaterial> materials=new HashMap<Integer, EvGLMaterial>();
 			
 			
 			for(Object o:e.getChildren())
@@ -238,7 +238,7 @@ public class Mesh3D extends EvObject
 					int id=ne.getAttribute("id").getIntValue();
 					
 					Element me=(Element)ne.getChildren().iterator().next();
-					GLMaterialSolid m=GLMaterialSolid.fromXML(me);
+					EvGLMaterialSolid m=EvGLMaterialSolid.fromXML(me);
 					
 					materials.put(id, m);
 					}
@@ -307,15 +307,15 @@ public class Mesh3D extends EvObject
 	public String saveMetadata(Element e)
 		{
 		//Store materials
-		Set<GLMaterial> materials=new HashSet<GLMaterial>();
+		Set<EvGLMaterial> materials=new HashSet<EvGLMaterial>();
 		for(Face f:faces)
 			if(f.material!=null)
 				materials.add(f.material);
 		int matCount=0;
-		HashMap<GLMaterial,Integer> materialToID=new HashMap<GLMaterial, Integer>();
-		for(GLMaterial m:materials)
+		HashMap<EvGLMaterial,Integer> materialToID=new HashMap<EvGLMaterial, Integer>();
+		for(EvGLMaterial m:materials)
 			{
-			if(m instanceof GLMaterialSolid)
+			if(m instanceof EvGLMaterialSolid)
 				{
 				int id=matCount;
 				matCount++;
@@ -326,7 +326,7 @@ public class Mesh3D extends EvObject
 				ne.setAttribute("id",""+materialToID.get(m));
 
 				//TODO abstract interface?
-				GLMaterialSolid sm=(GLMaterialSolid)m;
+				EvGLMaterialSolid sm=(EvGLMaterialSolid)m;
 				Element me=sm.toXML();
 				ne.addContent(me);
 				
