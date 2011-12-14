@@ -176,13 +176,23 @@ public class EvIODataBioformats implements EvIOData
 
 
 
-					//Create map channel -> series ID
-					Map<EvPath, EvChannel> channels=d.getIdObjectsRecursive(EvChannel.class);
+					//Create map channel -> BFID. 
+					//Currently each channel is stored separately, with each channel in its own series.
+					//In the future it might be better to try and find channels with common sizes and merge them.
+					//Also, it would be good if the BFID could be kept from before, for writing extra data 
+					Map<EvPath, EvChannel> mapPathChannels=d.getIdObjectsRecursive(EvChannel.class);
 					//channels=Collections.singletonMap(channels.entrySet().iterator().next().getKey(), channels.entrySet().iterator().next().getValue()); //Temp only one chan
 					ArrayList<EvPath> evchanToId=new ArrayList<EvPath>();
-					for(EvPath curChan:channels.keySet())
-						evchanToId.add(curChan);
+					for(Map.Entry<EvPath, EvChannel> curChan:mapPathChannels.entrySet())
+						{
+						curChan.getValue().ostBlobID=new BFID(evchanToId.size(),0).toIDstring();
+						evchanToId.add(curChan.getKey());
+						}
 
+					
+					
+					
+					
 					System.out.println("channels "+evchanToId);
 
 					//Create metadata for each series
@@ -644,100 +654,150 @@ public class EvIODataBioformats implements EvIOData
 		return false;
 		}
 		  
+	
+	
+	private boolean hasBFIDmapping(EvData d)
+		{
+		for(EvChannel ch:d.getObjects(EvChannel.class))
+			if(ch.ostBlobID!=null && ch.ostBlobID.startsWith("bf:"))
+				return true;
+		return false;
+		}
+	
+	
+	private static class BFID
+		{
+		int series;
+		int color;
+		
+		public BFID(int series, int color)
+			{
+			super();
+			this.series = series;
+			this.color = color;
+			}
+
+		public String toIDstring()
+			{
+			return "bf:"+series+":"+color;
+			}
+		}
+	
+	private static BFID parseBFID(String bfid) 
+		{
+		if(bfid==null)
+			return null;
+		StringTokenizer stok=new StringTokenizer(bfid, ":");
+		if(stok.hasMoreTokens())
+			{
+			String first=stok.nextToken();
+			if(first.equals("bf"))
+				{
+				String series=stok.nextToken();
+				String color=stok.nextToken();
+				return new BFID(
+						Integer.parseInt(series),
+						Integer.parseInt(color));
+				}
+			}
+		return null;
+		}
+	
 	/**
 	 * Scan recording for channels and build a file database
 	 */
 	public void buildDatabase(EvData d)
 		{
 		//Load metadata from added OSTXML-file. This has to be done first or all image loaders are screwed
+		boolean generateBfidMapping=true;
 		File metaFile=getMetaFile();
 		if(metaFile.exists())
-			d.loadXmlMetadata(metaFile);
-
-		System.out.println("#series "+imageReader.getSeriesCount());
-		
-		//HashSet<String> usedImsetNames=new HashSet<String>();
-		for(int seriesIndex=0;seriesIndex<imageReader.getSeriesCount();seriesIndex++)
 			{
-			//Setting series will re-populate the metadata store as well
-			imageReader.setSeries(seriesIndex);
-			
-			System.out.println("bioformats looking at series "+seriesIndex);
+			d.loadXmlMetadata(metaFile);
+			if(hasBFIDmapping(d))
+				generateBfidMapping=false;
+			}
 
-			String imsetName=retrieve.getImageName(seriesIndex);
-			System.out.println("-------------- got image name "+imsetName);
-			if(imsetName==null)
-				imsetName="im"+seriesIndex;
-			else
+		
+		//Generate channel mappings
+		if(generateBfidMapping)
+			{
+			for(int seriesIndex=0;seriesIndex<imageReader.getSeriesCount();seriesIndex++)
 				{
-				//On windows, bio-formats uses the entire path. This is ugly so cut off the part until the last file 
-				//if(imsetName.contains("\\"))
-				//	imsetName=imsetName.substring(imsetName.lastIndexOf('\\'));
-				}
-
-			if(imsetName.equals(""))
-				imsetName="im"+seriesIndex;
-
-			
-			
-//			if(d.metaObject.containsKey(imsetName))
-			//if(usedImsetNames.contains(imsetName)) //In case channel already exist in XML, do not overwrite it
-				//imsetName="im-"+imageName;
-			//usedImsetNames.add(imsetName);
-			
-			
-			Imageset imset=(Imageset)d.metaObject.get(imsetName);
-			if(imset==null)
-				d.metaObject.put(imsetName, imset=new Imageset());
-			for(String s:new LinkedList<String>(imset.getChannels().keySet()))
-				{
-				//TODO Keep metaobjects below channel?
-				imset.metaObject.remove(s);
-				}
-
-			
-			
-			int sizeT=retrieve.getPixelsSizeT(seriesIndex).getValue();
-			int sizeZ=retrieve.getPixelsSizeZ(seriesIndex).getValue();
-			int sizeC=retrieve.getPixelsSizeC(seriesIndex).getValue();
-			
-			
-			for(int curC=0;curC<sizeC;curC++)
-				{
-				//Figure out name of channel
-				String chanName=null;
+				//Setting series will re-populate the metadata store as well
+				imageReader.setSeries(seriesIndex);
+				System.out.println("bioformats looking at series "+seriesIndex);
 				
-				try
+				String imsetName=retrieve.getImageName(seriesIndex);
+				System.out.println("-------------- got image name "+imsetName);
+				if(imsetName==null)
+					imsetName="im"+seriesIndex;
+				else
 					{
-					chanName=retrieve.getChannelName(seriesIndex, curC);
+					//On windows, bio-formats uses the entire path. This is ugly so cut off the part until the last file 
+					//if(imsetName.contains("\\"))
+					//	imsetName=imsetName.substring(imsetName.lastIndexOf('\\'));
 					}
-				catch (Exception e1)
+
+				if(imsetName.equals(""))
+					imsetName="im"+seriesIndex;
+
+				Imageset imset=(Imageset)d.metaObject.get(imsetName);
+				if(imset==null)
+					d.metaObject.put(imsetName, imset=new Imageset());
+				for(String s:new LinkedList<String>(imset.getChannels().keySet()))
 					{
-					//Ugly hack! report to bioformats
-					e1.printStackTrace();
+					//TODO Keep metaobjects below channel?
+					imset.metaObject.remove(s);
 					}
 				
+				int sizeC=retrieve.getPixelsSizeC(seriesIndex).getValue();
 				
-				if(chanName==null)
-					chanName="ch"+curC;
+				for(int curC=0;curC<sizeC;curC++)
+					{
+					//Figure out name of channel
+					String chanName=null;
+					
+					try
+						{
+						chanName=retrieve.getChannelName(seriesIndex, curC);
+						}
+					catch (Exception e1)
+						{
+						//Ugly hack! report to bioformats
+						e1.printStackTrace();
+						}
+					
+					
+					if(chanName==null)
+						chanName="ch"+curC;
 
-				EvChannel ch=imset.getCreateChannel(chanName);
+					EvChannel ch=imset.getCreateChannel(chanName);
+					
+					//Generate the BFID
+					String bfid="bf:"+seriesIndex+":"+curC;
+					ch.ostBlobID=bfid;
+					}
+			
+				}
+			}
+		
 
-				System.out.println("im: "+imsetName+" ch: "+chanName+" zct: "+sizeZ+" "+sizeC+" "+sizeT);
+		//Populate channels
+		for(Map.Entry<EvPath, EvChannel> che:d.getIdObjectsRecursive(EvChannel.class).entrySet())
+			{
+			EvChannel ch=che.getValue();
+			BFID bfid=parseBFID(ch.ostBlobID);
+			if(bfid!=null)
+				{
+				imageReader.setSeries(bfid.series);
 
+				int sizeT=retrieve.getPixelsSizeT(bfid.series).getValue();
+				int sizeZ=retrieve.getPixelsSizeZ(bfid.series).getValue();
+				//	System.out.println("im: "+imsetName+" ch: "+chanName+" zct: "+sizeZ+" "+sizeC+" "+sizeT);
 				for(int curT=0;curT<sizeT;curT++)
 					{
-					
-					//int imageIndexFirstPlane=imageReader.getIndex(0, curC, curT);
-					//System.out.println("index of first plane for this time point "+imageIndexFirstPlane);
-					
-					//Read resolution
-					//Note: values are optional!!!
-					/*
-					Double resX=retrieve.getPixelsPhysicalSizeX(imageIndexFirstPlane); //[um/px]
-					Double resY=retrieve.getPixelsPhysicalSizeY(imageIndexFirstPlane); //[um/px]
-					Double resZ=retrieve.getPixelsPhysicalSizeZ(imageIndexFirstPlane); //[um/px]*/
-					
+
 					PositiveFloat resXf=retrieve.getPixelsPhysicalSizeX(0); //[um/px]
 					PositiveFloat resYf=retrieve.getPixelsPhysicalSizeY(0); //[um/px]
 					PositiveFloat resZf=retrieve.getPixelsPhysicalSizeZ(0); //[um/px]
@@ -758,12 +818,12 @@ public class EvIODataBioformats implements EvIOData
 					else
 						{
 						frame=new EvDecimal(curT);
-						
+
 						//Time since beginning of experiment [s] is optional
 						//Double deltaT=retrieve.getPlaneDeltaT(imageIndexFirstPlane, 0);
 						try
 							{
-							Double deltaT=retrieve.getPlaneDeltaT(seriesIndex, imageReader.getIndex(0, curC, curT));
+							Double deltaT=retrieve.getPlaneDeltaT(bfid.series, imageReader.getIndex(0, bfid.color, curT));
 							if(deltaT!=null)
 								frame=new EvDecimal(deltaT);
 							}
@@ -772,10 +832,7 @@ public class EvIODataBioformats implements EvIOData
 							System.out.println("Failed to call getPlaneDeltaT");
 							}
 						}
-					
-					
-					
-					
+
 					boolean isDicom=imageReader.getFormat().equals("DICOM");//imageReader instanceof DicomReader;
 					//System.out.println("isdicom "+isDicom+" "+imageReader.getFormat());
 
@@ -783,26 +840,30 @@ public class EvIODataBioformats implements EvIOData
 					EvStack stack=new EvStack();
 					ch.putStack(frame, stack);
 					stack.setRes(resX,resY,resZ);
-					
+
 					//Fill stack with planes
 					for(int curZ=0;curZ<sizeZ;curZ++)
 						{
 						EvImage evim=new EvImage();
-						evim.io=new BioformatsSliceIO(imageReader, seriesIndex, imageReader.getIndex(curZ, curC, curT), basedir, false);
+						evim.io=new BioformatsSliceIO(imageReader, bfid.series, imageReader.getIndex(curZ, bfid.color, curT), basedir, false);
 						if(isDicom)
 							((BioformatsSliceIO)evim.io).isDicom=true;
 						stack.putInt(curZ, evim);
 						}
-					
-					
-		
 					}
-				
-				
-				
+
+
+				}
+			else
+				{
+				//Artifact from old bad implementations. Delete this channel
+				EvPath path=che.getKey();
+				System.out.println("Discarding artifact channel "+path);
+				path.getParent().getObject().removeMetaObjectByValue(ch);
 				}
 			
 			}
+		
 		
 		// http://hudson.openmicroscopy.org.uk/job/LOCI/javadoc/
 		

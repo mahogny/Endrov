@@ -143,9 +143,6 @@ public class EvIODataOMERO implements EvIOData
 	public OMEROConnection connection;
 	
 	
-	//ImageData image;
-	
-	
 	//Map: (omero image, channel) <-> endrov evchannel path
 	
 	public static class OMEROChannelMap
@@ -225,7 +222,7 @@ public class EvIODataOMERO implements EvIOData
 				for(ImageData imd:images)
 					{
 					
-					
+					System.out.println("got omero imagedata with id "+imd.getId());
 					
 					PixelsData pixels=imd.getDefaultPixels();
 					int sizeC=pixels.getSizeC();
