@@ -59,7 +59,7 @@ public class EvIODataBioformats implements EvIOData
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	
-	
+	private static final boolean debug=false;
 	
 	/******************************************************************************************************
 	 *                               Image I/O class                                                      *
@@ -147,11 +147,6 @@ public class EvIODataBioformats implements EvIOData
 			
 			
 
-
-			//PixelType pixelType=PixelType.DOUBLE;
-			//PixelType pixelType=PixelType.INT32;
-			//PixelType pixelType=PixelType.INT8;
-
 			//TODO other formats supported too!
 
 
@@ -232,7 +227,18 @@ public class EvIODataBioformats implements EvIOData
 						  for(EvDecimal frame:ch.getFrames())
 						  	timeID.put(frame,curTimeID++);*/
 
-						//Figure out resolution
+						
+
+						int saveFormatType=FormatTools.INT32;  //works    DEFAULT!
+						
+						
+						//int saveFormatType=FormatTools.INT8;  //works
+						//int saveFormatType=FormatTools.INT16;  //works
+						//int saveFormatType=FormatTools.UINT16;  //does not work
+						//int saveFormatType=FormatTools.DOUBLE;  //once loaded as int32!! is it caching? but it works
+
+						
+						//Figure out resolution and pixeltype
 						int depth=0;
 						int width=0;
 						int height=0;
@@ -251,6 +257,21 @@ public class EvIODataBioformats implements EvIOData
 							resX=s.resX;
 							resY=s.resY;
 							resZ=s.resZ;
+							
+							EvPixels p=s.getFirstImage().getPixels(null);
+
+							if(p.getType()==EvPixelsType.DOUBLE)
+								saveFormatType=FormatTools.DOUBLE;
+							else if(p.getType()==EvPixelsType.FLOAT)
+								saveFormatType=FormatTools.FLOAT;
+							else if(p.getType()==EvPixelsType.UBYTE || p.getType()==EvPixelsType.AWT)
+								saveFormatType=FormatTools.INT8;
+							else if(p.getType()==EvPixelsType.SHORT)
+								saveFormatType=FormatTools.INT16; 
+							else
+								saveFormatType=FormatTools.INT32; 
+								
+							
 							}
 
 						//TODO verify all stacks the same size. can wait until write
@@ -303,13 +324,14 @@ public class EvIODataBioformats implements EvIOData
 
 						System.out.println("chan: "+imageName+" xyzct "+width+" "+height+" "+depth+" "+metadata.getPixelsSizeC(imageIndex)+" "+metadata.getPixelsSizeT(imageIndex));
 
-						int formatType=FormatTools.INT32;
-
+						
+						
+						
 						
 						metadata.setPixelsDimensionOrder(DimensionOrder.XYZCT, imageIndex);
 						try
 							{
-							metadata.setPixelsType(PixelType.fromString(FormatTools.getPixelTypeString(formatType)), imageIndex);
+							metadata.setPixelsType(PixelType.fromString(FormatTools.getPixelTypeString(saveFormatType)), imageIndex);
 							}
 						catch (EnumerationException e)
 							{
@@ -422,7 +444,7 @@ public class EvIODataBioformats implements EvIOData
 								int formatType = FormatTools.pixelTypeFromString(pixelType.getValue());
 
 								
-								boolean signed=FormatTools.isSigned(formatType);
+								//boolean signed=FormatTools.isSigned(formatType);
 
 								//Get and convert to bytes in the specified format, given evpixel format
 								EvPixels p=s.getInt(curZ).getPixels(null);
@@ -431,23 +453,57 @@ public class EvIODataBioformats implements EvIOData
 									{
 									//TODO: mystery. why does it not work? or does it?
 									plane=DataTools.doublesToBytes(p.convertToDouble(true).getArrayDouble(), littleEndian);
+									
+									System.out.println("pixel type DOUBLE");
+									
+									}
+								else if(formatType==FormatTools.INT16)
+									{
+									short[] arr;
+
+									arr=p.convertToShort(true).getArrayShort();
+									arr = DataTools.makeSigned(arr); 
+
+									if(debug)
+										{
+										System.out.println("save pixel type INT16:");
+						  			for(int b:arr)
+						  				System.out.print(b+",");
+						  			System.out.println();
+										}
+
+									plane=DataTools.shortsToBytes(arr, littleEndian);
+									}
+								else if(formatType==FormatTools.UINT16)   //This does not work yet!
+									{
+									short[] arr;
+
+									arr=p.convertToShort(true).getArrayShort();
+									arr = DataTools.makeSigned(arr); ///???? 
+
+									if(debug)
+										{
+										System.out.println("save pixel type UINT16:");
+						  			for(int b:arr)
+						  				System.out.print(b+",");
+						  			System.out.println();
+										}
+
+									plane=DataTools.shortsToBytes(arr, littleEndian);
 									}
 								else if(formatType==FormatTools.INT32)
 									{
 									int[] arr;
-									/*if(signed)
-						  				{
-							  			arr=p.convertToInt(false).getArrayInt();
-							  			makeUnSigned(arr);
-						  				}
-						  			else*/
-									arr=p.convertToInt(true).getArrayInt();
 
-									/*
+									arr=p.convertToInt(true).getArrayInt();
+									arr = DataTools.makeSigned(arr);  //TODO good?
+									if(debug)
+										{
+										System.out.println("save pixel type INT32:");
 						  			for(int b:arr)
 						  				System.out.print(b+",");
 						  			System.out.println();
-									 */
+										}
 
 									plane=DataTools.intsToBytes(arr, littleEndian); //TODO !
 									}
@@ -462,6 +518,9 @@ public class EvIODataBioformats implements EvIOData
 						  			else*/
 									arr=p.convertToUByte(true).getArrayUnsignedByte();
 									plane=arr;
+									
+									System.out.println("pixel type INT8");
+
 									}
 								else
 									throw new RuntimeException("Unsupported format in bf writer - bug");
@@ -900,11 +959,50 @@ public class EvIODataBioformats implements EvIOData
 			}
 		
 */
-		EvData d=EvData.loadFile(new File("/Volumes/TBU_main06/ost3dgood/A12D51070814.ost"));
+//		EvData d=EvData.loadFile(new File("/Volumes/TBU_main06/ost3dgood/A12D51070814.ost"));
+	
+		
+		EvData d=new EvData();
+		Imageset imset=new Imageset();
+		d.metaObject.put("im", imset);
+		EvChannel ch=imset.getCreateChannel("ch");
+		
+		EvStack stack=new EvStack();
+		ch.putStack(EvDecimal.ZERO, stack);
+		
+		int w=30;
+		int h=20;
+		int depth=2;
+		
+		
+		/*
+		stack.allocate(w, h, depth, EvPixelsType.UBYTE, null);
+		byte[] arr=stack.getInt(0).getPixels(null).getArrayUnsignedByte();
+		for(int ax=0;ax<w;ax++)
+			for(int ay=0;ay<h;ay++)
+				arr[ay*w+ax]=(byte)((ax+ay)%100);
+		*/
+		
+		/*
+		stack.allocate(w, h, depth, EvPixelsType.INT, null);
+		int[] arr=stack.getInt(0).getPixels(null).getArrayInt();
+		for(int ax=0;ax<w;ax++)
+			for(int ay=0;ay<h;ay++)
+				arr[ay*w+ax]=((ax+ay)%1000);
+				*/
+		
+		stack.allocate(w, h, depth, EvPixelsType.DOUBLE, null);
+		double[] arr=stack.getInt(0).getPixels(null).getArrayDouble();
+		for(int ax=0;ax<w;ax++)
+			for(int ay=0;ay<h;ay++)
+				arr[ay*w+ax]=((ax+ay)%1000);
+		
+		
 		
 		try
 			{
-			File out=new File("/home/tbudev3/temp/A12D51070814_double.ome.tiff");
+			//File out=new File("/home/tbudev3/temp/A12D51070814_double.ome.tiff");
+			File out=new File("/home/tbudev3/temp/test.ome.tiff");
 			out.delete();
 			d.saveDataAs(out);
 			}

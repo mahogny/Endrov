@@ -25,6 +25,9 @@ public class BioformatsSliceIO extends EvIOImage
 	private boolean closeReaderOnFinalize;
 	public boolean isDicom=false;
 
+	
+	private static final boolean debug=false;
+	
 	/**
 	 * Optional: Might return null
 	 */
@@ -79,7 +82,9 @@ public class BioformatsSliceIO extends EvIOImage
 			
 			
 			
-			System.out.println("bpp:"+bpp+" fp:"+isFloat+" islittle:"+isLittle+" signed:"+isSigned+" class:"+bfpixels.getClass());
+			
+			if(debug)
+				System.out.println("bpp:"+bpp+" fp:"+isFloat+" islittle:"+isLittle+" signed:"+isSigned+" class:"+bfpixels.getClass()+"   pixeltype:"+FormatTools.getPixelTypeString(type));
 			
 			//Much of this code modified from bioformats IJ-plugin. I deem it functional and hence not copyrightable
 			//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/loci/plugins/Util.java?rev=4289
@@ -106,20 +111,22 @@ public class BioformatsSliceIO extends EvIOImage
 				{
 				short[] q = (short[]) bfpixels;
 				
-				int len=w*h;
-				if(isSigned)
-					{
+				//int len=w*h;
+				//if(isSigned)
+					//{
 					if (q.length > w * h) 
 						{
 						short[] tmp = q;
 						q = new short[w * h];
 						System.arraycopy(tmp, 0, q, 0, q.length);
 						}
+					
+					if(isSigned)
 					q = DataTools.makeSigned(q);
 					
 					if(isDicom)
 						{
-						System.out.println("applying dicom ...");
+						System.out.println("applying dicom fixes...");
 						for(int i=0;i<w*h;i++)
 							if(q[i]==30768)
 								q[i]=0;
@@ -129,12 +136,22 @@ public class BioformatsSliceIO extends EvIOImage
 //								q[i]=0;
 						}
 					
+
+					if(debug)
+						{
+						System.out.println("read short[]:");
+						for(int i:q)
+							System.out.print(" "+i);
+						System.out.println();
+						}
+					
 					return EvPixels.createFromShort(w, h, q);
+					/*
 					}
 				else
 					{
 					return EvPixels.createFromInt(w, h, EvPixels.convertUshortToInt(q, len));
-					}
+					}*/
 				/*
 				if (q.length > w * h) 
 					{
@@ -160,6 +177,7 @@ public class BioformatsSliceIO extends EvIOImage
 					System.arraycopy(tmp, 0, q, 0, q.length);
 					}
 
+				
 /*
 				System.out.println("byte: ");
 				for(int i:bytes)
@@ -173,6 +191,14 @@ public class BioformatsSliceIO extends EvIOImage
 				*/
 				if (isSigned) 
 					q = DataTools.makeSigned(q);
+
+				if(debug)
+					{
+					System.out.println("read int[]:");
+					for(int i:q)
+						System.out.print(" "+i);
+					System.out.println();
+					}
 
 				/*
 				System.out.println("signed int: ");
@@ -203,6 +229,7 @@ public class BioformatsSliceIO extends EvIOImage
 					q = new double[w * h];
 					System.arraycopy(tmp, 0, q, 0, q.length);
 					}
+				
 				return EvPixels.createFromDouble(w, h, q);
 				}
 			else
