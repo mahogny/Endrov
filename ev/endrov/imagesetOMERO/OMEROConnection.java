@@ -23,6 +23,8 @@ import omero.api.RawFileStorePrx;
 import omero.api.ServiceFactoryPrx;
 import omero.model.Annotation;
 import omero.model.Dataset;
+import omero.model.Experimenter;
+import omero.model.ExperimenterGroup;
 import omero.model.FileAnnotation;
 import omero.model.FileAnnotationI;
 import omero.model.IObject;
@@ -63,6 +65,35 @@ public class OMEROConnection
 	public Long getMyUserId() throws ServerError
 		{
 		return entry.getAdminService().getEventContext().userId;
+		}
+	
+	
+	/**
+	 * Get all users this connection has access to(?)
+	 * not tested
+	 */
+	public Set<Long> getUserIDs() throws ServerError
+		{
+		//entry.getAdminService().getMemberOfGroupIds(experimenter)
+		//Experimenter experimenter=entry.getAdminService().getExperimenter(getMyUserId());
+		
+		List<ExperimenterGroup> expgroups=entry.getAdminService().containedGroups(getMyUserId());
+		Set<Long> expIds=new HashSet<Long>(); 
+		for(ExperimenterGroup g:expgroups)
+			{
+			//g.get
+			for(Experimenter e:entry.getAdminService().containedExperimenters(g.getId().getValue()))
+				expIds.add(e.getId().getValue());
+					//exp
+			//expIds.addAll());
+			}
+		
+		for(long id:expIds)
+			{
+			System.out.println(entry.getAdminService().getExperimenter(id).getFirstName().toString());
+			}
+		
+		return expIds;
 		}
 	
 	public Long getMyGroupId() throws ServerError

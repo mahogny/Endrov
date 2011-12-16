@@ -93,7 +93,7 @@ public class EvIODataOMERO implements EvIOData
 
 				System.out.println("plane size "+plane.length+"  wh "+w+"   "+h);
 				
-				boolean isSigned=store.isSigned();
+				//boolean isSigned=store.isSigned();
 				
 				boolean little=false;
 				
