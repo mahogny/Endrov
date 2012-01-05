@@ -1146,12 +1146,6 @@ public class LineageModelExtension implements ModelWindowExtension
 	    else
 	    	nucColor=new float[]{1,1,1};
 			
-    	
-			
-//			float lightAmbient[] = { nucColor[0]*0.3f, nucColor[1]*0.3f, nucColor[2]*0.3f, 0.0f };
-//    gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, nucColor, 0);   
-	    	
-
 			
 	    if(LineageCommonUI.hiddenParticles.contains(nucPair))
 	    	{

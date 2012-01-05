@@ -123,7 +123,8 @@ public class BatchMovie
 			{
 			arg=new String[]{
 					"/Volumes/TBU_main06/ost4dgood/",
-					"/pimai/TBU_main01b/ost4dgood/",
+					//"/pimai/TBU_main01b/ost4dgood/",
+					"/pimai/TBU_extra05/ost4dpaper/"
 					//"/pimai/TBU_main01b/daemon/output/",
 					};
 			for(String s:arg)

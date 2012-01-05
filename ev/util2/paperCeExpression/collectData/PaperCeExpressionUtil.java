@@ -19,8 +19,6 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.imageset.Imageset;
-import endrov.lineage.expression.ExpUtil;
-import endrov.util.Tuple;
 
 
 
@@ -168,7 +166,10 @@ public class PaperCeExpressionUtil
 	public static Set<File> getAnnotated()
 		{
 		Set<File> doneStrains=new TreeSet<File>();
-		for(File parent:new File[]{new File("/Volumes/TBU_main06/ost4dgood")})
+		for(File parent:new File[]{
+				new File("/Volumes/TBU_main06/ost4dgood"),
+				new File("/pimai/TBU_extra05/ost4dpaper")
+				})
 			for(File f:parent.listFiles())
 				if(f.getName().endsWith(".ost"))
 					{
@@ -201,6 +202,7 @@ public class PaperCeExpressionUtil
 	 * Find strains not annotated
 	 * @param args
 	 */
+	/*
 	public static void main2(String[] args)
 		{
 		Set<String> strains=new TreeSet<String>();
@@ -212,6 +214,7 @@ public class PaperCeExpressionUtil
 				new File("/Volumes/TBU_main02/ost4dgood"),
 				new File("/Volumes/TBU_main03/ost4dgood"),
 				new File("/Volumes/TBU_main04/ost4dgood"),
+				new File("/pimai/TBU_extra05/ost4dpaper")
 		})
 			for(File f:parent.listFiles())
 				if(f.getName().endsWith(".ost"))
@@ -231,7 +234,7 @@ public class PaperCeExpressionUtil
 			if(!doneStrains.contains(strain))
 				System.out.println("Appears missing: "+strain);
 		System.exit(0);
-		}
+		}*/
 
 	
 	/**

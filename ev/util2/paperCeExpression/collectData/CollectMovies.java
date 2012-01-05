@@ -26,7 +26,7 @@ public class CollectMovies
 
 		
 		File outdir=new File("/home/tbudev3/articleMovies"); 
-		File indir=new File("/Volumes/TBU_main06/ost4dgood");
+		//File indir=new File("/Volumes/TBU_main06/ost4dgood");
 
 		
 		try
@@ -34,6 +34,11 @@ public class CollectMovies
 			outdir.mkdirs();
 			EvFileUtil.deleteRecursive(outdir);
 			outdir.mkdirs();
+			
+			for(File indir:new File[]{
+					new File("/Volumes/TBU_main06/ost4dgood"),
+					new File("/pimai/TBU_extra05/ost4dpaper/"),
+			})
 			
 			for(File ostfile:indir.listFiles())
 				{
