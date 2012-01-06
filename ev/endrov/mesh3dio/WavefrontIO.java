@@ -175,19 +175,21 @@ public class WavefrontIO implements EvIOData
 				StringTokenizer st=new StringTokenizer(line," ");
 				st.nextElement();
 
-				Mesh3D.Face face=new Mesh3D.Face();
-				face.material=currentMaterial;
-				face.vertex=new int[3];
-				int[] faceTC=new int[3];
-				int[] faceN=new int[3];
+				//TODO support quads!
+				
+				int[] fvertex=new int[4];
+				int[] faceTC=new int[4];
+				int[] faceN=new int[4]; //TODO: reduce to 3 elements later?
+				
 				boolean hasTC=false;
 				boolean hasN=false;
-				for(int i=0;i<3;i++)
+				int vertexcount=0;
+				for(int i=0;i<4 && st.hasMoreTokens();i++)
 					{
 					//Formats: v    v/vt/vn    v//vn
 					
 					StringTokenizer tok2=new StringTokenizer(st.nextToken(),"/");
-					face.vertex[i]=Integer.parseInt(tok2.nextToken())-1;
+					fvertex[i]=Integer.parseInt(tok2.nextToken())-1;
 					if(tok2.hasMoreElements())
 						{
 						String svt=tok2.nextToken();
@@ -202,21 +204,35 @@ public class WavefrontIO implements EvIOData
 							hasN=true;
 							}
 						}
+					vertexcount++;
 					}
-				if(hasTC)
-					face.texcoord=faceTC;
-				if(hasN)
-					face.normal=faceN;
 				
-				face.smoothGroup=currentSmooth;
 				
-				//Get or create a mesh
-				if(currentMesh==null)
+				for(int i=3;i<=vertexcount;i++)
 					{
-					currentMesh=new Mesh3D();
-					meshes.put(currentGroup, currentMesh);
+					int current=i-3;
+
+					Mesh3D.Face face=new Mesh3D.Face();
+					face.material=currentMaterial;
+					face.vertex=take3a(fvertex,current);
+
+					if(hasTC)
+						face.texcoord=take3a(faceTC,current);
+					if(hasN)
+						face.normal=take3a(faceN,current);
+					
+					face.smoothGroup=currentSmooth;
+					
+					//Get or create a mesh
+					if(currentMesh==null)
+						{
+						currentMesh=new Mesh3D();
+						meshes.put(currentGroup, currentMesh);
+						}
+					currentMesh.faces.add(face);
+
 					}
-				currentMesh.faces.add(face);
+				
 				
 				}
 			else if(line.startsWith("v "))
@@ -315,6 +331,16 @@ public class WavefrontIO implements EvIOData
 		return meshes;
 		}
 
+	
+	private static int[] take3a(int[] arr, int current)
+		{
+		if(current==0)
+			return new int[]{arr[0],arr[1],arr[2]};
+		else if(current==1)
+			return new int[]{arr[0],arr[2],arr[3]};
+		else
+			throw new RuntimeException("bad current index");
+		}
 	
 	
 	private File file;

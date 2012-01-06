@@ -187,7 +187,7 @@ public class IsosurfaceRenderer
 					gl.glDisable(GL2.GL_CULL_FACE);
 					gl.glEnable(GL2.GL_LIGHTING);
 					gl.glEnable(GL2.GL_LIGHT0);
-					gl.glEnable ( GL2.GL_COLOR_MATERIAL ) ;
+					gl.glEnable ( GL2.GL_COLOR_MATERIAL ) ;  //TODO dangerous command... should it be used?
 					gl.glColor4f(red,green,blue,trans);
 					}
 				public void enableBlend(GL glin)

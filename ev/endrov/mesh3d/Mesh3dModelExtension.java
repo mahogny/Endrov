@@ -356,9 +356,16 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 	      	normals.put((float)n.x);
 	      	normals.put((float)n.y);
 	      	normals.put((float)n.z);
+	      	
+	      	/*
+	      	double dist2=n.x*n.x+n.y*n.y+n.z*n.z;
+	      	if(dist2<0.5 || dist2>1.5)
+	      		System.out.println("warning: non-normalized normals");
+	      	*/
       		}
       	else
       		{
+      		System.out.println("warning: no normal");
       		normals.put(0);
       		normals.put(0);
       		normals.put(0);
@@ -367,13 +374,17 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			}
 		
 		
-		boolean extensionOK = gl.isExtensionAvailable("GL_ARB_vertex_buffer_object");
+		boolean canUseVBO = gl.isExtensionAvailable("GL_ARB_vertex_buffer_object");
 
-		if(extensionOK)
+		
+		//canUseVBO=false; //temp
+		//System.out.println("can use vbo "+canUseVBO);
+		
+		if(canUseVBO)
 			{
     	vertices.rewind();
-    	tex.rewind();
     	normals.rewind();
+    	tex.rewind();
     	
       int[] VBOVertices = new int[1];  
       gl.glGenBuffers(1, VBOVertices, 0);  
@@ -383,7 +394,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
       int[] VBONormals = new int[1];  
       gl.glGenBuffers(1, VBONormals, 0);  
       gl.glBindBuffer(GL.GL_ARRAY_BUFFER, VBONormals[0]);  
-      gl.glBufferData(GL.GL_ARRAY_BUFFER, vertexCount * 3 * BufferUtil.SIZEOF_FLOAT, vertices, GL.GL_STATIC_DRAW);
+      gl.glBufferData(GL.GL_ARRAY_BUFFER, vertexCount * 3 * BufferUtil.SIZEOF_FLOAT, normals, GL.GL_STATIC_DRAW);
 
       int[] VBOTexCoords = new int[1];
       gl.glGenBuffers(1, VBOTexCoords, 0);
@@ -404,11 +415,6 @@ public class Mesh3dModelExtension implements ModelWindowExtension
       vbo.useVBO=false;
 			}
 
-		/*
-    vbo.vertices=vertices;
-    vbo.normals=normals;
-    vbo.tex=tex;
-    */
 		
     vbo.vertices=vertices;
     vbo.normals=normals;

@@ -234,12 +234,6 @@ public class ModelView extends GLJPanel
 		{		
 		HashSet<ModelWindowHook> hasInited=new HashSet<ModelWindowHook>();
 		
-		float light_position[][] = new float[][]{
-					{ 0f, 0f, 100.0f, 0.0f },
-					//{ 100.0f, 100.0f, 100.0f, 0.0f },
-					//{ -100.0f, -100.0f, 100.0f, 0.0f }
-				};
-
 		/**
 		 * Called once when OpenGL is inititalized
 		 */
@@ -438,6 +432,8 @@ public class ModelView extends GLJPanel
 					}
 
 			//Prepare render extensions
+			gl.glLoadIdentity();
+			camera.transformGL(gl);
 			for(ModelWindowHook h:window.modelWindowHooks)
 				h.displayInit(gl);
 			
@@ -518,13 +514,12 @@ public class ModelView extends GLJPanel
 				{
 				gl.glLoadIdentity();
 
-				//Set light to follow camera
-				for(int i=0;i<light_position.length;i++)
-					gl.glLightfv(GL2.GL_LIGHT0+i, GL2.GL_POSITION, light_position[i],0);
+				//SETUPLIGHT SHOULD BE HERE TO FOLLOW CAM
 		    setupLight(gl);
 				
 				//Get camera into position
 				camera.transformGL(gl);
+
 
 				//Clear buffers
 				gl.glClearColor((float)bgColor.getRed()/255.0f,(float)bgColor.getGreen()/255.0f,(float)bgColor.getBlue()/255.0f,0.0f);
@@ -588,9 +583,16 @@ public class ModelView extends GLJPanel
 		public void setupLight(GL2 gl)
 			{
 			
-			float lightAmbient[] = { 0.5f, 0.5f, 0.5f, 0.0f };
-			float lightDiffuse[]=new float[]{1.0f,1.0f,1.0f};
-			float lightSpecular[]=new float[]{0.7f,0.7f,0.7f};
+
+			float light_position[][] = new float[][]{
+						{ 0f, 0f, 0.0f, 1.0f },
+					};
+
+			
+			float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 0.0f };
+			//float lightDiffuse[]=new float[]{1.0f,1.0f,1.0f};
+			float lightDiffuse[]=new float[]{0.8f,0.8f,0.8f};
+			float lightSpecular[]=new float[]{0.2f,0.2f,0.2f};
 /*
 			float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 0.0f };
 			float lightDiffuse[]=new float[]{1.0f,1.0f,1.0f};
@@ -610,9 +612,10 @@ public class ModelView extends GLJPanel
 				gl.glLightfv(GL2.GL_LIGHT0+i, GL2.GL_AMBIENT, lightAmbient, 0);   
 				gl.glLightfv(GL2.GL_LIGHT0+i, GL2.GL_DIFFUSE, lightDiffuse, 0);
 				gl.glLightfv(GL2.GL_LIGHT0+i, GL2.GL_SPECULAR, lightSpecular, 0);
+				gl.glLightfv(GL2.GL_LIGHT0+i, GL2.GL_POSITION, light_position[i],0);
 				gl.glEnable(GL2.GL_LIGHT0+i);
 				}
-			gl.glLightModelf(GL2.GL_LIGHT_MODEL_LOCAL_VIEWER, 1.0f);
+			//gl.glLightModelf(GL2.GL_LIGHT_MODEL_LOCAL_VIEWER, 1.0f);
 			gl.glShadeModel(GL2.GL_SMOOTH);
 			}
 		

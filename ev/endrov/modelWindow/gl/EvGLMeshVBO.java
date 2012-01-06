@@ -4,6 +4,7 @@ import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.vecmath.Vector3f;
 
 import endrov.basicWindow.EvColor;
 
@@ -20,13 +21,14 @@ public class EvGLMeshVBO
 		{
 		public boolean drawSolid=true;
 		public boolean drawNormals=false;
+		//public boolean drawNormals=true;
 		public boolean drawWireframe=false;
 		public EvColor outlineColor=null;
 		public float outlineWidth=5;
 		}
 		
 	
-	public boolean useVBO=false;
+	public boolean useVBO;
 	public int vertVBO;
 	public int normalsVBO;
 	public int texVBO;
@@ -58,20 +60,25 @@ public class EvGLMeshVBO
 			{
 			//Use VBO
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, texVBO);
-			gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, 0);    
+			gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, 0);
+			
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertVBO);
 			gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);    
+			
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normalsVBO);
 			gl.glNormalPointer(GL.GL_FLOAT, 0, 0);
 			}
 
 
 
+		gl.glEnable(GL2.GL_NORMALIZE); //temp
 
 
+		//Draw a solid mesh
 		if(settings.drawSolid)
 			{
 			gl.glEnable(GL2.GL_CULL_FACE);
+			
 			material.set(gl);
 			if(settings.drawWireframe)
 				{
@@ -82,8 +89,53 @@ public class EvGLMeshVBO
 				{
 				gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertexCount);  
 				}
+			
+			
+			
+			
 			}
 	
+		/*
+		 //safe renderer
+		if(true)
+			{
+			gl.glEnable(GL2.GL_NORMALIZE);
+
+			new EvGLMaterialSolid().set(gl);
+			
+			vertices.rewind();
+			for(int i=0;i<vertexCount/3;i++)
+				{
+				Vector3f v[]=new Vector3f[3];
+				for(int j=0;j<3;j++)
+					{
+					v[j]=new Vector3f();
+					v[j].x=vertices.get();
+					v[j].y=vertices.get();
+					v[j].z=vertices.get();
+					}
+				Vector3f vec1=new Vector3f(v[1]);
+				vec1.sub(v[0]);
+				Vector3f vec2=new Vector3f(v[2]);
+				vec2.sub(v[0]);
+				Vector3f norm=new Vector3f();
+				norm.cross(vec1,vec2);
+				norm.normalize();
+				//gl.glBegin(GL.GL_LINE_LOOP);
+				gl.glBegin(GL.GL_TRIANGLES);
+				gl.glNormal3f(norm.x, norm.y, norm.z);
+				gl.glColor3f(1.0f, 1.0f, 1.0f);
+				for(int j=0;j<3;j++)
+					gl.glVertex3f(v[j].x, v[j].y, v[j].z);
+				gl.glEnd();
+				
+				}
+			
+			
+			
+			}
+			*/
+		
 		gl.glDisable(GL2.GL_CULL_FACE);
 		gl.glDisable(GL2.GL_LIGHTING);
 	
