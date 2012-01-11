@@ -1,4 +1,4 @@
-package endrov.imageset;
+package endrov.util;
 
 import java.util.LinkedList;
 import java.util.WeakHashMap;

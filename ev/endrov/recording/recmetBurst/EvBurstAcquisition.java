@@ -22,6 +22,7 @@ import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
+import endrov.imageset.SwapImages;
 import endrov.recording.CameraImage;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
@@ -266,13 +267,13 @@ public class EvBurstAcquisition extends EvObject
 									}
 
 
-								System.out.println("time: "+curFrame+"   "+FrameControl.formatTime(curFrame));
 								
 								//See if another image is incoming
 								CameraImage camIm=cam.snapSequence();
 								if(camIm!=null)
 									{
 									
+									System.out.println("burst snap, time: "+curFrame+"   "+FrameControl.formatTime(curFrame));
 									
 									
 									System.out.println("Got image");
@@ -305,6 +306,9 @@ public class EvBurstAcquisition extends EvObject
 										
 										stack.putInt(0, evim);
 										ch.putStack(curFrame, stack);
+										
+										if(earlySwap)
+											SwapImages.hintSwapImage(evim);
 										}
 										
 									curFrame=curFrame.add(interval);

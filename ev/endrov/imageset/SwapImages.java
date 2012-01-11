@@ -5,8 +5,17 @@
  */
 package endrov.imageset;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.ref.WeakReference;
-import java.util.PriorityQueue;
+
+import endrov.util.LRUlist;
+import endrov.util.ProgressHandle;
+
 
 /**
  * Swap memory for images. I would normally say that the OS should deal with this, it is much better informed
@@ -28,69 +37,197 @@ public class SwapImages
 	private static LRUlist<WeakReference<EvImage>> lru=new LRUlist<WeakReference<EvImage>>();
 	
 	
+	private static Integer swapImageCount=0;
+	
+	
+	private static void countSwappedImages(int c)
+		{
+		synchronized (swapImageCount)
+			{
+			swapImageCount+=c;
+			}
+		}
+	
+	public static int getNumSwappedImage()
+		{
+		synchronized (swapImageCount)
+			{
+			return swapImageCount;
+			}
+		}
+	
+	
+	
 	private static Thread swapthread=new Thread()
 		{
 		public void run()
 			{
-			
-			//Get the next image
-			EvImage evim;
-			EvPixels p;
-			synchronized (lru)
+			for(;;)
 				{
-				
-				for(;;)
+				//Get the next image
+				EvImage evim;
+				EvPixels p;
+				synchronized (lru)
 					{
-					WeakReference<EvImage> ref=lru.getFirst();
-					if(ref!=null)
+					
+					for(;;)
 						{
-						evim=ref.get();
-						if(evim!=null)
+						WeakReference<EvImage> ref=lru.getFirst();
+						if(ref!=null)
 							{
-							p=evim.getMemoryImage();
-							if(evim.isDirty && p!=null)
-								break;
+							evim=ref.get();
+							if(evim!=null)
+								{
+								p=evim.getMemoryImage();
+								if(p!=null)
+									break;
+			//					else
+		//							System.out.println("image is not a memory image");
+								}
+	//						else
+//								System.out.println("null image");
+							}
+						else
+							System.out.println("Swap: nothing to do");
+						
+						//If there is nothing to do then sleep
+						try
+							{
+							lru.wait();
+							}
+						catch (InterruptedException e)
+							{
+							e.printStackTrace();
 							}
 						}
-					try
-						{
-						lru.wait();
-						}
-					catch (InterruptedException e)
-						{
-						e.printStackTrace();
-						}
 					}
+				
+				//Write image to disk
+				EvIOImage io=serializeToDisk(p);
+				if(io!=null)
+					{
+					evim.io=io;
+					evim.setMemoryImage((EvPixels)null);
+					System.gc(); //needed?
+					System.out.println("Swapped image to disk");
+					}
+				else
+					System.out.println("Failed to swap to disk");
 				}
-			
-			//Write image to disk
-			
-			//Depends on the image type....
-			
-			
-			
-			
-			
-			//p.
-			
-			
-			
 			}
-		
 		}; 
-	
+		
+		
+		
 		
 	static
 		{
 		swapthread.start();
 		}
-		
-		
-	private static boolean canSwap(EvImage evim)
+	
+	/**
+	 * Read image swapped to disk
+	 * 
+	 * @author Johan Henriksson
+	 *
+	 */
+	private static class SerializedImageIO extends EvIOImage
 		{
-		EvPixels p=evim.getMemoryImage();
-		return evim.isDirty && p!=null;
+		/** Type of data, any of TYPE_* */
+		private EvPixelsType type;
+		/** Width */
+		private int w;
+		/** Height */ 
+		private int h;
+
+		private File swapFile;
+		
+		public SerializedImageIO(EvPixels p, File tempFile)
+			{
+			w=p.getWidth();
+			h=p.getHeight();
+			type=p.getType();
+			this.swapFile=tempFile;
+			
+			countSwappedImages(1);
+
+			//This gives additional guarantee that the file will be gone once the software is quit
+			swapFile.deleteOnExit();
+			
+			}
+
+		@Override
+		protected EvPixels eval(ProgressHandle c)
+			{
+			try
+				{
+				ObjectInputStream is=new ObjectInputStream(new FileInputStream(swapFile));
+				Object o=is.readObject();
+				EvPixels p=EvPixels.createFromObject(type, w, h, o);
+
+				return p;
+				}
+			catch (Exception e)
+				{
+				throw new RuntimeException("Unable to read swap file: "+e.getMessage());
+				}
+			}
+		
+		@Override
+		protected void finalize() throws Throwable
+			{
+			countSwappedImages(-1);
+			//This file cause the file to be deleted once the object is gone
+			swapFile.delete();
+			super.finalize();
+			}
+		
 		}
+		
+		
+	private static EvIOImage serializeToDisk(EvPixels p)
+		{
+		try
+			{
+			File tempFile=File.createTempFile("endrovswap", ".im");
+			
+			ObjectOutputStream os=new ObjectOutputStream(new FileOutputStream(tempFile));
+			
+			if(p.getArrayDouble()!=null)
+				os.writeObject(p.getArrayDouble());
+			else if(p.getArrayFloat()!=null)
+				os.writeObject(p.getArrayFloat());
+			else if(p.getArrayInt()!=null)
+				os.writeObject(p.getArrayInt());
+			else if(p.getArrayUnsignedByte()!=null)
+				os.writeObject(p.getArrayUnsignedByte());
+			else if(p.getAWT()!=null)
+				os.writeObject(p.getAWT());
+			else
+				{
+				System.out.println("Unable to serialize image");
+				return null;
+				}
+			
+			os.close();
+			
+			return new SerializedImageIO(p, tempFile);
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			return null;
+			}
+
+		
+		
+		}
+	
+	
+	
+
+		
+		
 	
 	
 	/**
@@ -100,14 +237,10 @@ public class SwapImages
 		{
 		synchronized (lru)
 			{
+			System.out.println("hint to swap image");
 			lru.addFirst(new WeakReference<EvImage>(evim));
-
-			
 			lru.notifyAll();
-			
 			}
-		
-		
 		}
 	
 	

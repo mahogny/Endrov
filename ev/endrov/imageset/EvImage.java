@@ -213,11 +213,17 @@ public class EvImage
 	 */
 	public void setMemoryImage(BufferedImage im)
 		{
-		this.memoryPixels.setPixels(im);
+		if(im==null)
+			this.memoryPixels=null;
+		else
+			this.memoryPixels.setPixels(im);
 		}
 	public void setMemoryImage(EvPixels im)
 		{
-		this.memoryPixels.setPixels(im);
+		if(im==null)
+			this.memoryPixels=null;
+		else
+			this.memoryPixels.setPixels(im);
 		}
 	
 	

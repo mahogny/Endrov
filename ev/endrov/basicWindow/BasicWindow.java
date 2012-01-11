@@ -25,6 +25,8 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
 import endrov.data.GuiEvDataIO;
 import endrov.ev.*;
+import endrov.imageset.EvPixels;
+import endrov.imageset.SwapImages;
 import endrov.keyBinding.JInputManager;
 import endrov.keyBinding.JinputListener;
 import endrov.keyBinding.KeyBinding;
@@ -746,6 +748,8 @@ public abstract class BasicWindow extends JPanel
 				+"Free memory (in JVM): "+(rt.freeMemory()/1024/1024)+" MiB\n"
 				+"Memory left: "+((rt.maxMemory()-rt.totalMemory())/1024/1024)+" MiB\n"
 				+"Max memory available for Java: "+(rt.maxMemory()/1024/1024)+" MiB\n"
+				+"Image planes in memory: "+EvPixels.getNumLiveImages()+"\n"
+				+"Image planes swapped to disk: "+SwapImages.getNumSwappedImage()+"\n"
 				+jaiformats;
 		JOptionPane.showMessageDialog(null, text);
 		}

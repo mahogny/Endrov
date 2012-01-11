@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import javax.vecmath.Vector3f;
 
 import endrov.basicWindow.EvColor;
 

@@ -69,7 +69,6 @@ public class EvPixels implements AnyEvImage
 	 */
 	
 	/** Type of data, any of TYPE_* */
-	//private int type;
 	private EvPixelsType type;
 		/** Width */
 	private int w;
@@ -260,6 +259,36 @@ public class EvPixels implements AnyEvImage
 		p.w=w;
 		p.h=h;
 		p.arrayS=a;
+		return p;
+		}
+	
+	public static EvPixels createFromObject(EvPixelsType type, int w, int h, Object data)
+		{
+		EvPixels p=new EvPixels();
+		p.w=w;
+		p.h=h;
+		p.type=type;
+		switch(type)
+			{
+			case INT:
+				p.arrayI=(int[])data;
+				break;
+			case DOUBLE:
+				p.arrayD=(double[])data;
+				break;
+			case FLOAT:
+				p.arrayF=(float[])data;
+				break;
+			case UBYTE:
+				p.arrayB=(byte[])data;
+				break;
+			case SHORT:
+				p.arrayS=(short[])data;
+				break;
+			case AWT:
+				p.awt=(BufferedImage)data;
+				break;
+			}
 		return p;
 		}
 
@@ -895,11 +924,14 @@ public class EvPixels implements AnyEvImage
 		}
 	
 	
-	private static int livePixels=0;
+	private static Integer livePixels=0;
 	
-	private synchronized void count(int c)
+	private void count(int c)
 		{
-		livePixels+=c;
+		synchronized (livePixels)
+			{
+			livePixels+=c;
+			}
 		/*
 		if(c>0)
 			System.out.println("creating pixels, live "+livePixels);
@@ -910,7 +942,10 @@ public class EvPixels implements AnyEvImage
 	
 	public static int getNumLiveImages()
 		{
-		return livePixels;
+		synchronized (livePixels)
+			{
+			return livePixels;
+			}
 		}
 	
 	
