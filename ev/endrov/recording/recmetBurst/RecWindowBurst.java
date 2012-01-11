@@ -21,6 +21,7 @@ import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
+import endrov.recording.EvAcquisition;
 import endrov.recording.device.HWTrigger;
 import endrov.recording.widgets.RecWidgetComboDevice;
 import endrov.util.EvDecimal;
@@ -30,7 +31,7 @@ import endrov.util.EvSwingUtil;
  * Burst acquisition
  * @author Johan Henriksson 
  */
-public class RecWindowBurst extends BasicWindow implements ActionListener, EvBurstAcquisition.Listener
+public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcquisition.AcquisitionListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -232,7 +233,11 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvBur
 
 	
 
-	public void acqStopped()
+	public void acquisitionEventStatus(String s)
+		{
+		}
+	
+	public void acquisitionEventStopped()
 		{
 		bStartStop.setText("Start");
 		thread=null;
@@ -271,7 +276,6 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvBur
 		
 		
 		}
-	
 	
 	
 	}

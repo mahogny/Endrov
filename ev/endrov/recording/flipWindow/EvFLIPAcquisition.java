@@ -173,7 +173,7 @@ public class EvFLIPAcquisition extends EvAcquisition
 								long startTime=System.currentTimeMillis();
 
 								for(EvAcquisition.AcquisitionListener l:listeners)
-									l.newAcquisitionStatus("Doing repeat "+(i+1));
+									l.acquisitionEventStatus("Doing repeat "+(i+1));
 
 								if(toStop)
 									break acqLoop;
@@ -222,7 +222,7 @@ public class EvFLIPAcquisition extends EvAcquisition
 		
 			toStop=false;
 			for(EvAcquisition.AcquisitionListener l:listeners)
-				l.acqStopped();
+				l.acquisitionEventStopped();
 			}
 		
 		/**

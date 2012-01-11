@@ -17,8 +17,8 @@ public abstract class EvAcquisition extends EvObject
 	 */
 	public interface AcquisitionListener
 		{
-		public void acqStopped();
-		public void newAcquisitionStatus(String s);
+		public void acquisitionEventStopped();
+		public void acquisitionEventStatus(String s);
 		}
 
 	public interface AcquisitionThread

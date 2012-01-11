@@ -1,8 +1,6 @@
 package endrov.recording.recmetBurst;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
@@ -24,6 +22,7 @@ import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.imageset.SwapImages;
 import endrov.recording.CameraImage;
+import endrov.recording.EvAcquisition;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
 import endrov.recording.device.HWCamera;
@@ -37,7 +36,7 @@ import endrov.util.EvDecimal;
  * @author Johan Henriksson
  *
  */
-public class EvBurstAcquisition extends EvObject
+public class EvBurstAcquisition extends EvAcquisition
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -62,8 +61,6 @@ public class EvBurstAcquisition extends EvObject
 	
 	public EvDevicePath deviceTriggerOn;
 	public EvDevicePath deviceTriggerOff;
-	
-	private List<Listener> listeners=new LinkedList<Listener>();
 
 	
 	public void setDurationSeconds(EvDecimal s)
@@ -93,29 +90,9 @@ public class EvBurstAcquisition extends EvObject
 
 	
 	/**
-	 * Thread activity listener
-	 */
-	public interface Listener
-		{
-		public void acqStopped();
-		}
-	
-	
-	public void addListener(Listener l)
-		{
-		listeners.add(l);
-		}
-
-	public void removeListener(Listener l)
-		{
-		listeners.remove(l);
-		}
-	
-	
-	/**
 	 * Thread to perform acquisition
 	 */
-	public class AcqThread extends Thread
+	public class AcqThread extends Thread implements AcquisitionThread
 		{
 		private EvBurstAcquisition settings;
 		private boolean toStop=true;
@@ -163,6 +140,8 @@ public class EvBurstAcquisition extends EvObject
 		@Override
 		public void run()
 			{
+			EvDecimal firstFrame=null;
+			
 			if(deviceTriggerOn!=null)
 				((HWTrigger)deviceTriggerOn.getDevice()).addTriggerListener(listenerOn);
 			if(deviceTriggerOff!=null)
@@ -195,8 +174,6 @@ public class EvBurstAcquisition extends EvObject
 				intervalMS=1000.0/settings.rate.doubleValue();
 				}
 			
-			EvDecimal firstFrame=null;//new EvDecimal(System.currentTimeMillis()).divide(new EvDecimal(1000));
-
 			
 			//Check that there are enough parameters
 			if(cam!=null && container!=null)
@@ -206,126 +183,137 @@ public class EvBurstAcquisition extends EvObject
 				synchronized (RecordingResource.acquisitionLock)
 					{
 
-					boolean isRGB=false;
-					
-					Imageset imset=new Imageset();
-					for(int i=0;;i++)
-						if(container.getChild("im"+i)==null)
-							{
-							container.metaObject.put("im"+i, imset);
-							
-							if(isRGB)
-								{
-								imset.metaObject.put(channelName+"R", new EvChannel());
-								imset.metaObject.put(channelName+"G", new EvChannel());
-								imset.metaObject.put(channelName+"B", new EvChannel());
-								}
-							else
-								imset.metaObject.put(channelName, new EvChannel());
-							break;
-							}
+					//If there is no on-triggerer, then enable it first
+					semTriggered.drainPermits();
+					if(deviceTriggerOn==null)
+						listenerOn.triggered();
 
-					//TODO signal update on the object
-					BasicWindow.updateWindows();
-					
+					System.out.println("1 num permits "+semTriggered.availablePermits());
+
+
 					try
 						{
-						//If there is no on-triggerer, then enable it first
-						semTriggered.drainPermits();
-						
-						if(deviceTriggerOn==null)
-							listenerOn.triggered();
-						
-						System.out.println("1 num permits "+semTriggered.availablePermits());
-						
 						while(!toStop)
 							{
 							//Wait for start trigger
 							semTriggered.acquire();
 							semTriggered.release();
-							
-							EvDecimal curFrame=new EvDecimal(System.currentTimeMillis()).divide(new EvDecimal(1000));
-							if(firstFrame==null)
-								firstFrame=curFrame;
-							curFrame=curFrame.subtract(firstFrame);
 
-							cam.startSequenceAcq(intervalMS);
+							//Early stop to avoid creation of object. Not really needed otherwise
+							if(toStop)
+								break;
 
-							System.out.println("2 num permits "+semTriggered.availablePermits());
-							System.out.println("Running sequence");
+							boolean isRGB=false;
+
+							Imageset imset=new Imageset();
+							for(int i=0;;i++)
+								if(container.getChild("im"+i)==null)
+									{
+									container.metaObject.put("im"+i, imset);
+
+									if(isRGB)
+										{
+										imset.metaObject.put(channelName+"R", new EvChannel());
+										imset.metaObject.put(channelName+"G", new EvChannel());
+										imset.metaObject.put(channelName+"B", new EvChannel());
+										}
+									else
+										imset.metaObject.put(channelName, new EvChannel());
+									break;
+									}
+
+							//TODO signal update on the object
+							BasicWindow.updateWindows();
 
 							while(!toStop && semTriggered.availablePermits()>0)
 								{
-								//Avoid busy loop
-								try
+
+								EvDecimal curFrame=new EvDecimal(System.currentTimeMillis()).divide(new EvDecimal(1000));
+								if(firstFrame==null)
+									firstFrame=curFrame;
+								curFrame=curFrame.subtract(firstFrame);
+
+								cam.startSequenceAcq(intervalMS);
+
+								System.out.println("2 num permits "+semTriggered.availablePermits());
+								System.out.println("Running sequence");
+
+								while(!toStop && semTriggered.availablePermits()>0)
 									{
-									Thread.sleep((long)intervalMS/3);
-									}
-								catch (Exception e)
-									{
-									e.printStackTrace();
-									}
+									//Avoid busy loop
+									try
+										{
+										Thread.sleep((long)intervalMS/3);
+										}
+									catch (Exception e)
+										{
+										e.printStackTrace();
+										}
 
 
+									
+									//See if another image is incoming
+									CameraImage camIm=cam.snapSequence();
+									if(camIm!=null)
+										{
+										
+										System.out.println("burst snap, time: "+curFrame+"   "+FrameControl.formatTime(curFrame));
+										
+										
+										System.out.println("Got image");
+										
+										if(isRGB)
+											{
+											//TODO
+											
+											}
+										else
+											{
+											ResolutionManager.Resolution res=ResolutionManager.getCurrentResolutionNotNull(campath);
+											
+											EvChannel ch=(EvChannel)imset.getChild(channelName);
+											EvStack stack=new EvStack();
+											
+											stack.setRes(res.x,res.y,1);
+
+											stack.setDisplacement(new Vector3d(
+													RecordingResource.getCurrentStageX(),
+													RecordingResource.getCurrentStageY(),
+													0
+													));
+											
+											EvImage evim=new EvImage(camIm.getPixels()[0]);
+											
+											System.out.println(camIm.getPixels());
+											System.out.println(camIm.getNumComponents());
+											
+											
+											stack.putInt(0, evim);
+											ch.putStack(curFrame, stack);
+											
+											if(earlySwap)
+												SwapImages.hintSwapImage(evim);
+											}
+											
+										curFrame=curFrame.add(interval);
+										}
+									
+									}
+								System.out.println("Stopping sequence");
 								
-								//See if another image is incoming
-								CameraImage camIm=cam.snapSequence();
-								if(camIm!=null)
-									{
-									
-									System.out.println("burst snap, time: "+curFrame+"   "+FrameControl.formatTime(curFrame));
-									
-									
-									System.out.println("Got image");
-									
-									if(isRGB)
-										{
-										//TODO
-										
-										}
-									else
-										{
-										ResolutionManager.Resolution res=ResolutionManager.getCurrentResolutionNotNull(campath);
-										
-										EvChannel ch=(EvChannel)imset.getChild(channelName);
-										EvStack stack=new EvStack();
-										
-										stack.setRes(res.x,res.y,1);
-
-										stack.setDisplacement(new Vector3d(
-												RecordingResource.getCurrentStageX(),
-												RecordingResource.getCurrentStageY(),
-												0
-												));
-										
-										EvImage evim=new EvImage(camIm.getPixels()[0]);
-										
-										System.out.println(camIm.getPixels());
-										System.out.println(camIm.getNumComponents());
-										
-										
-										stack.putInt(0, evim);
-										ch.putStack(curFrame, stack);
-										
-										if(earlySwap)
-											SwapImages.hintSwapImage(evim);
-										}
-										
-									curFrame=curFrame.add(interval);
-									}
+								cam.stopSequenceAcq();
 								
 								}
-							System.out.println("Stopping sequence");
-							
-							cam.stopSequenceAcq();
 							
 							}
-						
 						}
 					catch (Exception e)
 						{
 						e.printStackTrace();
 						}
+					
+					
+					
 					
 					}
 				
@@ -334,8 +322,8 @@ public class EvBurstAcquisition extends EvObject
 			
 			//System.out.println("---------stop-----------");
 			toStop=false;
-			for(Listener l:listeners)
-				l.acqStopped();
+			for(EvAcquisition.AcquisitionListener l:listeners)
+				l.acquisitionEventStopped();
 			}
 		
 		

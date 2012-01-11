@@ -109,7 +109,7 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 			}
 		}
 	
-	public void acqStopped()
+	public void acquisitionEventStopped()
 		{
 		SwingUtilities.invokeLater(new Runnable(){
 		public void run()
@@ -121,7 +121,7 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 		});
 		}
 	
-	public void newAcquisitionStatus(final String s)
+	public void acquisitionEventStatus(final String s)
 		{
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run()

@@ -163,14 +163,14 @@ public class EvFRAPAcquisition extends EvAcquisition
 						try
 							{
 							for(EvAcquisition.AcquisitionListener l:listeners)
-								l.newAcquisitionStatus("Snap reference");
+								l.acquisitionEventStatus("Snap reference");
 							
 							//Acquire image before bleaching
 							snapOneImage(imset, campath, cam, curFrame);
 							BasicWindow.updateWindows();
 
 							for(EvAcquisition.AcquisitionListener l:listeners)
-								l.newAcquisitionStatus("Bleaching");
+								l.acquisitionEventStatus("Bleaching");
 
 							if(toStop)
 								break acqLoop;
@@ -195,7 +195,7 @@ public class EvFRAPAcquisition extends EvAcquisition
 									break acqLoop;
 								
 								for(EvAcquisition.AcquisitionListener l:listeners)
-									l.newAcquisitionStatus("Recover #"+(i+1));
+									l.acquisitionEventStatus("Recover #"+(i+1));
 								
 								curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
 								
@@ -222,7 +222,7 @@ public class EvFRAPAcquisition extends EvAcquisition
 				
 				toStop=false;
 				for(EvAcquisition.AcquisitionListener l:listeners)
-					l.acqStopped();
+					l.acquisitionEventStopped();
 				}
 //			Object lockCamera=RecordingResource.blockLiveCamera();
 			
