@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.ref.WeakReference;
 
+import endrov.ev.EV;
 import endrov.util.LRUlist;
 import endrov.util.ProgressHandle;
 
@@ -189,7 +190,8 @@ public class SwapImages
 		{
 		try
 			{
-			File tempFile=File.createTempFile("endrovswap", ".im");
+			File tempFile=EV.createTempFile("endrovswap", ".im");
+			//File.createTempFile("endrovswap", ".im");
 			
 			ObjectOutputStream os=new ObjectOutputStream(new FileOutputStream(tempFile));
 			

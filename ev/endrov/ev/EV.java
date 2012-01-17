@@ -12,6 +12,7 @@ import java.util.concurrent.Semaphore;
 import java.util.prefs.*;
 //import java.awt.Desktop;
 import java.io.*;
+
 import javax.swing.*;
 import org.jdom.*;
 import org.jdom.input.*;
@@ -446,6 +447,11 @@ public class EV
 			return false;
 		else
 			return a.equals(b);
+		}
+
+	public static File createTempFile(String prefix, String suffix) throws IOException
+		{
+		return File.createTempFile(prefix, suffix);
 		}
 	
 	}
