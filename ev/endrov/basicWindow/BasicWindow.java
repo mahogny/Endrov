@@ -20,6 +20,7 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
@@ -33,6 +34,7 @@ import endrov.keyBinding.KeyBinding;
 import endrov.starter.EvSystemUtil;
 
 import org.jdom.*;
+import org.openmicroscopy.shoola.util.ui.filechooser.FileChooser;
 
 
 /**
@@ -592,7 +594,10 @@ public abstract class BasicWindow extends JPanel
 					EV.openExternal(EvSystemUtil.getGlobalConfigEndrovDir());
 				else if (e.getSource()==miReportBug)
 					BrowserControl.displayURL("http://sourceforge.net/tracker/?group_id=199554&atid=969958");
+				else if(e.getSource()==miSetSwap)
+					dialogSetSwap();
 				}
+
 		};
 
 	private JMenuBar menubar = new JMenuBar();
@@ -617,6 +622,7 @@ public abstract class BasicWindow extends JPanel
 	private JMenuItem miSysInfo = new JMenuItem("System information");
 	private JMenuItem miSaveConfig = new JMenuItem("Save config now");
 	private JMenuItem miRegInfo = new JMenuItem("Change registration information");
+	private JMenuItem miSetSwap = new JMenuItem("Set swap directory");
 
 	/**
 	 * Add to the menu Window
@@ -694,7 +700,8 @@ public abstract class BasicWindow extends JPanel
 		mHelp.add(miWebPlugins);
 		mHelp.add(miReportBug);
 		mHelp.add(miSysInfo);
-
+		mHelp.add(miSetSwap);
+		
 		menubar.add(Box.createHorizontalGlue());
 		menubar.add(mHelp);
 
@@ -714,6 +721,7 @@ public abstract class BasicWindow extends JPanel
 		miSysInfo.addActionListener(listener);
 		miSaveConfig.addActionListener(listener);
 		miRegInfo.addActionListener(listener);
+		miSetSwap.addActionListener(listener);
 		}
 
 	/**
@@ -731,6 +739,26 @@ public abstract class BasicWindow extends JPanel
 				+"Individual plugins may be under different licenses";
 		JOptionPane.showMessageDialog(null, text);
 		}
+	
+	private void dialogSetSwap()
+		{
+		File f=EV.getSwapDirectory();
+		
+		//FileChooser fc=new FileChooser(null, dialogType, title, message)
+		JFileChooser fc=new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	
+		if(f!=null)
+			fc.setSelectedFile(f);
+
+		int returnVal = fc.showOpenDialog(this);
+
+		if(returnVal==JFileChooser.APPROVE_OPTION)
+			{
+			EV.setSwapDirectory(fc.getSelectedFile());
+			}
+		}
+
 
 	/**
 	 * Show system info dialog

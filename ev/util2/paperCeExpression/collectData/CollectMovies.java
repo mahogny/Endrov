@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
+import util.BatchMovie;
+
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
@@ -24,6 +28,8 @@ public class CollectMovies
 		//Find recordings to compare
 		Set<File> datas=PaperCeExpressionUtil.getAnnotated(); 
 
+		if(JOptionPane.showConfirmDialog(null, "Empty cache?", "", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+			PaperCeExpressionUtil.removeAllTags();
 		
 		File outdir=new File("/home/tbudev3/articleMovies"); 
 		//File indir=new File("/Volumes/TBU_main06/ost4dgood");
@@ -51,13 +57,21 @@ public class CollectMovies
 					
 					System.out.println(gfpgene);
 					
-					String inset=datas.contains(ostfile) ? " *" : "";
+					String inset=datas.contains(ostfile) ? " quantified" : "";
 					
 					File fOutfile=new File(outdir,gfpgene+" ("+ostfile.getName()+")"+inset+".avi");
 					System.out.println("----> "+fOutfile);
 					
 					if(!fOutfile.exists())
 						EvFileUtil.copy(fInfile, fOutfile);
+					
+					}
+				else
+					{
+					//Make the movie!!!!
+					
+					BatchMovie.makeMovie(ostfile);
+					
 					
 					}
 				

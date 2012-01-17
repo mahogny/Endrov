@@ -95,6 +95,20 @@ public class PaperCeExpressionUtil
 		stmt.executeUpdate(s);
 		}
 	
+	
+	public static void removeAllTags()
+		{
+		try
+			{
+			PreparedStatement ps=conn.prepareStatement("delete from osttags");
+			ps.execute();
+			}
+		catch (SQLException e)
+			{
+			e.printStackTrace();
+			}
+		}
+	
 	public static List<String> tagsFor(File ost)
 		{
 		LinkedList<String> tags=new LinkedList<String>();

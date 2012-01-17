@@ -40,6 +40,14 @@ public class EvSystemUtil
 		}
 
 	/**
+	 * Get name of config file in case it is stored as an individual file
+	 */
+	public static File getSystemConfigFileName()
+		{
+		return new File(getGlobalConfigEndrovDir(),"sysconfig.xml");
+		}
+	
+	/**
 	 * Get name of javaenv file in case it is stored as an individual file
 	 */
 	public static File getJavaenvWriteFileName()

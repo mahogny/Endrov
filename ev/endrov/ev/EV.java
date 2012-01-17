@@ -20,6 +20,8 @@ import org.jdom.output.*;
 
 import endrov.starter.EvSystemUtil;
 import endrov.util.EvDecimal;
+import endrov.util.EvXmlUtil;
+import endrov.util.Mutable;
 
 /**
  * Support functions for the EV framework
@@ -151,6 +153,8 @@ public class EV
 	 */
 	public static void savePersonalConfig()
 		{
+		writeSystemConfig();
+		
 		Element root=new Element("ev");
 		Document document=new Document(root);
 		for(PersonalConfig pc:personalConfigLoaders.values())
@@ -226,7 +230,60 @@ public class EV
 		{
 		for(PluginInfo pi:PluginInfo.getPluginList())
 			pi.load();
+		
+		//Read system config file
+		loadSystemConfig();
 		}
+	
+	/**
+	 * Read the system configuration: non-GUI related settings
+	 */
+	private static void loadSystemConfig()
+		{
+		File sysconfigFile=EvSystemUtil.getSystemConfigFileName();
+		
+		try
+			{
+			Document doc=EvXmlUtil.readXML(sysconfigFile);
+			
+			Element root=doc.getRootElement();
+			
+			Element eSwap=root.getChild("swapdirectory");
+			if(eSwap!=null)
+				setSwapDirectory(new File(eSwap.getText()));
+			}
+		catch (Exception e)
+			{
+			EvLog.printError("Could not read system config", null);
+			}
+		}
+	
+	/**
+	 * Write the system configuration to disk: non-GUI related settings
+	 */
+	private static void writeSystemConfig()
+		{
+		try
+			{
+			File sysconfigFile=EvSystemUtil.getSystemConfigFileName();
+			Element root=new Element("sysconfig");
+			
+			File swapDirectory=getSwapDirectory();
+			if(swapDirectory!=null)
+				{
+				Element eSwap=new Element("swapdirectory");
+				root.addContent(eSwap);
+				eSwap.setText(swapDirectory.toString());
+				}
+			
+			EvXmlUtil.writeXmlData(new Document(root), sysconfigFile);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}
+	
 	
 	public static String pad(EvDecimal d, int len)
 		{
@@ -449,9 +506,35 @@ public class EV
 			return a.equals(b);
 		}
 
+	
+	private static Mutable<File> swapDirectory=new Mutable<File>(null);
+	
+	
+	/**
+	 * Create temporary files. The folder can be selected by the user  
+	 */
 	public static File createTempFile(String prefix, String suffix) throws IOException
 		{
-		return File.createTempFile(prefix, suffix);
+		synchronized (swapDirectory)
+			{
+			return File.createTempFile(prefix, suffix, swapDirectory.get());
+			}
 		}
 	
+	public static void setSwapDirectory(File d)
+		{
+		synchronized (swapDirectory)
+			{
+			swapDirectory.set(d);
+			}
+		}
+
+	public static File getSwapDirectory()
+		{
+		synchronized (swapDirectory)
+			{
+			return swapDirectory.get();
+			}
+		}
+
 	}
