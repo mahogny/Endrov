@@ -288,6 +288,8 @@ public class EvPixels implements AnyEvImage
 			case AWT:
 				p.awt=(BufferedImage)data;
 				break;
+			default:
+				throw new RuntimeException("Cannot create pixels: wrong type, "+data.getClass().toString());
 			}
 		return p;
 		}
