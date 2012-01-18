@@ -201,13 +201,15 @@ public class SwapImages
 				os.writeObject(p.getArrayFloat());
 			else if(p.getArrayInt()!=null)
 				os.writeObject(p.getArrayInt());
+			else if(p.getArrayShort()!=null)
+				os.writeObject(p.getArrayShort());
 			else if(p.getArrayUnsignedByte()!=null)
 				os.writeObject(p.getArrayUnsignedByte());
 			else if(p.getAWT()!=null)
 				os.writeObject(p.getAWT());
 			else
 				{
-				System.out.println("Unable to serialize image");
+				System.out.println("Unable to serialize image, it has no data: "+p);
 				return null;
 				}
 			
