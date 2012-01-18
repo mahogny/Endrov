@@ -8,6 +8,8 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
+import util.debian.DebPackage.PkgType;
+
 import endrov.util.EvFileUtil;
 
 /**
@@ -331,7 +333,7 @@ libjboss-webservices-java
 		StringBuffer sb=new StringBuffer();
 		boolean first=true;
 		for(DebPackage p:pkgs)
-			if(p.name!=null && p.isDepends)
+			if(p.name!=null && p.type==PkgType.Depends)
 				{
 				if(!first)
 					sb.append(",");
@@ -346,7 +348,7 @@ libjboss-webservices-java
 		StringBuffer sb=new StringBuffer();
 		boolean first=true;
 		for(DebPackage p:pkgs)
-			if(p.name!=null && p.isSuggestion)
+			if(p.name!=null && p.type==PkgType.Suggests)
 				{
 				if(!first)
 					sb.append(",");
@@ -362,7 +364,7 @@ libjboss-webservices-java
 		StringBuffer sb=new StringBuffer();
 		boolean first=true;
 		for(DebPackage p:pkgs)
-			if(p.name!=null && p.isRecommended)
+			if(p.name!=null && p.type==PkgType.Recommends)
 				{
 				if(!first)
 					sb.append(",");

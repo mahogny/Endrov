@@ -12,12 +12,17 @@ public class DebPackage
 	public String name; //debian package file
 	public Set<String> linkJars=new HashSet<String>();
 	public Set<String> providesFiles=new HashSet<String>();
-	
+	/*
 	public boolean isDepends=false;
 	public boolean isSuggestion=false;
 	public boolean isRecommended=false;
-	
+	*/
 	private DebPackage(){}
+	
+	
+	public enum PkgType{Depends, Suggests, Recommends}
+	
+	public PkgType type;
 	
 	/**
 	 * Normal dependency
@@ -27,8 +32,9 @@ public class DebPackage
 	 */
 	public DebPackage(String name, String[] linkjar, String[] provides)
 		{
+		this.type=PkgType.Depends;
 		this.name=name;
-		isDepends=true;
+//		isDepends=true;
 		if(linkjar!=null)
 			for(String s:linkjar)
 				linkJars.add(s);
@@ -42,7 +48,8 @@ public class DebPackage
 		{
 		DebPackage pkg=new DebPackage();
 		pkg.name=name;
-		pkg.isSuggestion=true;
+		pkg.type=PkgType.Suggests;
+		//pkg.isSuggestion=true;
 		return pkg;
 		}
 
@@ -52,7 +59,8 @@ public class DebPackage
 	public static DebPackage recommends(String name, String[] linkjar, String[] provides)
 		{
 		DebPackage pkg=new DebPackage(name, linkjar, provides);
-		pkg.isRecommended=true;
+		pkg.type=PkgType.Recommends;
+		//pkg.isRecommended=true;
 		return pkg;
 		}
 	
