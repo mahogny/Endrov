@@ -58,7 +58,7 @@ public class EncodeFFMPEG
 				
 				public List<String> getQualities() 
 					{
-					return formats;//Arrays.asList("Default");
+					return formats;
 					}
 
 				public String getDefaultQuality()

@@ -21,8 +21,6 @@ import endrov.util.EvFileUtil;
 public class FFMPEGMovieMaker implements EvMovieMaker
 	{
 	private File path;
-	//private int w;
-	//private int h;
 	
 	private int curframe=1;
 
@@ -76,10 +74,15 @@ public class FFMPEGMovieMaker implements EvMovieMaker
 		
 		//ffv1 is FFMPEGs lossless format
 		
+		
+		int keyframeEveryFrame=20;
+		
+		
 		if(quality.equals(EncodeFFMPEG.formatFLV1))	
-			runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png","-vcodec","ffv1",output.toString());
+			runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png","-vcodec","ffv1","-g",""+keyframeEveryFrame,output.toString());
 		else if(quality.equals(EncodeFFMPEG.formatHighQualMp4))
-			runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png","-vcodec","mpeg4","-b","7000k",output.toString());
+		//	runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png","-vcodec","mpeg4","-b","7000k","-g",""+keyframeEveryFrame,output.toString());
+			runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png","-vcodec","libx264","-b","7000k","-g",""+keyframeEveryFrame,output.toString());
 		
 		// ffmpeg -i %08d.png out.mpg
 		// ffmpeg -i %08d.png out.avi

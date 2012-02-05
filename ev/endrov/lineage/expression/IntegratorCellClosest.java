@@ -155,11 +155,10 @@ public class IntegratorCellClosest implements Integrator
 						// Convert to world coordinates
 						Vector2d pos2 = integrator.stack.transformImageWorld(new Vector2d(ax,ay));
 						ImVector2 pos = new ImVector2(pos2.x, pos2.y);
-						//ImVector2 pos = new ImVector2(integrator.stack.transformImageWorldX(ax), integrator.stack.transformImageWorldY(ay));
 		
 						// Check if this is within ellipse boundary
 						ImVector2 elip = pos.sub(new ImVector2(shell.midx, shell.midy))
-								.rotate(shell.angle); // TODO angle? what?
+								.rotate(shell.angle);
 						double len;
 						if (1>=elip.y*elip.y/(shell.minor*shell.minor)+elip.x*elip.x/(shell.major*shell.major))
 							len = pos.sub(startpos).dot(dirvec)/(2*shell.major); 
@@ -171,9 +170,6 @@ public class IntegratorCellClosest implements Integrator
 					}
 				}
 		
-			//HashMap<String, Integer> nucMap=new HashMap<String, Integer>();
-			
-			
 			// Integrate this area. Go through all pixels and find nucleus, O(w h d #nuc)
 			for (int y = 0; y<integrator.pixels.getHeight(); y++)
 				{
@@ -187,7 +183,6 @@ public class IntegratorCellClosest implements Integrator
 						int thisExp=integrator.pixelsLine[i];
 
 						Vector3d thisPosWorld=integrator.stack.transformImageWorld(new Vector3d(x,y,integrator.curZint));
-						//thisPosWorld.z=integrator.curZ.doubleValue();
 						
 						//if(useNucleiRadius)
 						//{

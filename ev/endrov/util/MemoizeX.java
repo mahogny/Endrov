@@ -65,9 +65,10 @@ public abstract class MemoizeX<E> implements Stoppable
 		{
 		if(locksValue.isEmpty() && locksWantResult.isEmpty())
 			{
+			/*
 			if(evaluated)
-				System.out.println("Forgetting "+this);
-			
+				System.out.println("Forgetting memoizex: "+this);
+			*/
 			value=null;
 			evaluated=false;
 				
@@ -109,7 +110,7 @@ public abstract class MemoizeX<E> implements Stoppable
 		{
 		Object thisLock=new Object();
 		
-		System.out.println("getFinal");
+		//System.out.println("getFinal");
 		
 		//Important: during this evaluation 
 		

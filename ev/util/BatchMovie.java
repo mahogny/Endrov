@@ -54,7 +54,8 @@ public class BatchMovie
 			{
 			//EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("QT: h.264 (MPEG-4)");
 			//EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("Mencoder");
-			EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("Mencoder");
+//			EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("Mencoder");
+			EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("FFMPEG");
 			if(factory==null)
 				{
 				System.out.println("Cannot get movie maker");

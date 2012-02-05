@@ -111,6 +111,8 @@ public class Main
 			
 			
 			
+			if(dZipTemp.listFiles().length==0)
+				throw new RuntimeException("error: "+dZipTemp.toString()+" is empty!!!");
 			
 			System.out.println("Moving into place, "+dZipTemp.listFiles()[0]+" ---> "+dEndrov);
 			dZipTemp.listFiles()[0].renameTo(dEndrov);

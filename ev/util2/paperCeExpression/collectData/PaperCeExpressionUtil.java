@@ -1,11 +1,15 @@
 package util2.paperCeExpression.collectData;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.swing.JOptionPane;
@@ -27,8 +31,46 @@ public class PaperCeExpressionUtil
 	{
 	public static Connection conn=null;
 
+
+	public static Map<String,String> readMap(File f) throws IOException
+		{
+		CsvFileReader csvOrf2gene=new CsvFileReader(f, '\t');
+		Map<String,String> map=new TreeMap<String, String>();
+		ArrayList<String> l;
+		while((l=csvOrf2gene.readLine())!=null)
+			map.put(l.get(0), l.get(1));
+		return map;
+		}
+	
+	public static Set<String> readSet(File f) throws IOException
+		{
+		CsvFileReader csvOrf2gene=new CsvFileReader(f, '\t');
+		Set<String> map=new TreeSet<String>();
+		ArrayList<String> l;
+		while((l=csvOrf2gene.readLine())!=null)
+			map.add(l.get(0));
+		return map;
+		}
+
+	
+	public static Map<String,String> orf2gene;
+	public static Set<String> homeoboxes;
+
 	static
 	{
+	try
+		{
+		orf2gene=readMap(new File("/home/tbudev3/javaproj/endrov.git/ev/util2/paperCeExpression/collectData/orf2gene.csv"));
+		homeoboxes=readSet(new File("/home/tbudev3/javaproj/endrov.git/ev/util2/paperCeExpression/collectData/hbox.csv"));
+		}
+	catch (IOException e)
+		{
+		e.printStackTrace();
+		System.exit(1);
+		}
+
+	
+	
 	String pass=JOptionPane.showInputDialog("Password?");
 	if(!connectPostgres("//localhost/tbudev3", "tbudev3", pass))
 //	if(!connectPostgres("//pompeii.biosci.ki.se/mahogny", "postgres", pass))
@@ -176,8 +218,21 @@ public class PaperCeExpressionUtil
 		return name;
 		}
 
-
-	public static Set<File> getAnnotated()
+	
+	/**
+	 */
+	public static String getORF(File data)
+		{
+		String name=data.getName();
+		for(String tag:tagsFor(data))
+			if(tag.startsWith("gene:"))
+				name=tag.substring("gene:".length());
+		return name;
+		}
+	
+	
+	
+	public static Set<File> getAllOST()
 		{
 		Set<File> doneStrains=new TreeSet<File>();
 		for(File parent:new File[]{
@@ -186,10 +241,22 @@ public class PaperCeExpressionUtil
 				})
 			for(File f:parent.listFiles())
 				if(f.getName().endsWith(".ost"))
-					{
-					if(new File(f,"tagDone4d.txt").exists())
-						doneStrains.add(f);
-					}
+					doneStrains.add(f);
+		return doneStrains;
+		}
+
+	
+	public static boolean isAnnotated(File f)
+		{
+		return new File(f,"tagDone4d.txt").exists();
+		}
+
+	public static Set<File> getAnnotated()
+		{
+		Set<File> doneStrains=new TreeSet<File>();
+		for(File f:getAllOST())
+			if(isAnnotated(f))
+				doneStrains.add(f);
 		return doneStrains;
 		}
 

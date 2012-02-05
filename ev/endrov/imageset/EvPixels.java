@@ -181,7 +181,7 @@ public class EvPixels implements AnyEvImage
 	private void createdNew()
 		{
 		allEvPixels.put(this,null);
-		System.out.println("------------- now #evpixel in memory: "+allEvPixels.size());
+		//System.out.println("------------- now #evpixel in memory: "+allEvPixels.size());
 		}
 	
 	/**
