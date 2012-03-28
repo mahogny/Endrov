@@ -77,7 +77,7 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 							isHigher(eqVal, inarr, thisValue, w, thisValue, d, x, y+1, z) ||
 							isHigher(eqVal, inarr, thisValue, w, thisValue, d, x, y, z-1) ||
 							isHigher(eqVal, inarr, thisValue, w, thisValue, d, x, y, z+1))*/
-					if(isAnyHigher(eqVal, inarr, thisValue, w, h, x, y, z))
+					if(isAnyHigher(alsoDiagonals, eqVal, inarr, thisValue, w, h, x, y, z))
 						{
 						//One value is higher for sure. Can ignore this pixel
 						}
@@ -97,14 +97,18 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 								continue;
 							visited.add(v);
 							
+							/*
 							//Increase locality
 							int vx=v.x;
 							int vy=v.y;
-							int vz=v.z;
+							int vz=v.z;*/
 							
 							//Find a pixel which is higher. 
 							//Cannot simply stop here; if this area is not completely marked as
 							//visited then problems can arise later
+							if(isAnyHigher(alsoDiagonals, eqVal, inarr, thisValue, w, h, v.x, v.y, v.z))
+								foundHigher=true;
+							/*
 							if(
 									(vx>0   && isHigher(eqVal, inarr, thisValue, w, h, vx-1, vy, vz)) ||
 									(vx<w-1 && isHigher(eqVal, inarr, thisValue, w, h, vx+1, vy, vz)) ||
@@ -112,7 +116,7 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 									(vy<h-1 && isHigher(eqVal, inarr, thisValue, w, h, vx, vy+1, vz)))
 								foundHigher=true;
 							
-							
+							System.out.println("diagonals "+alsoDiagonals);
 							if(alsoDiagonals)
 								if(
 										(vx>0   && vy>0   && isHigher(eqVal, inarr, thisValue, w, h, vx-1, vy-1, vz)) ||
@@ -120,12 +124,12 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 										(vy>0   && vy<h-1 && isHigher(eqVal, inarr, thisValue, w, h, vx-1, vy+1, vz)) ||
 										(vy<h-1 && vy>0   && isHigher(eqVal, inarr, thisValue, w, h, vx+1, vy-1, vz)))
 									foundHigher=true;
+									*/
 							}
+						
+						//If no higher value was found in the surrounding of this set, then add representative pixel
 						if(!foundHigher)
-							{
-							//Add representative pixel for this area
 							list.add(here);
-							}
 						}
 					else
 						{
@@ -140,14 +144,39 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 		}
 	
 	/**
-	 * Is any higher?
+	 * Is any higher? Add to queue if equal
 	 */
-	private static boolean isAnyHigher(LinkedList<Vector3i> eqVal, double[] inarr, double thisValue, int w, int h,int x, int y, int z)
+	private static boolean isAnyHigher(boolean alsoDiagonals, LinkedList<Vector3i> eqVal, double[] inarr, double thisValue, int w, int h,int x, int y, int z)
 		{
-		return isHigher(eqVal, inarr, thisValue, w, h, x-1, y, z) ||
-		isHigher(eqVal, inarr, thisValue, w, h, x+1, y, z) ||
-		isHigher(eqVal, inarr, thisValue, w, h, x, y-1, z) ||
-		isHigher(eqVal, inarr, thisValue, w, h, x, y+1, z);
+		boolean foundHigher=false;
+		if(
+				(x>0   && isHigher(eqVal, inarr, thisValue, w, h, x-1, y, z)) ||
+				(x<w-1 && isHigher(eqVal, inarr, thisValue, w, h, x+1, y, z)) ||
+				(y>0   && isHigher(eqVal, inarr, thisValue, w, h, x, y-1, z)) ||
+				(y<h-1 && isHigher(eqVal, inarr, thisValue, w, h, x, y+1, z)))
+			foundHigher=true; //Important to not just return. Side-effects in if
+		
+		//System.out.println("diagonals "+alsoDiagonals);
+		if(alsoDiagonals)
+			if(
+					(x>0   && y>0   && isHigher(eqVal, inarr, thisValue, w, h, x-1, y-1, z)) ||
+					(x<w-1 && y<h-1 && isHigher(eqVal, inarr, thisValue, w, h, x+1, y+1, z)) ||
+					(y>0   && y<h-1 && isHigher(eqVal, inarr, thisValue, w, h, x-1, y+1, z)) ||
+					(y<h-1 && y>0   && isHigher(eqVal, inarr, thisValue, w, h, x+1, y-1, z)))
+				foundHigher=true;
+		
+		return foundHigher;
+		
+		
+		/*
+		return
+				isHigher(eqVal, inarr, thisValue, w, h, x-1, y, z) ||
+				isHigher(eqVal, inarr, thisValue, w, h, x+1, y, z) ||
+				isHigher(eqVal, inarr, thisValue, w, h, x, y-1, z) ||
+				isHigher(eqVal, inarr, thisValue, w, h, x, y+1, z);
+		
+		
+		*/
 		}
 	
 	/**

@@ -10,44 +10,44 @@ import java.util.*;
 
 if ~exist('hasInitEv')
     
-    evpath=which('evmInit');
-    if length(evpath)==0
-    	disp('====ERROR==== Cannot find Endrov. Check your path');
-   	else
-	    evpath=evpath(1:(length(evpath)-length('endrov/matlab/evmInit.m')));
-	    javaaddpath(evpath);
+	evpath=which('evmInit');
+	if length(evpath)==0
+		disp('====ERROR==== Cannot find Endrov. Check your path');
+	else
+		evpath=evpath(1:(length(evpath)-length('endrov/matlab/evmInit.m')));
+		javaaddpath(evpath);
         
-        jarbefore=javaclasspath('-all');
-        jarbeforelist=java.util.LinkedList; %Can use to eliminate warnings
+		jarbefore=javaclasspath('-all');
+		jarbeforelist=java.util.LinkedList; %Can use to eliminate warnings
         
-	    jars=EvMatlab.getJars(evpath,matlabroot,computer('arch'));
-        cellpath={};
-        for i=1:size(jars,1)
-            cellpath{i}=char(jars(i));
-        end
+		jars=EvMatlab.getJars(evpath,matlabroot,computer('arch'));
+		cellpath={};
+		for i=1:size(jars,1)
+			cellpath{i}=char(jars(i));
+		end
         
-        javaaddpath(cellpath);
+		javaaddpath(cellpath);
 
-	    logger=endrov.ev.StdoutLog;
-		endrov.ev.Log.listeners.add(logger);
+		logger=endrov.ev.EvLogStdout;
+		endrov.ev.EvLog.addListener(logger);
 	    
-	    endrov.ev.EV.loadPlugins();
+		endrov.ev.EV.loadPlugins();
 	    
         %evpath
 	    
 		clear logger
-	    clear evpath
-        clear jarbefore
-        clear jarbeforelist
+		clear evpath
+		clear jarbefore
+		clear jarbeforelist
 	    
-	    disp('Longest java name you can access directly: ');
-	    disp(namelengthmax);
-    end
+		disp('Longest java name you can access directly: ');
+		disp(namelengthmax);
+	end
     
     
-    hasInitEv=1;
+	hasInitEv=1;
 else
-    disp('EV already initialized');
+	disp('EV already initialized');
 end
 
 import endrov.util.*;

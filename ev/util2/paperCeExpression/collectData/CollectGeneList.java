@@ -89,8 +89,8 @@ public class CollectGeneList
 			PaperCeExpressionUtil.tagsFor(ostfile);
 
 			String gene=PaperCeExpressionUtil.getGeneName(ostfile);
-			if(PaperCeExpressionUtil.orf2gene.containsKey(gene))
-				gene=PaperCeExpressionUtil.orf2gene.get(gene);
+//			if(PaperCeExpressionUtil.orf2gene.containsKey(gene))
+				//gene=PaperCeExpressionUtil.orf2gene.get(gene);
 			//System.out.println(gene);
 
 			genenames.add(gene);

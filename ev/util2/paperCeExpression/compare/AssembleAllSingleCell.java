@@ -78,14 +78,21 @@ public class AssembleAllSingleCell
 		}
 	
 	
-	public static void assembleAPT(String label, Lineage aptLin, Lineage recSingleCell, Lineage refLin, Lineage outLin, File in, String totExpName)
+	public static void assembleAPT(String label, 
+			Lineage aptLin, //Data pulled out into APT lineage. Referenced by rec-frame
+			Lineage recSingleCell, //The single-cell lineage mapped to recording 
+			Lineage refLin, //Reference model
+			Lineage outLin, File in, String totExpName)
 		{
 		if(aptLin==null)
 			{
 			System.out.println("APT/T Not done!!!!!!           "+in);
 			return;
 			}
-
+		if(recSingleCell==null)
+			throw new RuntimeException("Recording has to single-cell lineage mapped");
+		
+		
 		FrameTime ftRef=CompareAll.buildFrametime(refLin);
 		FrameTime ftRec=CompareAll.buildFrametime(recSingleCell);
 
@@ -151,8 +158,8 @@ public class AssembleAllSingleCell
 		System.out.println(datas);
 		System.out.println("Number of annotated strains: "+datas.size());
 
-		EvData totalData=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/celegans2008.2.ost"));
-		final Lineage totLinSingleCell=totalData.getIdObjectsRecursive(Lineage.class).values().iterator().next();
+		final Lineage totLinSingleCell=PaperCeExpressionUtil.loadModel();
+		
 
 		Lineage totLinAPT=new Lineage();
 		Lineage totLinT=new Lineage();
@@ -164,19 +171,23 @@ public class AssembleAllSingleCell
 				{
 				EvData dataFile=EvData.loadFile(in);
 				Lineage inLinSingleCell=getSingleCellLin(dataFile);
-
-				String toExpName=PaperCeExpressionUtil.getGeneName(in)+"_"+in.getName();
-				//Do if not done: do single-cell
+				//Can only do the mapping if there is a single-cell lineage 
 				if(inLinSingleCell!=null)
-					LineageMergeUtil.mapExpression(inLinSingleCell, totLinSingleCell, CompareAll.expName, toExpName);
-				else
-					System.out.println("Not done!!!!!!           "+in);
-				
-				//Do the rest
-				Lineage inLinAPT=getInLinAPT(dataFile);
-				Lineage inLinT=getInLinT(dataFile);
-				assembleAPT("apt", inLinAPT, inLinSingleCell, totLinSingleCell, totLinAPT, in, toExpName);
-				assembleAPT("t", inLinT, inLinSingleCell, totLinSingleCell, totLinT, in, toExpName);
+					{
+					String toExpName=PaperCeExpressionUtil.getGeneName(in)+"_"+in.getName();
+					//Do if not done: do single-cell
+					if(inLinSingleCell!=null)
+						LineageMergeUtil.mapExpression(inLinSingleCell, totLinSingleCell, CompareAll.expName, toExpName);
+					else
+						System.out.println("Not done!!!!!!           "+in);
+					
+					//Do the rest
+					Lineage inLinAPT=getInLinAPT(dataFile);
+					Lineage inLinT=getInLinT(dataFile);
+					assembleAPT("apt", inLinAPT, inLinSingleCell, totLinSingleCell, totLinAPT, in, toExpName);
+					assembleAPT("t", inLinT, inLinSingleCell, totLinSingleCell, totLinT, in, toExpName);
+					}
+
 				}
 			}
 		
@@ -188,7 +199,7 @@ public class AssembleAllSingleCell
 			out.metaObject.put("ss", totLinSingleCell);
 			out.metaObject.put("apt", totLinAPT);
 			out.metaObject.put("t", totLinT);
-			out.saveDataAs(new File("/Volumes/TBU_main06/summary2.ost"));
+			out.saveDataAs(new File("/Volumes/TBU_main06/ostmodel/summary2.ost"));
 			}
 		catch (IOException e)
 			{

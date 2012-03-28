@@ -62,7 +62,6 @@ public class IntegratorSliceLR extends IntegratorSlice
 		else
 			System.out.println("Will do LR");
 
-//		Vector3d posABp = nucABp.pos.get(nucABp.pos.lastKey()).getPosCopy();
 		Vector3d posEMS = nucEMS.pos.get(nucEMS.pos.lastKey()).getPosCopy();
 
 		ImVector2 dirvec=ImVector2.polar(shell.major, shell.angle);
@@ -77,7 +76,7 @@ public class IntegratorSliceLR extends IntegratorSlice
 		
 		axisLR.normalize();
 		double axisLength=2*shell.minor;
-		axisLR.scale(1.0/axisLength);   // + or -?
+		axisLR.scale(1.0/axisLength); 
 		this.axis=axisLR;
 		
 		return true;

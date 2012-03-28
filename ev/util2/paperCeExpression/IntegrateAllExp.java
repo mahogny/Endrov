@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
+
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.ev.EV;
@@ -173,26 +175,36 @@ public class IntegrateAllExp
 			else
 				intXYZ = null;
 	
-			// Cell level expression if there is a lineage
+			// Cell level expression 
 			IntegratorCellClosest intC = null;
+			String nameEstCell="estcell";
+			imset.metaObject.remove(nameEstCell);
 			if (IntegrateExp.refLin!=null)
 				{
-				if (channelName.equals("RFP"))
+				/*
+				if(channelName.equals("RFP"))
 					{
+					//Use manually created lineage
 					intC = new IntegratorCellClosest(integrator, IntegrateExp.refLin, intAP.bg, false);
 					integrators.add(intC);
 					}
-				else
+				else*/
 					{
 					//Just superimpose the model, normalized!
 					
-					Lineage newlin=LineageMergeUtil.mapModelToRec(IntegrateExp.refLin, IntegrateAllExp.loadModel());
-					
-					//Imageset imset=data.getIdObjectsRecursive(Imageset.class).values().iterator().next();
-					imset.metaObject.put("estcell", newlin);
-					
-					intC = new IntegratorCellClosest(integrator, newlin, intAP.bg, false);
-					integrators.add(intC);
+					try
+						{
+						Lineage newlin=LineageMergeUtil.mapModelToRec(IntegrateExp.refLin, PaperCeExpressionUtil.loadModel());
+						
+						imset.metaObject.put(nameEstCell, newlin);
+						
+						intC = new IntegratorCellClosest(integrator, newlin, intAP.bg, false);
+						integrators.add(intC);
+						}
+					catch (Exception e1)
+						{
+						e1.printStackTrace();
+						}
 					}
 				}
 			
@@ -345,7 +357,7 @@ public class IntegrateAllExp
 			{
 			List<File> list = new ArrayList<File>();
 			for (File parent : new File[]
-				{ new File("/Volumes/TBU_main06/ost4dgood"), })
+				{ new File("/Volumes/TBU_main06/ost4dgood"), })  //////////////////TODO pimai!!!!
 				for (File f : parent.listFiles())
 					if (f.getName().endsWith(".ost"))
 						list.add(f);
@@ -383,11 +395,6 @@ public class IntegrateAllExp
 		System.exit(0);
 		}
 
-	public static Lineage loadModel()
-		{
-		EvData stdcelegans=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/celegans2008.2.ost"));
-		Lineage stdlin=stdcelegans.getIdObjectsRecursive(Lineage.class).values().iterator().next();
-		return stdlin;
-		}
+	
 	
 	}

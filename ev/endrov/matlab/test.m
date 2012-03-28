@@ -2,7 +2,7 @@ initev('/Users/tbudev3/javaproj/ev/');
 evm=EvMatlab;
 
 ost=evplugin.imagesetOST.OstImageset('/Volumes/TBU_main02/ost4dgood/TB2161_071120');
-channel=ost.channelImages.get('DIC')
+channel=ost.getChild('DIC')
 frames=channel.imageLoader.keySet
 
 [pl,zs]=getEvStack(ost.channelImages.get('DIC'),1010);

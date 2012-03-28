@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.vecmath.Vector3d;
 
-import util2.paperCeExpression.IntegrateAllExp;
+import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
 
 import endrov.data.EvData;
@@ -59,7 +59,7 @@ public class TestSingleCellPrecision
 		Lineage refLin=getManualAnnot(data);
 		
 		
-		Lineage approxLin=LineageMergeUtil.mapModelToRec(refLin, IntegrateAllExp.loadModel());
+		Lineage approxLin=LineageMergeUtil.mapModelToRec(refLin, PaperCeExpressionUtil.loadModel());
 		
 		EvDecimal firstFrame=refLin.firstFrameOfLineage(false).fst();
 		EvDecimal lastFrame=refLin.lastFrameOfLineage(false).fst();

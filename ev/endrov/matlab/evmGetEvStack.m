@@ -3,7 +3,7 @@
 %	[pl,zs]=getEvStack(ost.channelImages.get('DIC'),1010);
 function [pl,zs]=evmGetEvStack(channel,frame)
 pl=[];
-slices=channel.imageLoader.get(frame);
+slices=channel.getStack(frame);
 zs=endrov.matlab.EvMatlab.keySetEvDecimal(slices);
 pl = javaArray('endrov.imageset.EvImage', length(zs));
 for zi=1:length(zs)

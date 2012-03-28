@@ -107,6 +107,7 @@ public class PLUGIN extends PluginDef
 				FlowUnitAbs.class,
 				FlowUnitAbsGradXY2.class,
 				FlowUnitComplexMul.class,
+				FlowUnitMinusSign.class,
 				
 				//Objects
 				FlowUnitGetObject.class,FlowUnitParent.class,FlowUnitObjectIO.class,FlowUnitThisData.class,FlowUnitThisFlow.class,

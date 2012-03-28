@@ -13,6 +13,8 @@ public class CsvFileReader
 	{
 	private BufferedReader in;
 	private char sep;
+	
+	
 	public CsvFileReader(File f, char sep) throws IOException
 		{
 		in=new BufferedReader(new FileReader(f));

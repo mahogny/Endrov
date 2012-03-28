@@ -253,7 +253,13 @@ public class EvImage
 		{
 		return getPixels(progh).getReadOnly(EvPixelsType.AWT).getAWT();
 		}
+
 	
+	public EvPixels getPixels()
+		{
+		return getPixels(null);
+		}
+
 	/**
 	 * Get pixel data for image
 	 * 

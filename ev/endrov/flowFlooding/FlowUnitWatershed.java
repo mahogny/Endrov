@@ -7,7 +7,6 @@ package endrov.flowFlooding;
 
 
 import java.awt.Color;
-import java.util.Collections;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
@@ -20,7 +19,6 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
-import endrov.util.Vector3i;
 
 /**
  * Flow unit: Watershed
@@ -52,7 +50,7 @@ public class FlowUnitWatershed extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("pos", FlowType.TVECTOR3I); //TODO more than one
+		types.put("seedImage", FlowType.TVECTOR3I); //TODO more than one
 		}
 	
 	/** Get types of flows out */
@@ -66,11 +64,12 @@ public class FlowUnitWatershed extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		AnyEvImage image=(AnyEvImage)flow.getInputValue(this, exec, "image");
-		Vector3i pos=(Vector3i)flow.getInputValue(this, exec, "pos");
-		checkNotNull(image,pos);
+		AnyEvImage seedImage=(AnyEvImage)flow.getInputValue(this, exec, "seedImage");
+		//Vector3i pos=(Vector3i)flow.getInputValue(this, exec, "pos");
+		checkNotNull(image,seedImage);
 		
 		//TODO
-		lastOutput.put("region", new EvOpWatershed(Collections.singleton(pos)).exec1Untyped(exec.ph, image));
+		lastOutput.put("region", new EvOpWatershed().exec1Untyped(exec.ph, image, seedImage));
 		}
 
 	

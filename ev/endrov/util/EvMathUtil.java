@@ -270,7 +270,7 @@ public class EvMathUtil
 	 * NEEDS TESTING
 	 * 
 	 */
-	public EvDecimal interpolate(SortedMap<EvDecimal, EvDecimal> map, EvDecimal x)
+	public static EvDecimal interpolate(SortedMap<EvDecimal, EvDecimal> map, EvDecimal x)
 		{
 		EvDecimal preciseY=map.get(x);
 		if(preciseY!=null)
@@ -299,7 +299,7 @@ public class EvMathUtil
 	/**
 	 * Linear interpolation
 	 */
-	private EvDecimal linInterpolate(EvDecimal lastX,EvDecimal nextX, EvDecimal lastY, EvDecimal nextY, EvDecimal x)
+	private static EvDecimal linInterpolate(EvDecimal lastX,EvDecimal nextX, EvDecimal lastY, EvDecimal nextY, EvDecimal x)
 		{
 		EvDecimal frac=x.subtract(lastX).divide(nextX.subtract(lastX));
 		EvDecimal frac1=EvDecimal.ONE.subtract(frac);

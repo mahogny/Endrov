@@ -293,10 +293,14 @@ public class EvContainer
 		//Extract objects
 		for(Element child:EV.castIterableElement(element.getChildren()))
 			{			
-			Class<? extends EvObject> ext=EvData.supportedMetadataFormats.get(child.getName());
+			String childName=child.getName();
+			Class<? extends EvObject> ext=EvData.supportedMetadataFormats.get(childName);
 			EvObject o=null;
 			if(ext==null)
+				{
 				o=new CustomObject();
+				EvLog.printLog("Warning: "+childName+" was not detected to be of a known type");
+				}
 			else
 				{
 				try

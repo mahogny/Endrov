@@ -15,7 +15,7 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: Max
+ * Flow unit: Min
  * @author Johan Henriksson
  *
  */

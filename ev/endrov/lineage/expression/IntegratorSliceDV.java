@@ -77,7 +77,7 @@ public class IntegratorSliceDV extends IntegratorSlice
 		
 		axisDV.normalize();
 		double axisLength=2*shell.minor;
-		axisDV.scale(1.0/axisLength);   // + or -?
+		axisDV.scale(1.0/axisLength);  
 		this.axisDV=axisDV;
 		
 		

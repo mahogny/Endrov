@@ -147,11 +147,6 @@ public class Main
 				Lineage lin=(Lineage)linfile.getChild("t");
 				Lineage totLinSingleCell=(Lineage)linfile.getChild("lin");
 				
-//				EvData totalData=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/celegans2008.2.ost"));
-				//final NucLineage totLinSingleCell=linfile.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
-//				FrameTime ftRef=CompareAll.buildFrametime(totLinSingleCell);
-				
-				
 				double t4s=totLinSingleCell.particle.get("ABa").pos.firstKey().doubleValue();
 				double t4e=totLinSingleCell.particle.get("ABa").pos.lastKey().doubleValue();
 				double t28s=totLinSingleCell.particle.get("ABarpp").pos.firstKey().doubleValue();
@@ -268,7 +263,7 @@ public class Main
 			}
 	
 	
-	public static Map<String,String> getMapORF2wbid() throws IOException
+	private static Map<String,String> getMapORF2wbid() throws IOException
 		{
 		Map<String,String> m=new HashMap<String, String>();
 		BufferedReader br=new BufferedReader(new FileReader(new File("/home/tbudev3/Desktop/yanai/wbid2ORF.txt")));
@@ -287,7 +282,7 @@ public class Main
 		return m;
 		}
 	
-	public static Map<String,String> getMapGenename2wbid() throws IOException
+	private static Map<String,String> getMapGenename2wbid() throws IOException
 		{
 		Map<String,String> m=new HashMap<String, String>();
 		BufferedReader br=new BufferedReader(new FileReader(new File("/home/tbudev3/Desktop/yanai/wbid2commonname.txt")));

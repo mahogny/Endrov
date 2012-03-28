@@ -8,6 +8,8 @@ package util2.bobGoldstein;
 import java.io.File;
 import java.io.IOException;
 
+import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
+
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.lineage.Lineage;
@@ -23,9 +25,8 @@ public class Lifespans
 		try
 			{
 			System.out.println("here");
-			EvData data=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/celegans2008.2.ost"));
 			
-			Lineage lin=data.getIdObjectsRecursive(Lineage.class).values().iterator().next();
+			Lineage lin=PaperCeExpressionUtil.loadModel();
 			
 			
 			StringBuffer outputBuffer=new StringBuffer();

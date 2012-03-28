@@ -86,6 +86,10 @@ public class CompareAll
 	 */
 	public static FrameTime buildFrametime(Lineage coordLin)
 		{
+		if(coordLin==null)
+			throw new RuntimeException("coordinate lineage is null");
+		
+		
 		//Fit model time using a few markers
 		//Times must be relative to a sane time, such that if e.g. venc is missing, linear interpolation still makes sense
 		FrameTime ft=new FrameTime();
@@ -143,6 +147,9 @@ public class CompareAll
 	 */
 	public static double[][] apToArray(EvData data, String newLinName, String expName, Lineage coordLin)
 		{
+		if(coordLin==null)
+			throw new RuntimeException("coordlin is null");
+		
 		Imageset imset = data.getObjects(Imageset.class).get(0);
 		Lineage lin = null;
 
@@ -343,9 +350,10 @@ public class CompareAll
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 		
 		FrameTime ftA=buildFrametime(coordLinA);
+		EvChannel chanA=(EvChannel)imsetA.getChild(chanNameA); 
 
 		//Bad data survival
-		if(ftA.getNumPoints()<2)
+		if(ftA.getNumPoints()<2 || chanA==null)
 			{
 			System.out.println("Cannot make XYZ graph");
 			return;
@@ -353,7 +361,6 @@ public class CompareAll
 		else
 			System.out.println("Making XYZ summary file");
 		
-		EvChannel chanA=(EvChannel)imsetA.getChild(chanNameA); 
 
 		//Graph size is fixed
 		int numSteps=50; //?
@@ -363,16 +370,19 @@ public class CompareAll
 		//xyzSize x xyzSize xyzSize columns
 		BufferedImage bim=new BufferedImage((xyzSize+2)*xyzSize, numSteps*(xyzSize+2), BufferedImage.TYPE_3BYTE_BGR);
 		
+		EvDecimal firstFrame=chanA.getFirstFrame();
+		EvDecimal lastFrame=chanA.getLastFrame();
+		
 		//Compare channels
 		for(int time=0;time<numSteps;time++)
 			{
 			//Corresponding frame
 			EvDecimal modelTime=new EvDecimal(time*imageMaxTime/(double)numSteps);
-			System.out.println("Modeltime: "+modelTime);
 			EvDecimal frameA=ftA.mapTime2Frame(modelTime);
+			System.out.println("Modeltime: "+modelTime+"   =====map===> "+frameA);
 			
 			//If outside range, stop calculating
-			if(frameA.less(chanA.getFirstFrame()) || frameA.greater(chanA.getLastFrame()))
+			if(frameA.less(firstFrame) || frameA.greater(lastFrame))
 				continue;
 						
 			//Use closest frame
@@ -578,11 +588,11 @@ public class CompareAll
 			if(!e.getKey().getLeafName().startsWith("AP"))
 				{
 				if(e.getValue()==null)
-					System.out.println("!!!!! lineage is null in tree");
+					throw new RuntimeException("!!!!! lineage is null in tree");
 				return e.getValue();
 				}
-		System.out.println("no lineage. got: "+data.getIdObjectsRecursive(Lineage.class).keySet());
-		return null;
+		//return null;
+		throw new RuntimeException("no lineage. got: "+data.getIdObjectsRecursive(Lineage.class).keySet());
 		}
 	
 	
@@ -919,11 +929,14 @@ public class CompareAll
 
 							System.out.println("Comparing: "+key);
 
+							Lineage coordLinA=coordLineageFor(dataA);
+							Lineage coordLinB=coordLineageFor(dataB);
+							
 							//Slices: T
 							try
 								{
-								double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
-								double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
+								double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLinA);
+								double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLinB);
 								ColocCoefficients coeffT=colocSliceTime(imtA, imtB);
 								synchronized (comparisonLock)
 									{
@@ -938,8 +951,8 @@ public class CompareAll
 							//Slices: AP
 							try
 								{
-								double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
-								double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+								double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLinA);
+								double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLinB);
 								ColocCoefficients coeff=colocSliceTime(imapA, imapB);
 								synchronized (comparisonLock)
 									{
@@ -954,8 +967,8 @@ public class CompareAll
 							//Slices: DV
 							try
 								{
-								double[][] imapA=apToArray(dataA, "DV"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
-								double[][] imapB=apToArray(dataB, "DV"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+								double[][] imapA=apToArray(dataA, "DV"+20+"-"+chanNameA, expName, coordLinA);
+								double[][] imapB=apToArray(dataB, "DV"+20+"-"+chanNameB, expName, coordLinB);
 								ColocCoefficients coeff=colocSliceTime(imapA, imapB);
 								synchronized (comparisonLock)
 									{
@@ -970,8 +983,8 @@ public class CompareAll
 							//Slices: LR
 							try
 								{
-								double[][] imapA=apToArray(dataA, "LR"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
-								double[][] imapB=apToArray(dataB, "LR"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+								double[][] imapA=apToArray(dataA, "LR"+20+"-"+chanNameA, expName, coordLinA);
+								double[][] imapB=apToArray(dataB, "LR"+20+"-"+chanNameB, expName, coordLinB);
 								ColocCoefficients coeff=colocSliceTime(imapA, imapB);
 								synchronized (comparisonLock)
 									{
@@ -984,10 +997,17 @@ public class CompareAll
 								}
 
 							//Slices: XYZ
-							ColocCoefficients coeffXYZ=colocXYZ(new ProgressHandle(), dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), "XYZ","XYZ");
-							synchronized (comparisonLock)
+							try
 								{
-								comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);   ///////////////// symmetry?
+								ColocCoefficients coeffXYZ=colocXYZ(new ProgressHandle(), dataA, dataB, coordLinA, coordLinB, "XYZ","XYZ");
+								synchronized (comparisonLock)
+									{
+									comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);   ///////////////// symmetry?
+									}
+								}
+							catch (Exception e)
+								{
+								e.printStackTrace();
 								}
 
 							//Store down this value too

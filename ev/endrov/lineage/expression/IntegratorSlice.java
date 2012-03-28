@@ -81,7 +81,7 @@ public abstract class IntegratorSlice implements Integrator
 		
 		Collection<Shell> shells=integrator.imset.getIdObjectsRecursive(Shell.class).values();
 		if(shells.isEmpty())
-			throw new RuntimeException("No shell found");
+			throw new RuntimeException("No shell found, objects: "+integrator.imset.metaObject.keySet());
 		shell = shells.iterator().next();
 	
 		// Virtual nuc for AP

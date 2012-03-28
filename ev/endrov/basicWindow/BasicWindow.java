@@ -20,7 +20,6 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
@@ -34,7 +33,6 @@ import endrov.keyBinding.KeyBinding;
 import endrov.starter.EvSystemUtil;
 
 import org.jdom.*;
-import org.openmicroscopy.shoola.util.ui.filechooser.FileChooser;
 
 
 /**

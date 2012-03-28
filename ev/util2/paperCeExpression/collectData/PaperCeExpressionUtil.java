@@ -23,6 +23,8 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.imageset.Imageset;
+import endrov.lineage.Lineage;
+import endrov.util.EvFileUtil;
 
 
 
@@ -31,6 +33,13 @@ public class PaperCeExpressionUtil
 	{
 	public static Connection conn=null;
 
+	
+	public static Lineage loadModel()
+		{
+		EvData stdcelegans=EvData.loadFile(new File("/Volumes/TBU_main06/ostmodel/celegans2008.2.ost"));
+		Lineage stdlin=stdcelegans.getIdObjectsRecursive(Lineage.class).values().iterator().next();
+		return stdlin;
+		}
 
 	public static Map<String,String> readMap(File f) throws IOException
 		{
@@ -53,17 +62,20 @@ public class PaperCeExpressionUtil
 		}
 
 	
-	public static Map<String,String> orf2gene;
+	private static Map<String,String> orf2gene;
 	public static Set<String> homeoboxes;
 
 	static
 	{
 	try
 		{
-		orf2gene=readMap(new File("/home/tbudev3/javaproj/endrov.git/ev/util2/paperCeExpression/collectData/orf2gene.csv"));
-		homeoboxes=readSet(new File("/home/tbudev3/javaproj/endrov.git/ev/util2/paperCeExpression/collectData/hbox.csv"));
+		File forf2gene=EvFileUtil.getFileFromURL(PaperCeExpressionUtil.class.getResource("orf2gene.csv").toURI().toURL());
+		File fhomeoboxes=EvFileUtil.getFileFromURL(PaperCeExpressionUtil.class.getResource("hbox.csv").toURI().toURL());
+		
+		orf2gene=readMap(forf2gene);
+		homeoboxes=readSet(fhomeoboxes);
 		}
-	catch (IOException e)
+	catch (Exception e)
 		{
 		e.printStackTrace();
 		System.exit(1);
@@ -215,6 +227,12 @@ public class PaperCeExpressionUtil
 		for(String tag:tagsFor(data))
 			if(tag.startsWith("gfpgene:"))
 				name=tag.substring("gfpgene:".length());
+		
+		
+		if(PaperCeExpressionUtil.orf2gene.containsKey(name))
+			name=PaperCeExpressionUtil.orf2gene.get(name);
+
+		
 		return name;
 		}
 

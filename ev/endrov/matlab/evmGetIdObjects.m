@@ -1,4 +1,4 @@
-% evmGetIdObjects	Equivalent to EvData.getIdObjects but returns in a format suitable for Matlab.
+% evmGetIdObjects Equivalent to EvData.getIdObjects but returns in a format suitable for Matlab.
 function out=evmGetIdObjects(ost,class)
 
 obid=ost.getIdObjects(getClass(class));

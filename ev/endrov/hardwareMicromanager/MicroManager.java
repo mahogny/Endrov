@@ -79,13 +79,11 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 			
 
 			}
-		catch (Exception e) 
+		catch (Throwable e) 
 			{
 			e.printStackTrace();
 			System.out.println("err:"+e.getMessage());
 			}
-		
-		
 		
 		
 		}
