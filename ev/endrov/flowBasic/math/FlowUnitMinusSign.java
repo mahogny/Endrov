@@ -34,7 +34,7 @@ public class FlowUnitMinusSign extends FlowUnitMathUniop
 	
 	public FlowUnitMinusSign()
 		{
-		super("-x",metaType);
+		super("-x ",metaType);
 		}
 	
 	

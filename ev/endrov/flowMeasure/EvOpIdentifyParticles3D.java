@@ -28,10 +28,12 @@ import endrov.util.Vector3i;
 public class EvOpIdentifyParticles3D extends EvOpStack1
 	{
 	private boolean ignore0;
+	private boolean alsoDiagonal;
 	
-	public EvOpIdentifyParticles3D(boolean ignore0)
+	public EvOpIdentifyParticles3D(boolean ignore0, boolean alsoDiagonal)
 		{
 		this.ignore0=ignore0;
+		this.alsoDiagonal=alsoDiagonal;
 		}
 	
 	
@@ -48,10 +50,10 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 	
 	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return apply(ph, p[0], ignore0);
+		return apply(ph, p[0], ignore0, alsoDiagonal);
 		}
 	
-	public static EvStack apply(ProgressHandle ph, EvStack stack, boolean ignore0)
+	public static EvStack apply(ProgressHandle ph, EvStack stack, boolean ignore0, boolean alsoDiagonal)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
@@ -104,20 +106,37 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 							visited[vz][vy][vx]=true;
 							mark[vz][vy*w+vx]=thisMarkID;
 
-							if(vx>0)
-								tryadd(eqVal, inarr, thisValue, w, h, d, vx-1,vy,vz);
-							if(vx<w-1)
-								tryadd(eqVal, inarr, thisValue, w, h, d, vx+1,vy,vz);
+							if(alsoDiagonal)
+								{
+								for(int nx=vx-1;nx<=vx+1;nx++)
+									for(int ny=vy-1;ny<=vy+1;ny++)
+										for(int nz=vz-1;nz<=vz+1;nz++)
+											if(nx!=vx || ny!=vy || nz!=vz)
+												if(
+													nx>=0 && nx<w &&
+													ny>=0 && ny<h &&
+													nz>=0 && nz<d)
+													tryadd(eqVal, inarr, thisValue, w, h, d, nx,ny,nz);
+								}
+							else
+								{
+								if(vx>0)
+									tryadd(eqVal, inarr, thisValue, w, h, d, vx-1,vy,vz);
+								if(vx<w-1)
+									tryadd(eqVal, inarr, thisValue, w, h, d, vx+1,vy,vz);
+								
+								if(vy>0)
+									tryadd(eqVal, inarr, thisValue, w, h, d, vx,vy-1,vz);
+								if(vy<h-1)
+									tryadd(eqVal, inarr, thisValue, w, h, d, vx,vy+1,vz);
+								
+								if(vz>0)
+									tryadd(eqVal, inarr, thisValue, w, h, d, vx,vy,vz-1);
+								if(vz<d-1)
+									tryadd(eqVal, inarr, thisValue, w, h, d, vx,vy,vz+1);
+								}
 							
-							if(vy>0)
-								tryadd(eqVal, inarr, thisValue, w, h, d, vx,vy-1,vz);
-							if(vy<h-1)
-								tryadd(eqVal, inarr, thisValue, w, h, d, vx,vy+1,vz);
 							
-							if(vz>0)
-								tryadd(eqVal, inarr, thisValue, w, h, d, vx,vy,vz-1);
-							if(vz<d-1)
-								tryadd(eqVal, inarr, thisValue, w, h, d, vx,vy,vz+1);
 							}
 						
 						}

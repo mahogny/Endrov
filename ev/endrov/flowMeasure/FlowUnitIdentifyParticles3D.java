@@ -6,9 +6,9 @@
 package endrov.flowMeasure;
 
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
@@ -48,6 +48,7 @@ public class FlowUnitIdentifyParticles3D extends FlowUnitBasic
 		}
 	
 	private boolean ignore0=true;
+	private boolean alsoDiagonal=true;
 	
 	
 	public FlowUnitIdentifyParticles3D()
@@ -55,9 +56,10 @@ public class FlowUnitIdentifyParticles3D extends FlowUnitBasic
 		textPosition=TEXTABOVE;
 		}
 	
-	private void setValues(boolean ignore0)
+	private void setValues(boolean ignore0, boolean alsoDiagonal)
 		{
 		this.ignore0=ignore0;
+		this.alsoDiagonal=alsoDiagonal;
 		}
 	
 	public String toXML(Element e)
@@ -65,12 +67,18 @@ public class FlowUnitIdentifyParticles3D extends FlowUnitBasic
 		Element eIgnore0=new Element("ignore0");
 		eIgnore0.setText(Boolean.toString(ignore0));
 		e.addContent(eIgnore0);
+		
+		Element eAlsoDiagonal=new Element("alsodiagonal");
+		eAlsoDiagonal.setText(Boolean.toString(alsoDiagonal));
+		e.addContent(eAlsoDiagonal);
 		return metaType;
 		}
 	
 	public void fromXML(Element e)
 		{
 		ignore0=Boolean.parseBoolean(e.getChildText("ignore0"));
+		if(e.getChildText("alsoDiagonal")!=null)
+			alsoDiagonal=Boolean.parseBoolean(e.getChildText("alsoDiagonal"));
 		}
 	
 	public String getBasicShowName(){return showName;}
@@ -107,7 +115,7 @@ public class FlowUnitIdentifyParticles3D extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 //		Boolean ignore0=(Boolean)flow.getInputValue(this, exec, "ignore0");
 
-		lastOutput.put("out", new EvOpIdentifyParticles3D(ignore0).exec1Untyped(exec.ph, a));
+		lastOutput.put("out", new EvOpIdentifyParticles3D(ignore0, alsoDiagonal).exec1Untyped(exec.ph, a));
 		}
 
 	
@@ -121,20 +129,24 @@ public class FlowUnitIdentifyParticles3D extends FlowUnitBasic
 		private static final long serialVersionUID = 1L;
 
 		private JCheckBox cIgnore0=new JCheckBox();
+		private JCheckBox cAlsoDiagonal=new JCheckBox();
 		
 		public TotalPanel()
 			{
-			setLayout(new BorderLayout());
+			setLayout(new GridLayout(2,1));
 			cIgnore0.setSelected(ignore0);
 			cIgnore0.setOpaque(false);
+			cAlsoDiagonal.setOpaque(false);
 			add(EvSwingUtil.withLabel("Ignore 0-value",cIgnore0));
+			add(EvSwingUtil.withLabel("Also diagonal",cAlsoDiagonal));
 			cIgnore0.addActionListener(this);
+			cAlsoDiagonal.addActionListener(this);
 			setOpaque(false);
 			}
 
 		public void actionPerformed(ActionEvent e)
 			{
-			setValues(cIgnore0.isSelected());
+			setValues(cIgnore0.isSelected(), cAlsoDiagonal.isSelected());
 			}
 		
 		}

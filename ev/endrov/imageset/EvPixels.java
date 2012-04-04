@@ -185,11 +185,14 @@ public class EvPixels implements AnyEvImage
 		}
 	
 	/**
-	 * Constructing an empty pixelset, shouldn't really be possible outside
+	 * Constructing an 1x1 area. Not really useful
 	 */
-	private EvPixels()
+	public EvPixels()
 		{
 		count(1);
+		w=h=1;
+		type=EvPixelsType.INT;
+		arrayI=new int[1];
 		createdNew();
 		}
 
@@ -219,6 +222,7 @@ public class EvPixels implements AnyEvImage
 
 	
 		}
+	
 	
 
 	/**
@@ -324,6 +328,22 @@ public class EvPixels implements AnyEvImage
 		return p;
 		}
 	
+	public static EvPixels createFromDouble2D(double[][] a)
+		{
+		int w=a[0].length;
+		int h=a.length;
+		
+		EvPixels p=new EvPixels();
+		p.type=EvPixelsType.DOUBLE;
+		p.w=w;
+		p.h=h;
+		double arr[]=new double[w*h];
+		for(int ay=0;ay<h;ay++)
+			for(int ax=0;ax<w;ax++)
+				arr[ay*w+ax]=a[ay][ax];
+		p.arrayD=arr;
+		return p;
+		}
 	
 	
 	/**

@@ -97,9 +97,12 @@ public abstract class MemoizeX<E> implements Stoppable
 		{
 		if(beenTo.contains(this))
 			throw new RuntimeException("Circular dependency detected");
+		//Add this unit and check childen
 		beenTo.add(this);
 		for(MemoizeX<?> m:hasToRunFirst.keySet())
 			m.checkCircDep(beenTo);
+		//When stepping up, remove this unit. This avoids the need to copy the entire set every recursion
+		beenTo.remove(this); 
 		}
 	
 	

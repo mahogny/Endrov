@@ -32,6 +32,14 @@ public abstract class EvOpGeneral
 	public abstract EvPixels exec1(ProgressHandle ph, EvPixels... p);
 	
 	/**
+	 * Apply given several stacks, returns only the first stack
+	 */
+	public EvPixels exec11(ProgressHandle ph, EvPixels p)
+		{
+		return exec1(ph, new EvPixels[]{p});
+		}
+	
+	/**
 	 * Apply given several stacks, returns one or more stacks depending on operation
 	 */
 	public abstract EvStack[] exec(ProgressHandle ph, EvStack... p);
@@ -40,6 +48,15 @@ public abstract class EvOpGeneral
 	 * Apply given several stacks, returns only the first stack
 	 */
 	public abstract EvStack exec1(ProgressHandle ph, EvStack... p);
+	
+	/**
+	 * Apply given several stacks, returns only the first stack
+	 */
+	public EvStack exec11(ProgressHandle ph, EvStack p)
+		{
+		return exec1(ph, new EvStack[]{p});
+		}
+	
 
 	/**
 	 * Apply given several channels, returns one or more channels depending on operation

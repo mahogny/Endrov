@@ -160,6 +160,11 @@ public class EvStack implements AnyEvImage
 		cs=o.cs.clone();
 		}
 	
+	
+	public void allocate(int w, int h, int d, EvPixelsType type)
+		{
+		allocate(w, h, d, type, null);
+		}
 	/**
 	 * Allocate a 3d stack. ref will disappear later. instead have d.
 	 * Covers getMetaFrom as well.
