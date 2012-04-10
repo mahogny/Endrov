@@ -43,11 +43,11 @@ public class FlowUnitMeasureToFile extends FlowUnitBasic
 	private boolean addHeaders=true;
 	
 	private static Vector<Delim> delimiters=new Vector<Delim>();
-	{
-	delimiters.add(new Delim("<tab>","\t"));
-	delimiters.add(new Delim("<space>"," "));
-	delimiters.add(new Delim(",",","));
-	}
+		{
+		delimiters.add(new Delim("<tab>","\t"));
+		delimiters.add(new Delim("<space>"," "));
+		delimiters.add(new Delim(",",","));
+		}
 	
 	public FlowUnitMeasureToFile()
 		{

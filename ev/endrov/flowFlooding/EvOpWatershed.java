@@ -26,14 +26,6 @@ import endrov.util.Vector3i;
  */
 public class EvOpWatershed extends EvOpStack1
 	{
-	/*
-	private Collection<Vector3i> seeds;
-
-	public EvOpWatershed(Collection<Vector3i> seeds)
-		{
-		this.seeds = seeds;
-		}
-*/
 
 	@Override
 	public EvStack exec1(ProgressHandle ph, EvStack... p)
@@ -78,8 +70,6 @@ public class EvOpWatershed extends EvOpStack1
 		
 		public PriPixel(int x, int y, int z, int group, int intensity, int generation)
 			{
-			//System.out.println("intensity "+intensity+"\t"+group+"\t"+generation);
-			
 			this.x = x;
 			this.y = y;
 			this.z = z;
@@ -91,19 +81,19 @@ public class EvOpWatershed extends EvOpStack1
 		
 		public int compareTo(PriPixel b)
 			{
+			//Intensity based
 			if(intensity>b.intensity)
 				return -1;
 			else if(intensity<b.intensity)
 				return 1;
 			
-			return 0;
-			/*
-			else if(generation<b.generation)
+			//Order-based
+			else if(generation<b.generation) ///hmmmm. actually, only count generation if the value is the same as the last pixel?
 				return -1;
 			else if(generation>b.generation)
 				return 1;
 			else 
-				return 0;*/
+				return 0;
 			}
 		
 		
@@ -111,13 +101,45 @@ public class EvOpWatershed extends EvOpStack1
 		
 		}
 	
-	//TODO seeds should maybe be groups?
+	public static class IDPoint
+		{
+		int x,y,z;
+		int id;
+		
+		public IDPoint(Vector3i p, int id)
+			{
+			x=p.x;
+			y=p.y;
+			z=p.z;
+			this.id=id;
+			}
+		
+		public IDPoint(int x, int y, int z, int id)
+			{
+			this.x=x;
+			this.y=y;
+			this.z=z;
+			this.id=id;
+			}
+		}
 	
 	
-	public static List<Vector3i> getSeedPoints(ProgressHandle progh, EvStack seedStack)
+	public static List<IDPoint> makeUniquePoints(Collection<Vector3i> seeds)
+		{
+		LinkedList<IDPoint> n=new LinkedList<IDPoint>();
+		int id=1;
+		for(Vector3i p:seeds)
+			n.add(new IDPoint(p, id++));
+		return n;
+		}
+
+	/**
+	 * Create seed points. The IDs will be taken from the image, thus the color of each blob should be unique 
+	 */
+	public static List<IDPoint> getSeedPoints(ProgressHandle progh, EvStack seedStack)
 		{
 		//Collect seed points
-		LinkedList<Vector3i> seeds=new LinkedList<Vector3i>();
+		LinkedList<IDPoint> seeds=new LinkedList<IDPoint>();
 		int w=seedStack.getWidth();
 		int h=seedStack.getHeight();
 		for(int az=0;az<seedStack.getDepth();az++)
@@ -125,8 +147,11 @@ public class EvOpWatershed extends EvOpStack1
 			int[] arr=seedStack.getInt(az).getPixels(progh).convertToInt(true).getArrayInt();
 			for(int ay=0;ay<h;ay++)
 				for(int ax=0;ax<w;ax++)
-					if(arr[ay*w+ax]!=0)
-						seeds.add(new Vector3i(ax, ay, az));
+					{
+					int thisID=arr[ay*w+ax];
+					if(thisID!=0)
+						seeds.add(new IDPoint(ax,ay,az, thisID));
+					}
 			}
 		
 		return seeds;
@@ -137,7 +162,7 @@ public class EvOpWatershed extends EvOpStack1
 		return watershed(progh, stack, getSeedPoints(progh, seedStack));
 		}
 	
-	public static EvStack watershed(ProgressHandle progh, EvStack stack, Collection<Vector3i> seeds)
+	public static EvStack watershed(ProgressHandle progh, EvStack stack, Collection<IDPoint> seeds)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
@@ -152,10 +177,10 @@ public class EvOpWatershed extends EvOpStack1
 		
 		//Start queue with seed pixels
 		PriorityQueue<PriPixel> q=new PriorityQueue<PriPixel>();
-		int curGroup=1;
-		for(Vector3i s:seeds)
+		//int curGroup=1;
+		for(IDPoint s:seeds)
 			q.add(new PriPixel(s.x,s.y,s.z,
-					curGroup++, 
+					s.id,//curGroup++, 
 					inarr[s.z][s.y*w+s.x],
 					0));
 		
@@ -165,7 +190,7 @@ public class EvOpWatershed extends EvOpStack1
 			//Take the next pixel off queue
 			PriPixel p=q.poll();
 			
-			//Make sure the compiler can assume values to be static
+			//Make sure the compiler can assume the values to be static
 			int x=p.x;
 			int y=p.y;
 			int z=p.z;
