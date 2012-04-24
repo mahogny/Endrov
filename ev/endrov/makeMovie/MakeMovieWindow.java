@@ -84,7 +84,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 		updateQualityList();
 		for(int i=0;i<numChannelCombo;i++)
 			{
-			EvComboChannel c=new EvComboChannel(false, false);
+			EvComboChannel c=new EvComboChannel(true, false);
 			c.addActionListener(this);
 			channelCombo.add(c);
 			
