@@ -29,7 +29,7 @@ public class ParticleMeasureCenterOfMass implements ParticleMeasure.MeasurePrope
 		
 		
 		HashMap<Integer,Vector3d> sum=new HashMap<Integer, Vector3d>();
-		HashMap<Integer,Integer> vol=new HashMap<Integer, Integer>();
+		HashMap<Integer,Double> vol=new HashMap<Integer, Double>();
 		//TODO: a special map for this case could speed up plenty.
 		//also: only accept integer IDs? this would speed up hashing and indexing.
 		//can be made even faster as a non-hash
@@ -58,10 +58,10 @@ public class ParticleMeasureCenterOfMass implements ParticleMeasure.MeasurePrope
 						lastSum.add(new Vector3d(ax*v,ay*v,az*v));
 						
 						
-						Integer lastVol=vol.get(id);
+						Double lastVol=vol.get(id);
 						if(lastVol==null)
-							lastVol=0;
-						vol.put(id, lastVol+1);
+							lastVol=0.0;
+						vol.put(id, lastVol+v);
 						}
 
 					

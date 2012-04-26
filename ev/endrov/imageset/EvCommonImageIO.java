@@ -16,8 +16,10 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.stream.FileImageOutputStream;
 
 import loci.formats.FormatException;
+import loci.formats.IFormatReader;
 import loci.formats.ImageReader;
 import loci.formats.ImageWriter;
+import loci.formats.in.TiffReader;
 import endrov.ev.EvLog;
 import endrov.util.EvFileUtil;
 import endrov.util.ProgressHandle;
@@ -72,15 +74,23 @@ public class EvCommonImageIO
 			//BufferedImage bim=new BioformatsSliceIO(reader,id,0,"").loadJavaImage().quickReadOnlyAWT();
 			//BufferedImage bim=reader.openImage(id);
 			//return bim;
-			
-			
-			//Rely on Bioformats in the worst case
-			ImageReader reader=new ImageReader();
-			reader.setId(file.getAbsolutePath());
-			int id=z==null?0:z;
-			return new BioformatsSliceIO(reader,0,id,file, true).get(new ProgressHandle());
 
 			
+			//Rely on Bioformats in the worst case. Use the most stupid reader available, or bio-formats might attempt
+			//detecting a special format
+			IFormatReader reader;
+			if(fend.equals("tiff") || fend.equals("tif"))
+				{
+				reader=new TiffReader();
+				}
+			else
+				{
+				reader=new ImageReader();
+				}
+
+			int id=z==null?0:z;
+			reader.setId(file.getAbsolutePath());
+			return new BioformatsSliceIO(reader,0,id,file, true).get(new ProgressHandle());
 			
 			
 			}

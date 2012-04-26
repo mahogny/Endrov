@@ -64,7 +64,8 @@ public class FlowUnitMeasureToFile extends FlowUnitBasic
 		{
 		Element eDelim=new Element("fieldDelim");
 		Element eAddHeaders=new Element("addHeaders");
-		eDelim.setText(fieldDelim);
+		//eDelim.setText(fieldDelim);
+		eDelim.setAttribute("value", fieldDelim);
 		eAddHeaders.setText(Boolean.toString(addHeaders));
 		
 		e.addContent(eDelim);
@@ -75,7 +76,8 @@ public class FlowUnitMeasureToFile extends FlowUnitBasic
 
 	public void fromXML(Element e)
 		{
-		fieldDelim=e.getChildText("fieldDelim");
+		fieldDelim=e.getChild("fieldDelim").getAttributeValue("value");
+		//fieldDelim=e.getChildText("fieldDelim");
 		addHeaders=Boolean.parseBoolean(e.getChildText("addHeaders"));
 		}
 	
