@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -38,6 +39,7 @@ import endrov.data.EvObject;
 import endrov.data.EvPath;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
+import endrov.util.EvStringUtil;
 
 /**
  * Object combo. with children disabled it also works as a EvData selector.
@@ -235,10 +237,16 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	
 	private void updateListRec(EvContainer parent, LinkedList<String> contPath, EvData data)
 		{
-		for(Map.Entry<String, EvObject> entry:parent.metaObject.entrySet())
+		TreeSet<String> reorderObjects=new TreeSet<String>(EvStringUtil.getNaturalComparator());
+		reorderObjects.addAll(parent.metaObject.keySet());
+		
+		
+		//for(Map.Entry<String, EvObject> entry:parent.metaObject.entrySet())
+		for(String key:reorderObjects)
 			{
-			EvContainer thisCont=entry.getValue();
-			contPath.addLast(entry.getKey());
+			EvContainer thisCont=parent.metaObject.get(key);
+			//EvContainer thisCont=entry.getValue();
+			contPath.addLast(key);
 			if(includeObject(thisCont))
 				combo.addItem(new ComboItem(new EvPath(data, contPath)));
 			if(showChildren)

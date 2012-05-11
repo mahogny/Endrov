@@ -32,7 +32,7 @@ import java.util.Comparator;
 /**
  * Utility class for common String operations
  */
-public final class Strings {
+public final class EvStringUtil {
     /**
      * <p>A string comparator that does case sensitive comparisons and handles embedded numbers correctly.</p>
      * <p><b>Do not use</b> if your app might ever run on any locale that uses more than 7-bit ascii characters.</p>
@@ -56,7 +56,7 @@ public final class Strings {
     /**
      * This is a utility class (static methods only), don't instantiate.
      */
-    private Strings() {
+    private EvStringUtil() {
     }
 
     /**

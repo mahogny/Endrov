@@ -33,7 +33,7 @@ import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.hardware.EvHardwareConfigGroup;
 import endrov.util.JSmartToggleCombo;
-import endrov.util.Strings;
+import endrov.util.EvStringUtil;
 
 /**
  * Property window - shows every property available
@@ -242,7 +242,7 @@ public class PropertyWindow extends BasicWindow implements ActionListener, EvHar
 		else if (!pt.categories.isEmpty())
 			{
 			Vector<String> cats=new Vector<String>(pt.categories);
-			Collections.sort(cats, Strings.getNaturalComparatorAscii());
+			Collections.sort(cats, EvStringUtil.getNaturalComparatorAscii());
 			JSmartToggleCombo c = new JSmartToggleCombo(cats);
 			c.setSelectedItem(hw.getPropertyValue(propName));
 			c.addActionListener(new ActionListener()

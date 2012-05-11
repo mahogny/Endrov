@@ -49,7 +49,7 @@ import endrov.util.EvDecimal;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
 import endrov.util.JSmartToggleCombo;
-import endrov.util.Strings;
+import endrov.util.EvStringUtil;
 
 /**
  * Microscope control: Manual
@@ -317,7 +317,7 @@ public class RecControlWindow extends BasicWindow
 				else if (!pt.categories.isEmpty())
 					{
 					Vector<String> cats=new Vector<String>(pt.categories);
-					Collections.sort(cats, Strings.getNaturalComparatorAscii());
+					Collections.sort(cats, EvStringUtil.getNaturalComparatorAscii());
 					JSmartToggleCombo c = new JSmartToggleCombo(cats);
 					c.setSelectedItem(hw.getPropertyValue(propName));
 					c.addActionListener(new ActionListener()
