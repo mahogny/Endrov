@@ -134,5 +134,9 @@
 	<classpathentry kind="lib" path="libs/ij.jar"/>
 	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/MMCoreJ.jar"/>
 	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/MMJ_.jar"/>
+	<classpathentry kind="lib" path="libs/imglib_inc/imglib-algorithms.jar"/>
+	<classpathentry kind="lib" path="libs/imglib_inc/imglib-io.jar"/>
+	<classpathentry kind="lib" path="libs/imglib_inc/imglib-scripting.jar"/>
+	<classpathentry kind="lib" path="libs/imglib_inc/imglib.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
