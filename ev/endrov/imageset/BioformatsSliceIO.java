@@ -58,6 +58,8 @@ public class BioformatsSliceIO extends EvIOImage
 	 */
 	public EvPixels eval(ProgressHandle progh)
 		{
+		System.out.println("getting series:"+ series + " id: "+id);
+		
 		try
 			{
 			byte[] bytes;
@@ -247,7 +249,15 @@ public class BioformatsSliceIO extends EvIOImage
 			}
 		}
 
-	
+
+	public File getRawJPEGData()
+		{
+		if(sourceName instanceof File)
+			return defaultGetRawJPEG((File)sourceName);
+		else
+			return null;
+		}
+
 
 	@Override
 	protected void finalize() throws Throwable

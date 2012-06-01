@@ -5,6 +5,7 @@
  */
 package endrov.flow;
 
+import java.io.File;
 import java.util.HashMap;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvIOImage;
@@ -129,7 +130,12 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 							if(thisAc>=parr.length)
 								throw new RuntimeException("EvOp programming error: Trying to get channel "+thisAc+" but only "+parr.length+" channels were returned");
 							return parr[thisAc];
-							}};
+							}
+						public File getRawJPEGData()
+							{
+							return null;
+							}
+						};
 							
 						newim.io.dependsOn(m);
 						newim.registerLazyOp(m);		

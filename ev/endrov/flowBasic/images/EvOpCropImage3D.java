@@ -5,6 +5,8 @@
  */
 package endrov.flowBasic.images;
 
+import java.io.File;
+
 import javax.vecmath.Vector3d;
 
 import endrov.flow.EvOpStack1;
@@ -120,6 +122,10 @@ public class EvOpCropImage3D extends EvOpStack1
 				protected EvPixels eval(ProgressHandle ph)
 					{
 					return new EvOpCropImage2D(fromX, toX, fromY, toY).exec1(ph, stack.getInt(inZ).getPixels(ph));
+					}
+				public File getRawJPEGData()
+					{
+					return null;
 					}
 				};
 			newim.registerLazyOp(newim.io); //TODO

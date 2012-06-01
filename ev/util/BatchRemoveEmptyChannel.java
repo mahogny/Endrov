@@ -22,34 +22,41 @@ public class BatchRemoveEmptyChannel
 	{
 	public static void makeOST(File file)
 		{
-		if(file.getName().endsWith(".ost"))
+		try
 			{
-			System.out.println("----- "+file);
-			EvData data=EvData.loadFile(file);
-			
-			boolean changed=false;
-			for(Map.Entry<EvPath, EvChannel> e:data.getIdObjectsRecursive(EvChannel.class).entrySet())
+			if(file.getName().endsWith(".ost"))
 				{
-				EvChannel ch=e.getValue();
-				if(ch.getFrames().isEmpty() && ch.metaObject.isEmpty())
+				System.out.println("----- "+file);
+				EvData data=EvData.loadFile(file);
+				
+				boolean changed=false;
+				for(Map.Entry<EvPath, EvChannel> e:data.getIdObjectsRecursive(EvChannel.class).entrySet())
 					{
-					System.out.println("Would delete "+e.getKey());
-					
-					
-					EvContainer cont=e.getKey().getParent().getObject();
-					
-					cont.metaObject.remove(e.getKey().getLeafName());
-					changed=true;
-					
-					}
+					EvChannel ch=e.getValue();
+					if(ch.getFrames().isEmpty() && ch.metaObject.isEmpty())
+						{
+						System.out.println("Would delete "+e.getKey());
+						
+						
+						EvContainer cont=e.getKey().getParent().getObject();
+						
+						cont.metaObject.remove(e.getKey().getLeafName());
+						changed=true;
+						
+						}
 //				else
-	//				System.out.println("Would keep "+e.getKey());
+//				System.out.println("Would keep "+e.getKey());
+					}
+				
+				if(changed)
+					data.saveData();
+				
+				
 				}
-			
-			if(changed)
-				data.saveData();
-			
-			
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
 			}
 		
 		

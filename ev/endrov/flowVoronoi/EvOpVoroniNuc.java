@@ -1,5 +1,6 @@
 package endrov.flowVoronoi;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -115,6 +116,10 @@ public class EvOpVoroniNuc
 				EvImage evim=new EvImage();
 				evim.io=new EvIOImage()
 					{
+					public File getRawJPEGData()
+						{
+						return null;
+						}
 					public EvPixels eval(ProgressHandle progh)
 						{
 						List<PointList> list=interLazy.get(progh);

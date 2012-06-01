@@ -1,6 +1,7 @@
 package util2.paperCeExpression.compare;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import javax.vecmath.Vector3d;
@@ -162,7 +163,14 @@ public class TestSingleCellPrecision
 			}
 		
 		data.metaObject.get("im").metaObject.put("estcell", approxLin);
-		data.saveData();
+		try
+			{
+			data.saveData();
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
 		
 		System.exit(0);
 		

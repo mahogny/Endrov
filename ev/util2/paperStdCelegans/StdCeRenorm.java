@@ -6,6 +6,7 @@
 package util2.paperStdCelegans;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -115,7 +116,14 @@ public class StdCeRenorm
 		System.out.println();
 		
 		data.metaObject.put("sulstontime", ft); //"sulstontime"
-		data.saveData();
+		try
+			{
+			data.saveData();
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
 		
 		//TODO in case of celegans2008.2, this mapping should be applied on the frames? or?
 		

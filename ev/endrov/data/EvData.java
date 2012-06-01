@@ -269,12 +269,12 @@ public class EvData extends EvContainer
 	public String metadataVersion="0";
 
 
-	public void saveData()
+	public void saveData() throws IOException
 		{
 		saveData(deafFileIOCB);
 		}
 	
-	public void saveData(EvData.FileIOStatusCallback cb)
+	public void saveData(EvData.FileIOStatusCallback cb) throws IOException
 		{
 		io.saveData(this, cb);
 		}

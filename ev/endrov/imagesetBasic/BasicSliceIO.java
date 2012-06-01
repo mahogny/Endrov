@@ -35,6 +35,11 @@ public class BasicSliceIO extends EvIOImage
 		{
 		return EvCommonImageIO.loadPixels(file, z);
 		}
+	
+	public File getRawJPEGData()
+		{
+		return defaultGetRawJPEG(file);
+		}
 
 	
 	

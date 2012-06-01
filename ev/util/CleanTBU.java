@@ -136,8 +136,15 @@ public class CleanTBU
 			
 			
 			
-			if(changed)
-				data.saveData();
+			try
+				{
+				if(changed)
+					data.saveData();
+				}
+			catch (IOException e1)
+				{
+				e1.printStackTrace();
+				}
 			}
 		
 		

@@ -148,6 +148,10 @@ public class EvIODataBD implements EvIOData
 							{
 							return EvCommonImageIO.loadPixels(fname, 0);
 							}
+						public File getRawJPEGData()
+							{
+							return null;
+							}
 						};
 					stack.putInt(0, evim);
 					

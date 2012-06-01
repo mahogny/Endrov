@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import javax.swing.*;
 
@@ -311,7 +312,15 @@ public class EvDataMenu implements BasicWindowExtension
 							if (option==JOptionPane.YES_OPTION)
 								for(EvData thisMeta:EvData.openedData)
 									{
-									thisMeta.saveData();
+									try
+										{
+										thisMeta.saveData();
+										}
+									catch (IOException e1)
+										{
+										// TODO handle properly
+										e1.printStackTrace();
+										}
 									thisMeta.setMetadataNotModified(); //this might be wrong if save not supported
 									}
 							EvData.openedData.clear();
@@ -412,7 +421,14 @@ public class EvDataMenu implements BasicWindowExtension
 									"Metadata has been modified. Save before close?", "Save?", JOptionPane.YES_NO_CANCEL_OPTION);
 							if (option==JOptionPane.YES_OPTION)
 								{
-								thisMeta.saveData();
+								try
+									{
+									thisMeta.saveData();
+									}
+								catch (IOException e1)
+									{
+									e1.printStackTrace();
+									}
 								//thisMeta.setMetadataNotModified();//this might be wrong if save not supported
 								}
 							else if (option == JOptionPane.CANCEL_OPTION)

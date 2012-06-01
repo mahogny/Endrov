@@ -16,7 +16,7 @@ import java.lang.ref.*;
  */
 public class CacheImages
 	{
-	private static int qsize=5;
+	private static int qsize=100; //this should be user configurable
 	private static LinkedList<WeakReference<EvImage>> queue=new LinkedList<WeakReference<EvImage>>();
 	
 	/**

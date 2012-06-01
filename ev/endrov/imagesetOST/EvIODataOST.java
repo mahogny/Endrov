@@ -72,6 +72,12 @@ public class EvIODataOST implements EvIOData
 			else
 				return "write "+f+" using "+oldio;
 			}
+		
+		public File getRawJPEGData()
+			{
+			return defaultGetRawJPEG(f);
+			}
+
 		}
 	
 	

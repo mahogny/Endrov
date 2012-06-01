@@ -82,7 +82,15 @@ public class GuiEvDataIO
 			{
 			for(EvData data:datas)
 				{
-				data.saveData();
+				try
+					{
+					data.saveData();
+					}
+				catch (IOException e)
+					{
+					// TODO implement properly
+					e.printStackTrace();
+					}
 				nowAt++;
 				fileIOStatus(0, "");
 				}

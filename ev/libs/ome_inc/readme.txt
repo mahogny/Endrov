@@ -8,4 +8,4 @@ build #2885
 
 bioformats -----
 
-bioformats.jar from trunk, 2011-09-29
+own fork of bio-formats

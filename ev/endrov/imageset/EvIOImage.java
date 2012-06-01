@@ -5,6 +5,8 @@
  */
 package endrov.imageset;
 
+import java.io.File;
+
 import endrov.util.MemoizeX;
 
 
@@ -16,4 +18,16 @@ import endrov.util.MemoizeX;
  */
 public abstract class EvIOImage extends MemoizeX<EvPixels>
 	{
+	public abstract File getRawJPEGData();
+	
+	
+	
+	protected static File defaultGetRawJPEG(File f)
+		{
+		String n=f.getName().toLowerCase();
+		if(n.endsWith(".jpg") || n.endsWith(".jpeg"))
+			return f;
+		else
+			return null;
+		}
 	}

@@ -6,6 +6,7 @@
 package util2;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import endrov.data.EvData;
@@ -65,7 +66,14 @@ public class FixOSTendframe
 		if(change)
 			{
 			System.out.println(f);
-			data.saveData();
+			try
+				{
+				data.saveData();
+				}
+			catch (IOException e1)
+				{
+				e1.printStackTrace();
+				}
 			
 			}
 		}

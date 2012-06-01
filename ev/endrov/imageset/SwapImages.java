@@ -183,6 +183,11 @@ public class SwapImages
 			super.finalize();
 			}
 		
+		public File getRawJPEGData()
+			{
+			return null;
+			}
+
 		}
 		
 		

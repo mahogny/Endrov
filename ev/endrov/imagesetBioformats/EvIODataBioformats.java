@@ -20,6 +20,7 @@ import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
 
 import loci.common.DataTools;
+import loci.common.RandomAccessInputStream;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
@@ -140,12 +141,12 @@ public class EvIODataBioformats implements EvIOData
 	/**
 	 * Save data to disk
 	 */
-	public void saveData(EvData d, EvData.FileIOStatusCallback cb)
+	public void saveData(EvData d, EvData.FileIOStatusCallback cb) throws IOException
 		{
-		try
-			{
+		
 			
-			
+			//I think this is only about how the image is currently stored in image. thus I only have to pick one mode.
+			boolean isLittleEndian=false; //what is optimal?
 
 			//TODO other formats supported too!
 
@@ -189,7 +190,7 @@ public class EvIODataBioformats implements EvIOData
 						evchanToId.add(curChan.getKey());
 						}
 
-					
+					Set<Integer> imageIdIsJPEG=new HashSet<Integer>();
 					
 					
 					
@@ -212,6 +213,8 @@ public class EvIODataBioformats implements EvIOData
 					//Map<EvImage,Integer> planeIDs=new HashMap<EvImage, Integer>();
 
 
+					//int sumOldPlaneId=0;
+					
 					//Mapping: One "bf image" per "evchannel"
 					for (int imageIndex=0; imageIndex<evchanToId.size(); imageIndex++) 
 						{
@@ -239,14 +242,17 @@ public class EvIODataBioformats implements EvIOData
 
 						
 
-						int saveFormatType=FormatTools.INT32;  //works    DEFAULT!
+						//Pixel format. This is the default choice
+						int saveFormatType=FormatTools.INT32;
 						
 						
 						//int saveFormatType=FormatTools.INT8;  //works
 						//int saveFormatType=FormatTools.INT16;  //works
 						//int saveFormatType=FormatTools.UINT16;  //does not work
+						//int saveFormatType=FormatTools.INT32;   //works
 						//int saveFormatType=FormatTools.DOUBLE;  //once loaded as int32!! is it caching? but it works
 
+						//boolean isJPEG=false;
 						
 						//Figure out resolution and pixeltype
 						int depth=0;
@@ -268,20 +274,34 @@ public class EvIODataBioformats implements EvIOData
 							resY=s.resY;
 							resZ=s.resZ;
 							
-							EvPixels p=s.getFirstImage().getPixels(null);
+							EvImage evim=s.getFirstImage();
+							if(evim.io.getRawJPEGData()!=null)
+								{
+								//isJPEG=true;
+								imageIdIsJPEG.add(imageIndex);
+								saveFormatType=FormatTools.INT8; //just invent something?
 
-							if(p.getType()==EvPixelsType.DOUBLE)
-								saveFormatType=FormatTools.DOUBLE;
-							else if(p.getType()==EvPixelsType.FLOAT)
-								saveFormatType=FormatTools.FLOAT;
-							else if(p.getType()==EvPixelsType.UBYTE || p.getType()==EvPixelsType.AWT)
-								saveFormatType=FormatTools.INT8;
-							else if(p.getType()==EvPixelsType.SHORT)
-								saveFormatType=FormatTools.INT16; 
-							else
-								saveFormatType=FormatTools.INT32; 
 								
-							
+								
+								
+								//Let the JPEGs decide endianess?
+								//boolean isLittleEndian=false; //what is optimal?
+
+								}
+							else
+								{
+								EvPixels p=evim.getPixels(null);
+								if(p.getType()==EvPixelsType.DOUBLE)
+									saveFormatType=FormatTools.DOUBLE;
+								else if(p.getType()==EvPixelsType.FLOAT)
+									saveFormatType=FormatTools.FLOAT;
+								else if(p.getType()==EvPixelsType.UBYTE || p.getType()==EvPixelsType.AWT)
+									saveFormatType=FormatTools.INT8;
+								else if(p.getType()==EvPixelsType.SHORT)
+									saveFormatType=FormatTools.INT16; 
+								else
+									saveFormatType=FormatTools.INT32; 
+								}
 							}
 
 						//TODO verify all stacks the same size. can wait until write
@@ -349,7 +369,6 @@ public class EvIODataBioformats implements EvIOData
 							}
 
 
-						boolean isLittleEndian=false; //what is optimal?
 
 						int binDataIndex=0; //hmmmmm. TODO what is this?
 						metadata.setPixelsBinDataBigEndian(!isLittleEndian, imageIndex, binDataIndex);
@@ -363,6 +382,8 @@ public class EvIODataBioformats implements EvIOData
 							for(int curEvZ=0;curEvZ<depth;curEvZ++)
 								{
 								int planeIndex=curEvFrameID*depth+curEvZ;
+								//int planeIndex=sumOldPlaneId;
+								//sumOldPlaneId++;
 
 
 								metadata.setPlaneDeltaT(frame.doubleValue(), imageIndex, planeIndex);
@@ -399,32 +420,44 @@ public class EvIODataBioformats implements EvIOData
 					// http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/meta/MetadataConverter.java;h=3780d383239aa519be1ae149d3a875825dfd03ef;hb=HEAD
 
 
-
-					ImageWriter writer = new ImageWriter();
-
-
 					//Delete old file. TODO. can continue writing on it!
 					System.out.println("deleting "+basedir);
 					basedir.delete();
 
-					//Start writing
+
+					//Set up writers. Set appropriate settings
+					ImageWriter writer = new ImageWriter();
+					writer.setWriteSequentially(true); //This has to be set here. Not later!
+					writer.getWriter(OMETiffWriter.class).setCompression(TiffWriter.COMPRESSION_LZW);
+					((OMETiffWriter)writer.getWriter(OMETiffWriter.class)).setBigTiff(true);
+
+					
 					writer.setMetadataRetrieve(metadata);
 					writer.setId(basedir.getAbsolutePath());
+
+					if(writer.getWriter() instanceof OMETiffWriter)
+						{
+						System.out.println("This is OME-TIFF");
+						//OMETiffWriter ome=(OMETiffWriter)writer.getWriter();
+	
+						//ome.setCompression(TiffWriter.COMPRESSION_LZW);
+						//ome.setBigTiff(true); 
+						}
+					else
+						imageIdIsJPEG.clear(); //Do not attempt to write JPEGs
+						
+					
+					
+					//Start writing
 					writer.setInterleaved(false);
 					//writer.setCompression("J2K");
 
 					//Use BIGTIFF if possible. Later this will not be needed
 					
-					if(writer.getWriter() instanceof OMETiffWriter)
-						{
-						System.out.println("This is OME-TIFF");
-						OMETiffWriter ome=(OMETiffWriter)writer.getWriter();
-						//ome.setBigTiff(true);
-						ome.setCompression(TiffWriter.COMPRESSION_LZW);
-						}
 
 					//Write all the series
-					System.out.println("-------------- writing image data ------------------------- "+evchanToId.size());
+					System.out.println("-------------- writing image data -------------------------, #series: "+evchanToId.size());
+					//sumOldPlaneId=0;
 					for(int imageIndex=0;imageIndex<evchanToId.size();imageIndex++)
 						{
 						writer.setSeries(imageIndex);
@@ -432,123 +465,182 @@ public class EvIODataBioformats implements EvIOData
 						EvChannel ch=(EvChannel)evchanToId.get(imageIndex).getObject();
 						int depth=ch.getStack(ch.getFirstFrame()).getDepth();
 
+						System.out.println("series: "+imageIndex+" ch: "+ch);
+
+//////////////// before the first write here, it seeks to the beginning. and overwrites. why?						
+						
 						//For each frame
 						int curFrameID=0;
 						for(EvDecimal frame:ch.getFrames())
 							{
-							int binDataIndex=0;
-							boolean littleEndian = !metadata.getPixelsBinDataBigEndian(imageIndex, binDataIndex).booleanValue();
-
-
-							//boolean isSigned = pixelType == PixelType.INT8 || pixelType == PixelType.INT16 || pixelType == PixelType.INT32;
-
-							//For each z
-							EvStack s=ch.getStack(frame);
-							for (int curZ=0; curZ<depth; curZ++) 
+							//Write a JPEG stack. Only if input data is JPEG, and the output supports JPEG
+							if(imageIdIsJPEG.contains(imageIndex))
 								{
-								int planeID=curFrameID*depth+curZ;
-
-								System.out.println("writing ch:"+evchanToId.get(imageIndex)+" frame:"+frame+" z:"+curZ+" planeID:"+planeID);
-
-								PixelType pixelType=metadata.getPixelsType(imageIndex);
-								int formatType = FormatTools.pixelTypeFromString(pixelType.getValue());
-
-								
-								//boolean signed=FormatTools.isSigned(formatType);
-
-								//Get and convert to bytes in the specified format, given evpixel format
-								EvPixels p=s.getInt(curZ).getPixels(null);
-								byte[] plane=null;
-								if(formatType==FormatTools.DOUBLE)
+								//For each z
+								EvStack s=ch.getStack(frame);
+								for (int curZ=0; curZ<depth; curZ++) 
 									{
-									//TODO: mystery. why does it not work? or does it?
-									plane=DataTools.doublesToBytes(p.convertToDouble(true).getArrayDouble(), littleEndian);
+	//								int planeID=sumOldPlaneId;
+//									sumOldPlaneId++;
+									int planeID=curFrameID*depth+curZ;
+
+//									System.out.println("writing jpeg ch:"+evchanToId.get(imageIndex)+" frame:"+frame+" z:"+curZ+" planeID:"+planeID);
+									EvImage evim=s.getInt(curZ);
 									
-									System.out.println("pixel type DOUBLE");
+									File jpegFile=evim.io.getRawJPEGData();
 									
-									}
-								else if(formatType==FormatTools.INT16)
-									{
-									short[] arr;
-
-									arr=p.convertToShort(true).getArrayShort();
-									arr = DataTools.makeSigned(arr); 
-
-									if(debug)
-										{
-										System.out.println("save pixel type INT16:");
-						  			for(int b:arr)
-						  				System.out.print(b+",");
-						  			System.out.println();
-										}
-
-									plane=DataTools.shortsToBytes(arr, littleEndian);
-									}
-								else if(formatType==FormatTools.UINT16)   //This does not work yet!
-									{
-									short[] arr;
-
-									arr=p.convertToShort(true).getArrayShort();
-									arr = DataTools.makeSigned(arr); ///???? 
-
-									if(debug)
-										{
-										System.out.println("save pixel type UINT16:");
-						  			for(int b:arr)
-						  				System.out.print(b+",");
-						  			System.out.println();
-										}
-
-									plane=DataTools.shortsToBytes(arr, littleEndian);
-									}
-								else if(formatType==FormatTools.INT32)
-									{
-									int[] arr;
-
-									arr=p.convertToInt(true).getArrayInt();
-									arr = DataTools.makeSigned(arr);  //TODO good?
-									if(debug)
-										{
-										System.out.println("save pixel type INT32:");
-						  			for(int b:arr)
-						  				System.out.print(b+",");
-						  			System.out.println();
-										}
-
-									plane=DataTools.intsToBytes(arr, littleEndian); //TODO !
-									}
-								else if(formatType==FormatTools.INT8)
-									{
-									byte[] arr;
-									/*if(signed)
-						  				{
-							  			arr=p.convertToUByte(false).getArrayUnsignedByte();
-							  			makeUnSigned(arr);
-						  				}
-						  			else*/
-									arr=p.convertToUByte(true).getArrayUnsignedByte();
-									plane=arr;
+									RandomAccessInputStream in = new RandomAccessInputStream(jpegFile.getAbsolutePath());
+							    byte[] jpegBytes = new byte[(int) in.length()];
+							    in.readFully(jpegBytes);
+							    in.close();
 									
-									System.out.println("pixel type INT8");
-
+							    ImageReader readerJPEG = new ImageReader();
+								  readerJPEG.setId(jpegFile.getAbsolutePath());
+								  
+								  OMETiffWriter ome=(OMETiffWriter)writer.getWriter();
+								  ome.saveJPEG(planeID, jpegBytes, 
+								  		readerJPEG.getSizeX(), readerJPEG.getSizeY(), 
+								  		readerJPEG.isLittleEndian(), readerJPEG.getPixelType(), readerJPEG.getRGBChannelCount());
 									}
-								else
-									throw new RuntimeException("Unsupported format in bf writer - bug");
-
-
-								/*
-						  		System.out.println("islittleendian "+littleEndian);
-					  			for(int b:plane)
-					  				System.out.print(b+",");
-					  			System.out.println();
-								 */
-								
-								//TODO use MetadataTools.createLSID(arg0, arg1) to create IDs
-
-								//TODO Have a look at DateTools.
-								
-								writer.saveBytes(planeID, plane);
 								}
+							else
+								{
+								//Write a non-JPEG stack
+								int binDataIndex=0;
+								boolean littleEndian = !metadata.getPixelsBinDataBigEndian(imageIndex, binDataIndex).booleanValue();
+
+
+								//boolean isSigned = pixelType == PixelType.INT8 || pixelType == PixelType.INT16 || pixelType == PixelType.INT32;
+
+								//For each z
+								EvStack s=ch.getStack(frame);
+								for (int curZ=0; curZ<depth; curZ++) 
+									{
+									int planeID=curFrameID*depth+curZ;
+									//int planeID=sumOldPlaneId;
+									//sumOldPlaneId++;
+
+//									System.out.println("writing ch:"+evchanToId.get(imageIndex)+" frame:"+frame+" z:"+curZ+" planeID:"+planeID);
+
+									PixelType pixelType=metadata.getPixelsType(imageIndex);
+									int formatType = FormatTools.pixelTypeFromString(pixelType.getValue());
+
+									
+									//boolean signed=FormatTools.isSigned(formatType);
+
+									EvImage evim=s.getInt(curZ);
+								
+									
+									
+									//Get and convert to bytes in the specified format, given evpixel format
+									EvPixels p=evim.getPixels(null);
+									byte[] plane=null;
+									if(formatType==FormatTools.FLOAT)
+										{
+										//TODO: mystery. why does it not work? or does it?
+										plane=DataTools.floatsToBytes(p.convertToFloat(true).getArrayFloat(), littleEndian);
+										
+//										System.out.println("pixel type DOUBLE");
+										
+										}
+									else if(formatType==FormatTools.DOUBLE)
+										{
+										//TODO: mystery. why does it not work? or does it?
+										plane=DataTools.doublesToBytes(p.convertToDouble(true).getArrayDouble(), littleEndian);
+										
+//										System.out.println("pixel type DOUBLE");
+										
+										}
+									else if(formatType==FormatTools.INT16)
+										{
+										short[] arr;
+
+										arr=p.convertToShort(true).getArrayShort();
+										arr = DataTools.makeSigned(arr); 
+
+										if(debug)
+											{
+											System.out.println("save pixel type INT16:");
+							  			for(int b:arr)
+							  				System.out.print(b+",");
+							  			System.out.println();
+											}
+
+										plane=DataTools.shortsToBytes(arr, littleEndian);
+										}
+									else if(formatType==FormatTools.UINT16)   //This does not work yet!
+										{
+										short[] arr;
+
+										arr=p.convertToShort(true).getArrayShort();
+										arr = DataTools.makeSigned(arr); ///???? 
+
+										if(debug)
+											{
+											System.out.println("save pixel type UINT16:");
+							  			for(int b:arr)
+							  				System.out.print(b+",");
+							  			System.out.println();
+											}
+
+										plane=DataTools.shortsToBytes(arr, littleEndian);
+										}
+									else if(formatType==FormatTools.INT32)
+										{
+										int[] arr;
+
+										arr=p.convertToInt(true).getArrayInt();
+										arr = DataTools.makeSigned(arr);  //TODO good?
+										if(debug)
+											{
+											System.out.println("save pixel type INT32:");
+							  			for(int b:arr)
+							  				System.out.print(b+",");
+							  			System.out.println();
+											}
+
+										plane=DataTools.intsToBytes(arr, littleEndian); //TODO !
+										}
+									else if(formatType==FormatTools.INT8)
+										{
+										byte[] arr;
+										/*if(signed)
+							  				{
+								  			arr=p.convertToUByte(false).getArrayUnsignedByte();
+								  			makeUnSigned(arr);
+							  				}
+							  			else*/
+										arr=p.convertToUByte(true).getArrayUnsignedByte();
+										plane=arr;
+										
+//										System.out.println("pixel type INT8");
+
+										}
+									
+//TODO: UINT8									
+									
+									else
+										throw new RuntimeException("Unsupported format in bf writer - (bug). format: "+formatType);
+
+
+									/*
+							  		System.out.println("islittleendian "+littleEndian);
+						  			for(int b:plane)
+						  				System.out.print(b+",");
+						  			System.out.println();
+									 */
+									
+									//TODO use MetadataTools.createLSID(arg0, arg1) to create IDs
+
+									//TODO Have a look at DateTools.
+									
+									writer.saveBytes(planeID, plane);
+									}
+								
+								}
+							
+							
+							
 
 							curFrameID++;
 							}
@@ -559,18 +651,13 @@ public class EvIODataBioformats implements EvIOData
 
 					writer.close();
 					}
-				catch (DependencyException e)
+				catch (Exception e)
 					{
 					e.printStackTrace();
-					}
-				catch (ServiceException e)
-					{
-					e.printStackTrace();
-					}
-				catch (FormatException e)
-					{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("deleting incomplete file "+basedir);
+					basedir.delete();
+					
+					throw new IOException("Error storing "+basedir+", "+e.getMessage());
 					}
 
 
@@ -612,11 +699,7 @@ public class EvIODataBioformats implements EvIOData
 			
 			EvIODataOST.saveMeta(d, getMetaFile());
 			d.setMetadataNotModified();
-			}
-		catch (IOException e)
-			{
-			e.printStackTrace();
-			}
+			
 		}
 	
 
@@ -714,7 +797,7 @@ public class EvIODataBioformats implements EvIOData
 		if(metaFile.exists())
 			{
 			d.loadXmlMetadata(metaFile);
-			if(hasBFIDmapping(d))
+			if(!hasBFIDmapping(d))
 				generateBfidMapping=false;
 			}
 
@@ -722,6 +805,8 @@ public class EvIODataBioformats implements EvIOData
 		//Generate channel mappings
 		if(generateBfidMapping)
 			{
+			System.out.println("No BF-ID mapping to channels - creating new channels");
+			
 			for(int seriesIndex=0;seriesIndex<imageReader.getSeriesCount();seriesIndex++)
 				{
 				//Setting series will re-populate the metadata store as well
@@ -798,9 +883,10 @@ public class EvIODataBioformats implements EvIOData
 				for(int curT=0;curT<sizeT;curT++)
 					{
 
-					PositiveFloat resXf=retrieve.getPixelsPhysicalSizeX(0); //[um/px]
-					PositiveFloat resYf=retrieve.getPixelsPhysicalSizeY(0); //[um/px]
-					PositiveFloat resZf=retrieve.getPixelsPhysicalSizeZ(0); //[um/px]
+					
+					PositiveFloat resXf=retrieve.getPixelsPhysicalSizeX(bfid.series); //[um/px]
+					PositiveFloat resYf=retrieve.getPixelsPhysicalSizeY(bfid.series); //[um/px]
+					PositiveFloat resZf=retrieve.getPixelsPhysicalSizeZ(bfid.series); //[um/px]
 					Double resX=1.0;
 					Double resY=1.0;
 					Double resZ=1.0;
@@ -811,7 +897,7 @@ public class EvIODataBioformats implements EvIOData
 					//Calculate which frame this is. Note that we only consider the time of the first plane!
 					EvDecimal frame=null;
 					//Double timeIncrement=retrieve.getPixelsTimeIncrement(imageIndexFirstPlane);   
-					Double timeIncrement=retrieve.getPixelsTimeIncrement(0);
+					Double timeIncrement=retrieve.getPixelsTimeIncrement(bfid.series);
 					if(timeIncrement!=null)
 						//Time increment [s] is optional
 						frame=new EvDecimal(curT*timeIncrement);
@@ -823,15 +909,19 @@ public class EvIODataBioformats implements EvIOData
 						//Double deltaT=retrieve.getPlaneDeltaT(imageIndexFirstPlane, 0);
 						try
 							{
-							Double deltaT=retrieve.getPlaneDeltaT(bfid.series, imageReader.getIndex(0, bfid.color, curT));
+							//Double deltaT=retrieve.getPlaneDeltaT(bfid.series, imageReader.getIndex(bfid.series, bfid.color, curT));
+							Double deltaT=retrieve.getPlaneDeltaT(bfid.series, imageReader.getIndex(0, bfid.color, curT));               //TODO verify!!!
 							if(deltaT!=null)
 								frame=new EvDecimal(deltaT);
 							}
 						catch (Exception e)
 							{
-							System.out.println("Failed to call getPlaneDeltaT");
+							System.out.println("Failed to call getPlaneDeltaT, "+e.getMessage());
 							}
 						}
+					
+
+					
 
 					boolean isDicom=imageReader.getFormat().equals("DICOM");//imageReader instanceof DicomReader;
 					//System.out.println("isdicom "+isDicom+" "+imageReader.getFormat());

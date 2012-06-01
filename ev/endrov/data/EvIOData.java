@@ -6,6 +6,7 @@
 package endrov.data;
 
 import java.io.File;
+import java.io.IOException;
 
 
 
@@ -41,7 +42,7 @@ public interface EvIOData
 	/** 
 	 * Save data
 	 */
-	public void saveData(EvData d, EvData.FileIOStatusCallback cb);
+	public void saveData(EvData d, EvData.FileIOStatusCallback cb) throws IOException;
 	
 	
 	/**

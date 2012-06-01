@@ -6,6 +6,8 @@
 package endrov.flow;
 
 
+import java.io.File;
+
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvIOImage;
 import endrov.imageset.EvImage;
@@ -160,6 +162,10 @@ public abstract class EvOpStack extends EvOpGeneral
 								System.out.println("index "+finalCurReturnChanIndex);
 								throw new RuntimeException("failed in lazy execution");
 								}
+							}
+						public File getRawJPEGData()
+							{
+							return null;
 							}
 						};
 					newim.io.dependsOn(ms);

@@ -130,6 +130,11 @@ public class EvIODataOMERO implements EvIOData
 				}
 			}
 
+		
+		public File getRawJPEGData()
+			{
+			return null;
+			}
 		}
 	
 	
