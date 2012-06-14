@@ -486,8 +486,13 @@ public class EvIODataBioformats implements EvIOData
 
 //									System.out.println("writing jpeg ch:"+evchanToId.get(imageIndex)+" frame:"+frame+" z:"+curZ+" planeID:"+planeID);
 									EvImage evim=s.getInt(curZ);
+									if(evim==null)
+										throw new IOException("Missing plane "+curZ +" at frame "+frame);
 									
 									File jpegFile=evim.io.getRawJPEGData();
+									
+									if(jpegFile==null)
+										throw new IOException("Expected all planes for one channel to be jpeg, if any. Not found: "+frame+" z:"+curZ);
 									
 									RandomAccessInputStream in = new RandomAccessInputStream(jpegFile.getAbsolutePath());
 							    byte[] jpegBytes = new byte[(int) in.length()];
@@ -498,9 +503,20 @@ public class EvIODataBioformats implements EvIOData
 								  readerJPEG.setId(jpegFile.getAbsolutePath());
 								  
 								  OMETiffWriter ome=(OMETiffWriter)writer.getWriter();
-								  ome.saveJPEG(planeID, jpegBytes, 
-								  		readerJPEG.getSizeX(), readerJPEG.getSizeY(), 
-								  		readerJPEG.isLittleEndian(), readerJPEG.getPixelType(), readerJPEG.getRGBChannelCount());
+								  
+								  
+								  try
+										{
+										ome.saveJPEG(planeID, jpegBytes, 
+												readerJPEG.getSizeX(), readerJPEG.getSizeY(), 
+												readerJPEG.isLittleEndian(), readerJPEG.getPixelType(), readerJPEG.getRGBChannelCount());
+										}
+									catch (Exception e)
+										{
+										throw new IOException("Error storing frame: "+frame+" plane: "+curZ+" - "+e.getMessage());
+										}
+								  
+								  
 									}
 								}
 							else
@@ -528,12 +544,29 @@ public class EvIODataBioformats implements EvIOData
 									
 									//boolean signed=FormatTools.isSigned(formatType);
 
-									EvImage evim=s.getInt(curZ);
-								
+									EvImage evim;
+									try
+										{
+										evim=s.getInt(curZ);
+										if(evim==null)
+											throw new IOException("Plane is null");
+										}
+									catch (Exception e)
+										{
+										throw new IOException("Failed to get slice "+curZ+" frame "+frame);
+										}
 									
 									
 									//Get and convert to bytes in the specified format, given evpixel format
-									EvPixels p=evim.getPixels(null);
+									EvPixels p;
+									try
+										{
+										p=evim.getPixels(null);
+										}
+									catch (Exception e)
+										{
+										throw new IOException("Failed to get slice "+curZ+" frame "+frame+" due to null");
+										}
 									byte[] plane=null;
 									if(formatType==FormatTools.FLOAT)
 										{

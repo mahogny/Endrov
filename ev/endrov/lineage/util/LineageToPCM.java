@@ -6,6 +6,7 @@
 package endrov.lineage.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -146,29 +147,38 @@ public class LineageToPCM
 		EvLog.addListener(new EvLogStdout());
 		EV.loadPlugins();
 		
-		System.out.println("--");
-		EvData data=EvData.loadFile(new File("/home/tbudev3/_imageset/celegans2008.2.ost"));
-		System.out.println("---");
-//		EvData data=EvData.loadFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost"));
-		Lineage ref=data.getIdObjectsRecursive(Lineage.class).values().iterator().next();
-		
-		
-		ParticleContactMap ccm=(ParticleContactMap)data.metaObject.get("ccm");
-
-		if(ccm==null)
+		try
 			{
-			ccm=calcneigh(ref, ref.particle.keySet(), new EvDecimal(30));
-			data.metaObject.put("ccm", ccm);
-			data.saveData();
+			System.out.println("--");
+			EvData data=EvData.loadFile(new File("/home/tbudev3/_imageset/celegans2008.2.ost"));
+			System.out.println("---");
+//		EvData data=EvData.loadFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost"));
+			Lineage ref=data.getIdObjectsRecursive(Lineage.class).values().iterator().next();
+			
+			
+			ParticleContactMap ccm=(ParticleContactMap)data.metaObject.get("ccm");
+
+			if(ccm==null)
+				{
+				ccm=calcneigh(ref, ref.particle.keySet(), new EvDecimal(30));
+				data.metaObject.put("ccm", ccm);
+				data.saveData();
+				}
+			
+			
+			File ccmFile=new File("/home/tbudev3/_imageset/testccm");
+			
+			HashMap<String,ParticleContactMap> maps=new HashMap<String, ParticleContactMap>();
+			maps.put("ref",ccm);
+			
+			ParticleContactMapToHTML.generateHTML(maps, ccmFile);
+			
+			
 			}
-		
-		
-		File ccmFile=new File("/home/tbudev3/_imageset/testccm");
-		
-		HashMap<String,ParticleContactMap> maps=new HashMap<String, ParticleContactMap>();
-		maps.put("ref",ccm);
-		
-		ParticleContactMapToHTML.generateHTML(maps, ccmFile);
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
 		
 		
 		System.exit(0);

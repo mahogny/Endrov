@@ -742,8 +742,10 @@ public class EvIODataOST implements EvIOData
 		//Create blobs
 		mapBlobs.clear();
 
-		for(EvChannel channel:data.getIdObjectsRecursive(EvChannel.class).values())
+		for(Map.Entry<EvPath, EvChannel> entry:data.getIdObjectsRecursive(EvChannel.class).entrySet())
 			{
+			EvChannel channel=entry.getValue();
+			
 			DiskBlob blob=getCreateBlob(channel);
 			blob.currentDir=channel.ostBlobID;
 
@@ -753,7 +755,13 @@ public class EvIODataOST implements EvIOData
 				File blobdir=blob.getDirectory();
 				//if(EV.debugMode)
 					System.out.println("Scanning for images in "+blobdir);
-				scanFilesChannel33(channel, blob);
+				if(!scanFilesChannel33(channel, blob))
+					{
+					//Delete this channel object if blob not found. Old recordings from the demon contains empty channels
+					EvPath p=entry.getKey();
+					EvContainer c=p.getParent().getObject();
+					c.metaObject.remove(p.getLeafName());
+					}
 				}
 
 			//Update the list of images in the imageset object
@@ -829,7 +837,7 @@ public class EvIODataOST implements EvIOData
 	/**
 	 * Scan all files for this channel and build a database
 	 */
-	private void scanFilesChannel33(EvChannel ch, DiskBlob blob)
+	private boolean scanFilesChannel33(EvChannel ch, DiskBlob blob)
 		{
 		//Rebuild this channel in diskimageloader. note that it is totally separate from metadata
 		blob.diskImageLoader33.clear();
@@ -838,7 +846,7 @@ public class EvIODataOST implements EvIOData
 		if(!chandir.exists())
 			{
 			System.out.println("Chan dir not found: "+chandir);
-			return;
+			return false;
 			}
 		File[] framedirs=chandir.listFiles();
 		for(File framedir:framedirs)
@@ -869,6 +877,7 @@ public class EvIODataOST implements EvIOData
 						}
 					}
 				}
+		return true;
 		}
 
 	

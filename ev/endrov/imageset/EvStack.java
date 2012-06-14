@@ -413,7 +413,15 @@ public class EvStack implements AnyEvImage
 	 */
 	public EvImage getFirstImage()
 		{
-		return loaders.get(0);
+		if(loaders.isEmpty())
+			throw new RuntimeException("Stack is empty");
+		else
+			{
+			EvImage evim=loaders.get(0);  //null for some recordings!!!
+			if(evim==null)
+				throw new RuntimeException("First image is null, got #images: "+loaders.size());
+			return evim;
+			}
 //		return loaders.get(loaders.firstKey());
 		}
 	
@@ -424,7 +432,9 @@ public class EvStack implements AnyEvImage
 	 */
 	public int getWidth()
 		{
-		return getFirstImage().getPixels(new ProgressHandle()).getWidth();  //TODO move width and height into stack instead. then this handle will not be needed
+		EvImage evim=getFirstImage();
+		EvPixels p=evim.getPixels(new ProgressHandle());
+		return p.getWidth();  //TODO move width and height into stack instead. then this handle will not be needed
 		}
 	
 	/**
@@ -432,7 +442,9 @@ public class EvStack implements AnyEvImage
 	 */
 	public int getHeight()
 		{
-		return getFirstImage().getPixels(new ProgressHandle()).getHeight();
+		EvImage evim=getFirstImage();
+		EvPixels p=evim.getPixels(new ProgressHandle());
+		return p.getHeight();  //TODO move width and height into stack instead. then this handle will not be needed
 		}
 	
 

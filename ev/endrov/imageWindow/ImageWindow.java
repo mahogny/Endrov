@@ -10,6 +10,7 @@ import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -924,8 +925,15 @@ public class ImageWindow extends BasicWindow
 			ConsoleWindow.focusConsole(this, imagePanel);
 		else if(e.getKeyCode()==KeyEvent.VK_S && holdModifier1(e))
 			{
-			data.saveData();
-			EvLog.printLog("Saving "+data.getMetadataName());
+			try
+				{
+				EvLog.printLog("Saving "+data.getMetadataName());
+				data.saveData();
+				}
+			catch (IOException e1)
+				{
+				EvLog.printLog("Failed to save "+data.getMetadataName());
+				}
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_W && holdModifier1(e))
 			{
