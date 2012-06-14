@@ -72,7 +72,7 @@ public class TBUfromOST
 
 			doone( errors, new
 				  File("/pimai/TBU_extra05/pimaiost4dpaper"), new
-				  File("/x/pimaiost4dpaper") );
+				  File("/x/c") );
 
 			/* this one 1Tb
 			doone( errors, new
