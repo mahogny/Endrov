@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,7 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.util.EvFileUtil;
+import endrov.util.EvParallel;
 
 public class TBUfromOST
 	{
@@ -24,7 +26,7 @@ public class TBUfromOST
 		{
 		try
 			{
-			PrintWriter errors = new PrintWriter(new FileWriter("/home/tbudev3/errors.txt"));
+			PrintWriter errors = new PrintWriter(new FileWriter("/Users/tbudev3/errors.txt"));
 
 			EvLog.addListener(new EvLogStdout());
 			EV.loadPlugins();
@@ -56,7 +58,7 @@ public class TBUfromOST
 			*/
 			
 			
-			
+	/*		
 			doone( errors, new
 				  File("/pimai/TBU_extra05/pimaiost3dgood"), new
 				  File("/x/pimaiost3dgood") );
@@ -69,16 +71,17 @@ public class TBUfromOST
 			doone( errors, new
 				  File("/pimai/TBU_extra05/pimaiost4dgood"), new
 				  File("/x/pimaiost4dgood") );
-
+*/
 			doone( errors, new
-				  File("/pimai/TBU_extra05/pimaiost4dpaper"), new
-				  File("/x/c") );
+				  File("/Volumes/TBU_extra05/pimaiost4dpaper"), new
+				  File("/Volumes/FROMPIMAI/pimaiost4dpaper") );
 
 			/* this one 1Tb
+			 * */
 			doone( errors, new
-				  File("/pimai/TBU_extra05/pimaiost/pimaiostdaemon"), new
-				  File("/x/pimaiostdaemon") );
-			*/
+				  File("/Volumes/TBU_extra05/pimaiostdaemon"), new
+				  File("/Volumes/FROMPIMAI/pimaiostdaemon") );
+			
 			
 
 			errors.close();
@@ -245,88 +248,93 @@ public class TBUfromOST
 
 		}
 
-	private static void doone(PrintWriter errors, File indir, File outdir)
+	private static void doone(final PrintWriter errors, final File indir, final File outdir)
 		{
 
-		for (File ostfile : indir.listFiles())
-			{
+		EvParallel.map_(Arrays.asList(indir.listFiles()), new EvParallel.FuncAB<File, Object>() {
 
-			if (ostfile.getName().endsWith(".ost"))
-				{
+			public Object func(File ostfile) {
+				
 
-				String fname = ostfile.getName();
-				fname = fname.substring(0, fname.length()-4)+".ome.tiff";
-				System.out.println(fname);
-
-				File outfileOMETIFF = new File(outdir, fname);
-
-				if (outfileOMETIFF.exists())
-					System.out.println("Already done: "+outfileOMETIFF);
-				else
+				if (ostfile.getName().endsWith(".ost"))
 					{
-					System.out.println(outfileOMETIFF);
 
-					try
-						{
-						fixOST(ostfile);
-						}
-					catch (Exception e1)
-						{
-						e1.printStackTrace();
-						}
+					String fname = ostfile.getName();
+					fname = fname.substring(0, fname.length()-4)+".ome.tiff";
+					System.out.println(fname);
 
-					try
-						{
-						// Convert extra data
-						File outfileData = new File(outdir, fname+".data");
-						outfileData.mkdirs();
-						System.out.println(outfileData);
+					File outfileOMETIFF = new File(outdir, fname);
 
-						// Copy all the files in the data directory
-						File infileData = new File(ostfile, "data");
-						if(infileData.exists())
+					if (outfileOMETIFF.exists())
+						System.out.println("Already done: "+outfileOMETIFF);
+					else
+						{
+						System.out.println(outfileOMETIFF);
+
+						try
 							{
-							for (File indata : infileData.listFiles())
-								{
-								File outdata = new File(outfileData, indata.getName());
-								System.out.println("  "+indata+" -> "+outdata);
-								// should the create date etc be preserved?
-								copyRecursive(indata, outdata);
-								}
+							fixOST(ostfile);
 							}
-						
-						// Copy all the tag files
-						for (File indata : ostfile.listFiles())
-							if (indata.getName().endsWith(".txt"))
+						catch (Exception e1)
+							{
+							e1.printStackTrace();
+							}
+
+						try
+							{
+							// Convert extra data
+							File outfileData = new File(outdir, fname+".data");
+							outfileData.mkdirs();
+							System.out.println(outfileData);
+
+							// Copy all the files in the data directory
+							File infileData = new File(ostfile, "data");
+							if(infileData.exists())
 								{
-								File outdata = new File(outfileData, indata.getName());
-								System.out.println("  "+indata+" -> "+outdata);
-								// should the create date etc be preserved?
-								// EvFileUtil.copy(indata, outdata);
-
-								copyRecursive(indata, outdata);
+								for (File indata : infileData.listFiles())
+									{
+									File outdata = new File(outfileData, indata.getName());
+									System.out.println("  "+indata+" -> "+outdata);
+									// should the create date etc be preserved?
+									copyRecursive(indata, outdata);
+									}
 								}
-						
-						// Convert images
-						EvData data = EvData.loadFile(ostfile);
-						data.saveDataAs(outfileOMETIFF);
-						}
-					catch (Exception e)
-						{
-						e.printStackTrace();
+							
+							// Copy all the tag files
+							for (File indata : ostfile.listFiles())
+								if (indata.getName().endsWith(".txt"))
+									{
+									File outdata = new File(outfileData, indata.getName());
+									System.out.println("  "+indata+" -> "+outdata);
+									// should the create date etc be preserved?
+									// EvFileUtil.copy(indata, outdata);
 
-						errors.println(e.getMessage());
-						for (StackTraceElement el : e.getStackTrace())
-							errors.println(el);
+									copyRecursive(indata, outdata);
+									}
+							
+							// Convert images
+							EvData data = EvData.loadFile(ostfile);
+							data.saveDataAs(outfileOMETIFF);
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
 
-						errors.flush();
+							errors.println(e.getMessage());
+							for (StackTraceElement el : e.getStackTrace())
+								errors.println(el);
+
+							errors.flush();
+							}
+
 						}
 
 					}
-
-				}
-
+				
+				return null;
 			}
+		});
+		
 
 		}
 	}
