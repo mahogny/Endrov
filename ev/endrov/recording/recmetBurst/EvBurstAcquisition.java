@@ -14,6 +14,7 @@ import endrov.basicWindow.FrameControl;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.ev.EV;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvChannel;
@@ -207,9 +208,17 @@ public class EvBurstAcquisition extends EvAcquisition
 
 							Imageset imset=new Imageset();
 							for(int i=0;;i++)
-								if(container.getChild("im"+i)==null)
+								{
+								String suggestName;
+								if(deviceTriggerOn!=null && deviceTriggerOff!=null)
+									suggestName="im"+EV.pad(i, 8);
+								else
+									suggestName="im"+i;
+								
+								
+								if(container.getChild(suggestName)==null)
 									{
-									container.metaObject.put("im"+i, imset);
+									container.metaObject.put(suggestName, imset);
 
 									if(isRGB)
 										{
@@ -221,6 +230,7 @@ public class EvBurstAcquisition extends EvAcquisition
 										imset.metaObject.put(channelName, new EvChannel());
 									break;
 									}
+								}
 
 							//TODO signal update on the object
 							BasicWindow.updateWindows();
