@@ -30,7 +30,10 @@ public class EvOpWatershed extends EvOpStack1
 	@Override
 	public EvStack exec1(ProgressHandle ph, EvStack... p)
 		{
-		return watershed(ph, p[0], p[1]);
+		
+		EvStack result=watershed(ph, p[0], p[1]);
+		
+		return result;
 		}
 	
 	/**
@@ -44,60 +47,88 @@ public class EvOpWatershed extends EvOpStack1
 	 */
 	
 	
+	private static class SpecialQueue
+		{
+		
+//		int curLargestValue=Integer.MAX_VALUE;
+		private LinkedList<Integer> intensityList=new LinkedList<Integer>();
+		
+		
+		private HashMap<Integer,LinkedList<PriPixel>> queues=new HashMap<Integer, LinkedList<PriPixel>>();
+		
+		
+		public PriPixel getNext()
+			{
+			for(;;)
+				{
+				if(intensityList.isEmpty())
+					return null;
+				
+				int curIntensity=intensityList.getFirst();
+//				curLargestValue=curIntensity;
+				LinkedList<PriPixel> curList=queues.get(curIntensity);
+				if(curList.isEmpty())
+					intensityList.removeFirst();
+				else
+					return curList.removeFirst();
+				}
+			}
+		
+		public void addAllIntensity(int[][] intensities)
+			{
+			//Find all intensities
+			HashSet<Integer> fi=new HashSet<Integer>();
+			for(int[] i:intensities)
+				for(int j:i)
+					fi.add(j);
+			
+			TreeSet<Integer> allValues=new TreeSet<Integer>();
+			allValues.addAll(fi);
+			allValues.add(Integer.MAX_VALUE);
+			
+			//Create queues
+			for(int i:allValues)
+				queues.put(i, new LinkedList<PriPixel>());
+			
+			//A list of intensities to consider. Finding the next intensity is always O(1)
+			intensityList.addAll(allValues.descendingSet());
+			}
+		
+		public void add(int x, int y, int z,
+				int group, int intensity) 
+			{
+			//If finding a new peak, then just grow according to distance. To not backtrack, add them to the currently considered intensity
+			int curIntensity=intensityList.getFirst();
+			if(intensity>curIntensity)
+				intensity=curIntensity;
+			LinkedList<PriPixel> list=queues.get(intensity);
+			
+			if(list==null)
+				System.out.println("Missing intensity "+intensity);
+			
+			list.addLast(new PriPixel(x,y,z,group));
+			}
+		
+		
+		}
+	
 
 	/**
 	 * One point on the queue
 	 */
-	private static class PriPixel implements Comparable<PriPixel>
+	private static class PriPixel
 		{
 		int x,y,z;
 		
 		int group;
 		
-		/**
-		 * Intensity of pixel. Could be looked up using position but keeping a copy here increases memory locality
-		 */
-		int intensity;
-		
-		/**
-		 * By introducing generation collisions on flat areas are handled better.
-		 * This turns watershedding into an extremely primitive levelset method. 
-		 * 
-		 * TODO should generation be reset whenever a new intensity level is hit?
-		 */
-		int generation; 
-		
-		
-		public PriPixel(int x, int y, int z, int group, int intensity, int generation)
+		public PriPixel(int x, int y, int z, int group)
 			{
 			this.x = x;
 			this.y = y;
 			this.z = z;
 			this.group=group;
-			this.intensity = intensity;
-			this.generation = generation;
 			}
-
-		
-		public int compareTo(PriPixel b)
-			{
-			//Intensity based
-			if(intensity>b.intensity)
-				return -1;
-			else if(intensity<b.intensity)
-				return 1;
-			
-			//Order-based
-			else if(generation<b.generation) ///hmmmm. actually, only count generation if the value is the same as the last pixel?
-				return -1;
-			else if(generation>b.generation)
-				return 1;
-			else 
-				return 0;
-			}
-		
-		
-		
 		
 		}
 	
@@ -108,9 +139,9 @@ public class EvOpWatershed extends EvOpStack1
 		
 		public IDPoint(Vector3i p, int id)
 			{
-			x=p.x;
-			y=p.y;
-			z=p.z;
+			this.x=p.x;
+			this.y=p.y;
+			this.z=p.z;
 			this.id=id;
 			}
 		
@@ -164,6 +195,8 @@ public class EvOpWatershed extends EvOpStack1
 	
 	public static EvStack watershed(ProgressHandle progh, EvStack stack, Collection<IDPoint> seeds)
 		{
+		
+		
 		int w=stack.getWidth();
 		int h=stack.getHeight();
 		int d=stack.getDepth();
@@ -175,20 +208,24 @@ public class EvOpWatershed extends EvOpStack1
 		int[][] inarr=stack.getReadOnlyArraysInt(progh);
 		int[][] outarr=stackOut.getOrigArraysInt(progh);
 		
+		long startTime=System.currentTimeMillis();
+
+		SpecialQueue queue=new SpecialQueue();
+		queue.addAllIntensity(inarr);
+
 		//Start queue with seed pixels
-		PriorityQueue<PriPixel> q=new PriorityQueue<PriPixel>();
+		//PriorityQueue<PriPixel> q=new PriorityQueue<PriPixel>();
 		//int curGroup=1;
 		for(IDPoint s:seeds)
-			q.add(new PriPixel(s.x,s.y,s.z,
-					s.id,//curGroup++, 
-					inarr[s.z][s.y*w+s.x],
-					0));
+			queue.add(s.x, s.y, s.z, s.id, inarr[s.z][s.y*w+s.x]);
+		
 		
 		//Go through all pixels
-		while(!q.isEmpty())
+		PriPixel p;
+		while((p=queue.getNext())!=null)
 			{
 			//Take the next pixel off queue
-			PriPixel p=q.poll();
+//			PriPixel p=q.poll();
 			
 			//Make sure the compiler can assume the values to be static
 			int x=p.x;
@@ -199,36 +236,40 @@ public class EvOpWatershed extends EvOpStack1
 			
 			//Check if this pixel should be marked: if neighbours are unmarked or belong to this group.
 			//This will cause basins to have the original value
-			if(outarr[z][thisi]==0 &&
+			if(outarr[z][thisi]==0 /* &&
 					checkNeighFreeOrThisGroup(outarr, w, h, d, x-1, y, z, group) &&
 					checkNeighFreeOrThisGroup(outarr, w, h, d, x+1, y, z, group) &&
-					checkNeighFreeOrThisGroup(outarr, w, h, d, x, y-1, z, group) &&
+					checkNeighFreeOrThisGroup(outarr, w, h, d, x, y-1, z, group) &&    ////orig. 53s. without these, 51s. can remove but need a better viewing mode for ID-data
 					checkNeighFreeOrThisGroup(outarr, w, h, d, x, y+1, z, group) &&
 					checkNeighFreeOrThisGroup(outarr, w, h, d, x, y, z-1, group) &&
-					checkNeighFreeOrThisGroup(outarr, w, h, d, x, y, z+1, group))
+					checkNeighFreeOrThisGroup(outarr, w, h, d, x, y, z+1, group)*/)
 				{
 				//Mark this pixel
 				outarr[z][thisi]=group;
 
 				
 				
-				//Put neighbours on the queue, make sure they are within boundary
-				int nextgen=p.generation+1;
+				//Put neighbours in the queue, make sure they are within boundary
+				//int nextgen=p.generation+1;
 				if(x>0)
-					q.add(new PriPixel(x-1,y,z, group, inarr[z  ][(y  )*w+(x-1)],nextgen));
+					queue.add(x-1, y, z, group, inarr[z  ][(y  )*w+(x-1)]);
 				if(x<w-1)
-					q.add(new PriPixel(x+1,y,z, group, inarr[z  ][(y  )*w+(x+1)],nextgen));
+					queue.add(x+1, y, z, group, inarr[z  ][(y  )*w+(x+1)]);
 				if(y>0)
-					q.add(new PriPixel(x,y-1,z, group, inarr[z  ][(y-1)*w+(x  )],nextgen));
+					queue.add(x, y-1, z, group, inarr[z  ][(y-1)*w+(x  )]);
 				if(y<h-1)
-					q.add(new PriPixel(x,y+1,z, group, inarr[z  ][(y+1)*w+(x  )],nextgen));
+					queue.add(x, y+1, z, group, inarr[z  ][(y+1)*w+(x  )]);
 				if(z>0)
-					q.add(new PriPixel(x,y,z-1, group, inarr[z-1][(y  )*w+(x  )],nextgen));
+					queue.add(x, y, z-1, group, inarr[z-1][(y)*w+(x  )]);
 				if(z<d-1)
-					q.add(new PriPixel(x,y,z+1, group, inarr[z+1][(y  )*w+(x  )],nextgen));
+					queue.add(x, y, z+1, group, inarr[z+1][(y)*w+(x  )]);
 					
 				}
 			}
+		
+		
+		long endTime=System.currentTimeMillis();
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> watershed time "+(endTime-startTime));
 		
 		return stackOut;
 		}
@@ -238,6 +279,7 @@ public class EvOpWatershed extends EvOpStack1
 	 * TODO test could be made faster by factoring out cases of borders
 	 * TODO multiplication could be removed by plugging thisi and doing addition at the caller
 	 */
+	/*
 	private static boolean checkNeighFreeOrThisGroup(int[][] outarr, int w, int h, int d, int x, int y, int z, int group)
 		{
 		if(x>=0 && y>=0 && z>=0 && 
@@ -249,6 +291,6 @@ public class EvOpWatershed extends EvOpStack1
 			}
 		else
 			return true;
-		}
+		}*/
 
 	}
