@@ -628,5 +628,12 @@ public class EvStack implements AnyEvImage
 				return true;
 		return false;
 		}
+
+	public EvPixelsType getPixelFormat()
+		{
+		EvPixels p=getFirstImage().getPixels();
+		return p.getType();
+		}
+
 	
 	}
