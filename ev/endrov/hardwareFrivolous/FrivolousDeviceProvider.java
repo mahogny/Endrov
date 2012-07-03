@@ -33,6 +33,7 @@ import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDeviceProvider;
 import endrov.hardware.EvHardware;
+import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWImageScanner;
@@ -227,13 +228,16 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 		public CameraImage snapInternal()
 			{
-//		int r = (int) stagePos[2];
 			int stagePosPixelsX=(int)(stagePos[0]/getRes());
 			int stagePosPixelsY=(int)(stagePos[1]/getRes());
 			
 			int[] im = model.convolve(stagePosPixelsX, stagePosPixelsY, simulatePSF, simulateNoise);
-			//int[]/*BufferedImage*/ im = model.getImage();
-			CameraImage cim = new CameraImage(model.imageWidth, model.imageHeight, 4, im, 1);
+			EvPixels p=EvPixels.createFromInt(model.imageWidth, model.imageHeight, im); 
+
+			
+			//TODO support other bit depths
+			
+			CameraImage cim = new CameraImage(p);
 			return cim;
 			}
 

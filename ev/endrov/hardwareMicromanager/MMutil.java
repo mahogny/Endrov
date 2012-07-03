@@ -86,11 +86,13 @@ public class MMutil
 		//Might want to handle this in a totally different way
 		
 		core.snapImage();
+		
+		System.out.println("snapped micromanaged, bpp: "+bpp+"  bitdepth:"+bitdepth);
 
 		Object arr;
 		if(core.getNumberOfComponents()==1) //Gray-scale
 			{
-			arr=core.getImage();//core.getLastImage();//;
+			arr=core.getImage();
 
 			//If it is a 16-bit image then it must be casted to 32-bit to handle signedness
 			if(bpp==2 && bitdepth==16)
@@ -107,6 +109,8 @@ public class MMutil
 				arr=newarr;
 				bpp=4;
 				}
+			
+			//what if it is 8 bitdepth, and higher bits? should downconvert?
 			
 			}
 		else

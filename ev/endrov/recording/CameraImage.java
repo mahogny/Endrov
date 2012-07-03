@@ -8,6 +8,7 @@ package endrov.recording;
 import java.awt.image.BufferedImage;
 
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Image from camera
@@ -32,6 +33,31 @@ public class CameraImage
 		this.bytesPerPixel = bytesPerPixel;
 		this.pixels = pixels;
 		this.numComponents = numComponents;
+		}
+	
+	public CameraImage(EvPixels p)
+		{
+		this.w=p.getWidth();
+		this.h=p.getHeight();
+		this.numComponents = 1;
+		if(p.getType()==EvPixelsType.INT)
+			{
+			this.bytesPerPixel = 4;
+			this.pixels = p.getArrayInt();
+			}
+		else if(p.getType()==EvPixelsType.SHORT)
+			{
+			this.bytesPerPixel = 2;
+			this.pixels = p.getArrayShort();
+			}
+		else if(p.getType()==EvPixelsType.UBYTE)
+			{
+			this.bytesPerPixel = 1;
+			this.pixels = p.getArrayUnsignedByte();
+			}
+		else
+			throw new RuntimeException("Unsupported pixel format");
+		
 		}
 
 	public String toString()

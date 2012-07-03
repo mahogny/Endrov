@@ -201,17 +201,35 @@ public class SwapImages
 			ObjectOutputStream os=new ObjectOutputStream(new FileOutputStream(tempFile));
 			
 			if(p.getArrayDouble()!=null)
+				{
+				assert p.getType()==EvPixelsType.DOUBLE;
 				os.writeObject(p.getArrayDouble());
+				}
 			else if(p.getArrayFloat()!=null)
+				{
+				assert p.getType()==EvPixelsType.FLOAT;
 				os.writeObject(p.getArrayFloat());
+				}
 			else if(p.getArrayInt()!=null)
+				{
+				assert p.getType()==EvPixelsType.INT;
 				os.writeObject(p.getArrayInt());
+				}
 			else if(p.getArrayShort()!=null)
+				{
+				assert p.getType()==EvPixelsType.SHORT;
 				os.writeObject(p.getArrayShort());
+				}
 			else if(p.getArrayUnsignedByte()!=null)
+				{
+				assert p.getType()==EvPixelsType.UBYTE;
 				os.writeObject(p.getArrayUnsignedByte());
+				}
 			else if(p.getAWT()!=null)
+				{
+				assert p.getType()==EvPixelsType.AWT;
 				os.writeObject(p.getAWT());
+				}
 			else
 				{
 				System.out.println("Unable to serialize image, it has no data: "+p);
