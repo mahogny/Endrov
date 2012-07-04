@@ -1,8 +1,10 @@
 package util2.hui;
 
 import java.io.File;
+import java.util.Map;
 
 import endrov.data.EvData;
+import endrov.data.EvObject;
 import endrov.data.EvPath;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
@@ -50,6 +52,64 @@ public class Hui
 			
 		//Execute flow
 		flowExec.evaluateAll();
+		
+		
+		
+		
+		
+		}
+	
+	
+	public static void doOnePlate(File imageFile) throws Exception
+		{
+		File outdir=new File(imageFile.getParentFile(), imageFile.getName()+".endrovstats");
+		outdir.mkdir();
+		
+		File flowFile=new File("/Volumes/TBU_main06/customer/hui/onenuc.ostxml");
+		EvData dataFlow=EvData.loadFile(flowFile);
+		System.out.println(dataFlow);
+		
+		EvPath pathFlowNuc=EvPath.parse(dataFlow, "flownuc");
+		EvPath pathFlowLipids=EvPath.parse(dataFlow, "flowlipids");
+		
+		//TODO what about inputs to the flow object? need to code to put in file path!!!
+		
+		EvData dataImages=EvData.loadFile(imageFile);
+
+		
+		for(Map.Entry<String, EvObject> e:dataImages.metaObject.entrySet())
+			{
+			String well=e.getKey();
+			
+
+			long startTime=System.currentTimeMillis();
+			
+			EvPath pathWell=EvPath.parse(dataImages, well);
+			
+			System.out.println("------------ "+well);
+			
+			doOne(dataFlow, pathFlowNuc,    dataImages, pathWell, new File(outdir,"nuc_"+well+".csv"));
+			doOne(dataFlow, pathFlowLipids, dataImages, pathWell, new File(outdir,"lipid_"+well+".csv"));
+			
+			long endTime=System.currentTimeMillis();
+			
+			System.out.println("################################# Time for well: "+(endTime-startTime));
+			
+			
+			}
+		/*
+		String[] wellsX=new String[]{"A","B","C","D","E","F","G","H"};
+		String[] wellsY=new String[]{"01","02","03","04","05","06","07","08","09","10","11","12"};
+		
+		for(int i=0;i<wellsX.length;i++)
+			for(int j=0;j<wellsY.length;j++)
+				{
+				String well=wellsX[i]+wellsY[j];
+				
+				//System.exit(0);
+				
+				}
+				*/
 		}
 	
 	
@@ -61,35 +121,12 @@ public class Hui
 		
 		try
 			{
-			File flowFile=new File("/Volumes/TBU_main06/customer/hui/onenuc.ostxml");
-			EvData dataFlow=EvData.loadFile(flowFile);
-			System.out.println(dataFlow);
 			
-			EvPath pathFlowNuc=EvPath.parse(dataFlow, "flownuc");
-			EvPath pathFlowLipids=EvPath.parse(dataFlow, "flowlipids");
+			doOnePlate(new File("/Volumes/TBU_main06/customer/hui/round2/25"));
+			doOnePlate(new File("/Volumes/TBU_main06/customer/hui/round2/34"));
+			doOnePlate(new File("/Volumes/TBU_main06/customer/hui/round2/52"));
+			doOnePlate(new File("/Volumes/TBU_main06/customer/hui/round2/61"));
 			
-			//TODO what about inputs to the flow object? need to code to put in file path!!!
-			
-			File imageFile=new File("/Volumes/TBU_main06/customer/hui/2012-02-09_000");
-			EvData dataImages=EvData.loadFile(imageFile);
-			
-			String[] wellsX=new String[]{"A","B","C","D","E","F","G","H"};
-			String[] wellsY=new String[]{"01","02","03","04","05","06","07","08","09","10","11","12"};
-			
-			for(int i=0;i<wellsX.length;i++)
-				for(int j=0;j<wellsY.length;j++)
-					{
-					String well=wellsX[i]+wellsY[j];
-					EvPath pathWell=EvPath.parse(dataImages, well);
-					
-					System.out.println("------------ "+well);
-					
-					doOne(dataFlow, pathFlowNuc,    dataImages, pathWell, new File("/Volumes/TBU_main06/customer/hui/data-2012-02-09_000/nuc_"+well+".csv"));
-					doOne(dataFlow, pathFlowLipids, dataImages, pathWell, new File("/Volumes/TBU_main06/customer/hui/data-2012-02-09_000/lipid_"+well+".csv"));
-					
-					//System.exit(0);
-					
-					}
 			}
 		catch (Exception e)
 			{
