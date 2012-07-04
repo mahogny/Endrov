@@ -164,6 +164,7 @@ public class SwapImages
 				{
 				ObjectInputStream is=new ObjectInputStream(new FileInputStream(swapFile));
 				Object o=is.readObject();
+
 				EvPixels p=EvPixels.createFromObject(type, w, h, o);
 
 				return p;
@@ -199,37 +200,19 @@ public class SwapImages
 			//File.createTempFile("endrovswap", ".im");
 			
 			ObjectOutputStream os=new ObjectOutputStream(new FileOutputStream(tempFile));
-			
-			if(p.getArrayDouble()!=null)
-				{
-				assert p.getType()==EvPixelsType.DOUBLE;
+
+			if(p.getType()==EvPixelsType.DOUBLE)
 				os.writeObject(p.getArrayDouble());
-				}
-			else if(p.getArrayFloat()!=null)
-				{
-				assert p.getType()==EvPixelsType.FLOAT;
+			else if(p.getType()==EvPixelsType.FLOAT)
 				os.writeObject(p.getArrayFloat());
-				}
-			else if(p.getArrayInt()!=null)
-				{
-				assert p.getType()==EvPixelsType.INT;
+			else if(p.getType()==EvPixelsType.INT)
 				os.writeObject(p.getArrayInt());
-				}
-			else if(p.getArrayShort()!=null)
-				{
-				assert p.getType()==EvPixelsType.SHORT;
+			else if(p.getType()==EvPixelsType.SHORT)
 				os.writeObject(p.getArrayShort());
-				}
-			else if(p.getArrayUnsignedByte()!=null)
-				{
-				assert p.getType()==EvPixelsType.UBYTE;
+			else if(p.getType()==EvPixelsType.UBYTE)
 				os.writeObject(p.getArrayUnsignedByte());
-				}
-			else if(p.getAWT()!=null)
-				{
-				assert p.getType()==EvPixelsType.AWT;
+			else if(p.getType()==EvPixelsType.AWT)
 				os.writeObject(p.getAWT());
-				}
 			else
 				{
 				System.out.println("Unable to serialize image, it has no data: "+p);
