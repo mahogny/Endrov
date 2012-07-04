@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,7 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.util.EvFileUtil;
+import endrov.util.EvParallel;
 
 public class TBUfromOST
 	{
@@ -56,7 +58,7 @@ public class TBUfromOST
 			*/
 			
 			
-			
+	/*		
 			doone( errors, new
 				  File("/pimai/TBU_extra05/pimaiost3dgood"), new
 				  File("/x/pimaiost3dgood") );
@@ -69,16 +71,33 @@ public class TBUfromOST
 			doone( errors, new
 				  File("/pimai/TBU_extra05/pimaiost4dgood"), new
 				  File("/x/pimaiost4dgood") );
+*/
 
-			doone( errors, new
-				  File("/pimai/TBU_extra05/pimaiost4dpaper"), new
-				  File("/x/c") );
 
-			/* this one 1Tb
-			doone( errors, new
-				  File("/pimai/TBU_extra05/pimaiost/pimaiostdaemon"), new
-				  File("/x/pimaiostdaemon") );
+
+			doone( errors,
+					new				  File("/pimai/TBU_extra05/hasbeenmovedOST/pimaiost4dgood/"), 
+					new File("/Volumes/TBU_main06/newost"),
+					new				  File("/petra/ost/ost4dgood")
+			
+			
+			);
+			
+			
+			/*
+			doone( errors, 
+					new File("/pimai/TBU_extra05/pimaiostdaemon"), 
+				  new File("/media/e92a3a41-122c-452c-ac30-c00901e758cf/pimaiostdaemon"),
+				  new File("/x/pimaiostdaemon")
+			);
 			*/
+
+			/*
+			doone( errors, new
+				  File("/media/980ef0cb-4b1d-38d6-b53c-ebe4232d222d/pimaiost4dpaper"), new
+				  File("/media/e92a3a41-122c-452c-ac30-c00901e758cf/pimaiost4dpaper") );
+			*/  
+			
 			
 
 			errors.close();
@@ -245,88 +264,99 @@ public class TBUfromOST
 
 		}
 
-	private static void doone(PrintWriter errors, File indir, File outdir)
+	private static void doone(final PrintWriter errors, final File indir, final File outdir)
 		{
-
-		for (File ostfile : indir.listFiles())
+		doone(errors,indir,outdir,outdir);
+		}
+	
+	private static void doone(final PrintWriter errors, final File indir, final File outdir, final File altoutdir)
+		{
+		EvParallel.map_(1, Arrays.asList(indir.listFiles()), new EvParallel.FuncAB<File, Object>()
 			{
-
-			if (ostfile.getName().endsWith(".ost"))
-				{
-
-				String fname = ostfile.getName();
-				fname = fname.substring(0, fname.length()-4)+".ome.tiff";
-				System.out.println(fname);
-
-				File outfileOMETIFF = new File(outdir, fname);
-
-				if (outfileOMETIFF.exists())
-					System.out.println("Already done: "+outfileOMETIFF);
-				else
+				public Object func(File ostfile)
 					{
-					System.out.println(outfileOMETIFF);
+					
 
-					try
+					if (ostfile.getName().endsWith(".ost"))
 						{
-						fixOST(ostfile);
-						}
-					catch (Exception e1)
-						{
-						e1.printStackTrace();
-						}
 
-					try
-						{
-						// Convert extra data
-						File outfileData = new File(outdir, fname+".data");
-						outfileData.mkdirs();
-						System.out.println(outfileData);
+						String fname = ostfile.getName();
+						fname = fname.substring(0, fname.length()-4)+".ome.tiff";
+						System.out.println(fname);
 
-						// Copy all the files in the data directory
-						File infileData = new File(ostfile, "data");
-						if(infileData.exists())
+						File outfileOMETIFF = new File(outdir, fname);
+						File outfileOMETIFF_alt = new File(altoutdir, fname);
+
+						if (outfileOMETIFF.exists() || outfileOMETIFF_alt.exists())
+							System.out.println("Already done: "+outfileOMETIFF);
+						else
 							{
-							for (File indata : infileData.listFiles())
+							System.out.println(outfileOMETIFF);
+
+							try
 								{
-								File outdata = new File(outfileData, indata.getName());
-								System.out.println("  "+indata+" -> "+outdata);
-								// should the create date etc be preserved?
-								copyRecursive(indata, outdata);
+								fixOST(ostfile);
 								}
+							catch (Exception e1)
+								{
+								e1.printStackTrace();
+								}
+
+							try
+								{
+								// Convert extra data
+								File outfileData = new File(outdir, fname+".data");
+								outfileData.mkdirs();
+								System.out.println(outfileData);
+
+								// Copy all the files in the data directory
+								File infileData = new File(ostfile, "data");
+								if(infileData.exists())
+									{
+									for (File indata : infileData.listFiles())
+										{
+										File outdata = new File(outfileData, indata.getName());
+										System.out.println("  "+indata+" -> "+outdata);
+										// should the create date etc be preserved?
+										copyRecursive(indata, outdata);
+										}
+									}
+								
+								// Copy all the tag files
+								for (File indata : ostfile.listFiles())
+									if (indata.getName().endsWith(".txt"))
+										{
+										File outdata = new File(outfileData, indata.getName());
+										System.out.println("  "+indata+" -> "+outdata);
+										// should the create date etc be preserved?
+										// EvFileUtil.copy(indata, outdata);
+
+										copyRecursive(indata, outdata);
+										}
+								
+								// Convert images
+								EvData data = EvData.loadFile(ostfile);
+								data.saveDataAs(outfileOMETIFF);
+								}
+							catch (Exception e)
+								{
+								e.printStackTrace();
+
+								errors.println(e.getMessage());
+								for (StackTraceElement el : e.getStackTrace())
+									errors.println(el);
+
+								errors.flush();
+								}
+
 							}
-						
-						// Copy all the tag files
-						for (File indata : ostfile.listFiles())
-							if (indata.getName().endsWith(".txt"))
-								{
-								File outdata = new File(outfileData, indata.getName());
-								System.out.println("  "+indata+" -> "+outdata);
-								// should the create date etc be preserved?
-								// EvFileUtil.copy(indata, outdata);
 
-								copyRecursive(indata, outdata);
-								}
-						
-						// Convert images
-						EvData data = EvData.loadFile(ostfile);
-						data.saveDataAs(outfileOMETIFF);
 						}
-					catch (Exception e)
-						{
-						e.printStackTrace();
-
-						errors.println(e.getMessage());
-						for (StackTraceElement el : e.getStackTrace())
-							errors.println(el);
-
-						errors.flush();
-						}
-
+					
+					return null;
 					}
+			});
 
-				}
-
-			}
 
 		}
 	}
