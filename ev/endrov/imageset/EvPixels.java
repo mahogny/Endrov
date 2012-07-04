@@ -13,6 +13,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.WeakHashMap;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
 
 /**
  * <p>
@@ -838,6 +843,42 @@ public class EvPixels implements AnyEvImage
 		else
 			return convertTo(EvPixelsType.DOUBLE, true).asciiPart(y, startX, endX);
 		return sb.toString();
+		}
+	
+	
+	public static void main(String[] args)
+		{
+		BufferedImage bim=new BufferedImage(100, 100, BufferedImage.TYPE_BYTE_GRAY);
+		WritableRaster r=bim.getRaster();
+//		r.setPixel(0, 0, new int[100]);
+		r.setSample(0, 0, 0, -56);
+
+		/*
+		JFrame f=new JFrame();
+		f.add(new JLabel(new ImageIcon(bim)));
+		f.setVisible(true);
+		*/
+		EvPixels p=new EvPixels(bim);
+		
+		p=p.convertTo(EvPixelsType.UBYTE, false);
+		
+		//p.getArrayUnsignedByte()[0]=(byte)200;
+		
+		System.out.println(p.getArrayUnsignedByte()[0]);
+		
+		//////////////////
+		
+		
+		p=new EvPixels(EvPixelsType.INT,1,1);
+		p.getArrayInt()[0]=200;
+		p=p.convertTo(EvPixelsType.UBYTE, true);
+		System.out.println(p.getArrayUnsignedByte()[0]);
+		
+		p=p.convertTo(EvPixelsType.INT, true);
+		System.out.println(p.getArrayInt()[0]);
+		
+		
+		
 		}
 	
 	

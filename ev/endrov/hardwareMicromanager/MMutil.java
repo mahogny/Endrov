@@ -67,7 +67,7 @@ public class MMutil
 	/**
 	 * Snap one image
 	 */
-	public static CameraImage snap(CMMCore core, String device) throws Exception
+	public static CameraImage snap(CMMCore core, String device, String forceFormat) throws Exception
 		{
 		if(!core.getCameraDevice().equals(device))
 			core.setCameraDevice(device);
@@ -125,7 +125,8 @@ public class MMutil
 				(int)core.getImageHeight(),
 				bpp,
 				arr,
-				numComponent
+				numComponent,
+				forceFormat
 				);
 		return im;
 		}
@@ -134,7 +135,7 @@ public class MMutil
 	/**
 	 * Snap one image
 	 */
-	public static CameraImage snapSequence(CMMCore core, String device) throws Exception
+	public static CameraImage snapSequence(CMMCore core, String device, String forceFormat) throws Exception
 		{
 		if(!core.getCameraDevice().equals(device))
 			core.setCameraDevice(device);
@@ -144,6 +145,10 @@ public class MMutil
 		
 		int bpp=(int)core.getBytesPerPixel();
 		int numComponent=(int)core.getNumberOfComponents();
+		int bitdepth=(int)core.getImageBitDepth(); //How many bits of dynamic range are to be expected from the camera. This value should be used only as a guideline - it does not guarante that image buffer will contain only values from the returned dynamic range.
+
+		System.out.println("snapped micromanaged, bpp: "+bpp+"  bitdepth:"+bitdepth);
+
 		
 		//bug workaround???
 		String p=core.getProperty(device, "PixelType");
@@ -159,7 +164,8 @@ public class MMutil
 				(int)core.getImageHeight(),
 				bpp,
 				arr,
-				numComponent
+				numComponent,
+				forceFormat
 				);
 		return im;
 		}

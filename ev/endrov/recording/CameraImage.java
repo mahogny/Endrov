@@ -24,15 +24,17 @@ public class CameraImage
 	public int bytesPerPixel;
 	public Object pixels; //byte[] or short[] or int[]
 	public int numComponents;
+	public String forceFormat;
 	
 	
-	public CameraImage(int w, int h, int bytesPerPixel, Object pixels, int numComponents)
+	public CameraImage(int w, int h, int bytesPerPixel, Object pixels, int numComponents, String forceFormat)
 		{
 		this.w = w;
 		this.h = h;
 		this.bytesPerPixel = bytesPerPixel;
 		this.pixels = pixels;
 		this.numComponents = numComponents;
+		this.forceFormat = forceFormat;
 		}
 	
 	public CameraImage(EvPixels p)
@@ -66,6 +68,46 @@ public class CameraImage
 		}
 	
 	
+	private EvPixels[] fixFormat(EvPixels[] parr)
+		{
+		for(int i=0;i<parr.length;i++)
+			{
+			EvPixelsType curType=parr[i].getType();
+			EvPixels p=parr[i];
+			if(forceFormat.equals("8-bit int") && curType!=EvPixelsType.UBYTE)
+				{
+				p=p.convertToInt(false);
+				int arr[]=p.getArrayInt();
+
+				//Clamp
+				for(int j=0;j<arr.length;j++)
+					if(arr[j]>255)
+						arr[j]=255;
+				
+				p=p.convertToUByte(true);
+				}
+			else if(forceFormat.equals("16-bit int") && curType!=EvPixelsType.SHORT)
+				{
+				p=p.convertToInt(false);
+				int arr[]=p.getArrayInt();
+
+				//Clamp
+				for(int j=0;j<arr.length;j++)
+					if(arr[j]>32767)
+						arr[j]=32767;
+				
+				p=p.convertToShort(true);
+				
+				}
+			else if(forceFormat.equals("32-bit int") && curType!=EvPixelsType.INT)
+				{
+				p=p.convertToInt(true);
+				}
+			parr[i]=p;
+			}
+		return parr;
+		}
+	
 	/**
 	 * Get pixel data from camera
 	 */
@@ -73,7 +115,7 @@ public class CameraImage
 		{
 		if(pixels instanceof BufferedImage)
 			{
-			return new EvPixels[]{new EvPixels((BufferedImage)pixels)};
+			return fixFormat(new EvPixels[]{new EvPixels((BufferedImage)pixels)});
 			}
 		else
 			{
@@ -82,13 +124,13 @@ public class CameraImage
 				{
 				if(pixels instanceof byte[])
 				//if(bytesPerPixel==1)
-					return new EvPixels[]{EvPixels.createFromUByte(w, h, (byte[])pixels)};
+					return fixFormat(new EvPixels[]{EvPixels.createFromUByte(w, h, (byte[])pixels)});
 				else if(pixels instanceof short[])
 				//else if(bytesPerPixel==2)
-					return new EvPixels[]{EvPixels.createFromShort(w, h, (short[])pixels)};
+					return fixFormat(new EvPixels[]{EvPixels.createFromShort(w, h, (short[])pixels)});
 				else if(pixels instanceof int[])
 				//else if(bytesPerPixel==4)
-					return new EvPixels[]{EvPixels.createFromInt(w, h, (int[])pixels)};
+					return fixFormat(new EvPixels[]{EvPixels.createFromInt(w, h, (int[])pixels)});
 				}
 			else
 				{
@@ -113,11 +155,11 @@ public class CameraImage
 								b[i]+=128;
 							}
 						
-						return new EvPixels[]{
+						return fixFormat(new EvPixels[]{
 								EvPixels.createFromInt(w, h, (int[])r),
 								EvPixels.createFromInt(w, h, (int[])g),
 								EvPixels.createFromInt(w, h, (int[])b)
-							};
+							});
 						}
 					}
 				
@@ -139,11 +181,12 @@ public class CameraImage
 		return h;
 		}
 
+	/*
 	public int getBytesPerPixel()
 		{
 		return bytesPerPixel;
 		}
-
+*/
 	public int getNumComponents()
 		{
 		return numComponents;

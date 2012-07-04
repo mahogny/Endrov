@@ -20,10 +20,17 @@ import endrov.util.EvDecimal;
  * 
  * @author Johan Henriksson
  */
-public class MMCamera /*extends MMDeviceAdapter*/ implements HWCamera
+public class MMCamera implements HWCamera
 	{
 
-	EvDecimal expTime = new EvDecimal("100");
+	private EvDecimal expTime = new EvDecimal("100");
+	private String forceBPP = "None";
+	
+	private final static String propExposure="Exposure";
+	private final static String propForceBitType="Force pixel format";
+	
+	
+	private DevicePropertyType typeFroceBitType=DevicePropertyType.getEditableCategoryState(new String[]{"None","8-bit int","16-bit int","32-bit int"});
 
 	public SortedMap<String, String> getPropertyMap()
 		{
@@ -31,6 +38,9 @@ public class MMCamera /*extends MMDeviceAdapter*/ implements HWCamera
 			{
 			SortedMap<String, String> map=MMutil.getPropMap(mm.core,mmDeviceName);
 			map.put("Exposure", ""+expTime);
+			
+			map.put(propForceBitType, ""+forceBPP);
+			
 			return map;
 			}
 		catch (Exception e)
@@ -64,6 +74,7 @@ public class MMCamera /*extends MMDeviceAdapter*/ implements HWCamera
 				}
 			
 			map.put("Exposure", new DevicePropertyType());
+			map.put(propForceBitType, typeFroceBitType);
 			
 			return map;
 			}
@@ -77,8 +88,10 @@ public class MMCamera /*extends MMDeviceAdapter*/ implements HWCamera
 		{
 		try
 			{
-			if (prop.equals("Exposure"))
+			if (prop.equals(propExposure))
 				return ""+expTime;
+			else if(prop.equals(propForceBitType))
+				return ""+forceBPP;
 			else
 				return mm.core.getProperty(mmDeviceName, prop);
 			}
@@ -93,8 +106,10 @@ public class MMCamera /*extends MMDeviceAdapter*/ implements HWCamera
 		{
 		try
 			{
-			if(prop.equals("Exposure"))
+			if(prop.equals(propExposure))
 				expTime=new EvDecimal(value);
+			else if(prop.equals(propForceBitType))
+				forceBPP=value;
 			else
 				mm.core.setProperty(mmDeviceName, prop, value);
 			}
@@ -120,7 +135,7 @@ public class MMCamera /*extends MMDeviceAdapter*/ implements HWCamera
 	//		int numComponent=(int)core.getNumberOfComponents();
 
 			mm.core.setExposure(expTime.doubleValue());
-			return MMutil.snap(mm.core, mmDeviceName);
+			return MMutil.snap(mm.core, mmDeviceName, forceBPP);
 			}
 		catch (Exception e)
 			{
@@ -191,7 +206,7 @@ public class MMCamera /*extends MMDeviceAdapter*/ implements HWCamera
 
 	public CameraImage snapSequence() throws Exception
 		{
-		return MMutil.snapSequence(mm.core, mmDeviceName);
+		return MMutil.snapSequence(mm.core, mmDeviceName, forceBPP);
 		}
 
 	/*
