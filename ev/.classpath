@@ -138,5 +138,11 @@
 	<classpathentry kind="lib" path="libs/imglib_inc/imglib-io.jar"/>
 	<classpathentry kind="lib" path="libs/imglib_inc/imglib-scripting.jar"/>
 	<classpathentry kind="lib" path="libs/imglib_inc/imglib.jar"/>
+	<classpathentry kind="lib" path="libs/imglib_inc/imglib2-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/imglib_inc/imglib2-algorithms-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/imglib_inc/imglib2-algorithms-gpl-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/imglib_inc/imglib2-io-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/imglib_inc/imglib2-ops-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/imglib_inc/imglib2-realtransform-2.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
