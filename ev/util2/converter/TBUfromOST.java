@@ -1,13 +1,11 @@
 package util2.converter;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -263,12 +261,12 @@ public class TBUfromOST
 			}
 
 		}
-
+/*
 	private static void doone(final PrintWriter errors, final File indir, final File outdir)
 		{
 		doone(errors,indir,outdir,outdir);
 		}
-	
+	*/
 	private static void doone(final PrintWriter errors, final File indir, final File outdir, final File altoutdir)
 		{
 		EvParallel.map_(1, Arrays.asList(indir.listFiles()), new EvParallel.FuncAB<File, Object>()

@@ -13,11 +13,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.WeakHashMap;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
 
 /**
  * <p>

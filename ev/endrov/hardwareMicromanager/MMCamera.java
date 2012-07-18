@@ -144,13 +144,13 @@ public class MMCamera implements HWCamera
 			}
 		}
 	
-	public long getCamWidth()
+	public int getCamWidth()
 		{
-		return mm.core.getImageWidth();
+		return (int)mm.core.getImageWidth();
 		}
-	public long getCamHeight()
+	public int getCamHeight()
 		{
-		return mm.core.getImageHeight();
+		return (int)mm.core.getImageHeight();
 		}
 
 	private double getRes()

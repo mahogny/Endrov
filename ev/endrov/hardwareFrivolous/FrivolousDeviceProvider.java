@@ -417,15 +417,15 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			//this.height=height;
 			}
 
-		public long getCamWidth() {
-			
-			return (long) width;
-		}
+		public int getCamWidth() 
+			{
+			return width;
+			}
 
-		public long getCamHeight() {
-			
-			return (long) height;
-		}
+		public int getCamHeight()
+			{
+			return  height;
+			}
 
 		}
 

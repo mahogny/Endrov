@@ -390,10 +390,8 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 				double xLower = roi.getPlacementHandle2().getX();
 				double yLower = roi.getPlacementHandle2().getY();
 				HWCamera cam = getCurrentCamera();
-				double noOfImagesX = Math.ceil(Math.abs(xUpper-xLower)
-						/cam.getCamWidth());
-				double noOfImagesY = Math.ceil(Math.abs(yUpper-yLower)
-						/cam.getCamHeight());
+				double noOfImagesX = Math.ceil(Math.abs(xUpper-xLower)/cam.getCamWidth());
+				double noOfImagesY = Math.ceil(Math.abs(yUpper-yLower)/cam.getCamHeight());
 
 				for (int i = 0; i<(int) noOfImagesY; i++)
 					{
