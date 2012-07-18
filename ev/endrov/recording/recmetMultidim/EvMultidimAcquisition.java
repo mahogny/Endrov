@@ -1,6 +1,8 @@
 package endrov.recording.recmetMultidim;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.JMenu;
@@ -29,6 +31,7 @@ import endrov.recording.ResolutionManager;
 import endrov.recording.device.HWCamera;
 import endrov.recording.device.HWTrigger;
 import endrov.recording.device.HWTrigger.TriggerListener;
+import endrov.recording.positionsWindow.Position;
 import endrov.recording.widgets.RecSettingsChannel;
 import endrov.recording.widgets.RecSettingsDimensionsOrder;
 import endrov.recording.widgets.RecSettingsPositions;
@@ -44,7 +47,7 @@ import endrov.util.ProgressHandle;
  * Simple multidimensional acquisition - positions, times, stacks, channels
  * 
  * @author Johan Henriksson
- *
+ * @author Kim Nordlöf, Erik Vernersson
  */
 public class EvMultidimAcquisition extends EvAcquisition
 	{
@@ -79,7 +82,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 		private EvMultidimAcquisition settings;
 		private boolean toStop=true;
 
-		private Imageset imset=new Imageset();
+//		private Imageset imset=new Imageset();
 		private EvDevicePath cam=null;
 		private int currentFrameCount;
 		private EvDecimal currentFrame;
@@ -87,14 +90,10 @@ public class EvMultidimAcquisition extends EvAcquisition
 		private int currentZCount;
 		private EvDecimal dz;
 		
+		private String currentPos;
+		
 		private RecSettingsChannel.OneChannel currentChannel;
 		
-		
-		
-
-		//////////////////////////////
-		//////////////////////////////
-		//////////////////////////////
 		
 		
 		/**
@@ -137,8 +136,42 @@ public class EvMultidimAcquisition extends EvAcquisition
 						}
 					EvImage evim=new EvImage(pix);
 
+					
+//					EvContainer container=imset;
+					Imageset thisImset;
+					if(currentPos==null)
+					{
+						thisImset=(Imageset)container;
+					}
+					else
+					{
+						EvObject thisOb=container.metaObject.get(currentPos);
+						if(thisOb==null)
+							container.metaObject.put(currentPos, thisOb=new Imageset());
+						thisImset=(Imageset)thisOb;
+					}
+					
+					
+					
+					/*
+					private Imageset imset=new Imageset();
+					
+					String channelName=settings.containerStoreName;
+					boolean isRGB=false;
+					if(isRGB)
+						{
+						imset.metaObject.put(channelName+"R", new EvChannel());
+						imset.metaObject.put(channelName+"G", new EvChannel());
+						imset.metaObject.put(channelName+"B", new EvChannel());
+						}
+					else
+						imset.metaObject.put(channelName, new EvChannel());
+					*/
+					
+					//TODO fix container store name!!!!??
+					
 					//Get a stack, fill in metadata
-					EvChannel ch=imset.getCreateChannel("ch");
+					EvChannel ch=thisImset.getCreateChannel(settings.containerStoreName);
 					EvStack stack=new EvStack();//.getCreateFrame(currentFrame);
 					ch.putStack(currentFrame, stack);
 					
@@ -152,7 +185,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 					stack.setDisplacement(new Vector3d(
 							RecordingResource.getCurrentStageX(),  //Always do this?
 							RecordingResource.getCurrentStageY(),
-							dz.multiply(currentChannel.z0).doubleValue() //scary!!!
+							dz.multiply(currentChannel.z0).doubleValue() //scary!!!!
 							));
 					
 					int zpos=(currentZCount-currentChannel.z0)/currentChannel.zInc;
@@ -342,19 +375,29 @@ public class EvMultidimAcquisition extends EvAcquisition
 		 * Move to the next position, recurse
 		 */
 		private class RecOpPos extends RecOp
-			{
+		{
 			public void exec()
+			{	
+				for(Position pos:positions.positions)
 				{
-				//TODO
-				recurse.exec();
-				}
+					Map<String, Double> gotoPos=new HashMap<String, Double>();			
+					
+					//get all the axes
+					for(int i = 0; i<pos.getAxisInfo().length; i++){
+						gotoPos.put(pos.getAxisInfo()[i].getDevice().getAxisName()[pos.getAxisInfo()[i].getAxis()],
+								pos.getAxisInfo()[i].getValue());
+					}
+					//go to position
+					RecordingResource.setStagePos(gotoPos);
+					System.out.println(gotoPos);
+					currentPos=pos.getName();		
+					
+					recurse.exec();
+					
+				}			
 			}
-		
-		
-		//////////////////////////////
-		//////////////////////////////
-		//////////////////////////////
-		
+		}
+	
 
 		/**
 		 * Build a call stack out of the operations. Returns the first operation.
@@ -447,26 +490,22 @@ public class EvMultidimAcquisition extends EvAcquisition
 					 */
 
 					
+					
 					/**
 					 * Prepare object etc
 					 */
-					String channelName=settings.containerStoreName;
-					boolean isRGB=false;
-					for(int i=0;;i++)
-						if(container.getChild("im"+i)==null)
-							{
-							container.metaObject.put("im"+i, imset);
-							
-							if(isRGB)
+					if(positions.positions.isEmpty())
+					{
+						Imageset imset=new Imageset();
+						for(int i=0;;i++)
+							if(container.getChild("im"+i)==null)
 								{
-								imset.metaObject.put(channelName+"R", new EvChannel());
-								imset.metaObject.put(channelName+"G", new EvChannel());
-								imset.metaObject.put(channelName+"B", new EvChannel());
+								container.metaObject.put("im"+i, imset);
+								container=imset;
+								break;
 								}
-							else
-								imset.metaObject.put(channelName, new EvChannel());
-							break;
-							}
+						
+					}
 
 					//TODO signal update on the object
 					BasicWindow.updateWindows();

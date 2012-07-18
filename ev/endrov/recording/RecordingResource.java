@@ -5,6 +5,17 @@
  */
 package endrov.recording;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -274,6 +285,65 @@ public class RecordingResource
 
 		}
 
+	
+	
+	
+
+	public static void savePosList(File f) 
+		{
+		try
+			{
+			Position[] anArray = new Position[RecordingResource.posList.size()];
+			for(int i=0;i<RecordingResource.posList.size();i++)
+				anArray[i]=RecordingResource.posList.get(i);
+
+			OutputStream file = new FileOutputStream(f);
+			OutputStream buffer = new BufferedOutputStream(file);
+			ObjectOutput output = new ObjectOutputStream(buffer);
+			output.writeInt(1); //Version
+			output.writeObject(anArray);
+			output.close();
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			throw new RuntimeException("Could not save positions: "+e.getMessage());
+			}
+		}
+
+	
+	
+	
+	
+	
+	public static void loadPosList(File f)
+		{
+		Position[] anArray = null;
+
+		try
+			{
+			InputStream file = new FileInputStream("list.ser");
+			InputStream buffer = new BufferedInputStream(file);
+			ObjectInput input = new ObjectInputStream(buffer);
+
+			/*int version = */input.readInt(); 
+			anArray = (Position[]) input.readObject();
+			input.close();
+			
+			RecordingResource.posList.clear();
+			for (int i = 0; i<anArray.length; i++)
+				RecordingResource.posList.add(anArray[i]);
+			RecordingResource.posListUpdated();
+			}
+		catch (Exception e2)
+			{
+			e2.printStackTrace();
+			throw new RuntimeException("Could not read file: "+e2.getMessage());
+			}
+		}
+	
+	
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

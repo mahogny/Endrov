@@ -761,6 +761,15 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 
 		}
 
+	
+
+	public void positionsUpdated()
+		{
+		repaint();
+
+		}
+
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/
@@ -772,38 +781,32 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 		{
 		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
 			{
-				public void newBasicWindow(BasicWindow w)
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(), new Hook());
+				}
+
+			class Hook implements BasicWindowHook, ActionListener
+				{
+				public void createMenus(BasicWindow w)
 					{
-					w.basicWindowExtensionHook.put(this.getClass(), new Hook());
+					JMenuItem mi = new JMenuItem("Overview", new ImageIcon(getClass()
+							.getResource("fugueBinocular.png")));
+					mi.addActionListener(this);
+					BasicWindow.addMenuItemSorted(
+							w.getCreateMenuWindowCategory("Recording"), mi);
 					}
 
-				class Hook implements BasicWindowHook, ActionListener
+				public void actionPerformed(ActionEvent e)
 					{
-					public void createMenus(BasicWindow w)
-						{
-						JMenuItem mi = new JMenuItem("Overview", new ImageIcon(getClass()
-								.getResource("tangoCamera.png")));
-						mi.addActionListener(this);
-						BasicWindow.addMenuItemSorted(
-								w.getCreateMenuWindowCategory("Recording"), mi);
-						}
-
-					public void actionPerformed(ActionEvent e)
-						{
-						new OverviewWindow();
-						}
-
-					public void buildMenu(BasicWindow w)
-						{
-						}
+					new OverviewWindow();
 					}
+
+				public void buildMenu(BasicWindow w)
+					{
+					}
+				}
 			});
-
-		}
-
-	public void positionsUpdated()
-		{
-		repaint();
 
 		}
 

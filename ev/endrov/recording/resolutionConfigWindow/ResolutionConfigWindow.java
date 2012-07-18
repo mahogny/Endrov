@@ -23,7 +23,6 @@ import endrov.basicWindow.BasicWindowHook;
 import endrov.data.EvData;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
-import endrov.hardware.EvHardware;
 import endrov.hardware.EvHardwareConfigGroup.State;
 import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
@@ -136,103 +135,110 @@ public class ResolutionConfigWindow extends BasicWindow implements
 				}
 			}
 
-		EvDevicePath campath = cCaptureDevice.getSelectedDevice();
-		if (campath==null)
-			return;
-
-		if (e.getSource()==bEnter)
+		
+		EvDevicePath campath = (EvDevicePath) cCaptureDevice.getSelectedDevice();
+		if (campath!=null)
 			{
-
-			try
+			if (e.getSource()==bEnter)
 				{
-				// Get resolution
-				String sResX = JOptionPane.showInputDialog("Resolution X [um/px]?");
-				if (sResX==null)
-					return;
-				double resX = Double.parseDouble(sResX);
-				String sResY = JOptionPane.showInputDialog("Resolution Y [um/px]?");
-				if (sResY==null)
-					return;
-				double resY = Double.parseDouble(sResY);
-
-				String name = ResolutionManager.getUnusedResName(campath);
-
-				name = JOptionPane.showInputDialog("Name of resolution?", name);
-				if (name==null)
-					return;
-
-				// Create the resolution state
-				ResolutionState rstate = new ResolutionState();
-				rstate.cameraRes = new ResolutionManager.Resolution(resX, resY);
-				rstate.state = State.recordCurrent(wProperties.getSelectedProperties());
-				ResolutionManager.getCreateResolutionStatesMap(campath).put(name,
-						rstate);
-
-				generateList();
+				enterResolution(campath);
 				}
-			catch (NumberFormatException e1)
+			else if (e.getSource()==bDetect)
 				{
-				BasicWindow.showErrorDialog("Invalid number");
-				return;
+				detectResolution(campath);
 				}
 
-			}
-		else if (e.getSource()==bDetect)
-			{
-			HWCamera cam = getCurrentCamera();
-
-			if (cam!=null)
-				{
-				CameraImage cim = cam.snap();
-				lastCameraImage = cim.getPixels();
-				EvPixels imageA = lastCameraImage[0];
-
-				int cameraDisplacment = 50;
-
-				double newX = RecordingResource.getCurrentStageX()-cameraDisplacment;
-				double newY = RecordingResource.getCurrentStageY()-cameraDisplacment;
-
-				Map<String, Double> pos = new HashMap<String, Double>();
-				pos.put("X", newX);
-				pos.put("Y", newY);
-				RecordingResource.setStagePos(pos);
-
-				cim = cam.snap();
-				lastCameraImage = cim.getPixels();
-				EvPixels imageB = lastCameraImage[0];
-
-				double[] corrV = ImageDisplacementCorrelation.displacement(imageA, imageB);
-
-				// [um/px]
-				double resX, resY;
-				resX = cameraDisplacment/corrV[0];
-				resY = cameraDisplacment/corrV[1];
-
-				String name = "Detected Resolution";
-				
-				// Create the resolution state
-				ResolutionState rstate = new ResolutionState();
-				rstate.cameraRes = new ResolutionManager.Resolution(resX, resY);
-				rstate.state = State.recordCurrent(wProperties.getSelectedProperties());
-				ResolutionManager.getCreateResolutionStatesMap(campath).put(name,
-						rstate);
-				generateList();
-				System.out.println(resX+" "+resY);
-
-				}
-
+			
 			}
 
 		}
 
-	private HWCamera getCurrentCamera()
+	/**
+	 * Enter the current resolution manually
+	 */
+	private void enterResolution(EvDevicePath campath)
 		{
-		EvDevicePath camname = (EvDevicePath) cCaptureDevice.getSelectedDevice();
-		if (camname!=null)
-			return (HWCamera) EvHardware.getDevice(camname);
-		else
-			return null;
+		
+		
+		try
+			{
+			// Get resolution
+			String sResX = JOptionPane.showInputDialog("Resolution X [um/px]?");
+			if (sResX==null)
+				return;
+			double resX = Double.parseDouble(sResX);
+			String sResY = JOptionPane.showInputDialog("Resolution Y [um/px]?");
+			if (sResY==null)
+				return;
+			double resY = Double.parseDouble(sResY);
+
+			String name = ResolutionManager.getUnusedResName(campath);
+			name = JOptionPane.showInputDialog("Name of resolution?", name);
+			if (name==null)
+				return;
+
+			// Create the resolution state
+			ResolutionState rstate = new ResolutionState();
+			rstate.cameraRes = new ResolutionManager.Resolution(resX, resY);
+			rstate.state = State.recordCurrent(wProperties.getSelectedProperties());
+			ResolutionManager.getCreateResolutionStatesMap(campath).put(name,
+					rstate);
+
+			generateList();
+			}
+		catch (NumberFormatException e1)
+			{
+			BasicWindow.showErrorDialog("Invalid number");
+			return;
+			}
+
 		}
+	
+	
+	/**
+	 * Auto-detect the resolution by moving the stage and measuring the offset in the camera
+	 */
+	private void detectResolution(EvDevicePath campath)
+		{
+		HWCamera cam=(HWCamera)campath.getDevice();
+		
+		CameraImage cim = cam.snap();
+		lastCameraImage = cim.getPixels();
+		EvPixels imageA = lastCameraImage[0];
+
+		int cameraDisplacment = 50;
+
+		double newX = RecordingResource.getCurrentStageX()-cameraDisplacment;
+		double newY = RecordingResource.getCurrentStageY()-cameraDisplacment;
+
+		Map<String, Double> pos = new HashMap<String, Double>();
+		pos.put("X", newX);
+		pos.put("Y", newY);
+		RecordingResource.setStagePos(pos);
+
+		cim = cam.snap();
+		lastCameraImage = cim.getPixels();
+		EvPixels imageB = lastCameraImage[0];
+
+		double[] corrV = ImageDisplacementCorrelation.displacement(imageA, imageB);
+
+		// [um/px]
+		double resX, resY;
+		resX = cameraDisplacment/corrV[0];
+		resY = cameraDisplacment/corrV[1];
+
+		String name = "Detected Resolution";
+		
+		// Create the resolution state
+		ResolutionState rstate = new ResolutionState();
+		rstate.cameraRes = new ResolutionManager.Resolution(resX, resY);
+		rstate.state = State.recordCurrent(wProperties.getSelectedProperties());
+		ResolutionManager.getCreateResolutionStatesMap(campath).put(name,	rstate);
+		generateList();
+		
+		showInformativeDialog("Resolution detected: "+resX+" "+resY);
+		}
+
 
 	@Override
 	public void dataChangedEvent()

@@ -9,17 +9,7 @@ import java.awt.BorderLayout;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.File;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -29,14 +19,17 @@ import java.util.Map;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 
+import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import javax.swing.ListSelectionModel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import endrov.recording.RecordingResource;
 import endrov.recording.RecordingResource.PositionListListener;
+import endrov.util.EvFileUtil;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -72,7 +65,6 @@ public class WidgetPositions extends JPanel implements ActionListener,
 
 	public WidgetPositions()
 		{
-
 		bAdd.addActionListener(this);
 		bRemove.addActionListener(this);
 		bGoTo.addActionListener(this);
@@ -80,12 +72,10 @@ public class WidgetPositions extends JPanel implements ActionListener,
 		bMoveDown.addActionListener(this);
 		bSave.addActionListener(this);
 		bLoad.addActionListener(this);
-
 		bGoToHome.addActionListener(this);
 
 		JPanel bPanel = new JPanel();
 		JPanel posPanel = new JPanel(new BorderLayout());
-		this.setLayout(new BorderLayout());
 
 		bPanel.add(EvSwingUtil.layoutCompactVertical(bAdd, bRemove, bGoTo, bMoveUp,
 				bMoveDown, bSave, bLoad, bGoToHome));
@@ -97,21 +87,18 @@ public class WidgetPositions extends JPanel implements ActionListener,
 		posList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		posList.setLayoutOrientation(JList.VERTICAL);
 
-		listScroller = new JScrollPane(posList);
-		posPanel.add(listScroller, BorderLayout.NORTH);
-
 		infoScroller = new JScrollPane(infoList);
 
+		listScroller = new JScrollPane(posList);
+		posPanel.add(listScroller, BorderLayout.NORTH);
 		posPanel.add(infoScroller, BorderLayout.CENTER);
-
-		add(EvSwingUtil.withTitledBorder("Positions", posPanel),
-				BorderLayout.CENTER);
-		add(EvSwingUtil.withTitledBorder("", bPanel), BorderLayout.WEST);
+		
+		setLayout(new BorderLayout());
+		add(EvSwingUtil.withTitledBorder("Positions", posPanel), BorderLayout.CENTER);
+		add(bPanel, BorderLayout.WEST);
 
 		RecordingResource.posListListeners.addWeakListener(this);
-
 		RecordingResource.posListUpdated();
-
 		}
 
 	public void actionPerformed(ActionEvent e)
@@ -126,8 +113,7 @@ public class WidgetPositions extends JPanel implements ActionListener,
 								.getStagePos()[infoList.getInfo()[i].getAxis()]);
 				}
 
-			Position newPos = new Position(newInfo,
-					RecordingResource.getUnusedPosName());
+			Position newPos = new Position(newInfo,	RecordingResource.getUnusedPosName());
 			RecordingResource.posList.add(newPos);
 
 			RecordingResource.posListUpdated();
@@ -148,13 +134,13 @@ public class WidgetPositions extends JPanel implements ActionListener,
 			if (index>=0)
 				{
 				Position pos = RecordingResource.posList.get(index);
-
 				Map<String, Double> gotoPos = new HashMap<String, Double>();
 				for (int i = 0; i<pos.getAxisInfo().length; i++)
 					{
-					gotoPos
-							.put(pos.getAxisInfo()[i].getDevice().getAxisName()[pos
-									.getAxisInfo()[i].getAxis()], pos.getAxisInfo()[i].getValue());
+					AxisInfo ai=pos.getAxisInfo()[i];
+					gotoPos.put(
+							ai.getDevice().getAxisName()[pos.getAxisInfo()[i].getAxis()], 
+							ai.getValue());
 					}
 				RecordingResource.setStagePos(gotoPos);
 				}
@@ -164,37 +150,33 @@ public class WidgetPositions extends JPanel implements ActionListener,
 			int index = posList.getSelectedIndex();
 			if (index>0)
 				{
-				LinkedList<Position> newList = RecordingResource.posList;
-				newList.add(index+1, newList.get(index-1));
-				newList.remove(index-1);
+				LinkedList<Position> posList = RecordingResource.posList;
+				posList.add(index+1, posList.get(index-1));
+				posList.remove(index-1);
 				RecordingResource.posListUpdated();
-
 				}
 
 			}
 		else if (e.getSource()==bMoveDown)
 			{
 			int index = posList.getSelectedIndex();
-			if (index>=0&&index<listModel.getSize()-1)
+			if (index>=0 && index<listModel.getSize()-1)
 				{
-				LinkedList<Position> newList = RecordingResource.posList;
-				newList.add(index, newList.get(index+1));
-				newList.remove(index+2);
-				RecordingResource.posList = newList;
+				LinkedList<Position> posList = RecordingResource.posList;
+				posList.add(index, posList.get(index+1));
+				posList.remove(index+2);
+				RecordingResource.posList = posList;
 				RecordingResource.posListUpdated();
-
 				}
 
 			}
 		else if (e.getSource()==bSave)
 			{
 			savePosList();
-
 			}
 		else if (e.getSource()==bLoad)
 			{
 			loadPosList();
-
 			}
 		else if (e.getSource()==bGoToHome)
 			{
@@ -202,57 +184,42 @@ public class WidgetPositions extends JPanel implements ActionListener,
 			}
 		}
 
+	
+	
 	private void savePosList()
 		{
-		Position[] anArray = new Position[listModel.getSize()];
-		listModel.copyInto(anArray);
-		try
-			{
-			// use buffering
-			OutputStream file = new FileOutputStream("list.ser");
-			OutputStream buffer = new BufferedOutputStream(file);
-			ObjectOutput output = new ObjectOutputStream(buffer);
-			try
-				{
-				output.writeObject(anArray);
-				}
-			finally
-				{
-				output.close();
-				}
-			}
-		catch (IOException ex)
-			{
+		
+		JFileChooser fc=new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Endrov positions file", "evpos");
+    fc.setFileFilter(filter);
+		int ret=fc.showSaveDialog(this);
 
+		if(ret == JFileChooser.APPROVE_OPTION)
+			{
+			File theFile=fc.getSelectedFile();
+			theFile=EvFileUtil.makeFileEnding(theFile, ".evpos");
+			System.out.println(theFile);
+			RecordingResource.savePosList(theFile);
 			}
-
 		}
 
+	
+	
 	private void loadPosList()
 		{
-		Position[] anArray = null;
-
-		try
+		
+		JFileChooser fc=new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Endrov positions file", "evpos");
+    fc.setFileFilter(filter);
+		int ret=fc.showOpenDialog(this);
+		
+		if(ret == JFileChooser.APPROVE_OPTION)
 			{
-			// use buffering
-			InputStream file = new FileInputStream("list.ser");
-			InputStream buffer = new BufferedInputStream(file);
-			ObjectInput input = new ObjectInputStream(buffer);
-
-			anArray = (Position[]) input.readObject();
-			input.close();
+			File theFile=fc.getSelectedFile();
+			RecordingResource.loadPosList(theFile);
 			}
-		catch (Exception e2)
-			{
-			// TODO Auto-generated catch block
-			}
-
-		for (int i = 0; i<anArray.length; i++)
-			{
-			RecordingResource.posList.add(anArray[i]);
-			}
-		RecordingResource.posListUpdated();
 		}
+	
 
 	public void dataChangedEvent()
 		{

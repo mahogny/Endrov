@@ -33,7 +33,7 @@ public class PositionsWindow extends BasicWindow
 
 	public PositionsWindow()
 		{
-		this(new Rectangle(300, 300));
+		this(new Rectangle(500, 300));
 		}
 
 	public PositionsWindow(Rectangle bounds)
@@ -43,7 +43,7 @@ public class PositionsWindow extends BasicWindow
 
 		// Window overall things
 		setTitleEvWindow("Positions");
-		setBoundsEvWindow(300, 300);
+		setBoundsEvWindow(500, 300);
 		setVisibleEvWindow(true);
 		}
 
@@ -92,7 +92,7 @@ public class PositionsWindow extends BasicWindow
 					public void createMenus(BasicWindow w)
 						{
 						JMenuItem mi = new JMenuItem("Positions", new ImageIcon(getClass()
-								.getResource("jhMultidimWindow.png")));
+								.getResource("jhPositionsWindow.png")));
 						mi.addActionListener(this);
 						BasicWindow.addMenuItemSorted(
 								w.getCreateMenuWindowCategory("Recording"), mi);
