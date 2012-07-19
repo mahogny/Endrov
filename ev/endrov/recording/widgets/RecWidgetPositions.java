@@ -67,9 +67,7 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 		
 		RecordingResource.posListListeners.addWeakListener(this);
 
-		//TODO!!!!
-		for(Position pos:RecordingResource.posList)
-			listModelAvailable.addElement(pos);
+		positionsUpdated();
 		
 		cbAutofocus.setToolTipText("Autofocus for each position the first time");
 
@@ -116,6 +114,7 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 				{
 				listModelAvailable.removeElement(o);
 				listModelAdded.addElement(o);
+				positionsUpdated(); //TODO Ugly way
 				}
 			}
 		else if(e.getSource()==bRemove)
@@ -125,6 +124,7 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 				{
 				listModelAdded.removeElement(o);
 				listModelAvailable.addElement(o);
+				positionsUpdated(); //TODO Ugly way
 				}
 			}
 		}
@@ -148,51 +148,6 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 				listModelAdded.addElement(pos);
 			else
 				listModelAvailable.addElement(pos);
-		
-		
-		
-		//listModelAdded.getSize()
-		
-		
-		boolean found = false;
-		if (RecordingResource.posList.size()>listModelAvailable.getSize()+listModelAdded.getSize())
-			{
-			listModelAvailable.addElement(RecordingResource.posList.get(RecordingResource.posList.size()-1));
-			}
-		else if (RecordingResource.posList.size()<listModelAvailable.getSize()+listModelAdded.getSize())
-			{
-			for (int i = 0; i<listModelAvailable.getSize(); i++)
-				{
-				found = false;
-				for (Position p : RecordingResource.posList)
-					{
-					if (listModelAvailable.get(i).equals(p))
-						{
-						found = true;
-						}
-					}
-				if (!found)
-					{
-					listModelAvailable.remove(i);
-					}
-				}
-			for (int j = 0; j<listModelAdded.getSize(); j++)
-				{
-				found = false;
-				for (Position p : RecordingResource.posList)
-					{
-					if (listModelAdded.get(j).equals(p))
-						{
-						found = true;
-						}
-					}
-				if (!found)
-					{
-					listModelAdded.remove(j);
-					}
-				}
-			}
-
 		}
 	
 	public LinkedList<Position> getPositions()
