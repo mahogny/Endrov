@@ -133,6 +133,32 @@ public class EvSwingUtil
 		return p;*/
 		}
 	
+	/**
+	 * Add component in a container such that the component is placed in the vertical middle
+	 */
+	public static JComponent layoutMidVertical(JComponent comp)
+		{
+		
+		JPanel p=new JPanel(new GridBagLayout());
+		GridBagConstraints c=new GridBagConstraints();
+		c.fill=GridBagConstraints.BOTH;
+		c.weighty=1;
+		c.weightx=1;
+		c.gridx=0;
+		c.gridy=0;
+		p.add(new JPanel(),c);
+		
+		c.gridy=1;
+		c.weighty=0;
+		p.add(comp,c);
+		
+		c.weighty=1;
+		c.gridy=2;
+		p.add(new JPanel(),c);
+		
+		return p;
+		}
+	
 	public static JComponent layoutCompactVertical(JComponent... list)
 		{
 		JComponent last=list[list.length-1];
