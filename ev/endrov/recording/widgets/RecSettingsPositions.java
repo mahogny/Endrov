@@ -3,15 +3,15 @@ package endrov.recording.widgets;
 import java.util.LinkedList;
 import java.util.List;
 
-import endrov.recording.positionsWindow.Position;
+import endrov.recording.StoredStagePosition;
 
 public class RecSettingsPositions
 	{
-	public List<Position> positions=new LinkedList<Position>();
+	public List<StoredStagePosition> positions=new LinkedList<StoredStagePosition>();
 	
-	public RecSettingsPositions(LinkedList<Position> positions)
+	public RecSettingsPositions(LinkedList<StoredStagePosition> positions)
 		{
-		this.positions = new LinkedList<Position>(positions);
+		this.positions = new LinkedList<StoredStagePosition>(positions);
 		}
 	
 	}

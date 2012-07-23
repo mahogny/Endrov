@@ -10,6 +10,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
@@ -35,7 +36,6 @@ import endrov.keyBinding.JInputManager;
 import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWImageScanner;
 import endrov.recording.device.HWStage;
-import endrov.recording.positionsWindow.Position;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
 import endrov.roi.LineIterator.LineRange;
@@ -57,7 +57,7 @@ public class RecordingResource
 
 	public static GeneralObserver<PositionListListener> posListListeners = new GeneralObserver<RecordingResource.PositionListListener>();
 
-	public static LinkedList<Position> posList = new LinkedList<Position>();
+	public static LinkedList<StoredStagePosition> posList = new LinkedList<StoredStagePosition>();
 
 	public static void posListUpdated()
 		{
@@ -79,7 +79,7 @@ public class RecordingResource
 		{
 		// Find all names in use
 		Set<String> usedNames = new HashSet<String>();
-		for (Position pos : RecordingResource.posList)
+		for (StoredStagePosition pos : RecordingResource.posList)
 			usedNames.add(pos.getName());
 
 		// Generate an unused name
@@ -293,7 +293,7 @@ public class RecordingResource
 		{
 		try
 			{
-			Position[] anArray = new Position[RecordingResource.posList.size()];
+			StoredStagePosition[] anArray = new StoredStagePosition[RecordingResource.posList.size()];
 			for(int i=0;i<RecordingResource.posList.size();i++)
 				anArray[i]=RecordingResource.posList.get(i);
 
@@ -316,18 +316,18 @@ public class RecordingResource
 	
 	
 	
-	public static void loadPosList(File f)
+	public static void loadPosList(File f) throws IOException
 		{
-		Position[] anArray = null;
+		StoredStagePosition[] anArray = null;
 
 		try
 			{
-			InputStream file = new FileInputStream("list.ser");
+			InputStream file = new FileInputStream(f);
 			InputStream buffer = new BufferedInputStream(file);
 			ObjectInput input = new ObjectInputStream(buffer);
 
 			/*int version = */input.readInt(); 
-			anArray = (Position[]) input.readObject();
+			anArray = (StoredStagePosition[]) input.readObject();
 			input.close();
 			
 			RecordingResource.posList.clear();
@@ -338,7 +338,7 @@ public class RecordingResource
 		catch (Exception e2)
 			{
 			e2.printStackTrace();
-			throw new RuntimeException("Could not read file: "+e2.getMessage());
+			throw new IOException("Could not read the file: "+e2.getMessage());
 			}
 		}
 	

@@ -5,6 +5,7 @@
  */
 package endrov.hardwareFrivolous;
 import endrov.ev.PluginDef;
+import endrov.hardwareFrivolous.devices.FrivolousDeviceProvider;
 
 public class PLUGIN extends PluginDef
 	{

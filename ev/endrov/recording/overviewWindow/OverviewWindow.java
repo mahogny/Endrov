@@ -30,6 +30,8 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.recording.CameraImage;
 import endrov.recording.RecordingResource;
+import endrov.recording.StoredStagePosition;
+import endrov.recording.StoredStagePositionAxis;
 import endrov.recording.RecordingResource.PositionListListener;
 import endrov.recording.ResolutionManager;
 import endrov.recording.ResolutionManager.Resolution;
@@ -37,8 +39,6 @@ import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWCamera;
 import endrov.recording.device.HWStage;
 import endrov.recording.liveWindow.LiveHistogramViewRanged;
-import endrov.recording.positionsWindow.AxisInfo;
-import endrov.recording.positionsWindow.Position;
 import endrov.roi.GeneralToolROI;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
@@ -397,16 +397,16 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 					{
 					for (int j = 0; j<(int) noOfImagesX; j++)
 						{
-						AxisInfo[] posInfo = new AxisInfo[2];
+						StoredStagePositionAxis[] posInfo = new StoredStagePositionAxis[2];
 
-						posInfo[0] = new AxisInfo(xStage, xAxisNum,
+						posInfo[0] = new StoredStagePositionAxis(xStage, xAxisNum,
 								(xUpper+cam.getCamWidth()*j));
-						posInfo[1] = new AxisInfo(yStage, yAxisNum,
+						posInfo[1] = new StoredStagePositionAxis(yStage, yAxisNum,
 								(yUpper+cam.getCamHeight()*i));
 
 						String newName = RecordingResource.getUnusedPosName();
 
-						Position newPos = new Position(posInfo, newName);
+						StoredStagePosition newPos = new StoredStagePosition(posInfo, newName);
 						RecordingResource.posList.add(newPos);
 						}
 					}

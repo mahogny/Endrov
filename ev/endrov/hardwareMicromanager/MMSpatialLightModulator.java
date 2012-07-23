@@ -17,12 +17,10 @@ import endrov.recording.device.HWSpatialLightModulator;
  */
 public class MMSpatialLightModulator extends MMState implements HWSpatialLightModulator
 	{
-	public MMSpatialLightModulator(MicroManager mm, String mmDeviceName, boolean isXY)
+	public MMSpatialLightModulator(MicroManager mm, String mmDeviceName)
 		{
 		super(mm,mmDeviceName);
 		}
-
-	//TODO
 
 	
 	public void setImage(EvPixels p)

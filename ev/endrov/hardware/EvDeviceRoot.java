@@ -18,7 +18,8 @@ import org.jdom.Element;
  */
 public class EvDeviceRoot extends EvDeviceProvider implements EvDevice
 	{
-
+	public EvDeviceObserver event=new EvDeviceObserver();
+	
 	public Set<EvDevice> autodetect(){return null;}
 
 	public void getConfig(Element root)
@@ -71,7 +72,6 @@ public class EvDeviceRoot extends EvDeviceProvider implements EvDevice
 	public void openConfigureDialog(){}
 
 	
-	public EvDeviceObserver event=new EvDeviceObserver();
 	public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 		{
 		event.addWeakListener(listener);

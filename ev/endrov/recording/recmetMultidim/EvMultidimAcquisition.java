@@ -28,10 +28,10 @@ import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
+import endrov.recording.StoredStagePosition;
 import endrov.recording.device.HWCamera;
 import endrov.recording.device.HWTrigger;
 import endrov.recording.device.HWTrigger.TriggerListener;
-import endrov.recording.positionsWindow.Position;
 import endrov.recording.widgets.RecSettingsChannel;
 import endrov.recording.widgets.RecSettingsDimensionsOrder;
 import endrov.recording.widgets.RecSettingsPositions;
@@ -378,7 +378,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 		{
 			public void exec()
 			{	
-				for(Position pos:positions.positions)
+				for(StoredStagePosition pos:positions.positions)
 				{
 					Map<String, Double> gotoPos=new HashMap<String, Double>();			
 					

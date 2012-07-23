@@ -10,7 +10,7 @@ package endrov.hardwareFrivolous;
  * 
  * @author David Johansson, Arvid Johansson, Johan Henriksson
  */
-class FrivolousDiffusion implements Runnable
+public class FrivolousDiffusion implements Runnable
 	{
 
 	// Stencil: wensc

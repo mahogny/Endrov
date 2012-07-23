@@ -1,11 +1,16 @@
 /***
- * Copyright (C) 2010 Johan Henriksson
+ * Copyright (C) 2010 David Johansson & Arvid Johansson
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.hardwareNative;
+package endrov.hardwareFrivolous.devices;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.jdom.Element;
 
@@ -14,48 +19,48 @@ import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDeviceProvider;
 import endrov.hardware.EvHardware;
+import endrov.hardwareFrivolous.FrivolousModel;
 
 /**
- * Native device drivers
- * @author Johan Henriksson
- *
+ * Device provider for Frivolous virtual microscope
+ * 
+ * @author David Johansson, Arvid Johansson, Johan Henriksson
  */
-public class EvNativeHardware extends EvDeviceProvider implements EvDevice
+public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevice
 	{
-	private static Map<String, Class<? extends EvDevice>> hardwareProvided=new TreeMap<String, Class<? extends EvDevice>>();
+	private Map<String, Class<? extends EvDevice>> hardwareProvided = new TreeMap<String, Class<? extends EvDevice>>();
+	public EvDeviceObserver event=new EvDeviceObserver();
 	
 	
-	public EvNativeHardware()
+	double resolution=1;
+	int height=512;
+	int width=512;
+	FrivolousModel model;
+	public double[] stagePos = new double[]{ 0, 0, 0 };
+
+		
+
+
+	public FrivolousDeviceProvider()
 		{
-		//hw.put("IX", new OlympusIX());
-		
-		//hw.put("ITK", new ITKCorvus());
-		//hardwareProvided.put("OlympusIX", OlympusIX.class);
-		//hardwareProvided.put("ITKCorvus", ITKCorvus.class);
-		//hardwareProvided.put("Demo", DemoScope.class);
-		
-		hardwareProvided.put("pipetrigger", DevicePipeTrigger.class);
-
-		hw.put("pipetrigger1", new DevicePipeTrigger());
-		hw.put("pipetrigger2", new DevicePipeTrigger());
-
 		}
-		
-	
+
+
 	
 	public Set<EvDevice> autodetect()
 		{
 		return null;
 		}
+
 	public void getConfig(Element root)
 		{
 		}
 
 	public List<String> provides()
 		{
-		//return Arrays.asList("IXvirtual");
-		return Arrays.asList("pipetrigger");
+		return Arrays.asList("frivolous");
 		}
+
 	public EvDevice newProvided(String s)
 		{
 		try
@@ -71,60 +76,56 @@ public class EvNativeHardware extends EvDeviceProvider implements EvDevice
 
 	public void setConfig(Element root)
 		{
-		
+
 		}
 
 	public String getDescName()
 		{
-		return "Endrov native hardware";
+		return "Frivolous";
 		}
-
 
 	public SortedMap<String, String> getPropertyMap()
 		{
 		return new TreeMap<String, String>();
 		}
 
-
 	public SortedMap<String, DevicePropertyType> getPropertyTypes()
 		{
 		return new TreeMap<String, DevicePropertyType>();
 		}
-
 
 	public String getPropertyValue(String prop)
 		{
 		return null;
 		}
 
-
 	public Boolean getPropertyValueBoolean(String prop)
 		{
 		return false;
 		}
 
-
 	public void setPropertyValue(String prop, boolean value)
 		{
 		}
 
-
 	public void setPropertyValue(String prop, String value)
 		{
 		}
-	
-	
+
 	public boolean hasConfigureDialog()
 		{
 		return true;
 		}
+
 	public void openConfigureDialog()
 		{
-		//hw.put("demo", new DemoScope());
+		new FrivolousConfigWindow(this);
 		}
 
 	
-	public EvDeviceObserver event=new EvDeviceObserver();
+
+
+	
 	public void addDeviceListener(EvDeviceObserver.DeviceListener listener)
 		{
 		event.addWeakListener(listener);
@@ -134,15 +135,21 @@ public class EvNativeHardware extends EvDeviceProvider implements EvDevice
 		event.remove(listener);
 		}
 
+	public boolean hasSampleLoadPosition(){return false;}
+	public void setSampleLoadPosition(boolean b){}
+
+	
+	
 	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/
-	public static void initPlugin() {}
 	static
 		{
-		EvHardware.getRoot().hw.put("ev",new EvNativeHardware());
-		EvHardware.updateAvailableDevices();
+		EvHardware.getRoot().hw.put("fr", new FrivolousDeviceProvider());
 		}
-
+	public static void initPlugin()
+		{
+		}
+	
 	}

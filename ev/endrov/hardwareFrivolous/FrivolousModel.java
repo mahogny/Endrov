@@ -7,6 +7,7 @@ package endrov.hardwareFrivolous;
 
 import java.io.File;
 
+import endrov.hardwareFrivolous.devices.FrivolousDeviceProvider;
 import endrov.util.EvFileUtil;
 
 
