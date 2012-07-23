@@ -1,7 +1,4 @@
-package endrov.recording.flipWindow;
-
-import java.util.Iterator;
-import java.util.Map;
+package endrov.recording.recmetFLIP;
 
 import javax.swing.JMenu;
 import javax.vecmath.Vector3d;
@@ -26,7 +23,7 @@ import endrov.recording.EvAcquisition;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
 import endrov.recording.device.HWImageScanner;
-import endrov.recording.frapWindow.FlowUnitShowGraph;
+import endrov.recording.recmetFRAP.FlowUnitShowGraph;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
 
@@ -85,6 +82,8 @@ public class EvFLIPAcquisition extends EvAcquisition
 		@Override
 		public void run()
 			{
+			
+			
 			//TODO need to choose camera, at least!
 			
 			
@@ -92,15 +91,8 @@ public class EvFLIPAcquisition extends EvAcquisition
 			acqLoop: 
 			do
 				{
-				Map<EvDevicePath, HWImageScanner> cams=EvHardware.getDeviceMapCast(HWImageScanner.class);
-				Iterator<EvDevicePath> itcam=cams.keySet().iterator();
-				EvDevicePath campath=null;
-				HWImageScanner cam=null;
-				if(itcam.hasNext())
-					{
-					campath=itcam.next();
-					cam=cams.get(campath);
-					}
+				EvDevicePath campath=EvHardware.getCoreDevice().getCurrentDevicePathImageScanner();
+				HWImageScanner cam=EvHardware.getCoreDevice().getCurrentImageScanner();
 				
 				//Check that there are enough parameters
 				if(cam!=null && container!=null)

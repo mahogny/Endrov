@@ -688,7 +688,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 	 */
 	public void autofocus()
 		{
-		HWAutoFocus af=RecordingResource.getOneAutofocus();
+		HWAutoFocus af=EvHardware.getCoreDevice().getCurrentAutofocus();
 		if(af==null)
 			showErrorDialog("No autofocus device found");
 		else

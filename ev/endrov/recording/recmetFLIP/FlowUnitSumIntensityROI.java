@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.flipWindow;
+package endrov.recording.recmetFLIP;
 
 
 import java.awt.Color;

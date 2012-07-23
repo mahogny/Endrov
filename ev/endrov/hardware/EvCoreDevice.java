@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWCamera;
+import endrov.recording.device.HWImageScanner;
 import endrov.recording.device.HWShutter;
 import endrov.recording.device.HWSpatialLightModulator;
 import endrov.recording.device.HWStage;
@@ -169,41 +170,158 @@ public class EvCoreDevice implements EvDevice
 	
 	
 	
-	
-	
-	public EvDevicePath getCurrentDeviceAutofocus()
+	private EvDevicePath getDevicePathOrNull(String prop)
 		{
-		return new EvDevicePath(getPropertyValue("AutoFocus"));
+		String p=getPropertyValue(prop);
+		if(!p.equals(""))
+			return new EvDevicePath(p);
+		else
+			return null;
 		}
 	
-	public EvDevicePath getCurrentDeviceCamera()
+	
+	private EvDevice getDeviceOrNull(String prop)
 		{
-		return new EvDevicePath(getPropertyValue("Camera"));
+		String p=getPropertyValue(prop);
+		if(!p.equals(""))
+			return new EvDevicePath(p).getDevice();
+		else
+			return null;
 		}
 	
-	public EvDevicePath getCurrentDeviceFocus()
+	
+	/**
+	 * Get current Autofocus device 
+	 */
+	public EvDevicePath getCurrentDevicePathAutofocus()
 		{
-		return new EvDevicePath(getPropertyValue("Focus"));
+		return getDevicePathOrNull("AutoFocus");
 		}
 	
-	public EvDevicePath getCurrentDeviceSLM()
+	/**
+	 * Get current camera 
+	 */
+	public EvDevicePath getCurrentDevicePathCamera()
 		{
-		return new EvDevicePath(getPropertyValue("SLM"));
-		}
-	
-	public EvDevicePath getCurrentDeviceShutter()
-		{
-		return new EvDevicePath(getPropertyValue("Shutter"));
-		}
-	
-	public EvDevicePath getCurrentDeviceXYStage()
-		{
-		return new EvDevicePath(getPropertyValue("XYStage"));
+		return getDevicePathOrNull("Camera");
 		}
 
-	public boolean getAutoShutter()
+	
+	public EvDevicePath getCurrentDevicePathImageScanner()
+		{
+		EvDevicePath p=getDevicePathOrNull("Camera");
+		if(p!=null && p.getDevice() instanceof HWImageScanner)
+			return p;
+		else
+			return null;
+		}
+	
+	
+	/**
+	 * Get current focus device (z stage) 
+	 */
+	public EvDevicePath getCurrentDevicePathFocus()
+		{
+		return getDevicePathOrNull("Focus");
+		}
+	
+	/**
+	 * Get current SLM device 
+	 */
+	public EvDevicePath getCurrentDevicePathSLM()
+		{
+		return getDevicePathOrNull("SLM");
+		}
+	
+	/**
+	 * Get current shutter
+	 */
+	public EvDevicePath getCurrentDevicePathShutter()
+		{
+		return getDevicePathOrNull("Shutter");
+		}
+
+	/**
+	 * Get current XY stage
+	 */
+	public EvDevicePath getCurrentDevicePathXYStage()
+		{
+		return getDevicePathOrNull("XYStage");
+		}
+
+	/**
+	 * Get if autoshuttering enabled
+	 */
+	public boolean getAutoShutterEnabled()
 		{
 		return getPropertyValueBoolean("AutoShutter");
+		}
+	
+	
+	
+	
+	
+	
+	
+	
+
+	/**
+	 * Get current Autofocus device 
+	 */
+	public HWAutoFocus getCurrentAutofocus()
+		{
+		return (HWAutoFocus)getDeviceOrNull("AutoFocus");
+		}
+	
+	/**
+	 * Get current camera 
+	 */
+	public HWCamera getCurrentCamera()
+		{
+		return (HWCamera)getDeviceOrNull("Camera");
+		}
+	
+	/**
+	 * Get current focus device (z stage) 
+	 */
+	public HWStage getCurrentFocus()
+		{
+		return (HWStage)getDeviceOrNull("Focus");
+		}
+	
+	/**
+	 * Get current SLM device 
+	 */
+	public HWSpatialLightModulator getCurrentSLM()
+		{
+		return (HWSpatialLightModulator)getDeviceOrNull("SLM");
+		}
+	
+	/**
+	 * Get current shutter
+	 */
+	public HWShutter getCurrentShutter()
+		{
+		return (HWShutter)getDeviceOrNull("Shutter");
+		}
+
+	/**
+	 * Get current XY stage
+	 */
+	public HWStage getCurrentXYStage()
+		{
+		return (HWStage)getDeviceOrNull("XYStage");
+		}
+
+	
+	
+	public HWImageScanner getCurrentImageScanner()
+		{
+		HWCamera cam2=getCurrentCamera();
+		if(cam2 instanceof HWImageScanner)
+			return (HWImageScanner)cam2;
+		else
+			return null;
 		}
 	
 	

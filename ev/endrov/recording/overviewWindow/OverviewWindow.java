@@ -713,7 +713,7 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 	 */
 	public void autofocus()
 		{
-		HWAutoFocus af = RecordingResource.getOneAutofocus();
+		HWAutoFocus af = EvHardware.getCoreDevice().getCurrentAutofocus();
 		if (af==null)
 			showErrorDialog("No autofocus device found");
 		else

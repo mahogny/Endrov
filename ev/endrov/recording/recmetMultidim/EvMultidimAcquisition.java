@@ -1,7 +1,6 @@
 package endrov.recording.recmetMultidim;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
@@ -432,11 +431,8 @@ public class EvMultidimAcquisition extends EvAcquisition
 		@Override
 		public void run()
 			{
-			//TODO need to choose camera, at least!
-			Iterator<EvDevicePath> itcam=EvHardware.getDeviceMapCast(HWCamera.class).keySet().iterator();
-			if(itcam.hasNext())
-				cam=itcam.next();
-			
+			//Get current camera
+			cam=EvHardware.getCoreDevice().getCurrentDevicePathCamera();
 			
 			try
 				{

@@ -1,7 +1,5 @@
 package endrov.recording.recmetBurst;
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.JMenu;
@@ -147,20 +145,10 @@ public class EvBurstAcquisition extends EvAcquisition
 				((HWTrigger)deviceTriggerOn.getDevice()).addTriggerListener(listenerOn);
 			if(deviceTriggerOff!=null)
 				((HWTrigger)deviceTriggerOff.getDevice()).addTriggerListener(listenerOff);
-			
-			
-			//TODO need to choose camera, at least!
-			
-			Map<EvDevicePath, HWCamera> cams=EvHardware.getDeviceMapCast(HWCamera.class);
-			Iterator<EvDevicePath> itcam=cams.keySet().iterator();
-			EvDevicePath campath=null;
-			HWCamera cam=null;
-			if(itcam.hasNext())
-				{
-				campath=itcam.next();
-				cam=cams.get(campath);
-				}
-			
+
+			//Get current camera
+			HWCamera cam=EvHardware.getCoreDevice().getCurrentCamera();
+			EvDevicePath campath=EvHardware.getCoreDevice().getCurrentDevicePathCamera();
 			
 			EvDecimal interval;
 			double intervalMS;
