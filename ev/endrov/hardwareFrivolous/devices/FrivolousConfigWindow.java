@@ -13,6 +13,7 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.hardware.EvHardware;
 import endrov.hardwareFrivolous.FrivolousModel;
 import endrov.util.EvSwingUtil;
 
@@ -67,6 +68,7 @@ class FrivolousConfigWindow extends JFrame implements ActionListener
 				frivolous.hw.put("stage", stage);
 				frivolous.hw.put("autofocus", new FrivolousAutofocus(stage));
 
+				EvHardware.updateAvailableDevices();
 				BasicWindow.updateWindows();
 				
 				bStartStop.setText("Stop");

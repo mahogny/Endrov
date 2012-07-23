@@ -7,7 +7,6 @@ package endrov.hardwareFrivolous;
 
 import java.io.File;
 
-import endrov.hardwareFrivolous.devices.FrivolousDeviceProvider;
 import endrov.util.EvFileUtil;
 
 
@@ -23,7 +22,7 @@ public class FrivolousModel
 		{
 		try
 			{
-			return EvFileUtil.getFileFromURL(FrivolousDeviceProvider.class.getResource("data").toURI().toURL());
+			return EvFileUtil.getFileFromURL(FrivolousModel.class.getResource("data").toURI().toURL());
 			}
 		catch (Exception e)
 			{
