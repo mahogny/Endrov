@@ -33,6 +33,7 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.keyBinding.JInputManager;
+import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWImageScanner;
 import endrov.recording.device.HWStage;
 import endrov.roi.LineIterator;
@@ -382,5 +383,24 @@ public class RecordingResource
 		JInputManager.addGamepadMode("Hardware", new JInputModeRecording(), false);
 		soundCameraSnap = new EvSound(RecordingResource.class, "camera_click.ogg");
 		}
+
+	public static void autofocus()
+	{
+	HWAutoFocus af=EvHardware.getCoreDevice().getCurrentAutofocus();
+	if(af==null)
+		throw new RuntimeException("No autofocus device found");
+	else
+		{
+		try
+			{
+			af.fullFocus();
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			throw new RuntimeException("Failed to focus");
+			}
+		}
+	}
 
 	}

@@ -391,6 +391,10 @@ public class EvMultidimAcquisition extends EvAcquisition
 					System.out.println(gotoPos);
 					currentPos=pos.getName();		
 					
+					//Optionally use autofocus
+					if(settings.positions.useAutofocus)
+						RecordingResource.autofocus();
+					
 					recurse.exec();
 					
 				}			

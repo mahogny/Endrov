@@ -9,7 +9,6 @@ import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.*;
 
 import javax.swing.*;
@@ -35,7 +34,6 @@ import endrov.recording.StoredStagePositionAxis;
 import endrov.recording.RecordingResource.PositionListListener;
 import endrov.recording.ResolutionManager;
 import endrov.recording.ResolutionManager.Resolution;
-import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWCamera;
 import endrov.recording.device.HWStage;
 import endrov.recording.liveWindow.LiveHistogramViewRanged;
@@ -346,7 +344,7 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 			histoView.repaint();
 			}
 		else if (e.getSource()==bAutoFocus)
-			autofocus();
+			autofocusAction();
 		else if (e.getSource()==bGoToROI)
 			moveStageFocusROI();
 		// else if(e.getSource()==bCameraToROI){
@@ -711,24 +709,16 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 	/**
 	 * Autofocus, with whatever device there is
 	 */
-	public void autofocus()
+	public static void autofocusAction()
 		{
-		HWAutoFocus af = EvHardware.getCoreDevice().getCurrentAutofocus();
-		if (af==null)
-			showErrorDialog("No autofocus device found");
-		else
+		try
 			{
-			try
-				{
-				af.fullFocus();
-				}
-			catch (IOException e)
-				{
-				e.printStackTrace();
-				showErrorDialog("Failed to focus");
-				}
+			RecordingResource.autofocus();
 			}
-
+		catch (Exception e1)
+			{
+			showErrorDialog("Error: "+e1.getMessage());
+			}
 		}
 
 	/**

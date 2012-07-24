@@ -182,9 +182,8 @@ public class FrivolousCamera implements HWImageScanner
 	
 	public CameraImage snapInternal()
 		{
-	//int r = (int) stagePos[2];
-		int stagePosPixelsX=(int)(frivolous.stagePos[0]/getRes());
-		int stagePosPixelsY=(int)(frivolous.stagePos[1]/getRes());
+		int stagePosPixelsX=-getOffsetX();
+		int stagePosPixelsY=-getOffsetY();
 		
 		int[] im = frivolous.model.convolve(stagePosPixelsX, stagePosPixelsY, simulatePSF, simulateNoise);
 		
@@ -202,8 +201,8 @@ public class FrivolousCamera implements HWImageScanner
 		long startTime=System.currentTimeMillis();
 		CameraImage cim=snapInternal();
 	
-		int offsetX=-(int)(frivolous.stagePos[0]/getRes());
-		int offsetY=-(int)(frivolous.stagePos[1]/getRes());
+		int offsetX=getOffsetX();
+		int offsetY=getOffsetY();
 	
 		
 		//Bleach everything visible at the moment
@@ -313,25 +312,7 @@ public class FrivolousCamera implements HWImageScanner
 	 */
 	public void scan(int[] buffer, ScanStatusListener status)
 		{
-		long startTime=System.currentTimeMillis();
-		
-		//Scan
-		if(buffer!=null)
-			{
-			CameraImage im=snapInternal();
-			int[] snapped=(int[])im.pixels;
-			for(int i=0;i<snapped.length;i++)
-					buffer[i]=snapped[i];
-			}
-		
-		int offsetX=-(int)(frivolous.stagePos[0]/getRes());
-		int offsetY=-(int)(frivolous.stagePos[1]/getRes());
-		
-		//Bleach everything visible at the moment
-		for(FrivolousDiffusion d:frivolous.model.cell.diffusers)
-			d.bleach(frivolous.width, frivolous.height, offsetX, offsetY, (float)getBleachFactor());
-		frivolous.model.cell.bleachImmobile(frivolous.width, frivolous.height, offsetX, offsetY, (float)getBleachFactor());
-		waitInTotal(startTime, expTime);
+		scan(buffer, status, null);
 		}
 	
 	/**
@@ -346,13 +327,21 @@ public class FrivolousCamera implements HWImageScanner
 			{
 			CameraImage im=snapInternal();
 			int[] snapped=(int[])im.pixels;
-			for(int i=0;i<roi.length;i++)
-				if(roi[i]!=0)
+			if(roi!=null)
+				{
+				for(int i=0;i<snapped.length;i++)
+					if(roi[i]!=0)
+						buffer[i]=snapped[i];
+				}
+			else
+				{
+				for(int i=0;i<snapped.length;i++)
 					buffer[i]=snapped[i];
+				}
 			}
 		
-		int offsetX=-(int)(frivolous.stagePos[0]/getRes());
-		int offsetY=-(int)(frivolous.stagePos[1]/getRes());
+		int offsetX=getOffsetX();
+		int offsetY=getOffsetY();
 		
 		//Bleach only the ROI
 		for(FrivolousDiffusion d:frivolous.model.cell.diffusers)
@@ -360,6 +349,18 @@ public class FrivolousCamera implements HWImageScanner
 		frivolous.model.cell.bleachImmobile(roi, frivolous.width, frivolous.height, offsetX, offsetY, (float)getBleachFactor()); 
 		waitInTotal(startTime, expTime);
 		}
+	
+	
+	private int getOffsetX()
+		{
+		return -(int)(frivolous.stagePos[0]/getRes());
+		}
+	
+	private int getOffsetY()
+		{
+		return -(int)(frivolous.stagePos[1]/getRes());
+		}
+	
 	
 	/**
 	 * Set how many pixels should be scanned

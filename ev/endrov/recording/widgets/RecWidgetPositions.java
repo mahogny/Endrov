@@ -56,7 +56,7 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 	
 	public RecSettingsPositions getSettings()
 		{
-		RecSettingsPositions settings=new RecSettingsPositions(getPositions());
+		RecSettingsPositions settings=new RecSettingsPositions(getPositions(),cbAutofocus.isSelected());
 		return settings;
 		}
 	
