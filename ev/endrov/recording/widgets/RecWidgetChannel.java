@@ -246,10 +246,12 @@ public class RecWidgetChannel extends JPanel implements ActionListener
 	/**
 	 * Get channel settings
 	 */
-	public RecSettingsChannel getSettings()
+	public RecSettingsChannel getSettings() throws Exception
 		{
 		RecSettingsChannel settings=new RecSettingsChannel();
 		settings.configGroup=cConfigGroup.getConfigGroupName();
+		if(settings.configGroup==null)// settings.configGroup.equals(""))
+			throw new Exception("No config group specified");
 		for(OneChannelWidget e:entrylist)
 			{
 			RecSettingsChannel.OneChannel ch=new RecSettingsChannel.OneChannel();
