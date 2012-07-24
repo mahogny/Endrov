@@ -73,6 +73,15 @@ public class EvDevicePath implements Comparable<EvDevicePath>
 		return defret;
 		}
 	
+	@Override
+	public boolean equals(Object obj)
+		{
+		if(obj instanceof EvDevicePath)
+			return compareTo((EvDevicePath)obj)==0;
+		else
+			return false;
+		}
+	
 	/**
 	 * Get device for this path
 	 */
