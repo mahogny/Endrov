@@ -12,52 +12,50 @@ import endrov.recording.device.HWStage;
 
 
 /**
- * Frivolous XYZ stage
+ * Frivolous XY stage
  * 
  * @author Johan Henriksson, David Johansson, Arvid Johansson
  *
+ *
+ * TODO: kimno wants to flip XY coordinates to have them correspond to um
+ *
  */
-class FrivolousStage implements HWStage
+class FrivolousXYStage implements HWStage
 	{
 	
 	private FrivolousDeviceProvider frivolous;
 	
-	public FrivolousStage(FrivolousDeviceProvider frivolous)
+	public FrivolousXYStage(FrivolousDeviceProvider frivolous)
 		{
 		this.frivolous=frivolous;
 		}
 	
 	public String[] getAxisName()
 		{
-		return new String[]{ "X", "Y", "Z" };
+		return new String[]{ "X", "Y" };
 		}
 	
 	public int getNumAxis()
 		{
-		return 3;
+		return 2;
 		}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public double[] getStagePos()
 		{
-		return new double[]{ -frivolous.stagePos[0], -frivolous.stagePos[1], -frivolous.stagePos[2] };
+		return new double[]{ 
+				frivolous.stagePos[0], 
+				frivolous.stagePos[1] };
 		}
 	
 	public void setRelStagePos(double[] axis)
 		{
-		double[] tmp = frivolous.stagePos.clone();
-		for (int i = 0; i<3; i++)
-			tmp[i] += axis[i];
-		setStagePos(tmp);
+		setStagePos(new double[]{
+				frivolous.stagePos[0] + axis[0],
+				frivolous.stagePos[1] + axis[1]});
 		}
 	
 	public void setStagePos(double[] axis)
 		{
-		double oldZ = frivolous.stagePos[2];
-		if (axis[2]<-10000)
-			axis[2]=-10000;
-		else if(axis[2]>10000)
-			axis[2]=10000;
-		
 		//TODO connect to magnification
 		/*
 		for (int i = 0; i<2; i++)
@@ -74,23 +72,19 @@ class FrivolousStage implements HWStage
 				axis[i]=512*frivolous.resolution;	
 	
 		
-		for (int i = 0; i<3; i++)
-			frivolous.stagePos[i] = -axis[i];
-	
-		frivolous.model.getSettings().offsetZ = frivolous.stagePos[2];
-		if(frivolous.stagePos[2]!=oldZ)
-			frivolous.model.updatePSF();
+		for (int i = 0; i<2; i++)
+			frivolous.stagePos[i] = axis[i];
 		}
 	
 	public void goHome()
 		{
-		for (int i = 0; i<3; i++)
+		for (int i = 0; i<2; i++)
 			frivolous.stagePos[i] = 0;
 		}
 	
 	public String getDescName()
 		{
-		return "Frivolous stage";
+		return "Frivolous XY stage";
 		}
 	
 	public SortedMap<String, String> getPropertyMap()

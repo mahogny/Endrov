@@ -18,15 +18,14 @@ import endrov.recording.device.HWAutoFocus;
  */
 class FrivolousAutofocus implements HWAutoFocus
 	{
-
-	private FrivolousStage stage;
+	private FrivolousZStage stage;
 	public EvDeviceObserver event=new EvDeviceObserver();
 	public boolean contAutoFocus=false;
 	public boolean contFocusLock=false;
 	public double offset=0;
 
 	
-	public FrivolousAutofocus(FrivolousStage stage)
+	public FrivolousAutofocus(FrivolousZStage stage)
 		{
 		this.stage=stage;
 		}
@@ -92,9 +91,9 @@ class FrivolousAutofocus implements HWAutoFocus
 
 	public void fullFocus() throws IOException
 		{
-		double[] pos=stage.getStagePos();
-		pos[2]=offset;
-		stage.setStagePos(pos);
+		stage.setStagePos(new double[]{
+				offset
+		});
 		}
 
 	public double getAutoFocusOffset()
@@ -114,9 +113,9 @@ class FrivolousAutofocus implements HWAutoFocus
 
 	public void incrementalFocus() throws IOException
 		{
-		double[] pos=stage.getStagePos();
-		pos[2]=0;
-		stage.setStagePos(pos);
+		stage.setStagePos(new double[]{
+				0
+		});
 		}
 
 	public boolean isContinuousFocusEnabled()

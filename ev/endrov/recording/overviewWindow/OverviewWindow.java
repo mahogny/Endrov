@@ -364,12 +364,12 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 				{
 				int aname = stage.getNumAxis();
 				for (int i = 0; i<aname; i++)
-					if (stage.getAxisName()[i].equalsIgnoreCase("x"))
+					if (stage.getAxisName()[i].equals("X"))
 						{
 						xStage = stage;
 						xAxisNum = i;
 						}
-					else if (stage.getAxisName()[i].equalsIgnoreCase("y"))
+					else if (stage.getAxisName()[i].equals("Y"))
 						{
 						yStage = stage;
 						yAxisNum = i;

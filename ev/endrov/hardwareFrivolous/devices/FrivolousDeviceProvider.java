@@ -147,6 +147,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 	static
 		{
 		EvHardware.getRoot().hw.put("fr", new FrivolousDeviceProvider());
+		EvHardware.updateAvailableDevices();
 		}
 	public static void initPlugin()
 		{

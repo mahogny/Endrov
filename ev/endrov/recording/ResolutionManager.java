@@ -61,9 +61,10 @@ public class ResolutionManager
 	 */
 	public static ResolutionState getCurrentResolutionState(EvDevicePath camera)
 		{
+		if(camera==null)
+			return null;
 
 		Map<String,ResolutionState> rmap=resolutions.get(camera.getDevice());	
-		
 		if(rmap==null)
 			return null;
 

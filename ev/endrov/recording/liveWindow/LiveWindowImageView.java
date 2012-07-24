@@ -245,8 +245,8 @@ public abstract class LiveWindowImageView extends JPanel implements MouseListene
 				
 
 				Map<String, Double> diff=new HashMap<String, Double>();
-				diff.put("x",dx*res.x);
-				diff.put("y",dy*res.y);
+				diff.put("X",dx*res.x);
+				diff.put("Y",dy*res.y);
 				RecordingResource.setRelStagePos(diff);
 				repaint();
 				//TODO update manual view
@@ -270,7 +270,7 @@ public abstract class LiveWindowImageView extends JPanel implements MouseListene
 		//TODO magnification
 		int dz=e.getWheelRotation();
 		Map<String, Double> diff=new HashMap<String, Double>();
-		diff.put("z",dz*10.0);
+		diff.put("Z",dz*10.0);
 		RecordingResource.setRelStagePos(diff);
 		}
 	

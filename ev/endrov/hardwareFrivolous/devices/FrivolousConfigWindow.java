@@ -62,11 +62,13 @@ class FrivolousConfigWindow extends JFrame implements ActionListener
 				frivolous.model = new FrivolousModel(f);
 
 				FrivolousCamera cam = new FrivolousCamera(frivolous);
-				FrivolousStage stage = new FrivolousStage(frivolous);
+				FrivolousXYStage stageXY = new FrivolousXYStage(frivolous);
+				FrivolousZStage stageZ = new FrivolousZStage(frivolous);
 				cam.seqAcqThread.start();
 				frivolous.hw.put("cam", cam);
-				frivolous.hw.put("stage", stage);
-				frivolous.hw.put("autofocus", new FrivolousAutofocus(stage));
+				frivolous.hw.put("xystage", stageXY);
+				frivolous.hw.put("zstage", stageZ);
+				frivolous.hw.put("autofocus", new FrivolousAutofocus(stageZ));
 
 				EvHardware.updateAvailableDevices();
 				BasicWindow.updateWindows();

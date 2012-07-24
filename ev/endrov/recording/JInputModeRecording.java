@@ -32,9 +32,9 @@ public class JInputModeRecording implements JInputMode
 	
 	public JInputModeRecording()
 		{
-		gpMap.put("x", Tuple.make(new EvDevicePath("ev/demo/stage"),"x"));
-		gpMap.put("y", Tuple.make(new EvDevicePath("ev/demo/stage"),"y"));
-		gpMap.put("rz", Tuple.make(new EvDevicePath("ev/demo/stage"),"z"));
+		gpMap.put("x", Tuple.make(new EvDevicePath("ev/demo/stage"),"X"));
+		gpMap.put("y", Tuple.make(new EvDevicePath("ev/demo/stage"),"Y"));
+		gpMap.put("rz", Tuple.make(new EvDevicePath("ev/demo/stage"),"Z"));
 		//rz
 		}
 	

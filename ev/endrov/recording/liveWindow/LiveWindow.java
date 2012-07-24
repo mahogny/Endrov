@@ -726,8 +726,8 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 			//Best would be to be able to get a bounding box
 			
 			Map<String, Double> pos=new HashMap<String, Double>();
-			pos.put("x",x);
-			pos.put("y",y);
+			pos.put("X",x);
+			pos.put("Y",y);
 			RecordingResource.setStagePos(pos);
 			
 			//TODO move to center. must take into account camera etc in that case 
