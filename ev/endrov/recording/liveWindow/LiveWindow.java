@@ -7,8 +7,6 @@ package endrov.recording.liveWindow;
 
 
 
-//TODO must stop thread at exit
-
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -26,13 +24,19 @@ import org.jdom.*;
 import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.data.EvObject;
+import endrov.ev.EV;
 import endrov.hardware.*;
 import endrov.imageWindow.GeneralTool;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowInterface;
 import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageWindow.ImageWindowRendererExtension;
+import endrov.imageset.EvChannel;
+import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvStack;
+import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
@@ -49,6 +53,7 @@ import endrov.util.Vector2i;
 
 /**
  * Camera live-feed window
+ * 
  * @author Johan Henriksson 
  */
 public class LiveWindow extends BasicWindow implements ActionListener, ImageWindowInterface
@@ -79,6 +84,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 
 	private EvPixels[] lastCameraImage=null;
 	private Dimension lastImageSize=null; 
+	private ResolutionManager.Resolution lastResolution=null;
 
 	private Vector2d lastImageStagePos=new Vector2d();
 	
@@ -102,7 +108,20 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 	private JButton bCameraToROI=new JImageButton(iconCameraToROI, "Adapt camera limits to ROI");	
 	private JButton bGoToROI=new JImageButton(iconGoToROI, "Move stage to focus on ROI");
 	
-	
+	private JTextField tStoreName=new JTextField("im");
+	private EvComboObject comboStorageLocation=new EvComboObject(new LinkedList<EvObject>(), true, false)
+		{
+		private static final long serialVersionUID = 1L;
+		public boolean includeObject(EvContainer cont)
+			{
+			return cont instanceof EvContainer;
+			}
+		};
+	private JButton bStore=new JButton("Store");
+
+		
+		
+		
 	/**
 	 * Surface for the image
 	 */
@@ -213,7 +232,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 						CameraImage cim=cam.snap();
 						lastImageStagePos=curStagePos;
 						lastCameraImage=cim.getPixels();
-
+						lastResolution=getCameraResolution();
 
 						//Update range if needed
 						if(lastCameraImage!=null && tAutoRange.isSelected())
@@ -395,6 +414,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 		histoView.addActionListener(this);
 		bAutoFocus.addActionListener(this);
 		bGoToROI.addActionListener(this);
+		bStore.addActionListener(this);
 		
 		//pHisto.setBorder(BorderFactory.createTitledBorder("Range adjustment"));
 		pHisto.add(
@@ -419,6 +439,12 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 						null,
 						null
 				);
+
+		JComponent pAcquire=EvSwingUtil.layoutLCR(null, 
+				EvSwingUtil.layoutEvenHorizontal(
+						EvSwingUtil.withLabel("Store in: ", comboStorageLocation),
+						EvSwingUtil.withLabel("Name: ", tStoreName)),
+				bStore);
 		
 		
 		JPanel pCenter=new JPanel(new BorderLayout());
@@ -426,7 +452,12 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 				,BorderLayout.SOUTH);
 		pCenter.add(drawArea,BorderLayout.CENTER);
 		
-		sidepanel=new EvHidableSidePaneBelow(pCenter, pHisto, true);
+		sidepanel=new EvHidableSidePaneBelow(pCenter, 
+				EvSwingUtil.layoutACB(
+						null, 
+						EvSwingUtil.withTitledBorder("View settings", pHisto), 
+						EvSwingUtil.withTitledBorder("Store image", pAcquire)),
+				true);
 		sidepanel.addActionListener(this);
 		
 		setLayout(new BorderLayout());
@@ -504,6 +535,8 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 					(int)(bounds.getHeight()+dh)
 					));
 			}
+		else if(e.getSource()==bStore)
+			storeImage();
 		else
 			for(JToggleButton b:toolButtons)
 				if(e.getSource()==b)
@@ -523,7 +556,51 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 					}
 		
 		}
+	
+	
+	private Imageset findUnusedImageName(EvContainer con, String name)
+		{
+		String attempt;
+		int i=0;
+		do
+			{
+			attempt=name+EV.pad(i, 8);
+			i++;
+			} while(con.metaObject.containsKey(attempt));
+		Imageset im=new Imageset();
+		con.metaObject.put(attempt, im);
+		return im;
+		}
+	
+	/**
+	 * Store the current image
+	 */
+	private void storeImage()
+		{
+		EvPixels p[]=drawArea.getImage();
+		EvContainer con=comboStorageLocation.getSelectedObject();
+		String name=tStoreName.getText();
+		if(con==null)
+			showErrorDialog("No place to store selected");
+		else if(p==null)
+			showErrorDialog("No image to save");
+		else
+			{
+			Imageset im=findUnusedImageName(con, name);
+			EvChannel ch=im.getCreateChannel("live"); //pick a better name if possible
+			
+			EvStack stack=new EvStack();
+			stack.putInt(0, new EvImage(p[0]));
+			stack.resX=lastResolution.x;
+			stack.resY=lastResolution.y;
+			stack.resZ=1;
+			ch.putStack(EvDecimal.ZERO, stack);
+			}
+		}
 		
+	/**
+	 * Get the currently selected camera
+	 */
 	private HWCamera getCurrentCamera()
 		{
 		EvDevicePath camname=(EvDevicePath)cameraCombo.getSelectedItem();
@@ -553,6 +630,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 	
 	public void dataChangedEvent()
 		{
+		comboStorageLocation.updateList();
 		}
 
 	public void loadedFile(EvData data){}
@@ -616,18 +694,11 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 
 	
 	/**
-	 * [um/px]
+	 * Resolution [um/px]. Never null
 	 */
 	public ResolutionManager.Resolution getCameraResolution()
 		{
 		return ResolutionManager.getCurrentResolutionNotNull(getCurrentCameraPath());
-		/*
-		HWCamera cam=getCurrentCamera();
-		if(cam!=null)
-			return ResolutionManager.getCurrentTotalMagnification(cam);
-		else
-			return 1;
-			*/
 		}
 	
 	public double getStageX() // um

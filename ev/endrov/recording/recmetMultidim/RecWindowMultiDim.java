@@ -98,9 +98,6 @@ public class RecWindowMultiDim extends BasicWindow
 	
 	
 	
-	
-	
-	
 	public void dataChangedEvent()
 		{
 		wchans.dataChangedEvent();
