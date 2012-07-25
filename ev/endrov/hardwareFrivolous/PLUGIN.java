@@ -16,7 +16,8 @@ public class PLUGIN extends PluginDef
 
 	public String getAuthor()
 		{
-		return "David Johansson <jdavid@kth.se>\nArvid Johansson <arvidjo@kth.se>";
+		return "David Johansson <jdavid@kth.se>\n" +
+				"Arvid Johansson <arvidjo@kth.se>";
 		}
 	
 	public boolean systemSupported()
