@@ -85,7 +85,7 @@ public class BioformatsSliceIO extends EvIOImage
 			
 			
 			
-			if(debug)
+			//if(debug)
 				System.out.println("bpp:"+bpp+" fp:"+isFloat+" islittle:"+isLittle+" signed:"+isSigned+" class:"+bfpixels.getClass()+"   pixeltype:"+FormatTools.getPixelTypeString(type));
 			
 			//Much of this code modified from bioformats IJ-plugin. I deem it functional and hence not copyrightable
@@ -124,7 +124,7 @@ public class BioformatsSliceIO extends EvIOImage
 						}
 					
 					if(isSigned)
-					q = DataTools.makeSigned(q);
+						q = DataTools.makeSigned(q);
 					
 					if(isDicom)
 						{
@@ -147,7 +147,26 @@ public class BioformatsSliceIO extends EvIOImage
 						System.out.println();
 						}
 					
-					return EvPixels.createFromShort(w, h, q);
+					if(!isSigned)
+						{
+						//System.out.println("------ not signed!!!");
+						
+						
+						//Must store in an int!
+						int[] arri=new int[w*h];
+						for(int i=0;i<w*h;i++)
+							{
+							int value=q[i];
+							if(value<0)
+								value+=32768*2;
+							arri[i]=value;
+							}
+						return EvPixels.createFromInt(w, h, arri);
+						
+						
+						}
+					else
+						return EvPixels.createFromShort(w, h, q);
 					/*
 					}
 				else
@@ -191,8 +210,13 @@ public class BioformatsSliceIO extends EvIOImage
 					System.out.print(" "+i);
 				System.out.println();
 				*/
+				
+//				System.out.println("first int32 raw: "+q[0]);
+				
 				if (isSigned) 
 					q = DataTools.makeSigned(q);
+
+//				System.out.println("first int32 sign fixed: "+q[0]);
 
 				if(debug)
 					{

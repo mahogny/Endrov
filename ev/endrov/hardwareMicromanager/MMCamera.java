@@ -22,12 +22,20 @@ import endrov.util.EvDecimal;
  */
 public class MMCamera implements HWCamera
 	{
+	protected MicroManager mm;
+	protected String mmDeviceName;
 
 	private EvDecimal expTime = new EvDecimal("100");
 	private String forceBPP = "None";
 	
 	private final static String propExposure="Exposure";
 	private final static String propForceBitType="Force pixel format";
+	
+	private final static String propRoiX="roiX";
+	private final static String propRoiY="roiY";
+	private final static String propRoiWidth="roiWidth";
+	private final static String propRoiHeight="roiHeight";
+
 	
 	
 	private DevicePropertyType typeFroceBitType=DevicePropertyType.getEditableCategoryState(new String[]{"None","8-bit int","16-bit int","32-bit int"});
@@ -38,6 +46,12 @@ public class MMCamera implements HWCamera
 			{
 			SortedMap<String, String> map=MMutil.getPropMap(mm.core,mmDeviceName);
 			map.put("Exposure", ""+expTime);
+			
+			CameraROI roi=getCameraROI();
+			map.put(propRoiX, ""+roi.x);
+			map.put(propRoiY, ""+roi.y);
+			map.put(propRoiWidth, ""+roi.w);
+			map.put(propRoiHeight, ""+roi.h);
 			
 			map.put(propForceBitType, ""+forceBPP);
 			
@@ -76,6 +90,11 @@ public class MMCamera implements HWCamera
 			map.put("Exposure", new DevicePropertyType());
 			map.put(propForceBitType, typeFroceBitType);
 			
+			map.put(propRoiX, DevicePropertyType.getEditableIntState());
+			map.put(propRoiY, DevicePropertyType.getEditableIntState());
+			map.put(propRoiWidth, DevicePropertyType.getEditableIntState());
+			map.put(propRoiHeight, DevicePropertyType.getEditableIntState());
+			
 			return map;
 			}
 		catch (Exception e)
@@ -84,6 +103,88 @@ public class MMCamera implements HWCamera
 			}
 		}
 
+	
+	/**
+	 * Camera ROI
+	 * 
+	 * @author Johan Henriksson
+	 *
+	 */
+	public static class CameraROI
+		{
+		public CameraROI()
+			{
+			}
+		
+		public CameraROI(int x, int y, int w, int h)
+			{
+			this.x = x;
+			this.y = y;
+			this.w = w;
+			this.h = h;
+			}
+
+		public int x, y, w, h;
+		}
+	
+	/**
+	 * Get current camera ROI
+	 */
+	public CameraROI getCameraROI()
+		{
+		try
+			{
+			int[] x=new int[1];
+			int[] y=new int[1];
+			int[] w=new int[1];
+			int[] h=new int[1];
+			if(!mm.core.getCameraDevice().equals(mmDeviceName))
+				mm.core.setCameraDevice(mmDeviceName);
+			mm.core.getROI(x,y,w,h);
+			return new CameraROI(x[0],y[0],w[0],h[0]);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			return null;
+			}
+		}
+	
+	/**
+	 * Set the camera ROI
+	 */
+	public void setCameraROI(CameraROI roi)
+		{
+		try
+			{
+			if(!mm.core.getCameraDevice().equals(mmDeviceName))
+				mm.core.setCameraDevice(mmDeviceName);
+			mm.core.setROI(roi.x,roi.y,roi.w,roi.h);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}
+	
+	/**
+	 * Set camera ROI to show everything
+	 */
+	public void resetCameraROI()
+		{
+		try
+			{
+			if(!mm.core.getCameraDevice().equals(mmDeviceName))
+				mm.core.setCameraDevice(mmDeviceName);
+			mm.core.clearROI();
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}
+	
+	
 	public String getPropertyValue(String prop)
 		{
 		try
@@ -92,6 +193,14 @@ public class MMCamera implements HWCamera
 				return ""+expTime;
 			else if(prop.equals(propForceBitType))
 				return ""+forceBPP;
+			else if(prop.equals(propRoiX))
+				return ""+getCameraROI().x;
+			else if(prop.equals(propRoiY))
+				return ""+getCameraROI().y;
+			else if(prop.equals(propRoiWidth))
+				return ""+getCameraROI().w;
+			else if(prop.equals(propRoiHeight))
+				return ""+getCameraROI().h;
 			else
 				return mm.core.getProperty(mmDeviceName, prop);
 			}
@@ -110,6 +219,21 @@ public class MMCamera implements HWCamera
 				expTime=new EvDecimal(value);
 			else if(prop.equals(propForceBitType))
 				forceBPP=value;
+			else if(prop.equals(propRoiX) || prop.equals(propRoiY) || prop.equals(propRoiWidth) || prop.equals(propRoiHeight))
+				{
+				CameraROI roi=getCameraROI();
+				
+				if(prop.equals(propRoiX))
+					roi.x=Integer.parseInt(value);
+				else if(prop.equals(propRoiY))
+					roi.y=Integer.parseInt(value);
+				else if(prop.equals(propRoiWidth))
+					roi.w=Integer.parseInt(value);
+				else if(prop.equals(propRoiHeight))
+					roi.h=Integer.parseInt(value);
+				
+				setCameraROI(roi);
+				}
 			else
 				mm.core.setProperty(mmDeviceName, prop, value);
 			}
@@ -224,26 +348,11 @@ public class MMCamera implements HWCamera
 
 	public double getSequenceCapacityFree()
 		{
-		return mm.core.getBufferFreeCapacity()
-				/(double) mm.core.getBufferTotalCapacity();
+		return mm.core.getBufferFreeCapacity()/(double) mm.core.getBufferTotalCapacity();
 		}
 
-	/**
-	 * void * getLastImage () const throw (CMMError) void * popNextImage () throw
-	 * (CMMError) void * getLastImageMD (unsigned channel, unsigned slice,
-	 * Metadata &md) const throw (CMMError) void * popNextImageMD (unsigned
-	 * channel, unsigned slice, Metadata &md) throw (CMMError) long
-	 * getRemainingImageCount () long getBufferTotalCapacity () long
-	 * getBufferFreeCapacity () double getBufferIntervalMs () const bool
-	 * isBufferOverflowed () const void setCircularBufferMemoryFootprint (unsigned
-	 * sizeMB) throw (CMMError) void intializeCircularBuffer () throw (CMMError)
-	 */
-
 	
 	
-	
-	protected MicroManager mm;
-	protected String mmDeviceName;
 
 	public String getDescName()
 		{

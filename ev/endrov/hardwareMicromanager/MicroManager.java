@@ -17,7 +17,7 @@ import mmcorej.PropertyPair;
 import mmcorej.PropertySetting;
 
 import org.jdom.Element;
-import org.micromanager.conf.ConfiguratorDlg;
+import org.micromanager.conf2.ConfiguratorDlg2;
 
 import endrov.hardware.*;
 import endrov.recording.ResolutionManager;
@@ -402,7 +402,7 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 	public boolean hasConfigureDialog(){return true;}
 	public void openConfigureDialog()
 		{
-		ConfiguratorDlg dlg=new ConfiguratorDlg(core,configFile.getAbsolutePath());
+		ConfiguratorDlg2 dlg=new ConfiguratorDlg2(core,configFile.getAbsolutePath());
 		dlg.setVisible(true);
 		try
 			{

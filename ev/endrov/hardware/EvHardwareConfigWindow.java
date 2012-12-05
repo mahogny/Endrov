@@ -69,8 +69,8 @@ public class EvHardwareConfigWindow extends BasicWindow
 		//Window overall things
 		setTitleEvWindow("Hardware Configuration");
 		packEvWindow();
-		setVisibleEvWindow(true);
 		setBoundsEvWindow(bounds);
+		setVisibleEvWindow(true);
 		}
 	
 	

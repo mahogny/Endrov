@@ -1,2 +1,2 @@
--Xmx1700M -Djava.security.manager -Djava.security.policy=config/java.policy
+-Xmx3700M -Djava.security.manager -Djava.security.policy=config/java.policy
 

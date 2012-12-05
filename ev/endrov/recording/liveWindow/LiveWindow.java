@@ -470,8 +470,8 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 		//Window overall things
 		setTitleEvWindow("Live view");
 		packEvWindow();
-		setVisibleEvWindow(true);
 		setBoundsEvWindow(bounds);
+		setVisibleEvWindow(true);
 		timer.start();
 		//setResizable(false);
 		
