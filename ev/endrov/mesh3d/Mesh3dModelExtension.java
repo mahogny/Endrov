@@ -220,7 +220,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				return null;
 			}
 		
-		public void mouseClicked(MouseEvent e)
+		public boolean mouseClicked(MouseEvent e, JPopupMenu menu)
 			{
 			//Left-clicking a particle selects it
 			if(SwingUtilities.isLeftMouseButton(e))
@@ -232,7 +232,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				{
 				if(getHoveredMesh()!=null)
 					{
-					JPopupMenu menu=new JPopupMenu();
+//					JPopupMenu menu=new JPopupMenu();
 					
 					JMenu miSetColor=new JMenu("Set color");
 					menu.add(miSetColor);
@@ -248,9 +248,10 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 							}
 						});
 					
-					w.createPopupMenu(menu, e);
+//					w.createPopupMenu(menu, e);
 					}
 				}
+			return false;
 			
 			}
 		public boolean mouseDragged(MouseEvent e, int dx, int dy)

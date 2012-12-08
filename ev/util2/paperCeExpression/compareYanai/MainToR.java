@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,14 +13,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
-import endrov.flowColocalization.ColocCoefficients;
-import endrov.lineage.Lineage;
-import endrov.util.EvDecimal;
-import endrov.util.EvFileUtil;
 
 
 public class MainToR
