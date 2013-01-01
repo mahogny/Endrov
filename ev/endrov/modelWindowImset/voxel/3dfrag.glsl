@@ -39,8 +39,8 @@ void main (void)
 	
 	//TODO how to handle negative values
 	
-	if(alpha<0)
-		alpha=0;
+	if(alpha<0.0)
+		alpha=0.0;
 	
 	//vec4 newCol = vcolor;
 	vec4 newCol = vcolor*contrast;
