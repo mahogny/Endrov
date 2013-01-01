@@ -147,6 +147,7 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 	public void setBounds(Rectangle r)
 		{
 		super.setBounds(r);
+		super.setLocationRelativeTo(null);
 		}
 	
 	}

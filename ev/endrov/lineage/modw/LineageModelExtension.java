@@ -321,21 +321,24 @@ public class LineageModelExtension implements ModelWindowExtension
 		
 		
 		
-		public void mouseClicked(MouseEvent e)
+		public boolean mouseClicked(MouseEvent e, JPopupMenu menu)
 			{
 			//Left-clicking a particle selects it
 			if(SwingUtilities.isLeftMouseButton(e))
+				{
 				LineageCommonUI.mouseSelectObject(EvSelection.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+				return true;
+				}
 			else if(SwingUtilities.isRightMouseButton(e))
 				{
 				if(LineageCommonUI.getHoveredParticle()!=null)
 					{
 					//Popup menu
-					JPopupMenu menu=new JPopupMenu();
+					//JPopupMenu menu=new JPopupMenu();
 					new LineageCommonUI(w, w).addToMenu(menu, false);
-					w.createPopupMenu(menu, e);
 					}
 				}
+			return false;
 			}
 		
 		

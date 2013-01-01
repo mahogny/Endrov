@@ -101,6 +101,7 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 					catch (Exception e1)
 						{
 						EvLog.printError("Failed to run acquisition: "+e1.getMessage(),null);
+						e1.printStackTrace();
 						BasicWindow.showErrorDialog(e1.getMessage());
 						}
 					}

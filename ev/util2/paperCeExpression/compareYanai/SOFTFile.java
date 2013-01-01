@@ -159,8 +159,6 @@ public class SOFTFile
 			
 			
 			}
-		
-		
 		}
 	
 	

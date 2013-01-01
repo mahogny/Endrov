@@ -1,18 +1,19 @@
 package endrov.recording.resolutionConfigWindow;
 
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 
 import org.jdom.Element;
@@ -40,16 +41,17 @@ import endrov.util.EvSwingUtil;
  * @author Johan Henriksson
  * @author Kim Nordlöf, Erik Vernersson
  */
-public class ResolutionConfigWindow extends BasicWindow implements
-		ActionListener
+public class ResolutionConfigWindow extends BasicWindow implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
 
 	private EvPixels[] lastCameraImage = null;
 
 	private RecWidgetSelectProperties wProperties = new RecWidgetSelectProperties();
-	private JList listCalibrations = new JList(new DefaultListModel());
 
+	private JTable tableCalibrations = new JTable();
+	
+	
 	private JButton bDetect = new JButton("Detect");
 	private JButton bEnter = new JButton("Enter manually");
 	private JButton bDelete = new JButton("Delete");
@@ -64,23 +66,6 @@ public class ResolutionConfigWindow extends BasicWindow implements
 				}
 		};
 
-	private static class ListItem
-		{
-		public String name;
-		public HWCamera cam;
-
-		public ListItem(String name, HWCamera cam)
-			{
-			this.name = name;
-			this.cam = cam;
-			}
-
-		public String toString()
-			{
-			return name;
-			}
-		}
-
 	/**
 	 * Create window
 	 */
@@ -88,7 +73,7 @@ public class ResolutionConfigWindow extends BasicWindow implements
 		{
 		setLayout(new BorderLayout());
 
-		JScrollPane scrollList = new JScrollPane(listCalibrations,
+		JScrollPane scrollList = new JScrollPane(tableCalibrations, //listCalibrations,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -99,25 +84,49 @@ public class ResolutionConfigWindow extends BasicWindow implements
 		add(EvSwingUtil.layoutEvenHorizontal(bDetect, bEnter, bDelete),
 				BorderLayout.SOUTH);
 
-		generateList();
+		updateListOfResolutions();
 
 		bDetect.addActionListener(this);
 		bEnter.addActionListener(this);
 		bDelete.addActionListener(this);
 
+		
 		// Window overall things
 		setTitleEvWindow("Configure resolution");
 		packEvWindow();
+		setBoundsEvWindow(new Rectangle(500, 400));
 		setVisibleEvWindow(true);
 		}
 
-	private void generateList()
+	
+	
+	private void updateListOfResolutions()
 		{
-		DefaultListModel model = (DefaultListModel) listCalibrations.getModel();
-		model.removeAllElements();
-		for (HWCamera cam : ResolutionManager.resolutions.keySet())
-			for (String name : ResolutionManager.resolutions.get(cam).keySet())
-				model.addElement(new ListItem(name, cam));
+		DefaultTableModel model=new DefaultTableModel(new String[][]{}, new String[]{"Name","ResX","ResY","Camera","State"})
+			{
+			private static final long serialVersionUID = 1L;
+			public boolean isCellEditable(int row, int column)
+				{
+				return false;
+				}
+			};
+		for (EvDevicePath campath : ResolutionManager.resolutions.keySet())
+			{
+			for (String name : ResolutionManager.resolutions.get(campath).keySet())
+				{
+				ResolutionManager.ResolutionState state=ResolutionManager.resolutions.get(campath).get(name);
+				String[] row=new String[]{
+						name,
+						""+state.cameraRes.x,
+						""+state.cameraRes.y,
+						campath.toString(),
+						state.state.toString()
+				};
+				model.addRow(row);
+				}
+			}
+		
+		tableCalibrations.setModel(model);
 		}
 
 	/**
@@ -125,30 +134,30 @@ public class ResolutionConfigWindow extends BasicWindow implements
 	 */
 	public void actionPerformed(ActionEvent e)
 		{
+		
 		if (e.getSource()==bDelete)
 			{
-			ListItem item = (ListItem) listCalibrations.getSelectedValue();
-			if (item!=null)
+			int row=tableCalibrations.getSelectedRow();
+			if(row!=-1)
 				{
-				ResolutionManager.resolutions.get(item.cam).remove(item.name);
-				generateList();
+				DefaultTableModel model=(DefaultTableModel)tableCalibrations.getModel();
+				String name=(String)model.getValueAt(row, 0);
+				String campath=(String)model.getValueAt(row, 3);
+				ResolutionManager.resolutions.get(new EvDevicePath(campath)).remove(name);
+				updateListOfResolutions();
 				}
 			}
 
 		
 		EvDevicePath campath = (EvDevicePath) cCaptureDevice.getSelectedDevice();
-		if (campath!=null)
+		if (campath==null)
+			showErrorDialog("No camera selected");
+		else
 			{
 			if (e.getSource()==bEnter)
-				{
 				enterResolution(campath);
-				}
 			else if (e.getSource()==bDetect)
-				{
 				detectResolution(campath);
-				}
-
-			
 			}
 
 		}
@@ -158,8 +167,6 @@ public class ResolutionConfigWindow extends BasicWindow implements
 	 */
 	private void enterResolution(EvDevicePath campath)
 		{
-		
-		
 		try
 			{
 			// Get resolution
@@ -181,10 +188,9 @@ public class ResolutionConfigWindow extends BasicWindow implements
 			ResolutionState rstate = new ResolutionState();
 			rstate.cameraRes = new ResolutionManager.Resolution(resX, resY);
 			rstate.state = State.recordCurrent(wProperties.getSelectedProperties());
-			ResolutionManager.getCreateResolutionStatesMap(campath).put(name,
-					rstate);
+			ResolutionManager.getCreateResolutionStatesMap(campath).put(name,	rstate);
 
-			generateList();
+			updateListOfResolutions();
 			}
 		catch (NumberFormatException e1)
 			{
@@ -200,43 +206,51 @@ public class ResolutionConfigWindow extends BasicWindow implements
 	 */
 	private void detectResolution(EvDevicePath campath)
 		{
-		HWCamera cam=(HWCamera)campath.getDevice();
+		try
+			{
+			HWCamera cam=(HWCamera)campath.getDevice();
+			
+			CameraImage cim = cam.snap();
+			lastCameraImage = cim.getPixels();
+			EvPixels imageA = lastCameraImage[0];
+
+			int cameraDisplacment = 50;
+
+			double newX = RecordingResource.getCurrentStageX()-cameraDisplacment;
+			double newY = RecordingResource.getCurrentStageY()-cameraDisplacment;
+
+			Map<String, Double> pos = new HashMap<String, Double>();
+			pos.put("X", newX);
+			pos.put("Y", newY);
+			RecordingResource.setStagePos(pos);
+
+			cim = cam.snap();
+			lastCameraImage = cim.getPixels();
+			EvPixels imageB = lastCameraImage[0];
+
+			double[] corrV = ImageDisplacementCorrelation.displacement(imageA, imageB);
+
+			// [um/px]
+			double resX, resY;
+			resX = cameraDisplacment/corrV[0];
+			resY = cameraDisplacment/corrV[1];
+
+			String name = ResolutionManager.getUnusedResName(campath);
+			
+			// Create the resolution state
+			ResolutionState rstate = new ResolutionState();
+			rstate.cameraRes = new ResolutionManager.Resolution(resX, resY);
+			rstate.state = State.recordCurrent(wProperties.getSelectedProperties());
+			ResolutionManager.getCreateResolutionStatesMap(campath).put(name,	rstate);
+			updateListOfResolutions();
+			}
+		catch (Exception e)
+			{
+			showErrorDialog("Error: "+e.getMessage());
+			e.printStackTrace();
+			}
 		
-		CameraImage cim = cam.snap();
-		lastCameraImage = cim.getPixels();
-		EvPixels imageA = lastCameraImage[0];
-
-		int cameraDisplacment = 50;
-
-		double newX = RecordingResource.getCurrentStageX()-cameraDisplacment;
-		double newY = RecordingResource.getCurrentStageY()-cameraDisplacment;
-
-		Map<String, Double> pos = new HashMap<String, Double>();
-		pos.put("X", newX);
-		pos.put("Y", newY);
-		RecordingResource.setStagePos(pos);
-
-		cim = cam.snap();
-		lastCameraImage = cim.getPixels();
-		EvPixels imageB = lastCameraImage[0];
-
-		double[] corrV = ImageDisplacementCorrelation.displacement(imageA, imageB);
-
-		// [um/px]
-		double resX, resY;
-		resX = cameraDisplacment/corrV[0];
-		resY = cameraDisplacment/corrV[1];
-
-		String name = "Detected Resolution";
 		
-		// Create the resolution state
-		ResolutionState rstate = new ResolutionState();
-		rstate.cameraRes = new ResolutionManager.Resolution(resX, resY);
-		rstate.state = State.recordCurrent(wProperties.getSelectedProperties());
-		ResolutionManager.getCreateResolutionStatesMap(campath).put(name,	rstate);
-		generateList();
-		
-		showInformativeDialog("Resolution detected: "+resX+" "+resY);
 		}
 
 

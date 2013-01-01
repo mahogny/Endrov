@@ -10,6 +10,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
@@ -35,7 +36,6 @@ import endrov.keyBinding.JInputManager;
 import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWImageScanner;
 import endrov.recording.device.HWStage;
-import endrov.recording.positionsWindow.Position;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
 import endrov.roi.LineIterator.LineRange;
@@ -57,7 +57,7 @@ public class RecordingResource
 
 	public static GeneralObserver<PositionListListener> posListListeners = new GeneralObserver<RecordingResource.PositionListListener>();
 
-	public static LinkedList<Position> posList = new LinkedList<Position>();
+	public static LinkedList<StoredStagePosition> posList = new LinkedList<StoredStagePosition>();
 
 	public static void posListUpdated()
 		{
@@ -79,7 +79,7 @@ public class RecordingResource
 		{
 		// Find all names in use
 		Set<String> usedNames = new HashSet<String>();
-		for (Position pos : RecordingResource.posList)
+		for (StoredStagePosition pos : RecordingResource.posList)
 			usedNames.add(pos.getName());
 
 		// Generate an unused name
@@ -100,72 +100,45 @@ public class RecordingResource
 
 	public static double getCurrentStageX()
 		{
-		for (HWStage stage : EvHardware.getDeviceMapCast(HWStage.class).values())
+		HWStage stage = EvHardware.getCoreDevice().getCurrentXYStage();
+		if(stage!=null)
 			{
-			String[] aname = stage.getAxisName();
-			for (int i = 0; i<aname.length; i++)
-				if (aname[i].equals("x")||aname[i].equals("X"))
-					return stage.getStagePos()[i];
+			return stage.getStagePos()[0]; //Not general enough?
 			}
-		// System.out.println("No stage for X found");
-		return 0;
+		else
+			return 0;
 		}
 
-	public static HWAutoFocus getOneAutofocus()
-		{
-		for (HWAutoFocus af : EvHardware.getDeviceMapCast(HWAutoFocus.class)
-				.values())
-			return af;
-		return null;
-		}
 
-	/*
-	 * public static void moveAxis(String s, double dx) {
-	 * for(Map.Entry<EvDevicePath,HWStage>
-	 * e:EvHardware.getDeviceMapCast(HWStage.class).entrySet()) { HWStage
-	 * stage=e.getValue(); for(int i=0;i<stage.getNumAxis();i++) {
-	 * if(stage.getAxisName()[i].equals(s)) { //TODO should if possible set both
-	 * axis' at the same time. might make it faster double[] da=new
-	 * double[stage.getNumAxis()]; da[i]=dx; stage.setRelStagePos(da); return; } }
-	 * } }
-	 */
 
 	public static double getCurrentStageY()
 		{
-		for (HWStage stage : EvHardware.getDeviceMapCast(HWStage.class).values())
+		HWStage stage = EvHardware.getCoreDevice().getCurrentXYStage();
+		if(stage!=null)
 			{
-			String[] aname = stage.getAxisName();
-			for (int i = 0; i<aname.length; i++)
-				if (aname[i].equals("y")||aname[i].equals("Y"))
-					return stage.getStagePos()[i];
+			return stage.getStagePos()[1]; //Not general enough?
 			}
-		// System.out.println("No stage for Y found");
-		return 0;
+		else
+			return 0;
 		}
 
 	public static double getCurrentStageZ()
 		{
-		for (HWStage stage : EvHardware.getDeviceMapCast(HWStage.class).values())
+		HWStage stage = EvHardware.getCoreDevice().getCurrentFocus();
+		if(stage!=null)
 			{
-			String[] aname = stage.getAxisName();
-			for (int i = 0; i<aname.length; i++)
-				if (aname[i].equals("z")||aname[i].equals("Z"))
-					return stage.getStagePos()[i];
+			return stage.getStagePos()[0]; //Not general enough?
 			}
-		return 0;
+		else
+			return 0;
 		}
 
 	public static void setCurrentStageZ(double z)
 		{
-		for (HWStage stage : EvHardware.getDeviceMapCast(HWStage.class).values())
+		HWStage stage = EvHardware.getCoreDevice().getCurrentXYStage();
+		if(stage!=null)
 			{
-			String[] aname = stage.getAxisName();
-			for (int i = 0; i<aname.length; i++)
-				if (aname[i].equals("z")||aname[i].equals("Z"))
-					{
-					double[] pos = stage.getStagePos();
-					pos[i] = z;
-					}
+			stage.setStagePos(new double[]{z});
 			}
 		}
 
@@ -180,13 +153,11 @@ public class RecordingResource
 
 		int[] ret = new int[w*h];
 
-		EvPixels p = new EvPixels(EvPixelsType.UBYTE, w, h); // TODO avoid this
-																													// allocation
+		EvPixels p = new EvPixels(EvPixelsType.UBYTE, w, h); // TODO avoid this allocation
 		EvImage image = new EvImage(p);
 		EvStack stack = new EvStack();
 
-		ResolutionManager.Resolution res = ResolutionManager
-				.getCurrentResolutionNotNull(scannerpath);
+		ResolutionManager.Resolution res = ResolutionManager.getCurrentResolutionNotNull(scannerpath);
 		stack.setRes(res.x, res.y, 1);
 
 		String channel = "foo";
@@ -199,8 +170,7 @@ public class RecordingResource
 		ProgressHandle progh = new ProgressHandle();
 
 		// Fill bitmap ROI
-		LineIterator it = roi.getLineIterator(progh, stack, image, channel, frame,
-				z);
+		LineIterator it = roi.getLineIterator(progh, stack, image, channel, frame, z);
 		while (it.next())
 			{
 			int y = it.y;
@@ -224,6 +194,15 @@ public class RecordingResource
 	 */
 	public static void setRelStagePos(Map<String, Double> axisDiff)
 		{
+		HWStage pathXY=EvHardware.getCoreDevice().getCurrentXYStage();
+		HWStage pathZ=EvHardware.getCoreDevice().getCurrentFocus();
+		
+		if(pathXY!=null)
+			setRelStagePos(pathXY, axisDiff);
+		if(pathZ!=null)
+			setRelStagePos(pathZ, axisDiff);
+		/*
+		
 		for (Map.Entry<EvDevicePath, HWStage> e : EvHardware.getDeviceMapCast(
 				HWStage.class).entrySet())
 			{
@@ -242,14 +221,43 @@ public class RecordingResource
 			if (foundHere)
 				stage.setRelStagePos(da);
 			}
+			*/
 		}
+	
+	
+	public static void setRelStagePos(HWStage stage, Map<String, Double> axisDiff)
+		{
+		boolean foundHere = false;
+		double[] da = new double[stage.getNumAxis()];
+		for (int i = 0; i<stage.getNumAxis(); i++)
+			{
+			Double v = axisDiff.get(stage.getAxisName()[i]);
+			if (v!=null)
+				{
+				foundHere = true;
+				da[i] = v;
+				}
+			}
+		if (foundHere)
+			stage.setRelStagePos(da);
+		}
+	
 
 	/**
-	 * Move any device with right axis names TODO micromanager core property-like
-	 * way of doing it?
+	 * Move any device with right axis names
 	 */
 	public static void setStagePos(Map<String, Double> axisPos)
 		{
+		HWStage pathXY=EvHardware.getCoreDevice().getCurrentXYStage();
+		HWStage pathZ=EvHardware.getCoreDevice().getCurrentFocus();
+		
+		if(pathXY!=null)
+			setStagePos(pathXY, axisPos);
+		if(pathZ!=null)
+			setStagePos(pathZ, axisPos);
+		
+		//Alternative way, where each device must provide unique axis labels. Dropped in favour of the MM way
+		/*
 		int found = 0;
 		for (Map.Entry<EvDevicePath, HWStage> e : EvHardware.getDeviceMapCast(
 				HWStage.class).entrySet())
@@ -272,7 +280,26 @@ public class RecordingResource
 			if (found==axisPos.size())
 				return;
 			}
+			*/
 		}
+	private static void setStagePos(HWStage stage, Map<String, Double> axisPos)
+		{
+		boolean found=false;
+		double[] da = new double[stage.getNumAxis()];
+		for (int i = 0; i<stage.getNumAxis(); i++)
+			{
+			Double v = axisPos.get(stage.getAxisName()[i]);
+			if (v!=null)
+				{
+				found=true;
+				da[i] = v;
+				}
+			}
+		if (found)
+			stage.setStagePos(da);
+		}
+	
+	
 
 	public static void goToHome()
 		{
@@ -293,7 +320,7 @@ public class RecordingResource
 		{
 		try
 			{
-			Position[] anArray = new Position[RecordingResource.posList.size()];
+			StoredStagePosition[] anArray = new StoredStagePosition[RecordingResource.posList.size()];
 			for(int i=0;i<RecordingResource.posList.size();i++)
 				anArray[i]=RecordingResource.posList.get(i);
 
@@ -316,18 +343,18 @@ public class RecordingResource
 	
 	
 	
-	public static void loadPosList(File f)
+	public static void loadPosList(File f) throws IOException
 		{
-		Position[] anArray = null;
+		StoredStagePosition[] anArray = null;
 
 		try
 			{
-			InputStream file = new FileInputStream("list.ser");
+			InputStream file = new FileInputStream(f);
 			InputStream buffer = new BufferedInputStream(file);
 			ObjectInput input = new ObjectInputStream(buffer);
 
 			/*int version = */input.readInt(); 
-			anArray = (Position[]) input.readObject();
+			anArray = (StoredStagePosition[]) input.readObject();
 			input.close();
 			
 			RecordingResource.posList.clear();
@@ -338,7 +365,7 @@ public class RecordingResource
 		catch (Exception e2)
 			{
 			e2.printStackTrace();
-			throw new RuntimeException("Could not read file: "+e2.getMessage());
+			throw new IOException("Could not read the file: "+e2.getMessage());
 			}
 		}
 	
@@ -356,5 +383,24 @@ public class RecordingResource
 		JInputManager.addGamepadMode("Hardware", new JInputModeRecording(), false);
 		soundCameraSnap = new EvSound(RecordingResource.class, "camera_click.ogg");
 		}
+
+	public static void autofocus()
+	{
+	HWAutoFocus af=EvHardware.getCoreDevice().getCurrentAutofocus();
+	if(af==null)
+		throw new RuntimeException("No autofocus device found");
+	else
+		{
+		try
+			{
+			af.fullFocus();
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			throw new RuntimeException("Failed to focus");
+			}
+		}
+	}
 
 	}

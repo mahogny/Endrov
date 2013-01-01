@@ -1,4 +1,4 @@
-package endrov.recording.positionsWindow;
+package endrov.recording;
 
 import endrov.recording.device.HWStage;
 
@@ -8,13 +8,13 @@ import endrov.recording.device.HWStage;
  * @author Kim Nordlöf, Erik Vernersson
  */
 
-public class AxisInfo
+public class StoredStagePositionAxis
 	{
 	private HWStage device;
 	private int axis;
 	private double value;
 
-	public AxisInfo(HWStage stage, int axis, double value)
+	public StoredStagePositionAxis(HWStage stage, int axis, double value)
 		{
 		this.device = stage;
 		this.axis = axis;

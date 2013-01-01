@@ -8,6 +8,7 @@ package endrov.ev;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
+
 import javax.swing.*;
 
 import endrov.util.EvFileUtil;
@@ -24,7 +25,7 @@ public class PluginInfo
 	
 	/** Set to true if pluginlist.txt should be used instead of scanning the plugin directories */
 	public static boolean readFromList=false;
-
+	private static Set<String> loadedPlugins=Collections.synchronizedSet(new HashSet<String>());
 	
 	/**
 	 * Check if there was a plugin in the directory
@@ -75,6 +76,7 @@ public class PluginInfo
 						{
 						Method m=foo.getDeclaredMethod("initPlugin", new Class[]{});
 						m.invoke(foo, new Object[]{});
+						loadedPlugins.add(pdef.getPluginName());
 						}
 					catch (Exception e)
 						{
@@ -89,6 +91,10 @@ public class PluginInfo
 			}
 		}
 	
+	public static boolean isPluginLoaded(PluginInfo info)
+		{
+		return loadedPlugins.contains(info.pdef.getPluginName());
+		}
 
 
 	

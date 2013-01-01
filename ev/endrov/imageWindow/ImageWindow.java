@@ -181,7 +181,7 @@ public class ImageWindow extends BasicWindow
 						currentTool.paintComponent(g);
 					}
 				else
-					EvLog.printError("Bad scale of image", null);
+					EvLog.printError("Bad transformation of image", null);
 				}
 			}
 		};
@@ -332,7 +332,10 @@ public class ImageWindow extends BasicWindow
 						lowest=arr[i];
 					if(arr[i]>highest)
 						highest=arr[i];
+//					System.out.println("pix "+arr[i]);
 					}
+				
+				System.out.println("highest "+highest+" lowest "+lowest);
 				
 				//Calculate optimal settings
 				contrast=255.0/(highest-lowest);

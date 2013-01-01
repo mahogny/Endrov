@@ -9,7 +9,6 @@ import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.*;
 
 import javax.swing.*;
@@ -30,15 +29,14 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.recording.CameraImage;
 import endrov.recording.RecordingResource;
+import endrov.recording.StoredStagePosition;
+import endrov.recording.StoredStagePositionAxis;
 import endrov.recording.RecordingResource.PositionListListener;
 import endrov.recording.ResolutionManager;
 import endrov.recording.ResolutionManager.Resolution;
-import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWCamera;
 import endrov.recording.device.HWStage;
 import endrov.recording.liveWindow.LiveHistogramViewRanged;
-import endrov.recording.positionsWindow.AxisInfo;
-import endrov.recording.positionsWindow.Position;
 import endrov.roi.GeneralToolROI;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
@@ -346,7 +344,7 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 			histoView.repaint();
 			}
 		else if (e.getSource()==bAutoFocus)
-			autofocus();
+			autofocusAction();
 		else if (e.getSource()==bGoToROI)
 			moveStageFocusROI();
 		// else if(e.getSource()==bCameraToROI){
@@ -364,12 +362,12 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 				{
 				int aname = stage.getNumAxis();
 				for (int i = 0; i<aname; i++)
-					if (stage.getAxisName()[i].equalsIgnoreCase("x"))
+					if (stage.getAxisName()[i].equals("X"))
 						{
 						xStage = stage;
 						xAxisNum = i;
 						}
-					else if (stage.getAxisName()[i].equalsIgnoreCase("y"))
+					else if (stage.getAxisName()[i].equals("Y"))
 						{
 						yStage = stage;
 						yAxisNum = i;
@@ -397,16 +395,16 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 					{
 					for (int j = 0; j<(int) noOfImagesX; j++)
 						{
-						AxisInfo[] posInfo = new AxisInfo[2];
+						StoredStagePositionAxis[] posInfo = new StoredStagePositionAxis[2];
 
-						posInfo[0] = new AxisInfo(xStage, xAxisNum,
+						posInfo[0] = new StoredStagePositionAxis(xStage, xAxisNum,
 								(xUpper+cam.getCamWidth()*j));
-						posInfo[1] = new AxisInfo(yStage, yAxisNum,
+						posInfo[1] = new StoredStagePositionAxis(yStage, yAxisNum,
 								(yUpper+cam.getCamHeight()*i));
 
 						String newName = RecordingResource.getUnusedPosName();
 
-						Position newPos = new Position(posInfo, newName);
+						StoredStagePosition newPos = new StoredStagePosition(posInfo, newName);
 						RecordingResource.posList.add(newPos);
 						}
 					}
@@ -711,24 +709,16 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 	/**
 	 * Autofocus, with whatever device there is
 	 */
-	public void autofocus()
+	public static void autofocusAction()
 		{
-		HWAutoFocus af = RecordingResource.getOneAutofocus();
-		if (af==null)
-			showErrorDialog("No autofocus device found");
-		else
+		try
 			{
-			try
-				{
-				af.fullFocus();
-				}
-			catch (IOException e)
-				{
-				e.printStackTrace();
-				showErrorDialog("Failed to focus");
-				}
+			RecordingResource.autofocus();
 			}
-
+		catch (Exception e1)
+			{
+			showErrorDialog("Error: "+e1.getMessage());
+			}
 		}
 
 	/**

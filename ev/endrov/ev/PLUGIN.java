@@ -10,7 +10,7 @@ public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "EV";
+		return "Endrov core";
 		}
 
 	public String getAuthor()

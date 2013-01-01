@@ -23,6 +23,8 @@ import endrov.consoleWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.data.EvSelectObject;
+import endrov.data.EvSelection;
 import endrov.ev.*;
 import endrov.keyBinding.*;
 import endrov.modelWindow.basicExt.CrossHandler;
@@ -462,8 +464,34 @@ public class ModelWindow extends BasicWindow
 		}
 	public void mouseClicked(MouseEvent e)
 		{
+		JPopupMenu menu=new JPopupMenu();
+		if(SwingUtilities.isRightMouseButton(e))
+			{
+			//Menu entry: hide selected items
+			JMenuItem miHide=new JMenuItem("Hide selected objects");
+			menu.add(miHide);
+			miHide.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent arg0)
+					{
+					for(EvSelectObject<? extends EvObject> o:EvSelection.getSelected(EvSelectObject.class))
+						objectDisplayList.hideObject(o.getObject());
+					}
+				});
+			}
+		
+		boolean handled=false;
 		for(ModelWindowMouseListener list:modelWindowMouseListeners)
-			list.mouseClicked(e);
+			if(list.mouseClicked(e, menu))
+				{
+				handled=true;
+				break;
+				}
+		if(!handled)
+			{
+			if(SwingUtilities.isRightMouseButton(e))
+				createPopupMenu(menu, e);
+			}
 		view.requestFocus();
 		}
 	public void mousePressed(MouseEvent e)

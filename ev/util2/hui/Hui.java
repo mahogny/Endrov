@@ -65,7 +65,8 @@ public class Hui
 		File outdir=new File(imageFile.getParentFile(), imageFile.getName()+".endrovstats");
 		outdir.mkdir();
 		
-		File flowFile=new File("/Volumes/TBU_main06/customer/hui/onenuc.ostxml");
+		File flowFile=new File("/petra/data/x/customer/hui/onenuc.ostxml");
+//		File flowFile=new File("/Volumes/TBU_main06/customer/hui/onenuc.ostxml");
 		EvData dataFlow=EvData.loadFile(flowFile);
 		System.out.println(dataFlow);
 		
@@ -75,7 +76,8 @@ public class Hui
 		//TODO what about inputs to the flow object? need to code to put in file path!!!
 		
 		EvData dataImages=EvData.loadFile(imageFile);
-
+		if(dataImages==null)
+			throw new RuntimeException("Failed to open "+imageFile);
 		
 		for(Map.Entry<String, EvObject> e:dataImages.metaObject.entrySet())
 			{
@@ -121,11 +123,32 @@ public class Hui
 		
 		try
 			{
-			
+	/*		
 			doOnePlate(new File("/Volumes/TBU_main06/customer/hui/round2/25"));
 			doOnePlate(new File("/Volumes/TBU_main06/customer/hui/round2/34"));
 			doOnePlate(new File("/Volumes/TBU_main06/customer/hui/round2/52"));
 			doOnePlate(new File("/Volumes/TBU_main06/customer/hui/round2/61"));
+*/
+/*
+			doOnePlate(new File("/petra/data/x/customer/hui/round3/plate1"));
+			doOnePlate(new File("/petra/data/x/customer/hui/round3/plate2"));
+			doOnePlate(new File("/petra/data/x/customer/hui/round3/plate3"));
+			doOnePlate(new File("/petra/data/x/customer/hui/round3/plate4"));
+			*/
+
+			//doOnePlate(new File("/petra/data/x/customer/hui/round4/manual"));
+			//doOnePlate(new File("/petra/data/x/customer/hui/round4/new"));
+//			doOnePlate(new File("/petra/data/x/customer/hui/round4/old"));
+
+			
+			
+			for(String s:args)
+				{
+				System.out.println("Doing "+s);
+				doOnePlate(new File(s));
+				System.out.println("-------------------------------------------------");
+				}
+			
 			
 			}
 		catch (Exception e)
@@ -133,7 +156,7 @@ public class Hui
 			e.printStackTrace();
 			}
 		
-
+		System.out.println("done");
 		
 		}
 	
