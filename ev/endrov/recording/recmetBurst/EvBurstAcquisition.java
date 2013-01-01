@@ -225,12 +225,12 @@ public class EvBurstAcquisition extends EvAcquisition
 
 							while(!toStop && semTriggered.availablePermits()>0)
 								{
-
 								EvDecimal curFrame=new EvDecimal(System.currentTimeMillis()).divide(new EvDecimal(1000));
 								if(firstFrame==null)
 									firstFrame=curFrame;
 								curFrame=curFrame.subtract(firstFrame);
-
+								
+								
 								cam.startSequenceAcq(intervalMS);
 
 								System.out.println("2 num permits "+semTriggered.availablePermits());
@@ -248,7 +248,11 @@ public class EvBurstAcquisition extends EvAcquisition
 										e.printStackTrace();
 										}
 
-
+									//Optional (well, currently not): Use the wall clock time instead of the calculated time using intervals.
+									//This can be inaccurate, but the calculated time does not include the time for data transfer so the
+									//clock would actually run slower than the real clock.
+									curFrame=new EvDecimal(System.currentTimeMillis()).divide(new EvDecimal(1000));
+									curFrame=curFrame.subtract(firstFrame);
 									
 									//See if another image is incoming
 									CameraImage camIm=cam.snapSequence();
@@ -284,7 +288,6 @@ public class EvBurstAcquisition extends EvAcquisition
 											
 											System.out.println(camIm.getPixels());
 											System.out.println(camIm.getNumComponents());
-											
 											
 											stack.putInt(0, evim);
 											ch.putStack(curFrame, stack);
