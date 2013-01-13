@@ -12,7 +12,6 @@ import java.util.*;
 
 import endrov.data.EvData;
 import endrov.ev.*;
-import endrov.imageset.Imageset;
 import endrov.lineage.Lineage;
 import endrov.lineage.util.MakeParticleContactMap;
 import endrov.particleContactMap.neighmap.NeighMap;
@@ -63,9 +62,9 @@ public class UtilMakeCellContactMap
 				{
 				System.out.println("loading "+s);
 				EvData data=EvData.loadFile(new File(s));
-				Imageset im=data.getObjects(Imageset.class).iterator().next();
+	//			Imageset im=data.getObjects(Imageset.class).iterator().next();
 				
-				lins.put(data.getMetadataName(), im.getObjects(Lineage.class).iterator().next());
+				lins.put(data.getMetadataName(), data.getIdObjectsRecursive(Lineage.class).values().iterator().next());
 				}
 			Lineage reflin=EvData.loadFile(new File("celegans2008.2.ost")).getObjects(Lineage.class).iterator().next();
 			//////////

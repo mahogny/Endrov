@@ -13,11 +13,11 @@ import javax.swing.JPanel;
 
 import org.jdom.Element;
 
+import endrov.data.EvContainer;
 import endrov.data.EvObject;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
@@ -95,14 +95,14 @@ public class BitmapROI extends ROI
 
 	
 	@Override
-	public Set<String> getChannels(Imageset rec)
+	public Set<String> getChannels(EvContainer rec)
 		{
 		//TODO
 		return new HashSet<String>(rec.getIdObjects(EvChannel.class).keySet());
 		}
 
 	@Override
-	public Set<EvDecimal> getFrames(Imageset rec, String channel)
+	public Set<EvDecimal> getFrames(EvContainer rec, String channel)
 		{
 		return bitmap.getFrames();
 		}

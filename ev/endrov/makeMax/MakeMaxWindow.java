@@ -130,7 +130,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 				}
 			else
 				{
-				CalcThread thread=new CalcThread(channelCombo.getImageset(), 
+				CalcThread thread=new CalcThread(channelCombo.getSelectObjectParent(), 
 						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), channelCombo.getChannelName());
 
 				new BatchWindow(thread);

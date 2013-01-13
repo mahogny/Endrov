@@ -14,8 +14,8 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.algo.DoubleAlgebra;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 
+import endrov.data.EvContainer;
 import endrov.imageset.EvChannel;
-import endrov.imageset.Imageset;
 import endrov.lineage.Lineage;
 import endrov.lineage.LineageExp;
 import endrov.util.*;
@@ -62,7 +62,7 @@ public class ExpUtil
 	 * Correct for background etc. 
 	 * Return table of correction values so it can be applied again. Will be used for non-AP
 	 */
-	public static TreeMap<EvDecimal, Tuple<Double,Double>> calculateCorrectExposureChange20100709(Imageset imset, EvChannel ch, Lineage lin, String expName, /*String channelName, */SortedSet<EvDecimal> frames, Map<EvDecimal, Double> bg)
+	public static TreeMap<EvDecimal, Tuple<Double,Double>> calculateCorrectExposureChange20100709(EvContainer imset, EvChannel ch, Lineage lin, String expName, /*String channelName, */SortedSet<EvDecimal> frames, Map<EvDecimal, Double> bg)
 		{
 		Double minBG=null;
 		for(double d:bg.values())
@@ -81,8 +81,8 @@ public class ExpUtil
 		//Check if exposure time exists for any frames. Then jumps can be assumed to only occur during exposure time changes
 		boolean detectByJumps=true;
 		for(EvDecimal frame:frames)
-			if(ch.getMetaFrame(frame).containsKey("exposuretime") ||
-					imset.getMetaFrame(frame).containsKey("exposuretime"))
+			if(ch.getMetaFrame(frame).containsKey("exposuretime")/* ||
+					imset.getMetaFrame(frame).containsKey("exposuretime")*/)
 				{
 				detectByJumps=false;
 				break;
@@ -98,9 +98,9 @@ public class ExpUtil
 				{
 				framecount++;
 				double expTime=1;
-				String sExpTime=ch.getMetaFrame(frame).get("exposuretime");
+				String sExpTime=ch.getMetaFrame(frame).get("exposuretime");/*
 				if(sExpTime==null)
-					sExpTime=imset.getMetaFrame(frame).get("exposuretime");
+					sExpTime=imset.getMetaFrame(frame).get("exposuretime");*/
 				if(sExpTime!=null)
 					expTime=Double.parseDouble(sExpTime);
 				

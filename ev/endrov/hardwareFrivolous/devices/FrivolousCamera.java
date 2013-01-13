@@ -10,6 +10,7 @@ import endrov.hardwareFrivolous.FrivolousDiffusion;
 import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.device.HWImageScanner;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -237,6 +238,11 @@ public class FrivolousCamera implements HWImageScanner
 			else
 				return seqBuffer.poll();
 			}
+		}
+	
+	public EvDecimal getActualInterval()
+		{
+		return null;
 		}
 	
 	public void startSequenceAcq(double interval) throws Exception

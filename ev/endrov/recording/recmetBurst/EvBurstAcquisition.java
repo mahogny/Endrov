@@ -30,7 +30,7 @@ import endrov.recording.device.HWTrigger.TriggerListener;
 import endrov.util.EvDecimal;
 
 /**
- * 
+ * Burst acquisition - Using camera in video mode for fast frame rate
  * 
  * @author Johan Henriksson
  *
@@ -49,6 +49,7 @@ public class EvBurstAcquisition extends EvAcquisition
 	 *****************************************************************************************************/
 	public EvDecimal duration;
 	public String durationUnit;
+	public boolean maxDuration;
 	
 	public EvDecimal rate;
 	public String rateUnit;
@@ -86,16 +87,19 @@ public class EvBurstAcquisition extends EvAcquisition
 		this.rate=new EvDecimal(1).divide(rate);
 		rateUnit="Hz";
 		}
+	
 
+	
 	
 	/**
 	 * Thread to perform acquisition
 	 */
-	public class AcqThread extends Thread implements AcquisitionThread
+	public static class AcqThread extends Thread implements AcquisitionThread
 		{
 		private EvBurstAcquisition settings;
 		private boolean toStop=true;
-
+		int totalFrameCount=0;
+		private EvDecimal totalSecCount=EvDecimal.ZERO;
 		
 		public boolean isRunning()
 			{
@@ -106,6 +110,20 @@ public class EvBurstAcquisition extends EvAcquisition
 			{
 			toStop=true;
 			semTriggered.release();
+			}
+		
+		private boolean shouldContinue()
+			{
+			if(toStop)
+				return false;
+			if(settings.maxDuration)
+				{
+				if(settings.durationUnit.equals("Seconds") && totalSecCount.greater(settings.duration))
+					return false;
+				if(settings.durationUnit.equals("Frames") && totalFrameCount>=settings.duration.intValue())
+					return false;
+				}
+			return true;
 			}
 		
 		private AcqThread(EvBurstAcquisition settings)
@@ -136,15 +154,16 @@ public class EvBurstAcquisition extends EvAcquisition
 				}
 			};	
 			
+				
 		@Override
 		public void run()
 			{
 			EvDecimal firstFrame=null;
 			
-			if(deviceTriggerOn!=null)
-				((HWTrigger)deviceTriggerOn.getDevice()).addTriggerListener(listenerOn);
-			if(deviceTriggerOff!=null)
-				((HWTrigger)deviceTriggerOff.getDevice()).addTriggerListener(listenerOff);
+			if(settings.deviceTriggerOn!=null)
+				((HWTrigger)settings.deviceTriggerOn.getDevice()).addTriggerListener(listenerOn);
+			if(settings.deviceTriggerOff!=null)
+				((HWTrigger)settings.deviceTriggerOff.getDevice()).addTriggerListener(listenerOff);
 
 			//Get current camera
 			HWCamera cam=EvHardware.getCoreDevice().getCurrentCamera();
@@ -162,10 +181,24 @@ public class EvBurstAcquisition extends EvAcquisition
 				interval=new EvDecimal(1).divide(settings.rate);
 				intervalMS=1000.0/settings.rate.doubleValue();
 				}
+			EvDecimal actualInt=interval;
 			
+			
+			/*
+			int durFrames;
+			if(settings.durationUnit.equals("Seconds"))
+				{
+				durFrames=settings.duration.divide(interval).intValue();
+				}
+			else
+				{
+				//Frames
+				durFrames=settings.duration.intValue();
+				}
+			*/
 			
 			//Check that there are enough parameters
-			if(cam!=null && container!=null)
+			if(cam!=null && settings.container!=null)
 				{
 				//Object lockCamera=RecordingResource.blockLiveCamera();
 				
@@ -174,7 +207,7 @@ public class EvBurstAcquisition extends EvAcquisition
 
 					//If there is no on-triggerer, then enable it first
 					semTriggered.drainPermits();
-					if(deviceTriggerOn==null)
+					if(settings.deviceTriggerOn==null)
 						listenerOn.triggered();
 
 					System.out.println("1 num permits "+semTriggered.availablePermits());
@@ -182,7 +215,8 @@ public class EvBurstAcquisition extends EvAcquisition
 
 					try
 						{
-						while(!toStop)
+						//For all repeated burst rounds
+						while(shouldContinue())
 							{
 							//Wait for start trigger
 							semTriggered.acquire();
@@ -194,28 +228,29 @@ public class EvBurstAcquisition extends EvAcquisition
 
 							boolean isRGB=false;
 
+							//Set up the imageset
 							Imageset imset=new Imageset();
 							for(int i=0;;i++)
 								{
 								String suggestName;
-								if(deviceTriggerOn!=null && deviceTriggerOff!=null)
+								if(settings.deviceTriggerOn!=null && settings.deviceTriggerOff!=null)
 									suggestName="im"+EV.pad(i, 8);
 								else
 									suggestName="im"+i;
 								
 								
-								if(container.getChild(suggestName)==null)
+								if(settings.container.getChild(suggestName)==null)
 									{
-									container.metaObject.put(suggestName, imset);
+									settings.container.metaObject.put(suggestName, imset);
 
 									if(isRGB)
 										{
-										imset.metaObject.put(channelName+"R", new EvChannel());
-										imset.metaObject.put(channelName+"G", new EvChannel());
-										imset.metaObject.put(channelName+"B", new EvChannel());
+										imset.metaObject.put(settings.channelName+"R", new EvChannel());
+										imset.metaObject.put(settings.channelName+"G", new EvChannel());
+										imset.metaObject.put(settings.channelName+"B", new EvChannel());
 										}
 									else
-										imset.metaObject.put(channelName, new EvChannel());
+										imset.metaObject.put(settings.channelName, new EvChannel());
 									break;
 									}
 								}
@@ -223,8 +258,10 @@ public class EvBurstAcquisition extends EvAcquisition
 							//TODO signal update on the object
 							BasicWindow.updateWindows();
 
-							while(!toStop && semTriggered.availablePermits()>0)
+							//Start one sequence acquisition
+							while(shouldContinue() && semTriggered.availablePermits()>0)
 								{
+								//Decide starting time using wall-clock
 								EvDecimal curFrame=new EvDecimal(System.currentTimeMillis()).divide(new EvDecimal(1000));
 								if(firstFrame==null)
 									firstFrame=curFrame;
@@ -233,10 +270,16 @@ public class EvBurstAcquisition extends EvAcquisition
 								
 								cam.startSequenceAcq(intervalMS);
 
+								//Pull out real interval time from camera
+								EvDecimal tmp=cam.getActualInterval();
+								if(tmp!=null)
+									actualInt=tmp;
+								
 								System.out.println("2 num permits "+semTriggered.availablePermits());
 								System.out.println("Running sequence");
 
-								while(!toStop && semTriggered.availablePermits()>0)
+								//Run acquisition until triggered off
+								while(shouldContinue() && semTriggered.availablePermits()>0)
 									{
 									//Avoid busy loop
 									try
@@ -251,8 +294,8 @@ public class EvBurstAcquisition extends EvAcquisition
 									//Optional (well, currently not): Use the wall clock time instead of the calculated time using intervals.
 									//This can be inaccurate, but the calculated time does not include the time for data transfer so the
 									//clock would actually run slower than the real clock.
-									curFrame=new EvDecimal(System.currentTimeMillis()).divide(new EvDecimal(1000));
-									curFrame=curFrame.subtract(firstFrame);
+//									curFrame=new EvDecimal(System.currentTimeMillis()).divide(new EvDecimal(1000));
+//									curFrame=curFrame.subtract(firstFrame);
 									
 									//See if another image is incoming
 									CameraImage camIm=cam.snapSequence();
@@ -273,7 +316,7 @@ public class EvBurstAcquisition extends EvAcquisition
 											{
 											ResolutionManager.Resolution res=ResolutionManager.getCurrentResolutionNotNull(campath);
 											
-											EvChannel ch=(EvChannel)imset.getChild(channelName);
+											EvChannel ch=(EvChannel)imset.getChild(settings.channelName);
 											EvStack stack=new EvStack();
 											
 											stack.setRes(res.x,res.y,1);
@@ -292,11 +335,14 @@ public class EvBurstAcquisition extends EvAcquisition
 											stack.putInt(0, evim);
 											ch.putStack(curFrame, stack);
 											
-											if(earlySwap)
+											if(settings.earlySwap)
 												SwapImages.hintSwapImage(evim);
 											}
 											
-										curFrame=curFrame.add(interval);
+										//Increase frame and time count
+										totalFrameCount++;
+										totalSecCount=totalSecCount.add(actualInt);
+										curFrame=curFrame.add(actualInt);
 										}
 									
 									}
@@ -323,7 +369,7 @@ public class EvBurstAcquisition extends EvAcquisition
 			
 			//System.out.println("---------stop-----------");
 			toStop=false;
-			for(EvAcquisition.AcquisitionListener l:listeners)
+			for(EvAcquisition.AcquisitionListener l:settings.listeners)
 				l.acquisitionEventStopped();
 			}
 		
@@ -390,10 +436,13 @@ public class EvBurstAcquisition extends EvAcquisition
 		eRate.setAttribute("unit",rateUnit);
 		e.addContent(eRate);
 		
-		Element eDur=new Element("duration");
-		eDur.setAttribute("value",duration.toString());
-		eDur.setAttribute("unit",durationUnit);
-		e.addContent(eDur);
+		if(maxDuration)
+			{
+			Element eDur=new Element("duration");
+			eDur.setAttribute("value",duration.toString());
+			eDur.setAttribute("unit",durationUnit);
+			e.addContent(eDur);
+			}
 		return metaType;
 		}
 	

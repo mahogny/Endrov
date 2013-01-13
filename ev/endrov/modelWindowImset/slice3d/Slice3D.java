@@ -74,7 +74,7 @@ public class Slice3D
 	/**
 	 * Load stack into memory. Need GL context, forced by parameter.
 	 */
-	public void build(ProgressHandle progh, GL gl,EvDecimal frame, Imageset im, EvChannel ch, int zplane)
+	public void build(ProgressHandle progh, GL gl,EvDecimal frame, EvChannel ch, int zplane)
 		{
 		if(needBuild(frame))
 			{

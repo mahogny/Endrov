@@ -14,10 +14,10 @@ import org.jdom.Element;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.EvComboObjectOne;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvComboChannel;
-import endrov.imageset.Imageset;
 import endrov.lineage.Lineage;
 import endrov.util.EvSwingUtil;
 
@@ -113,7 +113,8 @@ public class ParticleDialogIntegrate extends BasicWindow implements ActionListen
 		public void run()
 			{
 			Lineage lin=comboLin.getSelectedObject();
-			Imageset imset=comboChannel.getImageset();
+			EvContainer imset=comboChannel.getSelectObjectParent();
+			//Imageset imset=comboChannel.getImageset();
 			EvChannel ch=comboChannel.getSelectedObject();
 			
 			boolean useCellRadius=cbUseRadius.isSelected();

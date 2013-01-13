@@ -105,7 +105,7 @@ public class WormImageRenderer implements ImageWindowRenderer
 	EvStack getCurrentStack()
 		{
 		EvDecimal frame=w.getFrame();
-		EvChannel ch=w.getSelectedChannel();
+		EvChannel ch=w.getCurrentChannel();
 		if(ch==null)
 			return null;
 		else

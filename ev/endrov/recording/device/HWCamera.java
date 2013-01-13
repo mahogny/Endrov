@@ -7,6 +7,7 @@ package endrov.recording.device;
 
 import endrov.hardware.*;
 import endrov.recording.CameraImage;
+import endrov.util.EvDecimal;
 
 /**
  * Hardware with recording capabilities
@@ -26,5 +27,7 @@ public interface HWCamera extends EvDevice
 
 	public int getCamHeight();
 	public int getCamWidth();
+	
+	public EvDecimal getActualInterval();
 	
 	}

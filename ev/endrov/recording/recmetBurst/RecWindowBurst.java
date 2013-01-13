@@ -173,11 +173,9 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 				bStartStop.setText("Stop");
 				acq.channelName=tChannelName.getText();
 				
-				if(cDuration.isSelected())
-					{
-					acq.duration=spDuration.getDecimalValue();
-					acq.durationUnit=(String)cDurationUnit.getSelectedItem();
-					}
+				acq.maxDuration=cDuration.isSelected();
+				acq.duration=spDuration.getDecimalValue();
+				acq.durationUnit=(String)cDurationUnit.getSelectedItem();
 				
 				acq.rate=spRate.getDecimalValue();
 				acq.rateUnit=(String)cRateUnit.getSelectedItem();

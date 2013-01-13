@@ -121,7 +121,7 @@ public class ImageWindow extends BasicWindow
 	private boolean temporarilyHideMarkings=false;
 
 	/** Keep track of last imageset for re-centering purposes */
-	private Imageset lastImagesetRecenter=null;
+	private EvContainer lastContainerRecenter=null;
 	
 	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */
 	private int mouseLastDragX=0, mouseLastDragY=0;
@@ -298,7 +298,7 @@ public class ImageWindow extends BasicWindow
 			{
 			if(e.getSource()==comboChannel)
 				{
-				frameControl.setChannel(getImageset(), getCurrentChannelName()); //has been moved here
+				frameControl.setChannel(getCurrentChannel()); //has been moved here
 				frameControl.setAll(frameControl.getFrame(), frameControl.getZ());
 				updateImagePanel();
 				}
@@ -365,24 +365,21 @@ public class ImageWindow extends BasicWindow
 			return comboColor.getEvColor();
 			}
 		
+		
 		public String getChannelName()
 			{
 			return comboChannel.getChannelName();
 			}
+		
+		
 		
 		/**
 		 * Get channel, or null in case it fails (data outdated, or similar)
 		 */
 		public EvChannel getChannel()
 			{
-			Imageset rec2=comboChannel.getImageset();
-			String chname=comboChannel.getChannelName();
-			if(rec2!=null && chname!=null)
-				return rec2.getChannel(chname);
-			else
-				return null;
+			return comboChannel.getSelectedObject();
 			}
-
 
 		public void resetSettings()
 			{
@@ -393,11 +390,17 @@ public class ImageWindow extends BasicWindow
 		}	
 
 		
-	/** Extension: Tool */
+	/** 
+	 * Extension: Tool 
+	 */
 	private final Vector<ImageWindowTool> imageWindowTools=new Vector<ImageWindowTool>();
-	/** Currently selected tool */
+	/** 
+	 * Currently selected tool 
+	 */
 	private ImageWindowTool currentTool;
 
+	
+	
 	public void setTool(ImageWindowTool tool)
 		{
 		if(this.currentTool!=null)
@@ -511,7 +514,7 @@ public class ImageWindow extends BasicWindow
 		for(ChannelWidget w:channelWidget)
 			w.comboChannel.updateList();
 		packEvWindow();
-		frameControl.setChannel(getImageset(), getCurrentChannelName());
+		frameControl.setChannel(getCurrentChannel());
 		frameControl.setFrame(EvDecimal.ZERO);
 		setBoundsEvWindow(bounds);
 		updateWindowTitle();
@@ -627,14 +630,9 @@ public class ImageWindow extends BasicWindow
 		return getCurrentChannelWidget().comboChannel.getChannelName();
 		}
 	
-	/** Get current channel or null */
-	public EvChannel getSelectedChannel()
+	public EvChannel getCurrentChannel()
 		{
-		String channelName=getCurrentChannelName();
-		if(channelName!=null && getImageset().getChannel(channelName)!=null)
-			return getImageset().getChannel(channelName);
-		else
-			return null;
+		return getCurrentChannelWidget().comboChannel.getSelectedObject();
 		}
 	
 	/**
@@ -648,11 +646,11 @@ public class ImageWindow extends BasicWindow
 	/** 
 	 * Get current imageset or an empty one 
 	 */
-	public Imageset getImageset()
+	public EvContainer getImageset()
 		{
-		Imageset im=getCurrentChannelWidget().comboChannel.getImageset();
+		EvContainer im=getCurrentChannelWidget().comboChannel.getImageset();
 		if(im==null)
-			return new Imageset();
+			return new EvContainer();
 		else
 			return im;
 		}
@@ -662,9 +660,9 @@ public class ImageWindow extends BasicWindow
 	 */
 	public EvContainer getRootObject()
 		{
-		Imageset im=getCurrentChannelWidget().comboChannel.getImageset();
+		EvContainer im=getCurrentChannelWidget().comboChannel.getImageset();
 		if(im==null)
-			return new Imageset();
+			return new EvContainer();
 		else
 			return im;
 		}
@@ -780,11 +778,11 @@ public class ImageWindow extends BasicWindow
 		{				
 		//Check if recenter needed
 		boolean zoomToFit=false;
-		Imageset rec=getImageset();
-		if(rec!=lastImagesetRecenter)
+		EvContainer rec=getImageset();
+		if(rec!=lastContainerRecenter)
 			{
 			zoomToFit=true;
-			lastImagesetRecenter=rec;
+			lastContainerRecenter=rec;
 			frameControl.stepForward();
 			}
 		
@@ -813,7 +811,7 @@ public class ImageWindow extends BasicWindow
 		imagePanel.dataChangedEvent();
 		for(ChannelWidget w:channelWidget)
 			w.comboChannel.updateList();
-		frameControl.setChannel(getImageset(), getCurrentChannelName());//hm. does not cause cascade?
+		frameControl.setChannel(getCurrentChannel());//hm. does not cause cascade?
 		buildMenu();
 		updateImagePanel();
 		}
@@ -836,7 +834,7 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void actionPerformed(ActionEvent e)
 		{
-		frameControl.setChannel(getImageset(), getCurrentChannelName());
+		frameControl.setChannel(getCurrentChannel());
 		
 		if(e.getSource()==miReset)
 			{
@@ -849,7 +847,7 @@ public class ImageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miMiddleSlice)
 			{
-			EvChannel ch=getImageset().getChannel(getCurrentChannelName());
+			EvChannel ch=getCurrentChannel();//getImageset().getChannel(getCurrentChannelName());
 			if(ch!=null)
 				{
 				EvDecimal curFrame=ch.closestFrame(frameControl.getFrame());
@@ -1094,7 +1092,7 @@ public class ImageWindow extends BasicWindow
 	
 	public void loadedFile(EvData data)
 		{
-		List<Imageset> ims=data.getObjects(Imageset.class);
+		List<EvChannel> ims=data.getObjects(EvChannel.class);
 		if(!ims.isEmpty())
 			{
 			//EvComboChannel chw=getCurrentChannelWidget().comboChannel;

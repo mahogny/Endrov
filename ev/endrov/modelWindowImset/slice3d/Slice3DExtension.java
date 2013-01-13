@@ -128,7 +128,7 @@ public class Slice3DExtension implements ModelWindowExtension
 			private JButton bDelete=BasicIcon.getButtonDelete();
 			private JCheckBox zProject=new JCheckBox("@Z=0");
 			private EvComboColor colorCombo=new EvComboColor(false);
-			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
+			private WeakReference<EvChannel> lastChannel=new WeakReference<EvChannel>(null);
 			public Slice3D slice=new Slice3D();
 			
 			
@@ -190,23 +190,26 @@ public class Slice3DExtension implements ModelWindowExtension
 				chanCombo.updateList();
 				
 				//Make sure surfaces are for the right imageset
-				Imageset im=chanCombo.getImageset();
-				if(lastImageset.get()!=im)
-					slice.rebuild();
-				lastImageset=new WeakReference<Imageset>(im);
-				if(im==null)
-					im=new Imageset();
+//				EvChannel im=chanCombo.getSelectedObject();//getImageset();
+//				if(im==null)
+//					im=new EvChannel();
 				
-				String channelName=chanCombo.getChannelName();
-				if(channelName!=null)
+//				String channelName=chanCombo.getChannelName();
+				EvChannel ch=chanCombo.getSelectedObject();//im.get Channel(channelName);
+				
+				if(lastChannel.get()!=ch)
+					slice.rebuild();
+				lastChannel=new WeakReference<EvChannel>(ch);
+				
+				
+				if(ch!=null)
 					{
-					EvChannel ch=im.getChannel(channelName);
 					EvDecimal cframe=ch.closestFrame(getFrame());
 					int zplane=(Integer)zplaneSpinner.getModel().getValue();
 
 					//Create surface if it wasn't there before
 					if(slice.needBuild(cframe))
-						slice.build(progh, gl, cframe, im, ch, zplane);
+						slice.build(progh, gl, cframe, ch, zplane);
 					
 					//Finally render
 					slice.render(gl,colorCombo.getColor(), zProject.isSelected());

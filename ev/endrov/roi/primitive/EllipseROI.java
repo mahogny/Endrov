@@ -11,6 +11,7 @@ import javax.swing.*;
 
 import org.jdom.*;
 
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.imageset.*;
@@ -141,10 +142,10 @@ public class EllipseROI extends ROI
 	/**
 	 * Get channels that at least are partially selected
 	 */
-	public Set<String> getChannels(Imageset rec)
+	public Set<String> getChannels(EvContainer rec)
 		{
 		TreeSet<String> c=new TreeSet<String>();
-		for(String s:rec.getChannels().keySet())
+		for(String s:getChannelMap(rec).keySet())
 			if(regionChannels.channelInRange(s))
 				c.add(s);
 		return c;
@@ -153,10 +154,10 @@ public class EllipseROI extends ROI
 	/**
 	 * Get frames that at least are partially selected
 	 */
-	public Set<EvDecimal> getFrames(Imageset rec, String channel)
+	public Set<EvDecimal> getFrames(EvContainer rec, String channel)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
-		EvChannel ch=rec.getChannel(channel);
+		EvChannel ch=(EvChannel)rec.metaObject.get(channel);//rec.getChannel(channel);
 		if(ch!=null)
 			{
 			for(EvDecimal f:ch.getFrames())

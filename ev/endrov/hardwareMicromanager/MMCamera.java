@@ -351,7 +351,25 @@ public class MMCamera implements HWCamera
 		return mm.core.getBufferFreeCapacity()/(double) mm.core.getBufferTotalCapacity();
 		}
 
-	
+
+	public EvDecimal getActualInterval()
+		{
+		String propname="ActualInterval-ms";
+		try
+			{
+			if(mm.core.hasProperty(mmDeviceName, propname))
+				{
+				String s=getPropertyValue(propname);
+				System.out.println("Got actual interval "+new EvDecimal(s).divide(1000));
+				return new EvDecimal(s).divide(1000);
+				}
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		return null;
+		}
 	
 
 	public String getDescName()
@@ -400,4 +418,5 @@ public class MMCamera implements HWCamera
 		{
 		event.remove(listener);
 		}
+
 	}
