@@ -59,15 +59,31 @@ public class ParticleMeasure extends EvObject
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	public static final String metaType="TODO";
+	public static final String metaType="ParticleMeasure";
 	
-	
+
+	/**
+	 * Register one property that can be measured
+	 */
+	public static void registerMeasure(String name, ParticleMeasure.MeasurePropertyType t)
+		{
+		synchronized (measures)
+			{
+			measures.put(name, t);
+			}
+		}
+
 	
 	/**
 	 * Property types
 	 */
 	protected static HashMap<String, ParticleMeasure.MeasurePropertyType> measures=new HashMap<String, ParticleMeasure.MeasurePropertyType>();
 	
+	
+	/******************************************************************************************************
+	 *                               Instance                                                             *
+	 *****************************************************************************************************/
+
 	/**
 	 * One property to measure. Columns must be fixed. 
 	 * 
@@ -88,27 +104,6 @@ public class ParticleMeasure extends EvObject
 		public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info);
 		}
 
-	/**
-	 * Register one property that can be measured
-	 */
-	public static void registerMeasure(String name, ParticleMeasure.MeasurePropertyType t)
-		{
-		synchronized (measures)
-			{
-			measures.put(name, t);
-			}
-		}
-
-	
-	
-
-	/**
-	 * Measure lazily
-	 */
-	private interface CalcInfo
-		{
-		public void calc();
-		}
 		
 	/**
 	 * Information about one frame - Just a list of particles, with a lazy evaluator
@@ -116,7 +111,7 @@ public class ParticleMeasure extends EvObject
 	public static class FrameInfo extends HashMap<Integer,ParticleInfo>
 		{
 		private static final long serialVersionUID = 1L;
-		private CalcInfo calcInfo;
+		private Runnable calcInfo;
 		
 		public HashMap<String, Object> getCreate(int id)
 			{
@@ -137,6 +132,9 @@ public class ParticleMeasure extends EvObject
 	public static class ParticleInfo
 		{
 		private HashMap<String, Object> map=new HashMap<String, Object>();
+		
+		
+		//TODO maybe this rather should do auto-conversion? internally, better 
 		
 		public Double getDouble(String s)
 			{
@@ -173,11 +171,13 @@ public class ParticleMeasure extends EvObject
 	@Override
 	public void loadMetadata(Element e)
 		{
+		//TODO
 		}
 
 	@Override
 	public String saveMetadata(Element e)
 		{
+		//TODO
 		return metaType;
 		}
 	
@@ -252,16 +252,15 @@ public class ParticleMeasure extends EvObject
 		for(final EvDecimal frame:chValue.getFrames())
 			{
 			FrameInfo info=new FrameInfo();
-			//final EvDecimal frame=e.getKey();
 			EvStack thestack=chValue.getStack(frame);
 			
-			//final EvStack stackValue=e.getValue();
 			final WeakReference<EvStack> weakStackValue=new WeakReference<EvStack>(thestack);
 			final WeakReference<EvChannel> weakChMask=new WeakReference<EvChannel>(chMask);
 			final WeakReference<FrameInfo> weakInfo=new WeakReference<FrameInfo>(info);
 			
-			info.calcInfo=new CalcInfo(){
-				public void calc()
+			info.calcInfo=new Runnable()
+				{
+				public void run()
 					{
 					for(String s:useMeasures)
 						measures.get(s).analyze(progh, weakStackValue.get(), weakChMask.get().getStack(frame),weakInfo.get());
@@ -275,7 +274,7 @@ public class ParticleMeasure extends EvObject
 	
 	
 	/**
-	 * Get data for one frame
+	 * Get data for one frame. Evaluate if necessary
 	 */
 	public Map<Integer,ParticleInfo> getFrame(EvDecimal frame)
 		{
@@ -284,7 +283,7 @@ public class ParticleMeasure extends EvObject
 			{
 			if(info.calcInfo!=null)
 				{
-				info.calcInfo.calc();
+				info.calcInfo.run();
 				info.calcInfo=null;
 				}
 			return Collections.unmodifiableMap(info);
@@ -518,14 +517,14 @@ public class ParticleMeasure extends EvObject
 				out.frameInfo.put(f.getKey(), newInfo);
 
 				//Filter need to execute lazily as well
-				newInfo.calcInfo=new CalcInfo()
+				newInfo.calcInfo=new Runnable()
 					{
-					public void calc()
+					public void run()
 						{
 						//Execute calculation if not done already
 						if(oldInfo.calcInfo!=null)
 							{
-							oldInfo.calcInfo.calc();
+							oldInfo.calcInfo.run();
 							oldInfo.calcInfo=null;
 							}
 

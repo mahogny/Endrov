@@ -60,7 +60,7 @@ public class PlateWindow extends BasicWindow
 	
 	private final FrameControlImage frameControl=new FrameControlImage(this);
 
-	private final JMenu menuImageWindow=new JMenu("PlateWindow");
+	private final JMenu menuPlateWindow=new JMenu("PlateWindow");
 
 	ImageLayoutView imagePanel=new ImageLayoutView();
 	
@@ -101,6 +101,35 @@ public class PlateWindow extends BasicWindow
 		
 		//Window overall things
 		
+		addMenubar(menuPlateWindow);
+
+		
+		JComboBox comboTable=new JComboBox();
+		JComboBox comboFeature=new JComboBox();
+
+		JComboBox comboAggregation=new JComboBox(new String[]{
+				"Mean", "Std.Dev", "Histogram"
+		});
+
+		JButton bExport=new JButton("Export as CSV");
+		
+		setLayout(new BorderLayout());
+		add(EvSwingUtil.layoutLCR(
+				null, 
+				imagePanel, 
+				EvSwingUtil.layoutACB(
+						EvSwingUtil.layoutCompactVertical(
+								new JLabel("WTF:"),
+								comboTable,
+								new JLabel("Feature object:"),
+								comboFeature,
+								new JLabel("View:"),
+								comboAggregation),
+								null,
+								bExport
+						)),
+				BorderLayout.CENTER);
+		
 		
 		packEvWindow();
 		frameControl.setFrame(EvDecimal.ZERO);
@@ -116,7 +145,7 @@ public class PlateWindow extends BasicWindow
 	 */
 	private void buildMenu()
 		{
-		EvSwingUtil.tearDownMenu(menuImageWindow);
+		EvSwingUtil.tearDownMenu(menuPlateWindow);
 		
 			
 		
