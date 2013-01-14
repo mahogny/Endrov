@@ -44,10 +44,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	private final ChangeListener listener;
 	
 	/** Which channel this control refers to */
-//	private String channel=null;
-	//private EvContainer imageset;
 	private EvChannel channel;
-	//New version: will never be null unless imageset is null
 	
 	
 	private JButton buttonStepBack=new JButton(BasicIcon.iconFramePrev);
@@ -77,38 +74,6 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			return FrameControlImage.this.nextFrame();
 			}
 		};
-	
-	/*
-	
-	new SpinnerModel()
-		{
-		private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
-		public void addChangeListener(ChangeListener e){listeners.add(e);}
-		public void removeChangeListener(ChangeListener e){listeners.remove(e);}
-		public EvDecimal frame=new EvDecimal(0);
-		public Object getNextValue()
-			{
-			EvDecimal i=nextFrame();
-			if(i==null)	return frame;	else return i;
-			}
-		public Object getPreviousValue()
-			{
-			EvDecimal i=lastFrame();
-			if(i==null)	return frame;	else return i;
-			}
-		public Object getValue(){return frame;}
-		public void setValue(Object e)
-			{
-			if(e instanceof Double)
-				frame=new EvDecimal((Double)e);
-			else if(e instanceof Integer)
-				frame=new EvDecimal((Integer)e);
-			else if(e instanceof EvDecimal)
-				frame=(EvDecimal)e;
-			for(ChangeListener li:listeners)
-				li.stateChanged(new ChangeEvent(this));
-			}
-		};*/
 		
 	/** Z spinner behaviour */
 	private SpinnerModel zModel=new SpinnerModel()
@@ -149,15 +114,8 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		
 	public void setChannel(EvChannel channel)
 		{
-		//this.imageset=imageset;
 		this.channel=channel;
 		}
-	/*
-	private EvContainer getImageset()
-		{
-		return imageset;
-		}
-	*/
 
 	/**
 	 * @param l Object to receive updates on change
@@ -185,26 +143,9 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		spinnerGroup.setValue(FrameControl.getUniqueGroup());
 		
 		//Build list of play buttons
-		/*
-		JPanel playPanel=new JPanel(new GridLayout(1,6,0,0));
-		playPanel.add(buttonBeginning);
-		playPanel.add(buttonEnd);
-		playPanel.add(buttonStepBack);
-		playPanel.add(buttonStepForward);
-		playPanel.add(buttonPlayBack);
-		playPanel.add(buttonPlayForward);
-		*/
-		
 		JComponent playPanel=EvSwingUtil.layoutCompactHorizontal(
 				buttonBeginning,buttonEnd,buttonStepBack,buttonStepForward,
 				buttonPlayBack,buttonPlayForward);
-		
-
-		/*
-		setLayout(new GridLayout(1,2));
-		add(playPanel);
-		add(therest);
-		*/
 		
 		spinnerFrame=new JSpinner(frameModel);
 		
@@ -294,20 +235,10 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			stopStart(false);
 		else if(e.getSource()==timer)
 			{
-			//if(true)
-				//{
-				if(playingForward)
-					stepForward();
-				else
-					stepBack();
-			/*	}
+			if(playingForward)
+				stepForward();
 			else
-				{
-				if(playingForward)
-					setFrame(getFrame().add(new EvDecimal(0.1)));
-				else
-					setFrame(getFrame().subtract(new EvDecimal(0.1)));
-				}*/
+				stepBack();
 			}
 		
 		}
@@ -499,8 +430,6 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			slicenum=new EvDecimal(stack.transformImageWorldZ(
 			EvMathUtil.clamp(Math.round(stack.transformWorldImageZ(z.doubleValue())), 0, stack.getDepth()-1)
 					));
-//			slicenum=stack.resZ.multiply(stack.closestZint(z.doubleValue()));
-			//slicenum=ch.closestZ(frame, slicenum);
 			}
 		removeChangeListener();
 		spinnerFrame.setValue(frame);
