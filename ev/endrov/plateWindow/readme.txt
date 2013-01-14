@@ -33,7 +33,7 @@ this excludes the double-counting when converted to bufferedimage.
 scaling down,
 20*20 * 100*100*2 = 8 MB
 can even have int precision without problem.
-
+co
 
 should store original size, and new size. thus possible to rescale at need. 
 
