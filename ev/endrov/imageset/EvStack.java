@@ -635,5 +635,6 @@ public class EvStack implements AnyEvImage
 		return p.getType();
 		}
 
+
 	
 	}
