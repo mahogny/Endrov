@@ -93,7 +93,7 @@ public class ParticleMeasureGeometricPCA implements ParticleMeasure.MeasurePrope
 		//Write into particles
 		for(int id:sumX.keySet())
 			{
-			HashMap<String, Object> p=info.getCreate(id);
+			HashMap<String, Object> p=info.getCreateParticle(id);
 
 			//Calculate covariance
 			Cov cov=sumX.get(id);

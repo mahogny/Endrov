@@ -65,7 +65,7 @@ public class ParticleMeasureMeanIntensity implements ParticleMeasure.MeasureProp
 		//Write into particles
 		for(int id:sum.keySet())
 			{
-			HashMap<String, Object> p=info.getCreate(id);
+			HashMap<String, Object> p=info.getCreateParticle(id);
 			p.put(propertyName, sum.get(id)/vol.get(id));
 			}
 		}

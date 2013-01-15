@@ -72,7 +72,7 @@ public class ParticleMeasureCenterOfMass implements ParticleMeasure.MeasurePrope
 		//Write into particles
 		for(int id:sum.keySet())
 			{
-			HashMap<String, Object> p=info.getCreate(id);
+			HashMap<String, Object> p=info.getCreateParticle(id);
 			Vector3d s=sum.get(id);
 			double v=vol.get(id);
 			p.put(propertyName+"X", s.x/v);

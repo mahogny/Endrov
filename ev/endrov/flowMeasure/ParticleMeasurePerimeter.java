@@ -76,7 +76,7 @@ public class ParticleMeasurePerimeter implements ParticleMeasure.MeasureProperty
 		//Write into particles
 		for(int id:perimeter.keySet())
 			{
-			HashMap<String, Object> p=info.getCreate(id);
+			HashMap<String, Object> p=info.getCreateParticle(id);
 			double v=perimeter.get(id);
 			p.put(propertyName, v);
 			}

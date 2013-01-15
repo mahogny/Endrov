@@ -58,7 +58,7 @@ public class ParticleMeasureMedianIntensity implements ParticleMeasure.MeasurePr
 		//Write into particles
 		for(int id:entryList.keySet())
 			{
-			HashMap<String, Object> p=info.getCreate(id);
+			HashMap<String, Object> p=info.getCreateParticle(id);
 			ArrayList<Double> entries=entryList.get(id);
 			double modal=EvListUtil.modalValue(EvListUtil.toDoubleArray(entries));
 			p.put(propertyName, modal);

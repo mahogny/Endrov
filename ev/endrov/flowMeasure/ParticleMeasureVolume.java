@@ -56,7 +56,7 @@ public class ParticleMeasureVolume implements ParticleMeasure.MeasurePropertyTyp
 		//Write into particles
 		for(int id:vol.keySet())
 			{
-			HashMap<String, Object> p=info.getCreate(id);
+			HashMap<String, Object> p=info.getCreateParticle(id);
 			p.put(propertyName, vol.get(id));
 			}
 		}

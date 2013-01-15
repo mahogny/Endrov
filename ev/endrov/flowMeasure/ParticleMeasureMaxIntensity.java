@@ -55,7 +55,7 @@ public class ParticleMeasureMaxIntensity implements ParticleMeasure.MeasurePrope
 		//Write into particles
 		for(int id:max.keySet())
 			{
-			HashMap<String, Object> p=info.getCreate(id);
+			HashMap<String, Object> p=info.getCreateParticle(id);
 			p.put(propertyName, max.get(id));
 			}
 		

@@ -54,7 +54,7 @@ public class ParticleMeasureMinIntensity implements ParticleMeasure.MeasurePrope
 		//Write into particles
 		for(int id:min.keySet())
 			{
-			HashMap<String, Object> p=info.getCreate(id);
+			HashMap<String, Object> p=info.getCreateParticle(id);
 			p.put(propertyName, min.get(id));
 			}
 		

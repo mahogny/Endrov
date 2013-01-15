@@ -113,7 +113,7 @@ public class ParticleMeasure extends EvObject
 		private static final long serialVersionUID = 1L;
 		private Runnable calcInfo;
 		
-		public HashMap<String, Object> getCreate(int id)
+		public HashMap<String, Object> getCreateParticle(int id)
 			{
 			ParticleInfo info=get(id);
 			if(info==null)
@@ -291,7 +291,11 @@ public class ParticleMeasure extends EvObject
 		else
 			return null;
 		}
-	
+
+	public void setFrame(EvDecimal frame, FrameInfo info)
+		{
+		frameInfo.put(frame, info);
+		}
 	
 	/**
 	 * Get which frames exist
@@ -572,6 +576,12 @@ public class ParticleMeasure extends EvObject
 		ParticleMeasure.registerMeasure("surface area", new ParticleMeasureSurfaceArea());
 		ParticleMeasure.registerMeasure("perimeter", new ParticleMeasurePerimeter());
 		ParticleMeasure.registerMeasure("Geometric PCA", new ParticleMeasureGeometricPCA());
+		}
+	
+	
+	public void addColumn(String s)
+		{
+		columns.add(s);
 		}
 	
 

@@ -58,7 +58,7 @@ public class ParticleMeasureModalIntensity implements ParticleMeasure.MeasurePro
 		//Write into particles
 		for(int id:entryList.keySet())
 			{
-			HashMap<String, Object> p=info.getCreate(id);
+			HashMap<String, Object> p=info.getCreateParticle(id);
 			ArrayList<Double> entries=entryList.get(id);
 			double[] arr=EvListUtil.toDoubleArray(entries);
 			double median=EvListUtil.findPercentileDouble(arr,0.5);

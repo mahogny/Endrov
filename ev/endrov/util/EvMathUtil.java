@@ -369,7 +369,35 @@ public class EvMathUtil
 				r=v[i];
 		return r;
 		}
-	
+
+	/**
+	 * Get the maximum of a collection, or null if empty
+	 */
+	public static Double maxAllDouble(Collection<Double> v)
+		{
+		if(v.isEmpty())
+			return null;
+		double r=v.iterator().next();
+		for(double d:v)
+			if(d>r)
+				r=d;
+		return r;
+		}
+
+
+	/**
+	 * Get the minimum of a collection, or null if empty
+	 */
+	public static Double minAllDouble(Collection<Double> v)
+		{
+		if(v.isEmpty())
+			return null;
+		double r=v.iterator().next();
+		for(double d:v)
+			if(d<r)
+				r=d;
+		return r;
+		}
 	
 	/**
 	 * Get the minimum of a list

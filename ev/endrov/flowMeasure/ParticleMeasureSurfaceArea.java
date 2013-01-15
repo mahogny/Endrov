@@ -79,7 +79,7 @@ public class ParticleMeasureSurfaceArea implements ParticleMeasure.MeasureProper
 		//Write into particles
 		for(int id:surfaceArea.keySet())
 			{
-			HashMap<String, Object> p=info.getCreate(id);
+			HashMap<String, Object> p=info.getCreateParticle(id);
 			double v=surfaceArea.get(id);
 			p.put(propertyName, v);
 			}

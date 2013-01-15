@@ -1,16 +1,30 @@
 package endrov.plateWindow.scene;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 import javax.vecmath.Vector2d;
 
+/**
+ * Scene element: text
+ * 
+ * @author Johan Henriksson
+ *
+ */
 public class Scene2DText implements Scene2DElement
 	{
 	public int x,y;
 	public String text;
-
+	public Font font;
+	public Alignment alignment=Alignment.Left;
+	
+	public enum Alignment
+		{
+		Left, Center, Right
+		}
 	
 	public Scene2DText(int x, int y, String text)
 		{
@@ -30,10 +44,20 @@ public class Scene2DText implements Scene2DElement
 		g2.scale(p.zoom, p.zoom);  
 		g2.rotate(p.rotation);
 
+		if(font!=null)
+			g.setFont(font);
+		
 		int sw=g2.getFontMetrics().stringWidth(text);
+		int sh=g2.getFontMetrics().getHeight();
 
 		g2.setColor(Color.RED);
-		g2.drawString(text, x-sw/2, y);
+		int ax=x;
+		int ay=y+sh/3;
+		if(alignment==Alignment.Center)
+			ax-=sw/2;
+		else if(alignment==Alignment.Right)
+			ax-=sw;
+		g2.drawString(text, ax, ay);
 		
 		
 		g2.rotate(-p.rotation);  //This should be in a common class!
@@ -42,5 +66,12 @@ public class Scene2DText implements Scene2DElement
 
 		
 		
+		}
+
+
+
+	public Rectangle getBoundingBox()
+		{
+		return new Rectangle(x-20, y-20, 40,40); //This can be improved
 		}
 	}

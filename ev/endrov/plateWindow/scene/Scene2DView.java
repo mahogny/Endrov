@@ -189,6 +189,7 @@ public class Scene2DView extends JPanel
 		{
 		transX+=dx/zoom;
 		transY+=dy/zoom;
+		repaint();
 		}
 
 
@@ -199,10 +200,48 @@ public class Scene2DView extends JPanel
 	 */
 	public void zoomToFit()
 		{
-		loadImage();
+		Rectangle rect=null;
+		
+//		loadImage();
 		for(Scene2DElement e:images)
+			{
+			Rectangle r=e.getBoundingBox();
+			if(r!=null)
+				{
+				if(rect==null)
+					rect=r;
+				else
+					rect.add(r);
+				}
+			}
+		/*
 			if(e instanceof Scene2DImage)
 				((Scene2DImage) e).zoomToFit(this);
+		*/
+		
+		if(rect!=null)
+			{
+			
+			double w=rect.getWidth();
+			double h=rect.getHeight();
+
+			
+			//Adjust zoom
+			double zoom1=getWidth()/w;
+			double zoom2=getHeight()/h;
+			zoom=Math.min(zoom1,zoom2);
+
+			//Place camera in the middle
+			
+			Vector2d mid=transformPointW2S(new Vector2d(w/2, h/2));
+					//transformI2S(p,stack,new Vector2d(w/2,h/2));
+			mid.sub(new Vector2d(getWidth()/2,getHeight()/2));
+			transX-=(int)mid.x/zoom;
+			transY-=(int)mid.y/zoom;
+
+			
+			}
+			
 		
 //		if(images.size()>0)
 //			images.get(0).zoomToFit(this);
@@ -290,11 +329,13 @@ public class Scene2DView extends JPanel
 	public void clear()
 		{
 		images.clear();
+		repaint();
 		}
 
 	public void zoom(double scale)
 		{
 		zoom*=scale;
+		repaint();
 		}
 	}
 
