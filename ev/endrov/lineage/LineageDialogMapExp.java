@@ -84,7 +84,7 @@ public class LineageDialogMapExp extends BasicWindow implements ActionListener
 		}
 
 	@Override
-	public void loadedFile(EvData data)
+	public void eventUserLoadedFile(EvData data)
 		{
 		}
 

@@ -193,7 +193,7 @@ public class PropertyWindow extends BasicWindow implements ActionListener, EvHar
 //		objectCombo.updateList();
 		}
 
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 
 	public void windowSavePersonalSettings(Element e)
 		{

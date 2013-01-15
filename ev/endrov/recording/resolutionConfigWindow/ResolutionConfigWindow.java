@@ -266,7 +266,7 @@ public class ResolutionConfigWindow extends BasicWindow implements ActionListene
 		}
 
 	@Override
-	public void loadedFile(EvData data)
+	public void eventUserLoadedFile(EvData data)
 		{
 		}
 

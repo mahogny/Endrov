@@ -208,7 +208,7 @@ public abstract class BasicWindow extends JPanel
 	public static void updateLoadedFile(EvData d)
 		{
 		for (BasicWindow w : getWindowList())
-			w.loadedFile(d);
+			w.eventUserLoadedFile(d);
 		}
 
 	/******************************************************************************************************
@@ -900,7 +900,7 @@ public abstract class BasicWindow extends JPanel
 	 * Called when a file has just been loaded and should be displayed in all
 	 * windows
 	 */
-	public abstract void loadedFile(EvData data);
+	public abstract void eventUserLoadedFile(EvData data);
 
 	/**
 	 * Called when the window is closed. Should take care of deallocating and stopping any threads

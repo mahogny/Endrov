@@ -213,7 +213,7 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 		objectCombo.updateList();
 		}
 
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 
 	public void windowSavePersonalSettings(Element e)
 		{

@@ -125,7 +125,7 @@ public class PositionsWindow extends BasicWindow implements ActionListener, Posi
 		{
 		}
 
-	public void loadedFile(EvData data)
+	public void eventUserLoadedFile(EvData data)
 		{
 		}
 

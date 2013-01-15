@@ -117,7 +117,7 @@ public class RecControlWindow extends BasicWindow
 		cp.dataChangedEvent();
 		}
 
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 
 	public void windowSavePersonalSettings(Element root)
 		{

@@ -44,6 +44,7 @@ public class MergeWormbaseMesh
 			String line=null;
 			while((line=br.readLine())!=null)
 				deleted.add(line.toLowerCase());
+			br.close();
 			}
 		catch (Exception e)
 			{

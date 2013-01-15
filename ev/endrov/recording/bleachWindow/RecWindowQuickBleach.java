@@ -130,7 +130,7 @@ public class RecWindowQuickBleach extends BasicWindow implements ActionListener,
 		roiCombo.updateList();
 		}
 
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 
 	public void windowSavePersonalSettings(Element e)
 		{

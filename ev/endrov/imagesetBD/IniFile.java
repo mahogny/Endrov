@@ -46,6 +46,7 @@ public class IniFile
 				s.prop.put(attr,value);
 				}
 			}
+		r.close();
 		}
 	
 	

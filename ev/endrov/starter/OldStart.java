@@ -175,6 +175,7 @@ public class OldStart
 							else
 								binfiles.add(line.substring(2)); //b:
 							}
+						input.close();
 						}
 					catch (Exception e)
 						{
@@ -480,6 +481,7 @@ public class OldStart
 							System.out.println("Java environment flag: "+tok);
 							}
 						}
+					envReader.close();
 					}
 				
 				//What to run? 

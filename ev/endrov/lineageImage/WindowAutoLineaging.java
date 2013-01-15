@@ -246,7 +246,7 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 		{
 		}
 
-	public void loadedFile(EvData data)
+	public void eventUserLoadedFile(EvData data)
 		{
 		}
 

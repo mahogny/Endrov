@@ -64,7 +64,7 @@ public class ImportMRI
 			
 			
 			
-			
+			di.close();
 			}
 		catch (Exception e)
 			{

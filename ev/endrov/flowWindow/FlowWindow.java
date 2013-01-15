@@ -289,7 +289,7 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 		fp.repaint();
 		}
 	
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 
 	public void windowSavePersonalSettings(Element root)
 		{

@@ -326,7 +326,7 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 		}
 
 	
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 	public void freeResources(){}
 
 

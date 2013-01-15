@@ -338,7 +338,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		}
 	
 	
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 	public void freeResources(){}
 
 

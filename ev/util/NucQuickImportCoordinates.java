@@ -97,6 +97,7 @@ public class NucQuickImportCoordinates
 				Lineage.Particle nuc=lin.getCreateParticle(nucName);
 				nuc.pos.put(time, pos);
 				}
+			fr.close();
 			}
 	
 		

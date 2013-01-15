@@ -32,9 +32,7 @@ public class ImglibTest
 
 		
 		EvData data=EvData.loadFile(new File("/home/mahogny/Desktop/4.png"));
-
 		EvChannel ch=data.getIdObjectsRecursive(EvChannel.class).values().iterator().next();
-		
 		EvStack stack=ch.getStack(ch.getFirstFrame());
 		
 		stack=new EvOpImageConvertPixel(EvPixelsType.FLOAT).exec1(null, stack);

@@ -78,7 +78,7 @@ public class ParticleDialogIntegrate extends BasicWindow implements ActionListen
 		}
 
 	@Override
-	public void loadedFile(EvData data)
+	public void eventUserLoadedFile(EvData data)
 		{
 		}
 

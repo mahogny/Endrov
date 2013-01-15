@@ -54,6 +54,7 @@ import net.imglib2.type.NativeType;
  * @author Stephan Preibisch
  * @author Stephan Saalfeld
  * @author Johannes Schindelin
+ * @author Johan Henriksson
  */
 public class ShortEvStack< T extends NativeType< T > > extends EvStackImg< T, ShortArray >
 {

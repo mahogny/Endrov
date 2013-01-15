@@ -105,7 +105,7 @@ public class RecWindowMultiDim extends BasicWindow
 		wacq.dataChangedEvent();
 		}
 
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 
 	public void windowSavePersonalSettings(Element e)
 		{

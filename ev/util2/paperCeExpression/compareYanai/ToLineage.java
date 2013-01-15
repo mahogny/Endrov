@@ -381,6 +381,7 @@ public class ToLineage
 				m.put(genename, wbid);
 				}
 			}
+		br.close();
 		return m;
 		}
 	
@@ -398,6 +399,7 @@ public class ToLineage
 			String genename=st.nextToken();
 			m.put(genename, wbid);
 			}
+		br.close();
 		return m;
 		}
 	

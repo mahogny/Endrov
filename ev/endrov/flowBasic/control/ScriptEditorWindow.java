@@ -163,7 +163,7 @@ public class ScriptEditorWindow extends BasicWindow implements ActionListener
 		}
 	
 	
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 	public void windowSavePersonalSettings(Element e){}
 	public void freeResources()
 		{

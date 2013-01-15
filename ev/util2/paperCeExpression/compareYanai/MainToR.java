@@ -177,6 +177,7 @@ public class MainToR
 		String line;
 		while((line=br.readLine())!=null)
 			set.add(line);
+		br.close();
 		return set;
 		}
 	
@@ -203,6 +204,7 @@ public class MainToR
 				}
 			}
 		}
+	br.close();
 	return m;
 	}
 
@@ -228,6 +230,7 @@ public class MainToR
 					}
 				}
 			}
+		br.close();
 		return m;
 		}
 	

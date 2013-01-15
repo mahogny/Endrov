@@ -120,7 +120,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	/**
 	 * @param l Object to receive updates on change
 	 */
-	public FrameControlImage(ChangeListener l)
+	public FrameControlImage(ChangeListener l, boolean includePlayButtons, boolean includeZ)
 		{	
 		listener=l;
 
@@ -143,10 +143,15 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		spinnerGroup.setValue(FrameControl.getUniqueGroup());
 		
 		//Build list of play buttons
-		JComponent playPanel=EvSwingUtil.layoutCompactHorizontal(
-				buttonBeginning,buttonEnd,buttonStepBack,buttonStepForward,
-				buttonPlayBack,buttonPlayForward);
-		
+		JComponent playPanel;
+		if(includePlayButtons)
+			playPanel=EvSwingUtil.layoutCompactHorizontal(
+					buttonBeginning,buttonEnd,buttonStepBack,buttonStepForward,
+					buttonPlayBack,buttonPlayForward);
+		else
+			playPanel=EvSwingUtil.layoutCompactHorizontal(
+					buttonBeginning,buttonEnd,buttonStepBack,buttonStepForward);
+			
 		spinnerFrame=new JSpinner(frameModel);
 		
 		EvFrameEditor frameEditor=new EvFrameEditor(spinnerFrame);
@@ -161,7 +166,6 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		JPanel zPanel=new JPanel(new BorderLayout());
 		zPanel.add(new JLabel("Z:"), BorderLayout.WEST);
 		zPanel.add(spinnerZ, BorderLayout.CENTER);
-		//zPanel.add(checkGroupSlice, BorderLayout.EAST);
 		
 		JPanel fPanel=new JPanel(new BorderLayout());
 				
@@ -175,8 +179,8 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 
 		JPanel therest=new JPanel(new GridLayout(1,2,0,0));
 		therest.add(fPanel);
-		therest.add(zPanel);
-		//therest.add(gPanel);
+		if(includeZ)
+			therest.add(zPanel);
 
 		setLayout(new BorderLayout());
 		add(playPanel,BorderLayout.WEST);

@@ -159,6 +159,7 @@ public class SOFTFile
 			
 			
 			}
+		in.close();
 		}
 	
 	

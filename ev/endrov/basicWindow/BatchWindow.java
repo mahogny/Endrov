@@ -110,6 +110,6 @@ public class BatchWindow extends BasicWindow implements ActionListener, BatchLis
 		lCurFrame.setText(s);
 		}
 	
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 	public void freeResources(){}
 	}

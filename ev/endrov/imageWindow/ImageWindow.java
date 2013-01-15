@@ -141,7 +141,7 @@ public class ImageWindow extends BasicWindow
 	
 	private final ButtonGroup rChannelGroup=new ButtonGroup();
 	private final Vector<ChannelWidget> channelWidget=new Vector<ChannelWidget>();
-	private final FrameControlImage frameControl=new FrameControlImage(this);
+	private final FrameControlImage frameControl=new FrameControlImage(this, true, true);
 	
 	private final JPanel channelPanel=new JPanel();
 
@@ -1090,7 +1090,7 @@ public class ImageWindow extends BasicWindow
 		repaint();
 		}
 	
-	public void loadedFile(EvData data)
+	public void eventUserLoadedFile(EvData data)
 		{
 		List<EvChannel> ims=data.getObjects(EvChannel.class);
 		if(!ims.isEmpty())

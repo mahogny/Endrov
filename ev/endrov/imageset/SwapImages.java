@@ -164,7 +164,7 @@ public class SwapImages
 				{
 				ObjectInputStream is=new ObjectInputStream(new FileInputStream(swapFile));
 				Object o=is.readObject();
-
+				is.close();
 				EvPixels p=EvPixels.createFromObject(type, w, h, o);
 
 				return p;
@@ -216,6 +216,7 @@ public class SwapImages
 			else
 				{
 				System.out.println("Unable to serialize image, it has no data: "+p);
+				os.close();
 				return null;
 				}
 			

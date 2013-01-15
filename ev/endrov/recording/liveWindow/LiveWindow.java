@@ -633,7 +633,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 		comboStorageLocation.updateList();
 		}
 
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 
 	public void windowSavePersonalSettings(Element e)
 		{

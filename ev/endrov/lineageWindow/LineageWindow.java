@@ -679,7 +679,7 @@ public class LineageWindow extends BasicWindow
 		repaint();
 		}
 	
-	public void loadedFile(EvData data)
+	public void eventUserLoadedFile(EvData data)
 		{
 		dataChangedEvent();
 		}

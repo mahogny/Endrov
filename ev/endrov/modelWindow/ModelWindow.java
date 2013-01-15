@@ -643,7 +643,7 @@ public class ModelWindow extends BasicWindow
 	/**
 	 * Called whenever a new file is loaded, and this window should change active set
 	 */
-	public void loadedFile(EvData data)
+	public void eventUserLoadedFile(EvData data)
 		{
 		metaCombo.setSelectedObject(data);
 		//metaCombo.setMeta(data);

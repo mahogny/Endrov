@@ -401,7 +401,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		System.out.println("removing console window");
 		}
 	
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 	public void freeResources(){}
 
 	

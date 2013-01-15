@@ -67,6 +67,7 @@ public class FixSchnabel
 				EvDecimal to=new EvDecimal(st.nextToken());
 				timeMap.put(from,to);
 				}
+			tfile.close();
 			}
 		catch (Exception e)
 			{

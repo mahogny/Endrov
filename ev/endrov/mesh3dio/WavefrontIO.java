@@ -122,7 +122,7 @@ public class WavefrontIO implements EvIOData
 		
 		for(Map.Entry<String, Material> e:materials.entrySet())
 			glmaterials.put(e.getKey(), e.getValue().toGLmaterial());
-		
+		br.close();
 		}
 	
 	
@@ -288,7 +288,7 @@ public class WavefrontIO implements EvIOData
 				
 				
 			}
-
+		br.close();
 		
 		//Linked lists to array lists, faster allocation
 		for(Mesh3D m:meshes.values())

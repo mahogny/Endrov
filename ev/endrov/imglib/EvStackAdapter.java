@@ -94,6 +94,7 @@ public class EvStackAdapter
 
 		return image;
 	}
+	
 
 	protected static EvStackImg< ?, ? > wrapLocal( final EvStack imp )
 	{

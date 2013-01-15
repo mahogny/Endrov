@@ -19,12 +19,15 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.PersonalConfig;
+import endrov.flowMeasure.ParticleMeasure;
 import endrov.imageWindow.FrameControlImage;
 import endrov.imageset.*;
+import endrov.plateWindow.scene.Scene2DImage;
+import endrov.plateWindow.scene.Scene2DText;
+import endrov.plateWindow.scene.Scene2DView;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
-import endrov.util.ProgressHandle;
 import endrov.util.SnapBackSlider;
 
 /**
@@ -58,13 +61,13 @@ public class PlateWindow extends BasicWindow
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 	
-	private final FrameControlImage frameControl=new FrameControlImage(this);
+	private final FrameControlImage frameControl=new FrameControlImage(this, false, false);
 
 	private final JMenu menuPlateWindow=new JMenu("PlateWindow");
 
-	ImageLayoutView imagePanel=new ImageLayoutView();
+	private Scene2DView imagePanel=new Scene2DView();
 	
-	ChannelWidget cw=new ChannelWidget();
+	private ChannelWidget cw=new ChannelWidget();
 
 	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */
 	private int mouseLastDragX=0, mouseLastDragY=0;
@@ -86,11 +89,11 @@ public class PlateWindow extends BasicWindow
 		{
 		
 		//Attach listeners
-		/*
 		imagePanel.addKeyListener(this);  //TODO
 		imagePanel.addMouseListener(this);
 		imagePanel.addMouseMotionListener(this);
 		imagePanel.addMouseWheelListener(this);
+		/*
 		sliderZoom2.addSnapListener(new SnapChangeListener(){
 			public void slideChange(SnapBackSlider source, int change){zoom(change/50.0);}
 		});
@@ -105,8 +108,10 @@ public class PlateWindow extends BasicWindow
 
 		
 		JComboBox comboTable=new JComboBox();
-		JComboBox comboFeature=new JComboBox();
-
+//		JComboBox comboFeature=new JComboBox();
+		EvComboObjectOne<ParticleMeasure> comboFeature=new EvComboObjectOne<ParticleMeasure>(new ParticleMeasure(), true, false);
+		
+		
 		JComboBox comboAggregation=new JComboBox(new String[]{
 				"Mean", "Std.Dev", "Histogram"
 		});
@@ -130,6 +135,11 @@ public class PlateWindow extends BasicWindow
 						)),
 				BorderLayout.CENTER);
 		
+		add(
+				EvSwingUtil.layoutCompactHorizontal(
+					frameControl,
+					cw),
+				BorderLayout.SOUTH);
 		
 		packEvWindow();
 		frameControl.setFrame(EvDecimal.ZERO);
@@ -190,7 +200,7 @@ public class PlateWindow extends BasicWindow
 		{
 		static final long serialVersionUID=0;
 		
-		private final EvComboChannel comboChannel=new EvComboChannel(false,false);
+//		private final EvComboChannel comboChannel=new EvComboChannel(false,false);
 		
 		private final SnapBackSlider sliderContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -10000,10000);
 		private final SnapBackSlider sliderBrightness=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -200,200);
@@ -214,6 +224,7 @@ public class PlateWindow extends BasicWindow
 			brightnessPanel.add(new JLabel(iconLabelBrightness), BorderLayout.WEST);
 			brightnessPanel.add(sliderBrightness,BorderLayout.CENTER);
 
+			/*
 			add(EvSwingUtil.layoutLCR(
 					null, 
 					EvSwingUtil.layoutLCR(
@@ -221,6 +232,7 @@ public class PlateWindow extends BasicWindow
 							comboChannel,
 							null),
 					null));
+			*/
 			add(contrastPanel);
 			add(EvSwingUtil.layoutLCR(
 					null,
@@ -231,7 +243,7 @@ public class PlateWindow extends BasicWindow
 			
 			
 //			comboColor.addActionListener(this);
-			comboChannel.addActionListener(this);
+//			comboChannel.addActionListener(this);
 	//		bRemoveChannel.addActionListener(this);
 			bFitRange.addActionListener(this);
 			
@@ -261,17 +273,19 @@ public class PlateWindow extends BasicWindow
 		
 		public void actionPerformed(ActionEvent e)
 			{
+			/*
 			if(e.getSource()==comboChannel)
 				{
 				frameControl.setChannel(getChannel()); //has been moved here
 				frameControl.setAll(frameControl.getFrame(), frameControl.getZ());
 				layoutImagePanel();
 				}
+			*/
 /*			else if(e.getSource()==comboColor)
 				updateImagePanel();
 			else if(e.getSource()==bRemoveChannel)
 				removeChannel(this);*/
-			else if(e.getSource()==bFitRange)
+			if(e.getSource()==bFitRange)
 				fitRange();
 			else
 				layoutImagePanel();
@@ -302,19 +316,16 @@ public class PlateWindow extends BasicWindow
 			return comboColor.getEvColor();
 			}
 		*/
-		public String getChannelName()
-			{
-			return comboChannel.getChannelName();
-			}
 		
 		/**
 		 * Get channel, or null in case it fails (data outdated, or similar)
 		 */
+		/*
 		public EvChannel getChannel()
 			{
 			return comboChannel.getSelectedObject();
 			}
-
+*/
 
 		public void resetSettings()
 			{
@@ -333,7 +344,59 @@ public class PlateWindow extends BasicWindow
 	public void layoutImagePanel()
 		{
 		//Set images
-		imagePanel.images.clear();
+		imagePanel.clear();
+		
+		
+		int imageMargin=10;
+		int imageSize=100;
+		
+		int numRow=10;
+		int numCol=10;
+		
+		for(int i=1;i<=numCol;i++)
+			{
+			char c='A';
+			Scene2DText st=new Scene2DText((i-1)*(imageSize+imageMargin)+50, -20, ""+(char)(c+i-1));
+			imagePanel.addElem(st);
+			}
+		
+		for(int i=1;i<=numRow;i++)
+			{
+			Scene2DText st=new Scene2DText(-20, (i-1)*(imageSize+imageMargin)+50, ""+i);
+			imagePanel.addElem(st);
+			}
+		
+
+		for(int row=1;row<=numRow;row++)
+			for(int col=1;col<=numCol;col++)
+				{
+
+				EvStack stack=new EvStack();  //Displacement from here
+				stack.allocate(300, 300, 1, EvPixelsType.INT);
+				
+				int maxdim=stack.getWidth();
+				if(stack.getHeight()>maxdim)
+					maxdim=stack.getHeight();
+				
+				stack.resX=stack.resY=stack.resZ=imageSize/(double)maxdim;
+
+				stack.cs.setMidBases(new Vector3d((col-1)*(imageSize+imageMargin),(row-1)*(imageSize+imageMargin),0), new Vector3d[]{
+						new Vector3d(1,0,0),
+						new Vector3d(0,1,0),
+						new Vector3d(0,0,1)
+						});
+				
+				Scene2DImage imp=new Scene2DImage();
+				imp.setImage(stack, 0);
+				imp.borderColor=EvColor.green;
+				imagePanel.addElem(imp);
+
+				}
+
+		
+/*		
+		
+		
 
 		
 	
@@ -384,7 +447,8 @@ public class PlateWindow extends BasicWindow
 				}
 			imagePanel.images.add(pi);
 			}
-		
+
+		*/
 		imagePanel.invalidateImages();
 		repaintImagePanel();
 		}
@@ -569,11 +633,11 @@ public class PlateWindow extends BasicWindow
 	
 	public void zoom(double val)
 		{
-//		imagePanel.zoom*=Math.pow(10,val/10);
+		imagePanel.zoom(Math.pow(10,val/10));
 		repaint();
 		}
 	
-	public void loadedFile(EvData data)
+	public void eventUserLoadedFile(EvData data)
 		{
 		List<Imageset> ims=data.getObjects(Imageset.class);
 		if(!ims.isEmpty())
@@ -663,27 +727,6 @@ public class PlateWindow extends BasicWindow
 		} 
 
 	
-	//are these useful?
-	/*
-	public void transformOverlay(Graphics2D g)
-		{
-		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
-		double zoomBinningX=imagePanel.zoom*getStrangeResX();
-		double zoomBinningY=imagePanel.zoom*getStrangeResY();
-		g.translate(trans.x,trans.y);
-		g.scale(zoomBinningX,zoomBinningY);
-		g.rotate(imagePanel.rotation);
-		}
-	public void untransformOverlay(Graphics2D g)
-		{
-		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
-		double zoomBinningX=imagePanel.zoom*getStrangeResX();
-		double zoomBinningY=imagePanel.zoom*getStrangeResY();
-		g.rotate(-imagePanel.rotation);
-		g.scale(1.0/zoomBinningX, 1.0/zoomBinningY);
-		g.translate(-trans.x,-trans.y);
-		}
-	*/
 	
 
 	
@@ -757,6 +800,19 @@ public class PlateWindow extends BasicWindow
 	public void setZ(EvDecimal z)
 		{
 		frameControl.setZ(z);
+		}
+	
+	
+	public static void main(String[] args)
+		{
+		
+	/*	
+		EvLog.addListener(new EvLogStdout());
+		EV.loadPlugins();
+*/
+		new PlateWindow(new Rectangle(600,600));
+		
+		
 		}
 	
 	}

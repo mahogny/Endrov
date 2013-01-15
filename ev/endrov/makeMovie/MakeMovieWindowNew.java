@@ -330,7 +330,7 @@ public class MakeMovieWindowNew extends BasicWindow implements ActionListener
 		}
 	
 	
-	public void loadedFile(EvData data){}
+	public void eventUserLoadedFile(EvData data){}
 	public void freeResources(){}
 
 	
