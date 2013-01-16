@@ -25,6 +25,8 @@ import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
 import endrov.ev.EV;
+import endrov.ev.EvLog;
+import endrov.ev.EvLogStdout;
 import endrov.ev.PersonalConfig;
 import endrov.flow.Flow;
 import endrov.flowMeasure.ParticleMeasure;
@@ -78,24 +80,20 @@ implements ChangeListener, ActionListener
 		};
 	EvComboObjectOne<ParticleMeasure> comboFeature=new EvComboObjectOne<ParticleMeasure>(new ParticleMeasure(), true, true);
 	EvComboObjectOne<Flow> comboFlow=new EvComboObjectOne<Flow>(new Flow(), true, true);
-	JComboBox comboAttribute1=new JComboBox();
-	JComboBox comboAttribute2=new JComboBox();
-	JComboBox comboChannel=new JComboBox();
-	
-	
-	JComboBox comboAggregation=new JComboBox(PlateWindowView.getAggrModes());
+	private JComboBox comboAttribute1=new JComboBox();
+	private JComboBox comboAttribute2=new JComboBox();
+	private JComboBox comboChannel=new JComboBox();
+	private JComboBox comboAggregation=new JComboBox(PlateWindowView.getAggrModes());
+	private final FrameControlImage frameControl=new FrameControlImage(this, false, true);
+	private PlateWindowView imagePanel=new PlateWindowView();	
+	private ChannelWidget cw=new ChannelWidget();
+	private JButton bExport=new JButton("Export as CSV");
 
-	JButton bExport=new JButton("Export as CSV");
-
-	
-	private final FrameControlImage frameControl=new FrameControlImage(this, false, false);
+	private boolean disableDataChanged=false;
 
 	private final JMenu menuPlateWindow=new JMenu("PlateWindow");
-
-	private PlateWindowView imagePanel=new PlateWindowView();
+	private final JMenuItem miZoom=new JMenuItem("Zoom to fit");
 	
-	private ChannelWidget cw=new ChannelWidget();
-
 	
 	
 	/**
@@ -104,8 +102,7 @@ implements ChangeListener, ActionListener
 	
 	public PlateWindow(Rectangle bounds)
 		{
-
-
+		//Add listeners
 		comboData.addActionListener(this);
 		comboFeature.addActionListener(this);
 		comboFlow.addActionListener(this);
@@ -184,6 +181,8 @@ implements ChangeListener, ActionListener
 		EvSwingUtil.tearDownMenu(menuPlateWindow);
 		
 			
+		menuPlateWindow.add(miZoom);
+		miZoom.addActionListener(this);
 		
 		}
 	
@@ -276,13 +275,12 @@ implements ChangeListener, ActionListener
 			
 			sliderContrast.addSnapListener(this);
 			sliderBrightness.addSnapListener(this);
-
 			}
 		
 
 		
-		double brightness=0;
-		double contrast=1;
+		private double brightness=0;
+		private double contrast=1;
 
 		public void slideChange(SnapBackSlider source, int change)
 			{
@@ -375,7 +373,6 @@ implements ChangeListener, ActionListener
 		}
 	
 	
-	private boolean disableDataChanged=false;
 	
 	
 	/**
@@ -397,8 +394,8 @@ implements ChangeListener, ActionListener
 			
 
 			List<String> alist=getAttributes();
-			updateAttrCombo(comboAttribute1,alist);
-			updateAttrCombo(comboAttribute2,alist);
+			updateCombo(comboAttribute1,alist);
+			updateCombo(comboAttribute2,alist);
 
 //			List<String> clist=getChannels();
 //			updateAttrCombo(comboChannel, clist);
@@ -413,6 +410,9 @@ implements ChangeListener, ActionListener
 		}
 
 	
+	/**
+	 * Update which wells exist
+	 */
 	public void updateAvailableWells()
 		{
 		imagePanel.wellMap.clear();
@@ -423,26 +423,38 @@ implements ChangeListener, ActionListener
 				(String)comboAttribute1.getSelectedItem(),
 				(String)comboAttribute2.getSelectedItem());
 		
+		
+		
 		if(con!=null)
 			{
 			Map<EvPath, EvChannel> m=con.getIdObjectsRecursive(EvChannel.class);
 			
-			TreeSet<String> chans=new TreeSet<String>();
 			TreeSet<EvPath> wellPaths=new TreeSet<EvPath>();
 
+			//Update channel combo
+			TreeSet<String> chans=new TreeSet<String>();
+			for(EvPath p:m.keySet())
+				chans.add(p.getLeafName());
+			LinkedList<String> listchans=new LinkedList<String>();
+			listchans.addAll(chans);
+			updateCombo(comboChannel, listchans);
+
+			//Add wells to panel
+			String curChannel=(String)comboChannel.getSelectedItem();
+			if(curChannel==null)
+				curChannel="";
+			
 			for(EvPath p:m.keySet())
 				{
-				EvPath path=p.getParent();
-				wellPaths.add(path);
-				chans.add(p.getLeafName());
-				imagePanel.addWell(path, m.get(p));
+				String ch=p.getLeafName();
+				if(ch.equals(curChannel))
+					{
+					EvPath path=p.getParent();
+					wellPaths.add(path);
+					imagePanel.addWell(path, m.get(p));
+					}
 				}
 
-			//Update channel combo
-			LinkedList<String> listchans=new LinkedList<String>();
-			listchans.add("");
-			listchans.addAll(chans);
-			updateAttrCombo(comboChannel, listchans);
 
 			
 			}
@@ -454,7 +466,10 @@ implements ChangeListener, ActionListener
 
 	
 
-	private void updateAttrCombo(JComboBox cb, List<String> alist)
+	/**
+	 * Update the options of a combobox 
+	 */
+	private void updateCombo(JComboBox cb, List<String> alist)
 		{
 		String item=(String)cb.getSelectedItem();
 		cb.removeAllItems();
@@ -468,6 +483,9 @@ implements ChangeListener, ActionListener
 			}
 		}
 	
+	/**
+	 * Get available particle attributes
+	 */
 	private List<String> getAttributes()
 		{
 		LinkedList<String> list=new LinkedList<String>();
@@ -525,6 +543,8 @@ implements ChangeListener, ActionListener
 			dataChangedEvent();
 		else if(e.getSource()==comboAttribute1 || e.getSource()==comboAttribute2 || e.getSource()==comboAggregation)
 			dataChangedEvent();
+		else if(e.getSource()==miZoom)
+			imagePanel.zoomToFit();
 		}
 
 	
@@ -585,8 +605,8 @@ implements ChangeListener, ActionListener
 	public static void main(String[] args)
 		{
 		
-	/*	
 		EvLog.addListener(new EvLogStdout());
+	/*	
 		EV.loadPlugins();
 */
 		new PlateWindow(new Rectangle(600,600));

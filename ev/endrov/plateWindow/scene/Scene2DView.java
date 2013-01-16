@@ -57,6 +57,7 @@ public class Scene2DView extends JPanel
 	 * Tell that images need be reloaded from disk.
 	 * Better register callbacks from images instead
 	 */
+	/*
 	public void invalidateImages()
 		{
 		for(Scene2DElement e:images)
@@ -64,7 +65,7 @@ public class Scene2DView extends JPanel
 //		for(ImagePanelImage im:images)
 				((Scene2DImage) e).update();
 		}
-	
+	*/
 	/**
 	 * Load image from imageloader if this has not been done yet
 	 *
@@ -73,7 +74,7 @@ public class Scene2DView extends JPanel
 		{
 		for(Scene2DElement e:images)
 			if(e instanceof Scene2DImage)
-				((Scene2DImage) e).loadImage();
+				((Scene2DImage) e).prepareImage();
 //		for(ImagePanelImage im:images)
 	//		im.loadImage();
 		}

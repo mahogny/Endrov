@@ -16,19 +16,19 @@ import javax.vecmath.Vector2d;
 
 import endrov.basicWindow.EvColor;
 import endrov.ev.EvLog;
+import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.imageset.EvStack;
+import endrov.util.ProgressHandle;
 
 /**
  * Scene element: One raster image
  */
-public class Scene2DImage implements Scene2DElement
+public class Scene2DStack implements Scene2DElement
 	{
-	public int x, y;
-	public double resX=1;
-	public double resY=1;
-//	CoordinateSystem cs=new CoordinateSystem();
-	public EvPixels pixels=null;
+	int z;
+	private EvStack stack=null;
 	public double contrast=1;
 	public double brightness=0;
 	private BufferedImage bufi=null;
@@ -71,6 +71,23 @@ public class Scene2DImage implements Scene2DElement
 	
 	
 	
+	
+	
+	
+	
+	public void setImage(EvStack stack, int z)//EvImage image)
+		{
+		this.z=z;
+		this.stack=stack;
+		}
+	
+	
+
+	public EvStack getStack()
+		{
+		return stack;
+		}
+	
 	public void update()
 		{
 		bufi=null;
@@ -79,18 +96,27 @@ public class Scene2DImage implements Scene2DElement
 	/**
 	 * Load image into memory
 	 */
-	public void prepareImage()
+	public void loadImage()
 		{
 		try
 			{
-			//Load image if this has not already been done
-			if(pixels==null)
+			if(stack==null)
 				bufi=null;
 			else
 				{
+				//Load image if this has not already been done
 				if(bufi==null)
 					{
-					bufi=applyIntensityTransform(pixels);
+					EvImage image=stack.getInt(z);
+		
+					//TODO handle progress. Put this in a thread if it takes too long. or, put it there right away, postpone update of image
+					if(image!=null)
+						{
+						EvPixels p=image.getPixels(new ProgressHandle()); /////////////////////////////////////////// HERE FOR LONG EXECUTIONS /////////////
+						bufi=applyIntensityTransform(p);
+						}
+					else
+						System.out.println("Null image, z:"+z);
 					}
 				}
 			}
@@ -105,18 +131,16 @@ public class Scene2DImage implements Scene2DElement
 	public void paintComponent(Graphics g, Scene2DView p)
 		{
 		Graphics2D g2 = (Graphics2D)g; 			
-		prepareImage(); 
-		
 		if(bufi!=null)
 			{
 //			System.out.println("drawing raster");
 			//Calculate translation and zoom of image
 			//Vector2d trans=transformI2S(p,stack,new Vector2d(stack.dispX, stack.dispY));
-			Vector2d trans=transformI2S(p,new Vector2d(0, 0));
+			Vector2d trans=transformI2S(p,stack,new Vector2d(0, 0));
 
 			
-			double scaleX=p.zoom*resX;
-			double scaleY=p.zoom*resY;
+			double scaleX=p.zoom*stack.resX;
+			double scaleY=p.zoom*stack.resY;
 			
 			g2.translate(trans.x,trans.y);
 			g2.scale(scaleX,scaleY);  
@@ -144,18 +168,18 @@ public class Scene2DImage implements Scene2DElement
 
 			} 
 		
-		if(borderColor!=null && pixels!=null)
+		if(borderColor!=null && stack!=null)
 			{
-			int w=pixels.getWidth();
-			int h=pixels.getHeight();
+			int w=stack.getWidth();
+			int h=stack.getHeight();
 			
 			//Reference area. This is what the transform decides on; the image above should be in it
 			g2.setColor(borderColor.getAWTColor()); //No displacement
 			//actually already displaced. red is double-displaced
-			Vector2d u1=transformI2S(p,new Vector2d(0,0));
-			Vector2d u2=transformI2S(p,new Vector2d(w,0));
-			Vector2d u3=transformI2S(p,new Vector2d(0,h));
-			Vector2d u4=transformI2S(p,new Vector2d(w,h));
+			Vector2d u1=transformI2S(p,stack,new Vector2d(0,0));
+			Vector2d u2=transformI2S(p,stack,new Vector2d(w,0));
+			Vector2d u3=transformI2S(p,stack,new Vector2d(0,h));
+			Vector2d u4=transformI2S(p,stack,new Vector2d(w,h));
 			g2.drawLine((int)u1.x, (int)u1.y, (int)u2.x, (int)u2.y);
 			g2.drawLine((int)u3.x, (int)u3.y, (int)u4.x, (int)u4.y);
 			g2.drawLine((int)u1.x, (int)u1.y, (int)u3.x, (int)u3.y);
@@ -166,22 +190,14 @@ public class Scene2DImage implements Scene2DElement
 		}
 	
 	
-	public Vector2d transformImageWorld(Vector2d u)
-		{
-		return new Vector2d(u.x*resX+x, u.y*resY+y);
-		}
-	
-	public Vector2d transformWorldImage(Vector2d u)
-		{
-		return new Vector2d((u.x-x)/resX, (u.y-y)/resY);
-		}
+
 
 	/** 
 	 * Convert image coordinate to screen coordinate (image scaled by binning) 
 	 */
-	public Vector2d transformI2S(Scene2DView p, Vector2d u)
+	public static Vector2d transformI2S(Scene2DView p, EvStack stack, Vector2d u)
 		{
-		return p.transformPointW2S(transformImageWorld(new Vector2d(u.x,u.y)));
+		return p.transformPointW2S(stack.transformImageWorld(new Vector2d(u.x,u.y)));
 		}
 	
 	
@@ -189,9 +205,9 @@ public class Scene2DImage implements Scene2DElement
 	/** 
 	 * Convert screen coordinate to image coordinate (image scaled by binning) 
 	 */
-	public Vector2d transformS2I(Scene2DView p, Vector2d u)
+	public static Vector2d transformS2I(Scene2DView p, EvStack stack, Vector2d u)
 		{
-		return transformWorldImage(p.transformPointS2W(u));
+		return stack.transformWorldImage(p.transformPointS2W(u));
 		}
 	
 	
@@ -284,13 +300,13 @@ public class Scene2DImage implements Scene2DElement
 
 	public Rectangle getBoundingBox()
 		{
-		if(pixels!=null)
+		if(stack!=null)
 			{
-			int w=pixels.getWidth();
-			int h=pixels.getHeight();
+			int w=stack.getWidth();
+			int h=stack.getHeight();
 				
-			Vector2d v1=transformImageWorld(new Vector2d(0,0));
-			Vector2d v2=transformImageWorld(new Vector2d(w,h));
+			Vector2d v1=stack.transformImageWorld(new Vector2d(0,0));
+			Vector2d v2=stack.transformImageWorld(new Vector2d(w,h));
 			
 			double x1=Math.min(v1.x, v2.x);
 			double y1=Math.min(v1.y, v2.y);
@@ -311,16 +327,16 @@ public class Scene2DImage implements Scene2DElement
 	 */
 	public void zoomToFit(Scene2DView p)
 		{
-		int w=pixels.getWidth();
-		int h=pixels.getHeight();
+		int w=stack.getWidth();
+		int h=stack.getHeight();
 					
 		//Adjust zoom
-		double zoom1=p.getWidth()/(double)(w*resX);
-		double zoom2=p.getHeight()/(double)(h*resY);
+		double zoom1=p.getWidth()/(double)(w*stack.resX);
+		double zoom2=p.getHeight()/(double)(h*stack.resY);
 		p.zoom=Math.min(zoom1,zoom2);
 
 		//Place camera in the middle
-		Vector2d mid=transformI2S(p,new Vector2d(w/2,h/2));
+		Vector2d mid=transformI2S(p,stack,new Vector2d(w/2,h/2));
 		mid.sub(new Vector2d(p.getWidth()/2,p.getHeight()/2));
 		p.transX-=(int)mid.x/p.zoom;
 		p.transY-=(int)mid.y/p.zoom;

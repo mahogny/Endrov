@@ -151,5 +151,6 @@
 	<classpathentry kind="lib" path="libs/swingx-1.0.jar"/>
 	<classpathentry kind="lib" path="libs/swingx-beaninfo-1.0.jar"/>
 	<classpathentry kind="lib" path="libs/umanager_inc/bin_linux/MMJ_.jar"/>
+	<classpathentry kind="lib" path="libs/imglib_inc/mpicbg-0.6.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

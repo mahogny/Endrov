@@ -8,6 +8,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,14 +17,13 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.SwingUtilities;
-import javax.vecmath.Vector3d;
-
 import endrov.basicWindow.EvColor;
 import endrov.data.EvPath;
 import endrov.flowMeasure.ParticleMeasure;
 import endrov.imageset.EvChannel;
-import endrov.imageset.EvPixelsType;
+import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
+import endrov.imglib.evop.EvOpScaleImage;
 import endrov.plateWindow.CalcAggregation.AggregationMethod;
 import endrov.plateWindow.scene.Scene2DHistogram;
 import endrov.plateWindow.scene.Scene2DImage;
@@ -32,7 +33,6 @@ import endrov.plateWindow.scene.Scene2DText;
 import endrov.plateWindow.scene.Scene2DText.Alignment;
 import endrov.plateWindow.scene.Scene2DView;
 import endrov.util.EvDecimal;
-import endrov.util.Tuple;
 
 /**
  * View for plates
@@ -43,7 +43,139 @@ import endrov.util.Tuple;
 public class PlateWindowView extends Scene2DView implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener
 	{
 	private static final long serialVersionUID = 1L;
+
 	
+	/**
+	 * How to display one well
+	 */
+	public static class OneWell
+		{
+		public int x, y;
+		public Double aggrValue;
+		public LinkedList<Double> arrA, arrB;
+		public EvPixels pixels;
+		public EvChannel evChannel;
+		public Scene2DImage imp;
+		}
+
+	/**
+	 * One grid to show labels for
+	 * 
+	 */
+	public static class Grid
+		{
+		public int x,y;
+		public int numNumber, numLetter;
+		public int distance;
+		}
+	
+	
+	public class WellImageLoader extends Thread
+		{
+		public LinkedList<WeakReference<OneWell>> queue=new LinkedList<WeakReference<OneWell>>();
+		
+		@Override
+		public void run()
+			{
+			for(;;)
+				{
+				while(!queue.isEmpty())
+					{
+					OneWell w;
+					synchronized (queue)
+						{
+						w=queue.removeFirst().get();
+						System.out.println("well: "+w);
+						}
+					if(w!=null)
+						loadImage(w);
+					}
+				
+				try
+					{
+					Thread.sleep(100);
+					//TODO fix!
+					}
+				catch (InterruptedException e)
+					{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					}
+
+				}			
+			}
+		
+		public void loadImage(OneWell w)
+			{
+			if(w.pixels==null)
+				{
+				EvDecimal closestFrame=w.evChannel.closestFrame(EvDecimal.ZERO);
+				
+				EvStack stack=w.evChannel.getStack(closestFrame);
+				if(stack!=null)
+					{
+					int pixwidth=200;
+					double scaleFactor=pixwidth/(double)stack.getWidth();
+					
+					stack=new EvOpScaleImage(scaleFactor, scaleFactor).exec1(null, stack);
+					
+					EvPixels pixels=stack.getInt(0).getPixels();
+//					System.out.println("arr :"+w.pixels.getArrayFloat()[0]);
+					
+					w.pixels=pixels;
+
+					Scene2DImage imp=new Scene2DImage();
+					imp.pixels=w.pixels;
+					imp.borderColor=EvColor.green;
+					imp.contrast=contrast;
+					imp.brightness=brightness;
+					imp.resX=imageSize/(double)w.pixels.getWidth();
+					imp.resY=imageSize/(double)w.pixels.getHeight();
+					imp.prepareImage();
+
+					w.imp=imp;
+					
+					//Specify z!
+					
+					//TODO contrast brightness here?
+
+					try
+						{
+						SwingUtilities.invokeAndWait(new Runnable(){
+							public void run()
+								{
+								System.out.println("new image!");
+								layoutImagePanel();                //This does way more work than needed(?)
+								}
+						
+						});
+						}
+					catch (InterruptedException e)
+						{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						}
+					catch (InvocationTargetException e)
+						{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						}
+					System.out.println("end update");
+					}
+
+				}
+			}
+		
+		public void addWell(OneWell w)
+			{
+			synchronized (queue)
+				{
+				queue.addLast(new WeakReference<PlateWindowView.OneWell>(w));
+				}
+			}
+		
+		}
+
 	
 	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */
 	private int mouseLastDragX=0, mouseLastDragY=0;
@@ -55,49 +187,13 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	/** Flag if the mouse cursor currently is in the window */
 	public boolean mouseInWindow=false;
 
-	
-	
-	
-	
 
 	
-
+	
+	private WellImageLoader imageLoaderThread=new WellImageLoader();	
 	public Map<EvPath, OneWell> wellMap=new HashMap<EvPath, OneWell>();
-	
-	
 	private LinkedList<Grid> grids=new LinkedList<Grid>();
-	
-	/**
-	 * How to display one well
-	 */
-	public static class OneWell
-		{
-//		public EvPath path;
-		public int x, y;
-		
-		//image to show
-		public EvStack stack;
-		
-		public Double aggrValue;
-		
-		public LinkedList<Double> arrA, arrB;
-
-//		public int[] histogram;
-		}
-	
-
-	/**
-	 * One grid to show labels for
-	 * 
-	 */
-	public static class Grid
-		{
-		int rows, cols;
-		int x,y;
-		public int distance;
-		}
-	
-
+	public double contrast=0.1, brightness=0;
 	
 	public PlateWindowView()
 		{
@@ -106,6 +202,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
+		
+		imageLoaderThread.start();
 		}
 
 	private int imageMargin=10;
@@ -145,17 +243,17 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		Font gridFont=new Font("Arial", Font.PLAIN, 60);
 		for(Grid g:grids)
 			{
-			for(int i=1;i<=g.cols;i++)
+			for(int i=1;i<=g.numLetter;i++)
 				{
 				char c='A';
-				Scene2DText st=new Scene2DText(g.x + (i-1)*(g.distance)+50, g.y + -20, ""+(char)(c+i-1));
+				Scene2DText st=new Scene2DText(g.x + -20, g.y + (i-1)*(g.distance)+50, ""+(char)(c+i-1));
 				st.font = gridFont;
 				st.alignment=Alignment.Center;
 				addElem(st);
 				}
-			for(int i=1;i<=g.rows;i++)
+			for(int i=1;i<=g.numNumber;i++)
 				{
-				Scene2DText st=new Scene2DText(g.x + -20, g.y + (i-1)*(g.distance)+50, ""+i);
+				Scene2DText st=new Scene2DText(g.x + (i-1)*(g.distance)+50, g.y + -20, ""+i);
 				st.font=gridFont;
 				st.alignment=Alignment.Right;
 				addElem(st);
@@ -223,6 +321,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		
 		
 		//Add wells to scene
+		System.out.println("----");
 		for(OneWell w:wellMap.values())
 			{
 			boolean drawRect=true;
@@ -230,7 +329,27 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			if(aggrMethod.equals(aggrHide))
 				{
 				//Show image
-				Scene2DImage imp=new Scene2DImage();
+	
+				/*
+				EvPixels pixels=new EvPixels(EvPixelsType.DOUBLE, 1, 1);
+				double[] v=pixels.getArrayDouble();
+				v[0]=Math.random()*255;
+*/
+				
+				if(w.imp!=null)
+					{
+					Scene2DImage imp=w.imp;
+					imp.x=w.x;
+					imp.y=w.y;
+					addElem(imp);
+					System.out.println("img");
+					drawRect=false;				
+					}
+
+				
+				
+				
+/*				
 				imp.setImage(w.stack, 0);
 				imp.borderColor=EvColor.green;
 				
@@ -243,7 +362,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				imp.loadImage(); //Should totally not be available here TODO
 				
 				addElem(imp);
-				drawRect=false;
+				*/
 				}
 			else if(aggrMethod instanceof CalcAggregation.AggregationMethod)
 				{
@@ -382,8 +501,9 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			}
 
 		*/
-		invalidateImages();
-		repaintImagePanel();
+//		invalidateImages();
+		repaint();
+//		repaintImagePanel();
 		}
 
 
@@ -640,41 +760,57 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		for(EvPath p:wellMap.keySet())
 			{
 			OneWell well=wellMap.get(p);
-			Tuple<Integer,Integer> pos=parseWellPos(p.getLeafName());
+			WellIndex pos=parseWellPos(p.getLeafName());
 			if(pos!=null)
 				{
-				well.y=(pos.fst()-1)*(imageSize+imageMargin);
-				well.x=(pos.snd()-1)*(imageSize+imageMargin);
+				well.x=(pos.indexNumber-1)*(imageSize+imageMargin);
+				well.y=(pos.indexLetter-1)*(imageSize+imageMargin);
 				}
 			}
 		
 		}
 		
 
-
+		
+	
 	public void addWell(EvPath p, EvChannel evChannel)
 		{
 		if(p==null)
 			throw new RuntimeException("null path");
 			
 		OneWell well=new OneWell();
+
+		well.evChannel=evChannel; //TODO baaaad!
+
 		
-		EvStack stack=well.stack=new EvStack();  //Displacement from here
-		stack.allocate(1, 1, 1, EvPixelsType.DOUBLE);
-		double[] v=stack.getInt(0).getPixels().getArrayDouble();
-		v[0]=Math.random()*200;
+		imageLoaderThread.addWell(well);
 		
+				
+				
+/*		
 		int maxdim=stack.getWidth();
 		if(stack.getHeight()>maxdim)
 			maxdim=stack.getHeight();
 		stack.resX=stack.resY=stack.resZ=imageSize/(double)maxdim;
-
+*/
 		wellMap.put(p, well);
 		}
 
 	
 	
-	public Tuple<Integer, Integer> parseWellPos(String n)
+	private static class WellIndex
+		{
+		int indexNumber;
+		int indexLetter;
+		
+		public WellIndex(int indexNumber, int indexLetter)
+			{
+			this.indexNumber = indexNumber;
+			this.indexLetter = indexLetter;
+			}
+		}
+	
+	public WellIndex parseWellPos(String n)
 		{
 		n=n.toUpperCase();
 		int ac=0;
@@ -689,7 +825,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		
 		int num=Integer.parseInt(numberpart);
 		int letter=letterpart.charAt(0)-'A'+1;
-		return Tuple.make(num, letter);
+		return new WellIndex(num, letter);
 		}
 	
 
@@ -701,19 +837,19 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		//Does this follow a multi-well format?  LettersNumbers
 		for(String n:wellNames)
 			{
-			Tuple<Integer,Integer> pos=parseWellPos(n);
+			WellIndex pos=parseWellPos(n);
 			if(pos==null)
 				return null;
 			
-			if(pos.fst()>maxnum)
-				maxnum=pos.fst();
-			if(pos.snd()>maxletter)
-				maxletter=pos.snd();
+			if(pos.indexNumber>maxnum)
+				maxnum=pos.indexNumber;
+			if(pos.indexLetter>maxletter)
+				maxletter=pos.indexLetter;
 			}
 		
 		PlateWindowView.Grid g=new PlateWindowView.Grid();
-		g.cols=maxletter;
-		g.rows=maxnum;
+		g.numLetter=maxletter;
+		g.numNumber=maxnum;
 		g.distance=imageSize+imageMargin;
 		return g;
 		}
@@ -761,5 +897,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		}
 
 
+
+	
+	
 	
 	}
