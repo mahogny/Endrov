@@ -136,7 +136,10 @@ public class MainToR
 						//Get gene name
 						String genename=mapORF2genename.get(orf);
 						if(genename==null)
+							{
+							pw.close();
 							throw new RuntimeException("null name for "+orf);
+							}
 						
 						if(orf!=null && orf.equals("M05B5.5"))
 							System.out.println("wheeeeeeeeeeee "+genename);

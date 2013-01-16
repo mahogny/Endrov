@@ -5,10 +5,14 @@ import java.util.Iterator;
 
 import endrov.util.EvMathUtil;
 
-public class Aggregation
+/**
+ * Aggregation math functions
+ * 
+ * @author Johan Henriksson
+ *
+ */
+public class CalcAggregation
 	{
-	
-	//TODO correlation as well
 	
 	
 	public static abstract class AggregationMethod
@@ -79,7 +83,7 @@ public class Aggregation
 			for(double d:listA)
 				{
 				sumx+=d;
-				sumx+=d*d;
+				sumxx+=d*d;
 				}
 			return Math.sqrt(EvMathUtil.unbiasedVariance(sumx, sumxx, listA.size()));
 			}
@@ -91,39 +95,84 @@ public class Aggregation
 			{
 			if(listA.isEmpty() || listA.size()!=listB.size())
 				return null;
-	
-			double meanA=aggrMean.calc(listA, null);
-			double meanB=aggrMean.calc(listB, null);
 			
-			double sum=0;
+			int n=listA.size();
+			
+			double sumA=0, sumAA=0;
+			double sumB=0, sumBB=0;
+			double sumAB=0;
+			for(double d:listA)
+				{
+				sumA+=d;
+				sumAA+=d*d;
+				}
+			for(double d:listB)
+				{
+				sumB+=d;
+				sumBB+=d*d;
+				}
 			Iterator<Double> itA=listA.iterator();
 			Iterator<Double> itB=listB.iterator();
 			while(itA.hasNext())
-				sum += (itA.next()-meanA)*(itB.next()-meanB);
-			sum/=listA.size();
-			return sum;
+				sumAB+=itA.next()*itB.next();
+			
+			double varA=(sumAA - sumA*sumA/n)/n;
+			double varB=(sumBB - sumB*sumB/n)/n;
+			double covAB=(sumAB - sumA*sumB/n)/n;
+			return covAB/(Math.sqrt(varA*varB));
 			}
 		};
-/*
+
+		/*
+	public static final AggregationMethod aggrSpearman=new AggregationMethod("Spearman corr")
+		{
+		public Double calc(Collection<Double> listA, Collection<Double> listB)
+			{
+			//Calculate rank within each list
+			
+			
+			
+			
+			
+			//Final eq!
+			
+			
+			if(listA.isEmpty() || listA.size()!=listB.size())
+				return null;
+	
+			}
+		};
+	
+*/		
+		
 	public static final AggregationMethod aggrSkew=new AggregationMethod("Skew")
 		{
 		public Double calc(Collection<Double> listA, Collection<Double> listB)
 			{
+			if(listA.size()<2 || listA.size()!=listB.size())
+				return null;
+	
+			double sigma=aggrStdDev.calc(listA, null);
+			double mu=aggrMean.calc(listA, null);
+			
+			double x3mean=0;
+			for(double x:listA)
+				x3mean+=x*x*x;
+			x3mean/=listA.size();
+			
+			return (x3mean - 3*mu*sigma*sigma - mu*mu*mu)/(sigma*sigma*sigma);
 			}
 		};
-*/
 
 	
-
-
-		public static AggregationMethod[] getAggrModes()
-			{
-			return new AggregationMethod[]{
-					//TODO spearman!
-					
-					aggrMean, aggrSum, aggrMin, aggrMax, aggrStdDev, aggrPearson
-			};
-			}
+	public static AggregationMethod[] getAggregationMethods()
+		{
+		return new AggregationMethod[]{
+				//TODO spearman!
+				
+				aggrMean, aggrSum, aggrMin, aggrMax, aggrStdDev, aggrPearson, aggrSkew
+		};
+		}
 
 	
 	}

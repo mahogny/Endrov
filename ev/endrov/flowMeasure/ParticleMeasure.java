@@ -138,17 +138,30 @@ public class ParticleMeasure extends EvObject
 		
 		public Double getDouble(String s)
 			{
-			return (Double)map.get(s);
+			Object o=map.get(s);
+			if(o instanceof String)
+				return Double.parseDouble((String)o);
+			else if(o instanceof Number)
+				return ((Number)o).doubleValue();
+			else
+				throw new RuntimeException("Bad type: "+o.getClass());
+//			return (Double)map.get(s);
 			}
 
 		public Integer getInt(String s)
 			{
-			return (Integer)map.get(s);
+			Object o=map.get(s);
+			if(o instanceof String)
+				return Integer.parseInt((String)o);
+			else if(o instanceof Number)
+				return ((Number)o).intValue();
+			else
+				throw new RuntimeException("Bad type: "+o.getClass());
 			}
 
 		public String getString(String s)
 			{
-			return (String)map.get(s);
+			return map.get(s).toString();
 			}
 
 		public Object getObject(String s)

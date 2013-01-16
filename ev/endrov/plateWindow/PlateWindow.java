@@ -5,7 +5,6 @@
  */
 package endrov.plateWindow;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,11 +29,9 @@ import endrov.ev.PersonalConfig;
 import endrov.flow.Flow;
 import endrov.flowMeasure.ParticleMeasure;
 import endrov.flowMeasure.ParticleMeasure.FrameInfo;
-import endrov.flowMeasure.ParticleMeasure.ParticleInfo;
 import endrov.imageWindow.FrameControlImage;
 import endrov.imageset.*;
 import endrov.imagesetBD.EvIODataBD;
-import endrov.plateWindow.PlateWindowView.Grid;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
@@ -111,6 +108,8 @@ implements ChangeListener, ActionListener
 
 		comboData.addActionListener(this);
 		comboFeature.addActionListener(this);
+		comboFlow.addActionListener(this);
+		comboAggregation.addActionListener(this);
 		comboAttribute1.addActionListener(this);
 		comboAttribute2.addActionListener(this);
 		comboChannel.addActionListener(this);
@@ -396,17 +395,17 @@ implements ChangeListener, ActionListener
 
 			updateAvailableWells();
 			
+
 			List<String> alist=getAttributes();
 			updateAttrCombo(comboAttribute1,alist);
 			updateAttrCombo(comboAttribute2,alist);
-			
-			List<String> clist=getChannels();
-			updateAttrCombo(comboChannel, clist);
+
+//			List<String> clist=getChannels();
+//			updateAttrCombo(comboChannel, clist);
 				
 
 			updateWindowTitle();
-			imagePanel.layoutImagePanel(); //TODO not always needed
-			imagePanel.zoomToFit(); //TODO
+//			imagePanel.zoomToFit(); //TODO
 			
 			
 			disableDataChanged=false;
@@ -418,23 +417,39 @@ implements ChangeListener, ActionListener
 		{
 		imagePanel.wellMap.clear();
 		EvContainer con=comboData.getSelectedObject();
+
+		imagePanel.setPM(getParticleMeasure());
+		imagePanel.setAggrMethod(comboAggregation.getSelectedItem(), 
+				(String)comboAttribute1.getSelectedItem(),
+				(String)comboAttribute2.getSelectedItem());
+		
 		if(con!=null)
 			{
 			Map<EvPath, EvChannel> m=con.getIdObjectsRecursive(EvChannel.class);
 			
 			TreeSet<String> chans=new TreeSet<String>();
 			TreeSet<EvPath> wellPaths=new TreeSet<EvPath>();
-			
+
 			for(EvPath p:m.keySet())
 				{
-				wellPaths.add(p.getParent());
+				EvPath path=p.getParent();
+				wellPaths.add(path);
 				chans.add(p.getLeafName());
-				imagePanel.addWell(p.getParent(), m.get(p));
+				imagePanel.addWell(path, m.get(p));
 				}
+
+			//Update channel combo
+			LinkedList<String> listchans=new LinkedList<String>();
+			listchans.add("");
+			listchans.addAll(chans);
+			updateAttrCombo(comboChannel, listchans);
+
 			
-			imagePanel.layoutWells();
 			}
 		
+
+		imagePanel.layoutWells();
+		imagePanel.layoutImagePanel(); //TODO not always needed
 		}
 
 	
@@ -456,14 +471,22 @@ implements ChangeListener, ActionListener
 	private List<String> getAttributes()
 		{
 		LinkedList<String> list=new LinkedList<String>();
-		
-		ParticleMeasure pm=new ParticleMeasure();
-		list.addAll(pm.getColumns());
-		list.add("foo attr");
-		
+		ParticleMeasure pm=getParticleMeasure();
+		if(pm!=null)
+			{
+			list.addAll(pm.getColumns());
+			list.remove("source");
+			}
 		return list;
 		}
 
+	
+	public ParticleMeasure getParticleMeasure()
+		{
+		return comboFeature.getSelectedObject();
+		}
+	
+	/*
 	private List<String> getChannels()
 		{
 		LinkedList<String> list=new LinkedList<String>();
@@ -472,7 +495,7 @@ implements ChangeListener, ActionListener
 		
 		return list;
 		}
-
+*/
 	
 	/**
 	 * Upon state changes, update the window
@@ -500,9 +523,8 @@ implements ChangeListener, ActionListener
 			dataChangedEvent();
 		else if(e.getSource()==comboChannel)
 			dataChangedEvent();
-		else if(e.getSource()==comboAttribute1 || e.getSource()==comboAttribute2)
+		else if(e.getSource()==comboAttribute1 || e.getSource()==comboAttribute2 || e.getSource()==comboAggregation)
 			dataChangedEvent();
-
 		}
 
 	
@@ -590,16 +612,17 @@ implements ChangeListener, ActionListener
 		pm.addColumn("source");
 		pm.addColumn("a");
 		pm.addColumn("b");
-		
-		for(String letter:new String[]{"B","C","D"})
-			for(String num:new String[]{"02","03","04"})
+
+		int id=0;
+		for(String letter:new String[]{"B","C","D","E","F"})
+			for(String num:new String[]{"02","03","04","05","06","07","08","09","10"})
 				for(int i=0;i<100;i++)
 					{
-					HashMap<String, Object> m=fi.getCreateParticle(i);
+					HashMap<String, Object> m=fi.getCreateParticle(id++);
 					double r=Math.random();
-					m.put("source", "<unnamed>/"+letter+num);
+					m.put("source", "#<unnamed>/"+letter+num);
 					m.put("a", r);
-					m.put("b", r*0.3+Math.random());
+					m.put("b", r+Math.random());
 					}
 		
 		EvData.registerOpenedData(d);

@@ -32,7 +32,7 @@ public class Scene2DImage implements Scene2DElement
 	public double contrast=1;
 	public double brightness=0;
 	private BufferedImage bufi=null;
-	public EvColor color;
+	public EvColor color=EvColor.white;
 	
 	public EvColor borderColor;
 	
@@ -40,13 +40,15 @@ public class Scene2DImage implements Scene2DElement
 	
 	public BufferedImage applyIntensityTransform(EvPixels p)
 		{
+//		System.out.println("here4");
 		double contrastR=contrast*color.getRedDouble();
 		double contrastG=contrast*color.getGreenDouble();
 		double contrastB=contrast*color.getBlueDouble();
 		
+	//	System.out.println("here5");
 		int w=p.getWidth();
 		int h=p.getHeight();
-		System.out.println("---"+w+" "+h);			
+	//	System.out.println("---"+w+" "+h);			
 		double[] aPixels=p.convertToDouble(true).getArrayDouble();
 		BufferedImage buf=new BufferedImage(w,h,BufferedImage.TYPE_3BYTE_BGR);
 		
@@ -107,11 +109,9 @@ public class Scene2DImage implements Scene2DElement
 					{
 					EvImage image=stack.getInt(z);
 		
-					System.out.println(""+stack+" "+z);
 					//TODO handle progress. Put this in a thread if it takes too long. or, put it there right away, postpone update of image
 					if(image!=null)
 						{
-						System.out.println("here2");
 						EvPixels p=image.getPixels(new ProgressHandle()); /////////////////////////////////////////// HERE FOR LONG EXECUTIONS /////////////
 						bufi=applyIntensityTransform(p);
 						}
@@ -133,7 +133,7 @@ public class Scene2DImage implements Scene2DElement
 		Graphics2D g2 = (Graphics2D)g; 			
 		if(bufi!=null)
 			{
-			System.out.println("drawing raster");
+//			System.out.println("drawing raster");
 			//Calculate translation and zoom of image
 			//Vector2d trans=transformI2S(p,stack,new Vector2d(stack.dispX, stack.dispY));
 			Vector2d trans=transformI2S(p,stack,new Vector2d(0, 0));
@@ -168,7 +168,7 @@ public class Scene2DImage implements Scene2DElement
 
 			} 
 		
-		if(borderColor!=null)
+		if(borderColor!=null && stack!=null)
 			{
 			int w=stack.getWidth();
 			int h=stack.getHeight();
@@ -300,21 +300,25 @@ public class Scene2DImage implements Scene2DElement
 
 	public Rectangle getBoundingBox()
 		{
-		
-		int w=stack.getWidth();
-		int h=stack.getHeight();
+		if(stack!=null)
+			{
+			int w=stack.getWidth();
+			int h=stack.getHeight();
+				
+			Vector2d v1=stack.transformImageWorld(new Vector2d(0,0));
+			Vector2d v2=stack.transformImageWorld(new Vector2d(w,h));
 			
-		Vector2d v1=stack.transformImageWorld(new Vector2d(0,0));
-		Vector2d v2=stack.transformImageWorld(new Vector2d(w,h));
-		
-		double x1=Math.min(v1.x, v2.x);
-		double y1=Math.min(v1.y, v2.y);
-		double x2=Math.max(v1.x, v2.x);
-		double y2=Math.max(v1.y, v2.y);
-		
-		Rectangle r=new Rectangle((int)x1,(int)y1, (int)(x2-x1), (int)(y2-y1));
-		
-		return r;
+			double x1=Math.min(v1.x, v2.x);
+			double y1=Math.min(v1.y, v2.y);
+			double x2=Math.max(v1.x, v2.x);
+			double y2=Math.max(v1.y, v2.y);
+			
+			Rectangle r=new Rectangle((int)x1,(int)y1, (int)(x2-x1), (int)(y2-y1));
+			
+			return r;
+			}
+		else
+			return null;
 		}
 
 

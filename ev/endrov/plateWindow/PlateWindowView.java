@@ -14,24 +14,32 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector3d;
 
 import endrov.basicWindow.EvColor;
-import endrov.data.EvData;
 import endrov.data.EvPath;
+import endrov.flowMeasure.ParticleMeasure;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
-import endrov.plateWindow.Aggregation.AggregationMethod;
+import endrov.plateWindow.CalcAggregation.AggregationMethod;
+import endrov.plateWindow.scene.Scene2DHistogram;
 import endrov.plateWindow.scene.Scene2DImage;
+import endrov.plateWindow.scene.Scene2DRect;
+import endrov.plateWindow.scene.Scene2DScatter;
 import endrov.plateWindow.scene.Scene2DText;
 import endrov.plateWindow.scene.Scene2DText.Alignment;
 import endrov.plateWindow.scene.Scene2DView;
-import endrov.util.EvMathUtil;
+import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
+/**
+ * View for plates
+ * 
+ * @author Johan Henriksson
+ *
+ */
 public class PlateWindowView extends Scene2DView implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener
 	{
 	private static final long serialVersionUID = 1L;
@@ -55,18 +63,26 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	
 
 	public Map<EvPath, OneWell> wellMap=new HashMap<EvPath, OneWell>();
-	public LinkedList<Grid> grids=new LinkedList<Grid>();
+	
+	
+	private LinkedList<Grid> grids=new LinkedList<Grid>();
 	
 	/**
 	 * How to display one well
 	 */
 	public static class OneWell
 		{
-		public EvPath path;
+//		public EvPath path;
 		public int x, y;
 		
 		//image to show
 		public EvStack stack;
+		
+		public Double aggrValue;
+		
+		public LinkedList<Double> arrA, arrB;
+
+//		public int[] histogram;
 		}
 	
 
@@ -95,100 +111,220 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	private int imageMargin=10;
 	private int imageSize=100;
 
-
-
 	
-	public void setupImagePanel()
+	private static class ValueRange
 		{
+		public Double min, max;
 		
-		int numRow=10;
-		int numCol=10;
+		public void add(double v)
+			{
+			if(max==null || v>max)
+				max=v;
+			if(min==null || v<min)
+				min=v;
+			}
 		
-		
-		
-		wellMap.clear();
-		grids.clear();
-		for(int row=1;row<=numRow;row++)
-			for(int col=1;col<=numCol;col++)
-				{
-				OneWell well=new OneWell();
-				
-				
-				EvStack stack=well.stack=new EvStack();  //Displacement from here
-				stack.allocate(300, 300, 1, EvPixelsType.INT);
-				
-				int maxdim=stack.getWidth();
-				if(stack.getHeight()>maxdim)
-					maxdim=stack.getHeight();
-				
-
-				well.x=(col-1)*(imageSize+imageMargin);
-				well.y=(row-1)*(imageSize+imageMargin);
-				stack.resX=stack.resY=stack.resZ=imageSize/(double)maxdim;
-				
-				EvData data=new EvData();
-				EvPath path=new EvPath(data,"ee_"+row+"_"+col);
-				wellMap.put(path, well);
-				}
-
-		
-		Grid g=new Grid();
-		g.cols=numCol;
-		g.rows=numRow;
-		g.distance=imageSize+imageMargin;
-		grids.add(g);
+		public double rescale(double v)
+			{
+			if(max==min)
+				return 1;
+			else
+				return (v-min)/(max-min);
+			}
 		}
+
 	
-	
-		
 	/**
 	 * Take current settings of sliders and apply it to image
 	 */
 	public void layoutImagePanel()
 		{
-//		setupImagePanel();
-		
-		//Set images
+		//Update scene graph
 		clear();
 	
-		Font font=new Font("Arial", Font.PLAIN, 60);
-		
+		Font gridFont=new Font("Arial", Font.PLAIN, 60);
 		for(Grid g:grids)
 			{
 			for(int i=1;i<=g.cols;i++)
 				{
 				char c='A';
 				Scene2DText st=new Scene2DText(g.x + (i-1)*(g.distance)+50, g.y + -20, ""+(char)(c+i-1));
-				st.font = font;
+				st.font = gridFont;
 				st.alignment=Alignment.Center;
 				addElem(st);
 				}
 			for(int i=1;i<=g.rows;i++)
 				{
 				Scene2DText st=new Scene2DText(g.x + -20, g.y + (i-1)*(g.distance)+50, ""+i);
-				st.font=font;
+				st.font=gridFont;
 				st.alignment=Alignment.Right;
 				addElem(st);
 				}
 			}
 		
+		
+		//Calculate aggregate value
+		ValueRange ragg=new ValueRange();
+		ValueRange raggA=new ValueRange();
+		ValueRange raggB=new ValueRange();
+		if(!aggrMethod.equals(aggrHide) && pm!=null)
+			{
+			for(Map.Entry<EvPath, OneWell> e:wellMap.entrySet())
+				{
+				OneWell w=e.getValue();
+				EvPath path=e.getKey();
 
+				String pathString=path.toString();
+				
+				//Should probably add another level here(?)
+				Map<Integer,ParticleMeasure.ParticleInfo> mapp=pm.getFrame(EvDecimal.ZERO);
+
+				//Extract relevant particle values
+				LinkedList<Double> listA=new LinkedList<Double>();
+				LinkedList<Double> listB=new LinkedList<Double>();
+				w.arrA=listA;
+				w.arrB=listB;
+				for(ParticleMeasure.ParticleInfo pi:mapp.values())
+					{
+					String src=pi.getString("source");
+					if(src.equals(pathString))
+						{
+						listA.add(pi.getDouble(attr1));
+						listB.add(pi.getDouble(attr2));
+						}
+					}
+
+				if(aggrMethod instanceof CalcAggregation.AggregationMethod)
+					{
+					CalcAggregation.AggregationMethod am=(CalcAggregation.AggregationMethod)aggrMethod;
+					w.aggrValue=am.calc(listA, listB);
+					}
+				else
+					w.aggrValue=null;
+				}
+			
+			
+			//Normalize values
+			for(OneWell w:wellMap.values())
+				{
+				if(w.aggrValue!=null)
+					ragg.add(w.aggrValue);
+				if(w.arrA!=null)
+					for(double d:w.arrA)
+						raggA.add(d);
+				if(w.arrB!=null)
+					for(double d:w.arrB)
+						raggB.add(d);
+				}
+			for(OneWell w:wellMap.values())
+				if(w.aggrValue!=null)
+					w.aggrValue=ragg.rescale(w.aggrValue);
+			}
+		
+		
+		//Add wells to scene
 		for(OneWell w:wellMap.values())
 			{
-			Scene2DImage imp=new Scene2DImage();
-			imp.setImage(w.stack, 0);
-			imp.borderColor=EvColor.green;
+			boolean drawRect=true;
 			
-			w.stack.cs.setMidBases(new Vector3d(w.x,w.y,0), new Vector3d[]{
-					new Vector3d(1,0,0),
-					new Vector3d(0,1,0),
-					new Vector3d(0,0,1)
-					});
+			if(aggrMethod.equals(aggrHide))
+				{
+				//Show image
+				Scene2DImage imp=new Scene2DImage();
+				imp.setImage(w.stack, 0);
+				imp.borderColor=EvColor.green;
+				
+				w.stack.cs.setMidBases(new Vector3d(w.x,w.y,0), new Vector3d[]{
+						new Vector3d(1,0,0),
+						new Vector3d(0,1,0),
+						new Vector3d(0,0,1)
+						});
+				
+				imp.loadImage(); //Should totally not be available here TODO
+				
+				addElem(imp);
+				drawRect=false;
+				}
+			else if(aggrMethod instanceof CalcAggregation.AggregationMethod)
+				{
+				if(w.aggrValue!=null)
+					{
+					Scene2DRect imp=new Scene2DRect(w.x, w.y, imageSize, imageSize);
+					imp.fillColor=new EvColor("", w.aggrValue, w.aggrValue, w.aggrValue, 1);
+					addElem(imp);
+					}
+				else
+					{
+					Scene2DRect impRect=new Scene2DRect(w.x, w.y, imageSize, imageSize);
+					impRect.fillColor=new EvColor("", 1,0,0, 1);
+					addElem(impRect);
+					}
+				}
+			else if(aggrMethod.equals(aggrHistogram))
+				{
+				//Calculate histogram
+				int[] barh=null;
+				if(w.arrA!=null)
+					{
+					int numbin=w.arrA.size()/10;
+					if(numbin>50)
+						numbin=50;
+					if(numbin<5)
+						numbin=5;
+					barh=new int[numbin];
+					for(double d:w.arrA)
+						{
+						int i=(int)(barh.length*raggA.rescale(d));
+						if(i==barh.length)
+							i=barh.length-1;
+						barh[i]++;
+						}
+					for(int i=0;i<barh.length;i++)
+						barh[i]*=(double)imageSize/w.arrA.size();
+					}
+
+				//Draw histogram
+				if(barh!=null)
+					{
+					int barw=imageSize/barh.length;
+					Scene2DHistogram imp=new Scene2DHistogram(w.x, w.y+imageSize, barw, barh);
+					addElem(imp);
+					}
+				}
+			else if(aggrMethod.equals(aggrScatter))
+				{
+				int n=w.arrA.size();
+				int[] listx=new int[n];
+				int[] listy=new int[n];
+				for(int i=0;i<n;i++)
+					{
+					listx[i]=w.x + (int)(imageSize*raggA.rescale(w.arrA.get(i)));
+					listy[i]=w.y + imageSize - (int)(imageSize*raggB.rescale(w.arrB.get(i)));
+					}
+				
+				Scene2DScatter imp=new Scene2DScatter(listx, listy);
+				addElem(imp);
+				}
 			
-			imp.loadImage(); //Should totally not be avaiable here TODO
-			
-			addElem(imp);
+			if(drawRect)
+				{
+				Scene2DRect impRect=new Scene2DRect(w.x-1, w.y-1, imageSize+2, imageSize+2);
+				impRect.borderColor=new EvColor("", 1,1,1, 0.3);
+				addElem(impRect);
+				}
 			}
+
+		
+		//Figure out if camera should be updated
+		TreeSet<String> newPaths=new TreeSet<String>();
+		for(EvPath p:wellMap.keySet())
+			newPaths.add(p.toString());
+		if(!newPaths.equals(lastPaths))
+			{
+			zoomToFit();
+			lastPaths=newPaths;
+			}
+
 
 		
 /*		
@@ -485,6 +621,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		}
 
 
+	
+	private TreeSet<String> lastPaths=new TreeSet<String>();
 
 	public void layoutWells()
 		{
@@ -510,13 +648,15 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				}
 			}
 		
-
 		}
 		
 
 
 	public void addWell(EvPath p, EvChannel evChannel)
 		{
+		if(p==null)
+			throw new RuntimeException("null path");
+			
 		OneWell well=new OneWell();
 		
 		EvStack stack=well.stack=new EvStack();  //Displacement from here
@@ -586,10 +726,15 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	
 	private Object aggrMethod=aggrHide;
 	
-	public void setAggrMethod(Object o)
+	private String attr1, attr2;
+	
+	public void setAggrMethod(Object o, String attr1, String attr2)
 		{
 		aggrMethod=o;
-		repaint();
+		this.attr1=attr1;
+		this.attr2=attr2;
+//		layoutImagePanel();
+//		repaint();
 		}
 
 	/**
@@ -599,11 +744,20 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		{
 		LinkedList<Object> list=new LinkedList<Object>();
 		list.add(aggrHide);
-		for(AggregationMethod m:Aggregation.getAggrModes())
-			list.add(m);
 		list.add(aggrHistogram);
 		list.add(aggrScatter);
+		for(AggregationMethod m:CalcAggregation.getAggregationMethods())
+			list.add(m);
 		return list.toArray(new Object[0]);
+		}
+
+
+
+	private ParticleMeasure pm=null;
+	
+	public void setPM(ParticleMeasure particleMeasure)
+		{
+		pm=particleMeasure;
 		}
 
 
