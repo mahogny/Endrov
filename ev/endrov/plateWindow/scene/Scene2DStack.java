@@ -133,39 +133,10 @@ public class Scene2DStack implements Scene2DElement
 		Graphics2D g2 = (Graphics2D)g; 			
 		if(bufi!=null)
 			{
-//			System.out.println("drawing raster");
-			//Calculate translation and zoom of image
-			//Vector2d trans=transformI2S(p,stack,new Vector2d(stack.dispX, stack.dispY));
-			Vector2d trans=transformI2S(p,stack,new Vector2d(0, 0));
 
-			
-			double scaleX=p.zoom*stack.resX;
-			double scaleY=p.zoom*stack.resY;
-			
-			g2.translate(trans.x,trans.y);
-			g2.scale(scaleX,scaleY);  
-			g2.rotate(p.rotation);
-			
+			g2.scale(stack.resX, stack.resY);  
 			g2.drawImage(bufi, null, 0, 0);
-			
-			g2.rotate(-p.rotation);
-			g2.scale(1/scaleX,1/scaleY); 
-			g2.translate(-trans.x,-trans.y);
-			
-			
-			/*
-			Vector2d v1=p.transformPointW2S(new Vector2d(0,0));
-			Vector2d v2=p.transformPointW2S(new Vector2d(100,0));
-			Vector2d v3=p.transformPointW2S(new Vector2d(0,100));
-			
-			g2.setColor(Color.RED);
-			g2.drawLine((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y);
-			g2.drawLine((int)v1.x, (int)v1.y, (int)v3.x, (int)v3.y); 
-			
-			*/
-//				stack.cs.transformToWorld(v)
-
-
+			g2.scale(1.0/stack.resX, 1.0/stack.resY);  
 			} 
 		
 		if(borderColor!=null && stack!=null)
@@ -325,6 +296,7 @@ public class Scene2DStack implements Scene2DElement
 	/**
 	 * Zoom image to fit panel
 	 */
+	/*
 	public void zoomToFit(Scene2DView p)
 		{
 		int w=stack.getWidth();
@@ -341,5 +313,5 @@ public class Scene2DStack implements Scene2DElement
 		p.transX-=(int)mid.x/p.zoom;
 		p.transY-=(int)mid.y/p.zoom;
 		}
-	
+	*/
 	}

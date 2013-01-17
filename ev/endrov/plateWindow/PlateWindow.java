@@ -44,9 +44,7 @@ import endrov.util.SnapBackSlider;
  *
  * @author Johan Henriksson
  */
-public class PlateWindow extends BasicWindow 
-implements ChangeListener, ActionListener
-			
+public class PlateWindow extends BasicWindow implements ChangeListener, ActionListener
 	{	
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -70,7 +68,7 @@ implements ChangeListener, ActionListener
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-	EvComboObject comboData=new EvComboObject(new LinkedList<EvObject>(), true, true)
+	private final EvComboObject comboData=new EvComboObject(new LinkedList<EvObject>(), true, true)
 		{
 		private static final long serialVersionUID = 1L;
 		public boolean includeObject(EvContainer cont)
@@ -78,8 +76,8 @@ implements ChangeListener, ActionListener
 			return true;
 			}
 		};
-	EvComboObjectOne<ParticleMeasure> comboFeature=new EvComboObjectOne<ParticleMeasure>(new ParticleMeasure(), true, true);
-	EvComboObjectOne<Flow> comboFlow=new EvComboObjectOne<Flow>(new Flow(), true, true);
+	private final EvComboObjectOne<ParticleMeasure> comboFeature=new EvComboObjectOne<ParticleMeasure>(new ParticleMeasure(), true, true);
+	private final EvComboObjectOne<Flow> comboFlow=new EvComboObjectOne<Flow>(new Flow(), true, true);
 	private JComboBox comboAttribute1=new JComboBox();
 	private JComboBox comboAttribute2=new JComboBox();
 	private JComboBox comboChannel=new JComboBox();
@@ -102,6 +100,8 @@ implements ChangeListener, ActionListener
 	
 	public PlateWindow(Rectangle bounds)
 		{
+		cw.updatePanelContrastBrightness();
+		
 		//Add listeners
 		comboData.addActionListener(this);
 		comboFeature.addActionListener(this);
@@ -110,26 +110,14 @@ implements ChangeListener, ActionListener
 		comboAttribute1.addActionListener(this);
 		comboAttribute2.addActionListener(this);
 		comboChannel.addActionListener(this);
-		
-		
-		/*
-		sliderZoom2.addSnapListener(new SnapChangeListener(){
-			public void slideChange(SnapBackSlider source, int change){zoom(change/50.0);}
-		});
-*/		
-		
-				
-//		attachDragAndDrop(imagePanel);
-		
-		//Window overall things
+
 		
 		addMenubar(menuPlateWindow);
 
 		//TODO right-click "open in image window"
 
-		
+		//Do the main layout
 		setLayout(new BorderLayout());
-
 		add(EvSwingUtil.layoutLCR(
 				null, 
 				imagePanel, 
@@ -158,13 +146,15 @@ implements ChangeListener, ActionListener
 						bExport
 						)),
 				BorderLayout.CENTER);
-		
 		add(
-				EvSwingUtil.layoutCompactHorizontal(
+				EvSwingUtil.layoutLCR(
 					frameControl,
-					cw),
+					cw,
+					null),
 				BorderLayout.SOUTH);
-				
+
+		//Misc
+		attachDragAndDrop(imagePanel);
 		packEvWindow();
 		frameControl.setFrame(EvDecimal.ZERO);
 		setBoundsEvWindow(bounds);
@@ -194,7 +184,7 @@ implements ChangeListener, ActionListener
 	 */
 	public double getZoom()
 		{
-		return imagePanel.zoom;
+		return imagePanel.getZoom();
 		}
 	
 	/**
@@ -202,19 +192,18 @@ implements ChangeListener, ActionListener
 	 */
 	public void setZoom(double zoom)
 		{
-		imagePanel.zoom=zoom;
-		repaint();
+		imagePanel.setZoom(zoom);
 		}
 	
 	/** Get rotation of image, in radians */
 	public double getRotation()
 		{
-		return imagePanel.rotation;
+		return imagePanel.getRotation();
 		}
 	/** Set rotation of image, in radians */
 	public void setRotation(double angle)
 		{
-		imagePanel.rotation=angle;
+		imagePanel.setRotation(angle);
 		}
 
 	
@@ -226,12 +215,9 @@ implements ChangeListener, ActionListener
 		{
 		static final long serialVersionUID=0;
 		
-//		private final EvComboChannel comboChannel=new EvComboChannel(false,false);
-		
 		private final SnapBackSlider sliderContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -10000,10000);
 		private final SnapBackSlider sliderBrightness=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -200,200);
 		
-//		private final EvComboColor comboColor=new EvComboColor(false, channelColorList, EvColor.white);
 		private final JImageButton bFitRange=new JImageButton(iconLabelFitRange,"Fit range");
 		
 		
@@ -280,7 +266,7 @@ implements ChangeListener, ActionListener
 
 		
 		private double brightness=0;
-		private double contrast=1;
+		private double contrast=0.1;
 
 		public void slideChange(SnapBackSlider source, int change)
 			{
@@ -292,9 +278,13 @@ implements ChangeListener, ActionListener
 				{
 				contrast*=Math.pow(2,change/1000.0);
 				}
-			imagePanel.layoutImagePanel();
+			updatePanelContrastBrightness();
 			}
 	
+		public void updatePanelContrastBrightness()
+			{
+			imagePanel.setContrastBrightness(contrast, brightness);
+			}
 		
 		public void actionPerformed(ActionEvent e)
 			{
@@ -327,39 +317,12 @@ implements ChangeListener, ActionListener
 			{
 			imagePanel.layoutImagePanel();
 			}	
-		
-		public double getContrast()
-			{
-			return contrast;
-			}
-		
-		public double getBrightness()
-			{
-			return brightness;
-			}
-		/*
-		public EvColor getColor()
-			{
-			return comboColor.getEvColor();
-			}
-		*/
-		
-		/**
-		 * Get channel, or null in case it fails (data outdated, or similar)
-		 */
-		/*
-		public EvChannel getChannel()
-			{
-			return comboChannel.getSelectedObject();
-			}
-*/
 
 		public void resetSettings()
 			{
 			brightness=1;
 			contrast=1;
 			}
-		
 		}	
 
 
@@ -390,7 +353,7 @@ implements ChangeListener, ActionListener
 			comboFeature.updateList();
 			comboFlow.updateList();
 
-			updateAvailableWells();
+			updateWells();
 			
 
 			List<String> alist=getAttributes();
@@ -411,25 +374,24 @@ implements ChangeListener, ActionListener
 
 	
 	/**
-	 * Update which wells exist
+	 * Update which wells exist, and their content
 	 */
-	public void updateAvailableWells()
+	public void updateWells()
 		{
 		imagePanel.wellMap.clear();
 		EvContainer con=comboData.getSelectedObject();
 
-		imagePanel.setPM(getParticleMeasure());
+		imagePanel.setParticleMeasure(getParticleMeasure());
 		imagePanel.setAggrMethod(comboAggregation.getSelectedItem(), 
 				(String)comboAttribute1.getSelectedItem(),
 				(String)comboAttribute2.getSelectedItem());
 		
-		
+		//TODO different channel, z, time etc?
 		
 		if(con!=null)
 			{
 			Map<EvPath, EvChannel> m=con.getIdObjectsRecursive(EvChannel.class);
 			
-			TreeSet<EvPath> wellPaths=new TreeSet<EvPath>();
 
 			//Update channel combo
 			TreeSet<String> chans=new TreeSet<String>();
@@ -443,7 +405,7 @@ implements ChangeListener, ActionListener
 			String curChannel=(String)comboChannel.getSelectedItem();
 			if(curChannel==null)
 				curChannel="";
-			
+			TreeSet<EvPath> wellPaths=new TreeSet<EvPath>();
 			for(EvPath p:m.keySet())
 				{
 				String ch=p.getLeafName();
@@ -454,9 +416,6 @@ implements ChangeListener, ActionListener
 					imagePanel.addWell(path, m.get(p));
 					}
 				}
-
-
-			
 			}
 		
 
@@ -563,7 +522,10 @@ implements ChangeListener, ActionListener
 			}
 		}
 
-	public void freeResources(){}
+	public void freeResources()
+		{
+		imagePanel.freeResources();
+		}
 	
 		
 
@@ -587,16 +549,21 @@ implements ChangeListener, ActionListener
 	public void setFrame(EvDecimal frame)
 		{
 		frameControl.setFrame(frame);
+		updateImagePanelFrameZ();
 		}
 
 
 	public void setZ(EvDecimal z)
 		{
 		frameControl.setZ(z);
+		updateImagePanelFrameZ();
 		}
 
 	
-
+	public void updateImagePanelFrameZ()
+		{
+		imagePanel.setFrameZ(getFrame(), getZ());
+		}
 	
 	
 	
@@ -687,7 +654,7 @@ implements ChangeListener, ActionListener
 					}
 				});
 		
-		EV.personalConfigLoaders.put("imagewindow",new PersonalConfig()
+		EV.personalConfigLoaders.put("platewindow",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
 				{
@@ -695,7 +662,6 @@ implements ChangeListener, ActionListener
 					{
 					PlateWindow win=new PlateWindow(BasicWindow.getXMLbounds(e));
 					win.frameControl.setGroup(e.getAttribute("group").getIntValue());
-					//win.channelWidget.get(0).comboChannel.lastSelectChannel=e.getAttributeValue("lastSelectChannel");
 					}
 				catch (Exception e1){e1.printStackTrace();}
 				}

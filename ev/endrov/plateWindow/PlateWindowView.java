@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.swing.SwingUtilities;
@@ -21,6 +22,7 @@ import endrov.basicWindow.EvColor;
 import endrov.data.EvPath;
 import endrov.flowMeasure.ParticleMeasure;
 import endrov.imageset.EvChannel;
+import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imglib.evop.EvOpScaleImage;
@@ -48,7 +50,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	/**
 	 * How to display one well
 	 */
-	public static class OneWell
+	public class OneWell
 		{
 		public int x, y;
 		public Double aggrValue;
@@ -56,6 +58,16 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		public EvPixels pixels;
 		public EvChannel evChannel;
 		public Scene2DImage imp;
+		
+		public void invalidate()
+			{
+			imp=null;
+			pixels=null;
+			synchronized (imageThreadLock)
+				{
+				imageThreadLock.notifyAll();
+				}
+			}
 		}
 
 	/**
@@ -72,13 +84,19 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	
 	public class WellImageLoader extends Thread
 		{
-		public LinkedList<WeakReference<OneWell>> queue=new LinkedList<WeakReference<OneWell>>();
+//		public LinkedList<WeakReference<OneWell>> queue=new LinkedList<WeakReference<OneWell>>();
+
 		
 		@Override
 		public void run()
 			{
 			for(;;)
 				{
+				OneWell w=getWellImageToLoad();
+				if(w==null)
+					return;
+				loadImage(w);
+/*
 				while(!queue.isEmpty())
 					{
 					OneWell w;
@@ -90,26 +108,18 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 					if(w!=null)
 						loadImage(w);
 					}
-				
-				try
-					{
-					Thread.sleep(100);
-					//TODO fix!
-					}
-				catch (InterruptedException e)
-					{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					}
-
+*/
 				}			
 			}
-		
+
+		/**
+		 * Get the pixel data from the data source
+		 */
 		public void loadImage(OneWell w)
 			{
 			if(w.pixels==null)
 				{
-				EvDecimal closestFrame=w.evChannel.closestFrame(EvDecimal.ZERO);
+				EvDecimal closestFrame=w.evChannel.closestFrame(currentFrame);
 				
 				EvStack stack=w.evChannel.getStack(closestFrame);
 				if(stack!=null)
@@ -117,34 +127,31 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 					int pixwidth=200;
 					double scaleFactor=pixwidth/(double)stack.getWidth();
 					
-					stack=new EvOpScaleImage(scaleFactor, scaleFactor).exec1(null, stack);
-					
-					EvPixels pixels=stack.getInt(0).getPixels();
-//					System.out.println("arr :"+w.pixels.getArrayFloat()[0]);
-					
+					int z=currentZ;
+					if(z>=stack.getDepth())
+						z=stack.getDepth()-1;
+						
+					//Fetch image from channel
+					stack=new EvOpScaleImage(scaleFactor, scaleFactor).exec1(null, stack);  //TODO no reason to scale all stack
+					EvImage evim=stack.getInt(z);
+					EvPixels pixels=evim.getPixels();
 					w.pixels=pixels;
 
+					//Set up scene element
 					Scene2DImage imp=new Scene2DImage();
 					imp.pixels=w.pixels;
-					imp.borderColor=EvColor.green;
-					imp.contrast=contrast;
-					imp.brightness=brightness;
+					//imp.borderColor=EvColor.green;
+					setContrastBrightness(imp);
 					imp.resX=imageSize/(double)w.pixels.getWidth();
 					imp.resY=imageSize/(double)w.pixels.getHeight();
 					imp.prepareImage();
-
-					w.imp=imp;
+					w.imp=imp; //This should be done last
 					
-					//Specify z!
-					
-					//TODO contrast brightness here?
-
 					try
 						{
 						SwingUtilities.invokeAndWait(new Runnable(){
 							public void run()
 								{
-								System.out.println("new image!");
 								layoutImagePanel();                //This does way more work than needed(?)
 								}
 						
@@ -160,21 +167,22 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 						}
-					System.out.println("end update");
 					}
 
 				}
 			}
-		
+		/*
 		public void addWell(OneWell w)
 			{
 			synchronized (queue)
 				{
 				queue.addLast(new WeakReference<PlateWindowView.OneWell>(w));
 				}
-			}
+			}*/
 		
 		}
+
+	
 
 	
 	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */
@@ -188,13 +196,22 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	public boolean mouseInWindow=false;
 
 
-	
+	private ParticleMeasure pm=null;
+	public Map<EvPath, OneWell> wellMap=new TreeMap<EvPath, OneWell>();
+	private LinkedList<Grid> grids=new LinkedList<Grid>();
 	
 	private WellImageLoader imageLoaderThread=new WellImageLoader();	
-	public Map<EvPath, OneWell> wellMap=new HashMap<EvPath, OneWell>();
-	private LinkedList<Grid> grids=new LinkedList<Grid>();
-	public double contrast=0.1, brightness=0;
-	
+	private TreeSet<String> lastWellPaths=new TreeSet<String>();
+
+	private double contrast=1, brightness=0;
+	private int imageMargin=10;
+	private int imageSize=100;
+	private EvDecimal currentFrame=EvDecimal.ZERO;
+	private int currentZ=0;
+			
+	/**
+	 * Construct panel
+	 */
 	public PlateWindowView()
 		{
 		//Attach listeners
@@ -206,8 +223,6 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		imageLoaderThread.start();
 		}
 
-	private int imageMargin=10;
-	private int imageSize=100;
 
 	
 	private static class ValueRange
@@ -321,7 +336,6 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		
 		
 		//Add wells to scene
-		System.out.println("----");
 		for(OneWell w:wellMap.values())
 			{
 			boolean drawRect=true;
@@ -334,7 +348,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				EvPixels pixels=new EvPixels(EvPixelsType.DOUBLE, 1, 1);
 				double[] v=pixels.getArrayDouble();
 				v[0]=Math.random()*255;
-*/
+				 */
 				
 				if(w.imp!=null)
 					{
@@ -342,27 +356,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 					imp.x=w.x;
 					imp.y=w.y;
 					addElem(imp);
-					System.out.println("img");
 					drawRect=false;				
 					}
-
-				
-				
-				
-/*				
-				imp.setImage(w.stack, 0);
-				imp.borderColor=EvColor.green;
-				
-				w.stack.cs.setMidBases(new Vector3d(w.x,w.y,0), new Vector3d[]{
-						new Vector3d(1,0,0),
-						new Vector3d(0,1,0),
-						new Vector3d(0,0,1)
-						});
-				
-				imp.loadImage(); //Should totally not be available here TODO
-				
-				addElem(imp);
-				*/
 				}
 			else if(aggrMethod instanceof CalcAggregation.AggregationMethod)
 				{
@@ -438,158 +433,15 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		TreeSet<String> newPaths=new TreeSet<String>();
 		for(EvPath p:wellMap.keySet())
 			newPaths.add(p.toString());
-		if(!newPaths.equals(lastPaths))
+		if(!newPaths.equals(lastWellPaths))
 			{
 			zoomToFit();
-			lastPaths=newPaths;
+			lastWellPaths=newPaths;
 			}
 
 
-		
-/*		
-		
-		
-
-		
-	
-		EvChannel ch=cw.getChannel();
-		
-		
-		//Imageset rec2=cw.comboChannel.getImageset();
-		//String chname=cw.comboChannel.getChannelName();
-		if(ch!=null)
-		//if(rec2!=null && chname!=null)
-			{
-			//EvChannel ch=rec2.getChannel(chname);
-			
-			
-			ImageLayoutView.ImagePanelImage pi=new ImageLayoutView.ImagePanelImage();
-			pi.brightness=cw.getBrightness();//cw.sliderBrightness.getValue();
-			pi.contrast=cw.getContrast();//Math.pow(2,cw.sliderContrast.getValue()/1000.0);
-			pi.color=EvColor.white;
-			
-			EvDecimal frame=frameControl.getFrame();
-			EvDecimal z=frameControl.getZ();
-			frame=ch.closestFrame(frame);
-			
-			EvStack stack=ch.getStack(new ProgressHandle(), frame);
-			
-			//System.out.println("---- got stack "+stack);
-			
-			if(stack==null)
-				pi.setImage(null,0);
-			else
-				{
-				int closestZ=stack.closestZint(z.doubleValue());
-				//System.out.println("----closest z: "+closestZ+"   depth:"+stack.getDepth());
-				if(closestZ!=-1)
-					{
-					EvImage evim=stack.getInt(closestZ);
-					//System.out.println("--- got stack 2: "+evim+"   "+evim.getPixels(null));
-					
-					if(evim!=null)
-						pi.setImage(stack,closestZ);
-					else
-						{
-						System.out.println("Image was null. ch:"+cw.getChannelName());
-						}
-					}
-				else
-					System.out.println("--z=-1 for ch:"+cw.getChannelName());
-				}
-			images.add(pi);
-			}
-
-		*/
-//		invalidateImages();
 		repaint();
-//		repaintImagePanel();
 		}
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/** 
-	 * Scale screen vector to world vector 
-	 */
-	/*
-	public double scaleS2w(double s)
-		{
-		return scaleS2w(s);
-		}
-	*/
-	/**
-	 * Scale world to screen vector 
-	 */
-	/*
-	public double scaleW2s(double w) 
-		{
-		return scaleW2s(w);
-		}
-*/
-
-	
-	//New functions, should replace the ones above at some point
-
-	/** Transform world coordinate to screen coordinate */
-	/*
-	public Vector2d transformPointW2S(Vector2d u)
-		{
-		return super.transformPointW2S(u);
-		}*/
-		
-	/** 
-	 * Transform screen coordinate to world coordinate 
-	 * NOTE: This means panning is not included! 
-	 */
-	/*
-	public Vector2d transformPointS2W(Vector2d u)
-		{
-		return transformPointS2W(u);
-		}
-		*/
-
-	/**
-	 * Transform screen vector to world vector.
-	 * NOTE: This means panning is not included! 
-	 * 
-	 */
-	/*
-	public Vector2d transformVectorS2W(Vector2d u)
-		{
-		return transformVectorS2W(u);
-		}
-*/
-	
-	/** Convert world to screen Z coordinate */
-	/*
-	public double w2sz(double z)
-		{
-		return z;
-		}
-	*/
-	/** Convert world to screen Z coordinate */
-	/*
-	public double s2wz(double sz) 
-		{
-		return sz;
-		} 
-*/
-	
-	
-	
 
 	
 	/**
@@ -688,13 +540,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		mouseLastDragX=e.getX();
 		mouseLastDragY=e.getY();
 		if(SwingUtilities.isRightMouseButton(e))
-			{
 			pan(dx,dy);
-			repaintImagePanel();
-			}
-
-//		if(currentTool!=null)
-	//		currentTool.mouseDragged(e,dx,dy);
 		}
 	/**
 	 * Callback: Mouse scrolls
@@ -714,35 +560,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		zoom(Math.pow(10,val/10));
 		}
 	
-	/**
-	 * Update, but assume images are still ok
-	 */
-	public void repaintImagePanel()
-		{				
-		//Check if recenter needed
-		boolean zoomToFit=false;
-		
-		//Show new image
-		repaint();
-
-		if(zoomToFit)
-			{
-			zoomToFit();
-			}
-
-//		updateWindowTitle();
-		}
 
 	
-	public void zoomToFit()
-		{
-		super.zoomToFit();
-		zoom(0.8);
-		}
-
-
-	
-	private TreeSet<String> lastPaths=new TreeSet<String>();
 
 	public void layoutWells()
 		{
@@ -772,6 +591,32 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		
 
 		
+	private boolean imageThreadClose=false;
+	private Object imageThreadLock=new Object();
+	
+	private OneWell getWellImageToLoad()
+		{
+		synchronized (imageThreadLock)
+			{
+			if(imageThreadClose)
+				return null;
+			for(;;)
+				{
+				for(OneWell w:wellMap.values())
+					if(w.imp==null || w.imp.pixels==null)
+						return w;
+				try
+					{
+					imageThreadLock.wait();
+					}
+				catch (InterruptedException e)
+					{
+					e.printStackTrace();
+					}
+				}
+			}
+		}
+
 	
 	public void addWell(EvPath p, EvChannel evChannel)
 		{
@@ -783,7 +628,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		well.evChannel=evChannel; //TODO baaaad!
 
 		
-		imageLoaderThread.addWell(well);
+		//imageLoaderThread.addWell(well);
 		
 				
 				
@@ -793,7 +638,11 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			maxdim=stack.getHeight();
 		stack.resX=stack.resY=stack.resZ=imageSize/(double)maxdim;
 */
-		wellMap.put(p, well);
+		synchronized (imageThreadLock)
+			{
+			wellMap.put(p, well);
+			imageThreadLock.notifyAll();
+			}
 		}
 
 	
@@ -889,15 +738,48 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 
 
 
-	private ParticleMeasure pm=null;
 	
-	public void setPM(ParticleMeasure particleMeasure)
+	public void setParticleMeasure(ParticleMeasure particleMeasure)
 		{
 		pm=particleMeasure;
 		}
 
+	public void setContrastBrightness(double contrast, double brightness)
+		{
+		this.contrast=contrast;
+		this.brightness=brightness;
+		
+		//Invalidate all pixels
+		for(OneWell w:wellMap.values())
+			if(w.imp!=null)
+				setContrastBrightness(w.imp);
+		
+		repaint();
+		}
 
 
+	private void setContrastBrightness(Scene2DImage imp)
+		{
+		imp.setContrastBrightness(contrast, brightness);
+		}
+
+
+	
+	public void setFrameZ(EvDecimal frame, EvDecimal z)
+		{
+		for(OneWell w:wellMap.values())
+			w.invalidate();
+		
+		}
+
+
+	public void freeResources()
+		{
+		imageThreadClose=true;
+		imageThreadLock.notifyAll();
+		}
+
+	
 	
 	
 	

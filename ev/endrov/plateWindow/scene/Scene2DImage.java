@@ -40,15 +40,12 @@ public class Scene2DImage implements Scene2DElement
 	
 	public BufferedImage applyIntensityTransform(EvPixels p)
 		{
-//		System.out.println("here4");
 		double contrastR=contrast*color.getRedDouble();
 		double contrastG=contrast*color.getGreenDouble();
 		double contrastB=contrast*color.getBlueDouble();
 		
-	//	System.out.println("here5");
 		int w=p.getWidth();
 		int h=p.getHeight();
-	//	System.out.println("---"+w+" "+h);			
 		double[] aPixels=p.convertToDouble(true).getArrayDouble();
 		BufferedImage buf=new BufferedImage(w,h,BufferedImage.TYPE_3BYTE_BGR);
 		
@@ -62,7 +59,6 @@ public class Scene2DImage implements Scene2DElement
 			outarr[i*3+0]=r;
 			outarr[i*3+1]=g;
 			outarr[i*3+2]=b;
-//				System.out.println("   "+r+" "+g+" "+b);
 			}
 
 		buf.getRaster().setDataElements(0, 0, w, h, outarr);
@@ -101,76 +97,45 @@ public class Scene2DImage implements Scene2DElement
 		}
 	
 	
-	
+
 	public void paintComponent(Graphics g, Scene2DView p)
 		{
 		Graphics2D g2 = (Graphics2D)g; 			
 		prepareImage(); 
-		
+
+
+		g2.translate(x,y);
+		g2.scale(resX, resY);  
+
+
 		if(bufi!=null)
 			{
-//			System.out.println("drawing raster");
-			//Calculate translation and zoom of image
-			//Vector2d trans=transformI2S(p,stack,new Vector2d(stack.dispX, stack.dispY));
-			Vector2d trans=transformI2S(p,new Vector2d(0, 0));
-
-			
-			double scaleX=p.zoom*resX;
-			double scaleY=p.zoom*resY;
-			
-			g2.translate(trans.x,trans.y);
-			g2.scale(scaleX,scaleY);  
-			g2.rotate(p.rotation);
-			
 			g2.drawImage(bufi, null, 0, 0);
-			
-			g2.rotate(-p.rotation);
-			g2.scale(1/scaleX,1/scaleY); 
-			g2.translate(-trans.x,-trans.y);
-			
-			
-			/*
-			Vector2d v1=p.transformPointW2S(new Vector2d(0,0));
-			Vector2d v2=p.transformPointW2S(new Vector2d(100,0));
-			Vector2d v3=p.transformPointW2S(new Vector2d(0,100));
-			
-			g2.setColor(Color.RED);
-			g2.drawLine((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y);
-			g2.drawLine((int)v1.x, (int)v1.y, (int)v3.x, (int)v3.y); 
-			
-			*/
-//				stack.cs.transformToWorld(v)
+			}
 
-
-			} 
-		
-		if(borderColor!=null && pixels!=null)
+		if(borderColor!=null)
 			{
 			int w=pixels.getWidth();
 			int h=pixels.getHeight();
-			
+
 			//Reference area. This is what the transform decides on; the image above should be in it
 			g2.setColor(borderColor.getAWTColor()); //No displacement
-			//actually already displaced. red is double-displaced
-			Vector2d u1=transformI2S(p,new Vector2d(0,0));
-			Vector2d u2=transformI2S(p,new Vector2d(w,0));
-			Vector2d u3=transformI2S(p,new Vector2d(0,h));
-			Vector2d u4=transformI2S(p,new Vector2d(w,h));
-			g2.drawLine((int)u1.x, (int)u1.y, (int)u2.x, (int)u2.y);
-			g2.drawLine((int)u3.x, (int)u3.y, (int)u4.x, (int)u4.y);
-			g2.drawLine((int)u1.x, (int)u1.y, (int)u3.x, (int)u3.y);
-			g2.drawLine((int)u2.x, (int)u2.y, (int)u4.x, (int)u4.y);
+			g2.drawRect(0, 0, w, h);
 			}
 
-		
+
+
+		g2.scale(1.0/resX, 1.0/resY);  
+		g2.translate(-x,-y);
+
 		}
-	
-	
+
+
 	public Vector2d transformImageWorld(Vector2d u)
 		{
 		return new Vector2d(u.x*resX+x, u.y*resY+y);
 		}
-	
+
 	public Vector2d transformWorldImage(Vector2d u)
 		{
 		return new Vector2d((u.x-x)/resX, (u.y-y)/resY);
@@ -308,7 +273,9 @@ public class Scene2DImage implements Scene2DElement
 
 	/**
 	 * Zoom image to fit panel
+	 *
 	 */
+	/*
 	public void zoomToFit(Scene2DView p)
 		{
 		int w=pixels.getWidth();
@@ -325,5 +292,24 @@ public class Scene2DImage implements Scene2DElement
 		p.transX-=(int)mid.x/p.zoom;
 		p.transY-=(int)mid.y/p.zoom;
 		}
+
+*/
+
+	private void invalidate()
+		{
+		bufi=null;
+		}
+
+
+
+	public void setContrastBrightness(double contrast, double brightness)
+		{
+		this.contrast=contrast;
+		this.brightness=brightness;
+		invalidate();
+		}
+
+
+
 	
 	}
