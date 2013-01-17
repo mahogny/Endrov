@@ -20,8 +20,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import endrov.recording.RecordingResource;
+import endrov.recording.StoredStagePosition;
 import endrov.recording.RecordingResource.PositionListListener;
-import endrov.recording.positionsWindow.Position;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -56,7 +56,7 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 	
 	public RecSettingsPositions getSettings()
 		{
-		RecSettingsPositions settings=new RecSettingsPositions(getPositions());
+		RecSettingsPositions settings=new RecSettingsPositions(getPositions(),cbAutofocus.isSelected());
 		return settings;
 		}
 	
@@ -143,18 +143,18 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 		listModelAdded.clear();
 		listModelAvailable.clear();
 		
-		for(Position pos:RecordingResource.posList)
+		for(StoredStagePosition pos:RecordingResource.posList)
 			if(lastAddedObjects.contains(pos))
 				listModelAdded.addElement(pos);
 			else
 				listModelAvailable.addElement(pos);
 		}
 	
-	public LinkedList<Position> getPositions()
+	public LinkedList<StoredStagePosition> getPositions()
 		{
-		LinkedList<Position> positions = new LinkedList<Position>();
+		LinkedList<StoredStagePosition> positions = new LinkedList<StoredStagePosition>();
 		for (int i = 0; i<listModelAdded.size(); i++)
-			positions.add((Position) listModelAdded.get(i));
+			positions.add((StoredStagePosition) listModelAdded.get(i));
 		return positions;
 		}
 	

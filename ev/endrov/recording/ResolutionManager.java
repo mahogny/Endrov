@@ -7,7 +7,6 @@ import java.util.Set;
 
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardwareConfigGroup;
-import endrov.recording.device.HWCamera;
 
 /**
  * Resolution handling
@@ -43,15 +42,25 @@ public class ResolutionManager
 		}
 
 	
-	public static Map<HWCamera,Map<String,ResolutionState>> resolutions=new HashMap<HWCamera, Map<String,ResolutionState>>();
 	
+	
+	
+	
+	/**
+	 * Map of all resolutions. CameraPath -> NameOfState -> State
+	 * 
+	 * Here the camera is the index, which makes sense from an endrov point of view. micromanager would rather have a state for current camera
+	 * but this would reduce the multiplexing capability 
+	 */
+	public static Map<EvDevicePath,Map<String,ResolutionState>> resolutions=new HashMap<EvDevicePath, Map<String,ResolutionState>>();
+	//public static Map<HWCamera,Map<String,ResolutionState>> resolutions=new HashMap<HWCamera, Map<String,ResolutionState>>();
 	
 	
 	public static Map<String,ResolutionState> getCreateResolutionStatesMap(EvDevicePath camera)
 		{
 		Map<String,ResolutionState> map=resolutions.get(camera.getDevice());
 		if(map==null)
-			resolutions.put((HWCamera) camera.getDevice(), map=new HashMap<String, ResolutionState>());
+			resolutions.put(camera, map=new HashMap<String, ResolutionState>());
 		return map;
 		}
 	
@@ -61,9 +70,9 @@ public class ResolutionManager
 	 */
 	public static ResolutionState getCurrentResolutionState(EvDevicePath camera)
 		{
-
+		if(camera==null)
+			return null;
 		Map<String,ResolutionState> rmap=resolutions.get(camera.getDevice());	
-		
 		if(rmap==null)
 			return null;
 
@@ -79,6 +88,8 @@ public class ResolutionManager
 	 */
 	public static Resolution getCurrentResolution(EvDevicePath camera)
 		{
+		if(camera==null)
+			return null;
 		ResolutionState state=getCurrentResolutionState(camera);
 		if(state!=null)
 			return state.cameraRes;
@@ -100,13 +111,15 @@ public class ResolutionManager
 	
 	
 	
-
+	/**
+	 * Find an unused name of a resolution
+	 */
 	public static String getUnusedResName(EvDevicePath campath)
 		{
-	// Find all names in use
+		// Find all names in use
 		Set<String> usedNames = new HashSet<String>();
-		for (HWCamera cam2 : ResolutionManager.resolutions.keySet())
-			usedNames.addAll(ResolutionManager.resolutions.get(cam2).keySet());
+		for (EvDevicePath p : ResolutionManager.resolutions.keySet())
+			usedNames.addAll(ResolutionManager.resolutions.get(p).keySet());
 
 		// Generate an unused name
 		String name;

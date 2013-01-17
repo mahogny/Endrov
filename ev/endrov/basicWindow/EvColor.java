@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -20,8 +21,10 @@ import javax.swing.JMenuItem;
  * Colors for EV. They come with a name unlike AWT colors.
  * @author Johan Henriksson
  */
-public class EvColor
+public class EvColor implements Serializable
 	{
+	private static final long serialVersionUID = 1L;
+	
 	public static EvColor black=new EvColor("Black",new Color(0,0,0));
 	public static EvColor white=new EvColor("White",new Color(255,255,255));
 	public static EvColor red=new EvColor("Red",new Color(255,0,0));

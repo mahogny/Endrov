@@ -33,7 +33,7 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 
 	private final ImageWindow w;
 
-	private final JMenuItem miRemoveChannel=new JMenuItem("Channel");
+	//private final JMenuItem miRemoveChannel=new JMenuItem("Channel");
 	private final JMenuItem miRemoveFrame=new JMenuItem("Frame");
 
 	
@@ -46,11 +46,11 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 		{
 		//Create menus
 		BasicWindow.addMenuItemSorted(miRemove, miRemove);
-		BasicWindow.addMenuItemSorted(miRemove, miRemoveChannel);
+//		BasicWindow.addMenuItemSorted(miRemove, miRemoveChannel);
 		BasicWindow.addMenuItemSorted(miRemove, miRemoveFrame);
 
 		//Add listeners
-		miRemoveChannel.addActionListener(this);
+	//	miRemoveChannel.addActionListener(this);
 		miRemoveFrame.addActionListener(this);
 		
 		return miRemove;
@@ -58,23 +58,7 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 	
 	public void actionPerformed(ActionEvent e)
 		{
-		
-		if(e.getSource()==miRemoveChannel)
-			{
-			final String ch=w.getCurrentChannelName();
-			if(JOptionPane.showConfirmDialog(null, "Do you really want to remove (channel "+ch+")? This can not be undone","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
-				{
-				new UndoOpNone("Remove channel")
-					{
-					public void redo()
-						{
-						w.getImageset().removeChannel(ch);
-						BasicWindow.updateWindows();
-						}
-					}.execute();
-				}
-			}
-		else if(e.getSource()==miRemoveFrame)
+		if(e.getSource()==miRemoveFrame)
 			{ 
 			final String ch=w.getCurrentChannelName();
 			final EvDecimal frame=w.getFrame();
@@ -85,7 +69,7 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 					{
 					public void redo()
 						{
-						w.getImageset().getChannel(ch).removeStack(frame);
+						w.getCurrentChannel().removeStack(frame);
 						BasicWindow.updateWindows();
 						}
 					}.execute();

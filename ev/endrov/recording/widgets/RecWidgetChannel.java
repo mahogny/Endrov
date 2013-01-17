@@ -181,6 +181,7 @@ public class RecWidgetChannel extends JPanel implements ActionListener
 			c.gridx++;
 			
 			//// For this, and other fancy options, might want a drop-down or something?
+			/*
 			if(i==-1)
 				{
 				JLabel lab=new JLabel("LC ");
@@ -189,6 +190,8 @@ public class RecWidgetChannel extends JPanel implements ActionListener
 				}
 			else p.add(row.chLightCompensate,c);
 			c.gridx++;
+			*/
+			
 			
 			if(i==-1)
 				{
@@ -246,10 +249,12 @@ public class RecWidgetChannel extends JPanel implements ActionListener
 	/**
 	 * Get channel settings
 	 */
-	public RecSettingsChannel getSettings()
+	public RecSettingsChannel getSettings() throws Exception
 		{
 		RecSettingsChannel settings=new RecSettingsChannel();
 		settings.configGroup=cConfigGroup.getConfigGroupName();
+		if(settings.configGroup==null)// settings.configGroup.equals(""))
+			throw new Exception("No config group specified");
 		for(OneChannelWidget e:entrylist)
 			{
 			RecSettingsChannel.OneChannel ch=new RecSettingsChannel.OneChannel();

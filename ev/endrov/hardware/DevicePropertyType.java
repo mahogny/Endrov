@@ -41,6 +41,12 @@ public class DevicePropertyType
 		return p;
 		}
 	
+	public static DevicePropertyType getEditableIntState()
+		{
+		DevicePropertyType p=new DevicePropertyType();
+		return p;
+		}
+	
 	public static DevicePropertyType getEditableIntState(int min,int max)
 		{
 		DevicePropertyType p=new DevicePropertyType();

@@ -31,8 +31,8 @@ import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageset.EvPixels;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
-import endrov.recording.positionsWindow.AxisInfo;
-import endrov.recording.positionsWindow.Position;
+import endrov.recording.StoredStagePosition;
+import endrov.recording.StoredStagePositionAxis;
 import endrov.util.Vector2i;
 
 /**
@@ -225,7 +225,7 @@ public abstract class OverviewWindowImageView extends JPanel implements
 
 					}
 
-				for (Position pos : RecordingResource.posList)
+				for (StoredStagePosition pos : RecordingResource.posList)
 					{
 
 					g.setColor(pos.getColor().getAWTColor());
@@ -233,7 +233,7 @@ public abstract class OverviewWindowImageView extends JPanel implements
 					double xPos = 0;
 					double yPos = 0;
 
-					for (AxisInfo info : pos.getAxisInfo())
+					for (StoredStagePositionAxis info : pos.getAxisInfo())
 						{
 						if (info.getDevice().getAxisName()[info.getAxis()].contains("X"))
 							{

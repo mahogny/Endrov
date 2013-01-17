@@ -1,7 +1,4 @@
-package endrov.recording.frapWindow;
-
-import java.util.Iterator;
-import java.util.Map;
+package endrov.recording.recmetFRAP;
 
 import javax.swing.JMenu;
 import javax.vecmath.Vector3d;
@@ -86,15 +83,9 @@ public class EvFRAPAcquisition extends EvAcquisition
 				acqLoop: 
 				do
 					{
-					Map<EvDevicePath, HWImageScanner> cams=EvHardware.getDeviceMapCast(HWImageScanner.class);
-					Iterator<EvDevicePath> itcam=cams.keySet().iterator();
-					EvDevicePath campath=null;
-					HWImageScanner cam=null;
-					if(itcam.hasNext())
-						{
-						campath=itcam.next();
-						cam=cams.get(campath);
-						}
+					EvDevicePath campath=EvHardware.getCoreDevice().getCurrentDevicePathImageScanner();
+					HWImageScanner cam=EvHardware.getCoreDevice().getCurrentImageScanner();
+
 					
 					//Check that there are enough parameters
 					if(cam!=null && container!=null)

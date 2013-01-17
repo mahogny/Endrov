@@ -74,35 +74,47 @@ public class CameraImage
 			{
 			EvPixelsType curType=parr[i].getType();
 			EvPixels p=parr[i];
-			if(forceFormat.equals("8-bit int") && curType!=EvPixelsType.UBYTE)
+			if(forceFormat==null || forceFormat.equals("None"))
 				{
-				p=p.convertToInt(false);
-				int arr[]=p.getArrayInt();
-
-				//Clamp
-				for(int j=0;j<arr.length;j++)
-					if(arr[j]>255)
-						arr[j]=255;
-				
-				p=p.convertToUByte(true);
+				//Do nothing
 				}
-			else if(forceFormat.equals("16-bit int") && curType!=EvPixelsType.SHORT)
+			else if(forceFormat.equals("8-bit int"))
 				{
-				p=p.convertToInt(false);
-				int arr[]=p.getArrayInt();
-
-				//Clamp
-				for(int j=0;j<arr.length;j++)
-					if(arr[j]>32767)
-						arr[j]=32767;
-				
-				p=p.convertToShort(true);
-				
+				if(curType!=EvPixelsType.UBYTE)
+					{
+					p=p.convertToInt(false);
+					int arr[]=p.getArrayInt();
+	
+					//Clamp
+					for(int j=0;j<arr.length;j++)
+						if(arr[j]>255)
+							arr[j]=255;
+					
+					p=p.convertToUByte(true);
+					}
 				}
-			else if(forceFormat.equals("32-bit int") && curType!=EvPixelsType.INT)
+			else if(forceFormat.equals("16-bit int"))
 				{
-				p=p.convertToInt(true);
+				if(curType!=EvPixelsType.SHORT)
+					{
+					p=p.convertToInt(false);
+					int arr[]=p.getArrayInt();
+	
+					//Clamp
+					for(int j=0;j<arr.length;j++)
+						if(arr[j]>32767)
+							arr[j]=32767;
+					
+					p=p.convertToShort(true);
+					}
 				}
+			else if(forceFormat.equals("32-bit int"))
+				{
+				if(curType!=EvPixelsType.INT)
+					p=p.convertToInt(true);
+				}
+			else
+				throw new RuntimeException("Unknown format ("+forceFormat+")");
 			parr[i]=p;
 			}
 		return parr;

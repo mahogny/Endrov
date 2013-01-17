@@ -19,12 +19,12 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.data.EvContainer;
 import endrov.imageWindow.ImageWindow;
 //import endrov.imageWindow.ImageWindowInterface;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
 
 /**
@@ -55,8 +55,8 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 		{
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
-			Imageset rec=w.getImageset();
-			EvChannel c=w.getSelectedChannel();
+			EvContainer rec=w.getImageset();
+			EvChannel c=w.getCurrentChannel();
 			
 			Vector2d diff=w.transformVectorS2W(new Vector2d(dx,dy));
 			

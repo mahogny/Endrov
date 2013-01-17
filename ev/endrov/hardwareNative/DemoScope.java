@@ -23,6 +23,7 @@ import endrov.hardware.EvDeviceProvider;
 import endrov.recording.CameraImage;
 import endrov.recording.device.HWCamera;
 import endrov.recording.device.HWStage;
+import endrov.util.EvDecimal;
 import endrov.util.EvMathUtil;
 
 /**
@@ -48,6 +49,8 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 	
 	
 	private Random rand=new Random();
+	
+	
 	
 	/**
 	 * Demo camera
@@ -110,6 +113,10 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 		
 		
 		
+		public EvDecimal getActualInterval()
+			{
+			return null;
+			}
 		
 		//TODO all below
 		

@@ -21,8 +21,8 @@ public interface HWAutoFocus extends EvDevice
 	public double getCurrentFocusScore();
 	public void fullFocus() throws IOException;
 	public void incrementalFocus() throws IOException; //Another exception?
-	public void setAutoFocusOffset (double offset);// throw (CMMError)
-	public double getAutoFocusOffset ();// throw (CMMError)
+	public void setAutoFocusOffset (double offset);
+	public double getAutoFocusOffset ();
 
 	
 	public void enableContinuousFocus(boolean enable);

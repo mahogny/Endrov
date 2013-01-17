@@ -8,6 +8,7 @@ package endrov.makeMax;
 //need to update batch script
 
 import endrov.basicWindow.*;
+import endrov.data.EvContainer;
 import endrov.ev.*;
 import endrov.flowProjection.EvOpProjectMaxZ;
 import endrov.imageset.*;
@@ -20,14 +21,14 @@ import endrov.util.ProgressHandle;
  */
 public final class CalcThread extends BatchThread
 	{
-	private final Imageset rec;
+	private final EvContainer rec;
 	
 	private final int startFrame, endFrame;
 	private final String channel;
 	
 	public ProgressHandle ph=new ProgressHandle(); //TODO connect handle
 	
-	public CalcThread(Imageset rec, int startFrame, int endFrame, String channel)
+	public CalcThread(EvContainer rec, int startFrame, int endFrame, String channel)
 		{
 		this.rec=rec;
 		this.startFrame=startFrame;
@@ -49,17 +50,18 @@ public final class CalcThread extends BatchThread
 			//ost.invalidateDatabaseCache();
 
 			//Get channel to process
-			EvChannel chfrom=rec.getChannel(channel);
+			EvChannel chfrom=(EvChannel)rec.metaObject.get(channel);
 			if(chfrom==null)
 				throw new Exception("Missing channel: "+channel);
 			
 			//Get channel to write
 			String maxChannel=channel+"max";
-			EvChannel chto=rec.getChannel(maxChannel);
+			EvChannel chto=(EvChannel)rec.metaObject.get(maxChannel);
 			if(chto==null)
 				{
 				//Channel does not exist before. Create it
-				chto=rec.getCreateChannel(maxChannel);
+				chto=new EvChannel();
+				rec.metaObject.put(maxChannel, chto);
 				
 				//should anything else be copied? copy entire meta? TODO
 				chto.chBinning=chfrom.chBinning;

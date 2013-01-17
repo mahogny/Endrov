@@ -116,7 +116,7 @@ public class ImageWindowExtensionROI implements ImageWindowExtension
 				if(ret==JFileChooser.APPROVE_OPTION)
 					{
 					EvDecimal frame=w.getFrame();
-					EvChannel ch=w.getSelectedChannel();
+					EvChannel ch=w.getCurrentChannel();
 					frame=ch.closestFrame(frame);
 					
 					try

@@ -11,6 +11,7 @@ import javax.swing.*;
 
 import org.jdom.*;
 
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.imageset.*;
@@ -186,7 +187,7 @@ public class SubtractROI extends CompoundROI
 	/**
 	 * Get channels that at least are partially selected
 	 */
-	public Set<String> getChannels(Imageset rec)
+	public Set<String> getChannels(EvContainer rec)
 		{
 		TreeSet<String> c=new TreeSet<String>();
 		for(ROI roi:getSubRoi())
@@ -197,7 +198,7 @@ public class SubtractROI extends CompoundROI
 	/**
 	 * Get frames that at least are partially selected
 	 */
-	public Set<EvDecimal> getFrames(Imageset rec, String channel)
+	public Set<EvDecimal> getFrames(EvContainer rec, String channel)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
 		for(ROI roi:getSubRoi())

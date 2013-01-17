@@ -69,7 +69,7 @@ public class EvSelection
 	 * Get selected objects of a given type
 	 */
 	@SuppressWarnings("unchecked")
-	public static <E> HashSet<E> getSelected(Class<E> e)
+	public static <E extends EvSelectable> HashSet<E> getSelected(Class<E> e)
 		{
 		HashSet<E> hs=new HashSet<E>();
 		for(Object o:selected)
@@ -78,12 +78,12 @@ public class EvSelection
 		return hs;
 		}
 	
-	public static boolean isSelected(Object o)
+	public static boolean isSelected(EvSelectable o)
 		{
 		return selected.contains(o);
 		}
 	
-	public static void unselect(Object o)
+	public static void unselect(EvSelectable o)
 		{
 		selected.remove(o);
 		}

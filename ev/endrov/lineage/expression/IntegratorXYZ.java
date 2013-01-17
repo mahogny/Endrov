@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import javax.vecmath.Vector3d;
 
 import endrov.coordinateSystem.CoordinateSystem;
+import endrov.data.EvContainer;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
@@ -111,6 +112,15 @@ public class IntegratorXYZ implements Integrator
 		sliceVol = new int[numSubDiv][numSubDiv][numSubDiv];
 		}
 	
+	
+	private static EvChannel getCreateChannel(EvContainer con, String name)
+		{
+		EvChannel ch=(EvChannel)con.metaObject.get(name);
+		if(ch==null)
+			con.metaObject.put(name, ch=new EvChannel());
+		return ch;
+		}
+	
 	/**
 	 * Calculate index map lazily
 	 */
@@ -118,9 +128,9 @@ public class IntegratorXYZ implements Integrator
 		{
 		ProgressHandle progh=new ProgressHandle();
 		
-		EvChannel chIndexX = integrator.imset.getCreateChannel("indX");
-		EvChannel chIndexY = integrator.imset.getCreateChannel("indY");
-		EvChannel chIndexZ = integrator.imset.getCreateChannel("indZ");
+		EvChannel chIndexX = getCreateChannel(integrator.imset,"indX");
+		EvChannel chIndexY = getCreateChannel(integrator.imset,"indY");
+		EvChannel chIndexZ = getCreateChannel(integrator.imset,"indZ");
 		
 		if(chIndexX.getStack(EvDecimal.ZERO)==null)
 			{
@@ -193,9 +203,9 @@ public class IntegratorXYZ implements Integrator
 		integrator.ensureImageLoaded();
 
 		//Load precalculated index
-		EvChannel chIndexX = integrator.imset.getCreateChannel("indX");
-		EvChannel chIndexY = integrator.imset.getCreateChannel("indY");
-		EvChannel chIndexZ = integrator.imset.getCreateChannel("indZ");
+		EvChannel chIndexX = getCreateChannel(integrator.imset,"indX");
+		EvChannel chIndexY = getCreateChannel(integrator.imset,"indY");
+		EvChannel chIndexZ = getCreateChannel(integrator.imset,"indZ");
 		EvPixels pX = chIndexX.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels(progh);
 		EvPixels pY = chIndexY.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels(progh);
 		EvPixels pZ = chIndexZ.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels(progh);

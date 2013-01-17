@@ -10,6 +10,7 @@ import java.util.LinkedList;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector3d;
 
@@ -184,7 +185,7 @@ public class CrossHandler
 				return false;
 			}
 		public void mouseMoved(MouseEvent e){}
-		public void mouseClicked(MouseEvent e){}
+		public boolean mouseClicked(MouseEvent e, JPopupMenu menu){return false;}
 		public void mouseEntered(MouseEvent e){}
 		public void mouseExited(MouseEvent e){listener=null;}
 		public void mousePressed(MouseEvent e)

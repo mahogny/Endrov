@@ -9,6 +9,7 @@ import java.util.*;
 
 
 
+import endrov.data.EvContainer;
 import endrov.imageset.*;
 import endrov.lineage.*;
 import endrov.util.*;
@@ -58,7 +59,7 @@ public class IntegrateExp
 	public int[] pixelsLine;
 	public String expName;
 	public EvChannel ch;
-	public Imageset imset;
+	public EvContainer imset;
 
 	
 	
@@ -74,7 +75,7 @@ public class IntegrateExp
 			}
 		}
 
-	public IntegrateExp(Imageset imset, EvChannel ch, String expName)
+	public IntegrateExp(EvContainer imset, EvChannel ch, String expName)
 		{
 		this.imset=imset;
 		this.expName = expName;
@@ -161,7 +162,7 @@ public class IntegrateExp
 	/**
 	 * Integrate single-cell for one recording
 	 */
-	public static void integrateSingleCell(Lineage lin, Imageset imset, EvChannel ch, String expName, IntegratorCallback cb, boolean useNucleiRadius)
+	public static void integrateSingleCell(Lineage lin, /*Imageset*/EvContainer imset, EvChannel ch, String expName, IntegratorCallback cb, boolean useNucleiRadius)
 		{
 		int numSubDiv = 20;
 	

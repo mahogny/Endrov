@@ -3,14 +3,14 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.chromacountkj;
+package endrov.plateWindow;
 import endrov.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Jeppson chromatin counting";
+		return "Plate Window";
 		}
 
 	public String getAuthor()
@@ -35,7 +35,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ChromaCountKJ.class};
+		return new Class[]{PlateWindow.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

@@ -1,10 +1,7 @@
 package endrov.recording.bleachWindow;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
 import endrov.basicWindow.BasicWindow;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
@@ -83,20 +80,13 @@ public class QuickBleach
 		@Override
 		public void run()
 			{
-			//TODO need to choose camera, at least!
+			//Get current camera
+			EvDevicePath campath=EvHardware.getCoreDevice().getCurrentDevicePathImageScanner();
+			HWImageScanner scanner=EvHardware.getCoreDevice().getCurrentImageScanner();
 
-			Map<EvDevicePath, HWImageScanner> cams=EvHardware.getDeviceMapCast(HWImageScanner.class);
-			Iterator<EvDevicePath> itcam=cams.keySet().iterator();
-			EvDevicePath campath=null;
-			HWImageScanner cam=null;
-			if(itcam.hasNext())
-				{
-				campath=itcam.next();
-				cam=cams.get(campath);
-				}
 
 			//Check that there are enough parameters
-			if(cam!=null)
+			if(scanner!=null)
 				{
 				synchronized (RecordingResource.acquisitionLock)
 					{
@@ -110,11 +100,11 @@ public class QuickBleach
 						//Bleach ROI
 						double stageX=RecordingResource.getCurrentStageX();
 						double stageY=RecordingResource.getCurrentStageY();
-						String normalExposureTime=cam.getPropertyValue("Exposure");
-						cam.setPropertyValue("Exposure", ""+bleachTime);
-						int[] roiArray=RecordingResource.makeScanningROI(campath, cam, roi, stageX, stageY);
-						cam.scan(null, null, roiArray);
-						cam.setPropertyValue("Exposure", normalExposureTime);
+						String normalExposureTime=scanner.getPropertyValue("Exposure");
+						scanner.setPropertyValue("Exposure", ""+bleachTime);
+						int[] roiArray=RecordingResource.makeScanningROI(campath, scanner, roi, stageX, stageY);
+						scanner.scan(null, null, roiArray);
+						scanner.setPropertyValue("Exposure", normalExposureTime);
 						}
 					catch (Exception e)
 						{

@@ -1,7 +1,6 @@
 package endrov.recording.recmetMultidim;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
@@ -28,10 +27,10 @@ import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
+import endrov.recording.StoredStagePosition;
 import endrov.recording.device.HWCamera;
 import endrov.recording.device.HWTrigger;
 import endrov.recording.device.HWTrigger.TriggerListener;
-import endrov.recording.positionsWindow.Position;
 import endrov.recording.widgets.RecSettingsChannel;
 import endrov.recording.widgets.RecSettingsDimensionsOrder;
 import endrov.recording.widgets.RecSettingsPositions;
@@ -378,7 +377,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 		{
 			public void exec()
 			{	
-				for(Position pos:positions.positions)
+				for(StoredStagePosition pos:positions.positions)
 				{
 					Map<String, Double> gotoPos=new HashMap<String, Double>();			
 					
@@ -391,6 +390,10 @@ public class EvMultidimAcquisition extends EvAcquisition
 					RecordingResource.setStagePos(gotoPos);
 					System.out.println(gotoPos);
 					currentPos=pos.getName();		
+					
+					//Optionally use autofocus
+					if(settings.positions.useAutofocus)
+						RecordingResource.autofocus();
 					
 					recurse.exec();
 					
@@ -432,11 +435,8 @@ public class EvMultidimAcquisition extends EvAcquisition
 		@Override
 		public void run()
 			{
-			//TODO need to choose camera, at least!
-			Iterator<EvDevicePath> itcam=EvHardware.getDeviceMapCast(HWCamera.class).keySet().iterator();
-			if(itcam.hasNext())
-				cam=itcam.next();
-			
+			//Get current camera
+			cam=EvHardware.getCoreDevice().getCurrentDevicePathCamera();
 			
 			try
 				{

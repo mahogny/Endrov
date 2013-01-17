@@ -21,9 +21,24 @@ import org.jdom.Element;
  */
 public class EvHardware
 	{
+	private static EvCoreDevice coreDevice=new EvCoreDevice();
+	private static EvDeviceRoot root=new EvDeviceRoot();
+	static
+		{
+		root.hw.put("core", coreDevice);
+		}
 	
 	
-	public static EvDeviceRoot root=new EvDeviceRoot();
+	
+	public static EvCoreDevice getCoreDevice()
+		{
+		return coreDevice;
+		}
+	
+	public static EvDeviceRoot getRoot()
+		{
+		return root;
+		}
 	
 	
 	/**
@@ -90,14 +105,6 @@ public class EvHardware
 		TreeMap<EvDevicePath,EvDevice> hwlist2=new TreeMap<EvDevicePath,EvDevice>();
 		for(Map.Entry<EvDevicePath, EvDevice> hwe:getDeviceMap().entrySet())
 			{
-			
-			/*
-			boolean is=false;
-			for(Class<?> intf:hwe.getValue().getClass().getInterfaces())
-				if(intf==hw)
-					is=true;
-			if(is)
-				hwlist2.put(hwe.getKey(),hwe.getValue());*/
 			if(hw.isInstance(hwe.getValue()))
 				hwlist2.put(hwe.getKey(),hwe.getValue());
 			}
@@ -126,7 +133,14 @@ public class EvHardware
 		{
 		}
 	
-	//
+	
+	/**
+	 * Update the list of all available devices. To be called by device providers. 
+	 */
+	public static void updateAvailableDevices()
+		{
+		getCoreDevice().updateDeviceCategories();
+		}
 	
 	
 	

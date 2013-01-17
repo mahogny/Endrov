@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.flipWindow;
+package endrov.recording.recmetFRAP;
 
 
 import java.awt.BorderLayout;
@@ -27,111 +27,87 @@ import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
 /**
- * FLIP acquisition
+ * FRAP acquisition
  * @author Johan Henriksson 
  */
-public class RecWindowFLIP extends BasicWindow 
+public class RecWindowFRAP extends BasicWindow 
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 
-	private SpinnerSimpleEvDecimal spNumRepeats=new SpinnerSimpleEvDecimal();
+	private SpinnerSimpleEvDecimal spRecoveryTime=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spBleachTime=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spRate=new SpinnerSimpleEvDecimal();
 
-	private EvFLIPAcquisition acq=new EvFLIPAcquisition();
-	
-	private EvComboObject roiBleachCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
-		{
-		private static final long serialVersionUID = 1L;
-		public boolean includeObject(EvContainer cont)
-			{
-			return cont instanceof ROI;
-			}
-		};
+	private EvFRAPAcquisition acq=new EvFRAPAcquisition();
 
-	private EvComboObject roiObserveCombo=new EvComboObject(new LinkedList<EvObject>(), true, true)
+	RecWidgetAcquire wAcq=new RecWidgetAcquire()
 		{
-		private static final long serialVersionUID = 1L;
-		public boolean includeObject(EvContainer cont)
-			{
-			return cont instanceof ROI;
-			}
-		};
+			private static final long serialVersionUID = 1L;
 
-//	private JTextField tStoreName=new JTextField("flip");
+			@Override
+			public boolean getAcquisitionSettings()
+				{
+				
+				acq.bleachTime=spBleachTime.getDecimalValue();
+				acq.rate=spRate.getDecimalValue();
+				acq.recoveryTime=spRecoveryTime.getDecimalValue();
+				acq.roi=(ROI)roiCombo.getSelectedObject();
+				
+				if(acq.roi==null)
+					{
+					showErrorDialog("Need to select a ROI");
+					return false;
+					}
+				else
+					return true;
+				}
+			
+			@Override
+			public EvAcquisition getAcquisition()
+				{
+				return acq;
+				}
+		};
 
 		
-	private RecWidgetAcquire wAcq=new RecWidgetAcquire()
+	private EvComboObject roiCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
+		{
+		private static final long serialVersionUID = 1L;
+		public boolean includeObject(EvContainer cont)
 			{
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public boolean getAcquisitionSettings()
-					{
-					acq.bleachTime=spBleachTime.getDecimalValue();
-					acq.rate=spRate.getDecimalValue();
-					acq.recoveryTime=spNumRepeats.getDecimalValue();
-					acq.roiBleach=(ROI)roiBleachCombo.getSelectedObject();
-					acq.roiObserve=(ROI)roiObserveCombo.getSelectedObject();
-					acq.numRepeats=spNumRepeats.getDecimalValue().intValue();
-					
-					if(acq.container==null)
-						{
-						showErrorDialog("Need to select a place to store the acquisition (e.g. File -> New)");
-						return false;
-						}
-					else if(acq.roiBleach==null)
-						{
-						showErrorDialog("Need to select a ROI to bleach");
-						return false;
-						}
-					else
-						return true;
-					}
-				
-				@Override
-				public EvAcquisition getAcquisition()
-					{
-					return acq;
-					}
-			};
+			return cont instanceof ROI;
+			}
+		};
 
 	
-	public RecWindowFLIP()
+	public RecWindowFRAP()
 		{
 		this(new Rectangle(300,120));
 		}
 	
-	public RecWindowFLIP(Rectangle bounds)
+	public RecWindowFRAP(Rectangle bounds)
 		{
 		
-		roiBleachCombo.setRoot(RecordingResource.getData());
-		roiObserveCombo.setRoot(RecordingResource.getData());
+		roiCombo.setRoot(RecordingResource.getData());
 		
-		wAcq.setStoreName("flip");
+		spRecoveryTime.setDecimalValue(new EvDecimal(10));
+		spRate.setDecimalValue(new EvDecimal(1));
+		spBleachTime.setDecimalValue(new EvDecimal(1));
+		wAcq.setStoreName("frap");
 		
-		spNumRepeats.setDecimalValue(new EvDecimal(10));
-		spRate.setDecimalValue(new EvDecimal(2));
-		spBleachTime.setDecimalValue(new EvDecimal("0.1"));
 		
 		////////////////////////////////////////////////////////////////////////
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutCompactVertical(
 				
-				EvSwingUtil.withTitledBorder("Settings", 
-						EvSwingUtil.layoutCompactVertical(
+				EvSwingUtil.withTitledBorder("Settings",
+						EvSwingUtil.layoutEvenVertical(
 								EvSwingUtil.layoutLCR(
-										new JLabel("Bleach ROI"),
-										roiBleachCombo,
-										null
-										),
-										
-								EvSwingUtil.layoutLCR(
-										new JLabel("Observe ROI"),
-										roiObserveCombo,
+										new JLabel("ROI"),
+										roiCombo,
 										null
 										),
 
@@ -142,9 +118,9 @@ public class RecWindowFLIP extends BasicWindow
 										),
 
 								EvSwingUtil.layoutLCR(
-										new JLabel("Num.repeats"),
-										spNumRepeats,
-										new JLabel("[-]")
+										new JLabel("Recovery time"),
+										spRecoveryTime,
+										new JLabel("[s]")
 										),
 
 								EvSwingUtil.layoutLCR(
@@ -154,14 +130,14 @@ public class RecWindowFLIP extends BasicWindow
 										)
 								)
 						
-						),
+				),
 				
 				wAcq
 				),
 				BorderLayout.CENTER);
 		
 		//Window overall things
-		setTitleEvWindow("FLIP acquisition");
+		setTitleEvWindow("FRAP acquisition");
 		packEvWindow();
 		setVisibleEvWindow(true);
 		//setBoundsEvWindow(bounds);
@@ -169,10 +145,10 @@ public class RecWindowFLIP extends BasicWindow
 	
 	
 	
+	
 	public void dataChangedEvent()
 		{
-		roiBleachCombo.updateList();
-		roiObserveCombo.updateList();
+		roiCombo.updateList();
 		wAcq.dataChangedEvent();
 		}
 
@@ -186,6 +162,12 @@ public class RecWindowFLIP extends BasicWindow
 		{
 		}
 	
+	public static void main(String[] args)
+		{
+		new RecWindowFRAP();
+		
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -203,14 +185,14 @@ public class RecWindowFLIP extends BasicWindow
 				{
 				public void createMenus(BasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("Acquire: FLIP",new ImageIcon(getClass().getResource("tangoCamera.png")));
+					JMenuItem mi=new JMenuItem("Acquire: FRAP",new ImageIcon(getClass().getResource("tangoCamera.png")));
 					mi.addActionListener(this);
 					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}
 	
 				public void actionPerformed(ActionEvent e) 
 					{
-					new RecWindowFLIP();
+					new RecWindowFRAP();
 					}
 	
 				public void buildMenu(BasicWindow w){}
@@ -220,6 +202,7 @@ public class RecWindowFLIP extends BasicWindow
 		
 		
 		}
+	
 	
 	
 	}

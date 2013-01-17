@@ -10,9 +10,8 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Map;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -20,8 +19,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jdom.*;
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
 import endrov.recording.RecordingResource;
+import endrov.recording.StoredStagePosition;
 import endrov.recording.RecordingResource.PositionListListener;
 import endrov.util.EvFileUtil;
 import endrov.util.EvSwingUtil;
@@ -44,16 +45,20 @@ public class PositionsWindow extends BasicWindow implements ActionListener, Posi
 	 *****************************************************************************************************/
 	private JList posList;
 	private DefaultListModel listModel = new DefaultListModel();
-	private CheckBoxList infoList = new CheckBoxList();
+	private RecWidgetAxisInclude axisList = new RecWidgetAxisInclude();
 
-	private JButton bAdd = new JButton("Add");
-	private JButton bRemove = new JButton("Remove");
-	private JButton bGoTo = new JButton("Go To Position");
-	private JButton bMoveUp = new JButton("Move Up");
-	private JButton bMoveDown = new JButton("Move Down");
-	private JButton bSave = new JButton("Save Positions");
-	private JButton bLoad = new JButton("Load Positions");
-	private JButton bGoToHome = new JButton("Go to home position");
+	private JButton bAdd = new JButton(BasicIcon.iconAdd);
+	private JButton bRemove = new JButton(BasicIcon.iconRemove);
+	private JButton bMoveUp = new JButton(BasicIcon.iconButtonUp);
+	private JButton bMoveDown = new JButton(BasicIcon.iconButtonDown);
+	
+	private JButton bRename = new JButton("Rename");
+	
+	private JButton bGoToPos = new JButton("Go to pos");
+	private JButton bGoToHome = new JButton("Go to home");
+	
+	private JButton bSave = new JButton("Save...");
+	private JButton bLoad = new JButton("Load...");
 	
 	
 	
@@ -67,38 +72,49 @@ public class PositionsWindow extends BasicWindow implements ActionListener, Posi
 		{
 		bAdd.addActionListener(this);
 		bRemove.addActionListener(this);
-		bGoTo.addActionListener(this);
+		bGoToPos.addActionListener(this);
 		bMoveUp.addActionListener(this);
 		bMoveDown.addActionListener(this);
+		bRename.addActionListener(this);
 		bSave.addActionListener(this);
 		bLoad.addActionListener(this);
 		bGoToHome.addActionListener(this);
 
-		JPanel bPanel = new JPanel();
-		JPanel posPanel = new JPanel(new BorderLayout());
-
-		bPanel.add(EvSwingUtil.layoutCompactVertical(
-				bAdd, bRemove, bGoTo, bMoveUp,
-				bMoveDown, bSave, bLoad, bGoToHome));
-
-
+		bAdd.setToolTipText("Store current position");
+		bRemove.setToolTipText("Remove selected positions");
+		bMoveUp.setToolTipText("Move selected position up");
+		bMoveDown.setToolTipText("Move selected position down");
+		bRename.setToolTipText("Rename position");
+		bSave.setToolTipText("Store all positions to disk");
+		bLoad.setToolTipText("Load positions from disk");
+		bGoToPos.setToolTipText("Move stage to selected position");
+		bGoToHome.setToolTipText("Move stage to home position");
+		
 		posList = new JList(listModel);
-		posList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		posList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		posList.setLayoutOrientation(JList.VERTICAL);
+		JScrollPane posListScroller = new JScrollPane(posList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		
+		JPanel posPanel = new JPanel(new BorderLayout());
+		posPanel.add(posListScroller, BorderLayout.CENTER);
+		posPanel.add(axisList, BorderLayout.SOUTH);
 
-		JScrollPane infoScroller = new JScrollPane(infoList);
-		JScrollPane listScroller = new JScrollPane(posList);
 		
-		posPanel.add(listScroller, BorderLayout.NORTH);
-		posPanel.add(infoScroller, BorderLayout.CENTER);
-		
+		JPanel bPanel = new JPanel(new BorderLayout()); 
+		bPanel.add(EvSwingUtil.layoutCompactVertical(
+				bAdd, bRemove, 
+				bMoveUp, bMoveDown,
+				bRename,
+				bGoToPos, bGoToHome,
+				bSave, bLoad), BorderLayout.NORTH);
+
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.withTitledBorder("Positions", posPanel), BorderLayout.CENTER);
 		add(bPanel, BorderLayout.WEST);
 
 		RecordingResource.posListListeners.addWeakListener(this);
 		RecordingResource.posListUpdated();
-		
+	
 		// Window overall things
 		setTitleEvWindow("Positions");
 		setBoundsEvWindow(500, 300);
@@ -127,85 +143,88 @@ public class PositionsWindow extends BasicWindow implements ActionListener, Posi
 		{
 		if (e.getSource()==bAdd)
 			{
-			AxisInfo[] newInfo = new AxisInfo[infoList.getInfo().length];
-			for (int i = 0; i<infoList.getInfo().length; i++)
-				{
-				newInfo[i] = new AxisInfo(infoList.getInfo()[i].getDevice(),
-						infoList.getInfo()[i].getAxis(), infoList.getInfo()[i].getDevice()
-								.getStagePos()[infoList.getInfo()[i].getAxis()]);
-				}
-
-			Position newPos = new Position(newInfo,	RecordingResource.getUnusedPosName());
+			StoredStagePosition newPos=axisList.createCurrentPosition();
 			RecordingResource.posList.add(newPos);
-
 			RecordingResource.posListUpdated();
-
 			}
 		else if (e.getSource()==bRemove)
+			removeSelectedPos();
+		else if (e.getSource()==bGoToPos)
 			{
 			int index = posList.getSelectedIndex();
 			if (index>=0)
-				{
-				RecordingResource.posList.remove(index);
-				RecordingResource.posListUpdated();
-				}
-			}
-		else if (e.getSource()==bGoTo)
-			{
-			int index = posList.getSelectedIndex();
-			if (index>=0)
-				{
-				Position pos = RecordingResource.posList.get(index);
-				Map<String, Double> gotoPos = new HashMap<String, Double>();
-				for (int i = 0; i<pos.getAxisInfo().length; i++)
-					{
-					AxisInfo ai=pos.getAxisInfo()[i];
-					gotoPos.put(
-							ai.getDevice().getAxisName()[pos.getAxisInfo()[i].getAxis()], 
-							ai.getValue());
-					}
-				RecordingResource.setStagePos(gotoPos);
-				}
+				RecordingResource.posList.get(index).goTo();
 			}
 		else if (e.getSource()==bMoveUp)
-			{
-			int index = posList.getSelectedIndex();
-			if (index>0)
-				{
-				LinkedList<Position> posList = RecordingResource.posList;
-				posList.add(index+1, posList.get(index-1));
-				posList.remove(index-1);
-				RecordingResource.posListUpdated();
-				}
-
-			}
+			moveUp();
 		else if (e.getSource()==bMoveDown)
+			moveDown();
+		else if (e.getSource()==bSave)
+			savePosList();
+		else if (e.getSource()==bLoad)
+			loadPosList();
+		else if (e.getSource()==bGoToHome)
+			RecordingResource.goToHome();
+		else if(e.getSource()==bRename)
 			{
 			int index = posList.getSelectedIndex();
-			if (index>=0 && index<listModel.getSize()-1)
-				{
-				LinkedList<Position> posList = RecordingResource.posList;
-				posList.add(index, posList.get(index+1));
-				posList.remove(index+2);
-				RecordingResource.posList = posList;
-				RecordingResource.posListUpdated();
-				}
-
+			if (index>=0)
+				renameDialog(RecordingResource.posList.get(index));
 			}
-		else if (e.getSource()==bSave)
+		}
+	
+	
+	private void renameDialog(StoredStagePosition pos)
+		{
+		String input=BasicWindow.showInputDialog("Name of position", pos.getName());
+		if(input!=null && !input.equals(""))
 			{
-			savePosList();
-			}
-		else if (e.getSource()==bLoad)
-			{
-			loadPosList();
-			}
-		else if (e.getSource()==bGoToHome)
-			{
-			RecordingResource.goToHome();
+			pos.setName(input);
+			RecordingResource.posListUpdated();
 			}
 		}
 
+	private void removeSelectedPos()
+		{
+		int[] indices=posList.getSelectedIndices();
+		for(int i=indices.length-1;i>=0;i--)
+			RecordingResource.posList.remove(indices[i]);
+		RecordingResource.posListUpdated();
+
+		/*
+		int index = posList.getSelectedIndex();
+		if (index>=0)
+			{
+			RecordingResource.posList.remove(index);
+			RecordingResource.posListUpdated();
+			}
+		*/
+		}
+	
+	private void moveUp()
+		{
+		int index = posList.getSelectedIndex();
+		if (index>0)
+			{
+			LinkedList<StoredStagePosition> posList = RecordingResource.posList;
+			posList.add(index+1, posList.get(index-1));
+			posList.remove(index-1);
+			RecordingResource.posListUpdated();
+			}
+		}
+
+	private void moveDown()
+		{
+		int index = posList.getSelectedIndex();
+		if (index>=0 && index<listModel.getSize()-1)
+			{
+			LinkedList<StoredStagePosition> posList = RecordingResource.posList;
+			posList.add(index, posList.get(index+1));
+			posList.remove(index+2);
+			RecordingResource.posList = posList;
+			RecordingResource.posListUpdated();
+			}
+		}
 	
 	
 	private void savePosList()
@@ -237,8 +256,15 @@ public class PositionsWindow extends BasicWindow implements ActionListener, Posi
 		
 		if(ret == JFileChooser.APPROVE_OPTION)
 			{
-			File theFile=fc.getSelectedFile();
-			RecordingResource.loadPosList(theFile);
+			try
+				{
+				File theFile=fc.getSelectedFile();
+				RecordingResource.loadPosList(theFile);
+				}
+			catch (IOException e)
+				{
+				BasicWindow.showErrorDialog(e.getMessage());
+				}
 			}
 		}
 	

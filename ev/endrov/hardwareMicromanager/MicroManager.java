@@ -17,7 +17,7 @@ import mmcorej.PropertyPair;
 import mmcorej.PropertySetting;
 
 import org.jdom.Element;
-import org.micromanager.conf.ConfiguratorDlg;
+import org.micromanager.conf2.ConfiguratorDlg2;
 
 import endrov.hardware.*;
 import endrov.recording.ResolutionManager;
@@ -38,11 +38,80 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 	}
 	
 	CMMCore core;
-
 	private static CoreEventCallback cb_ ;
-	
 	File configFile;
 	
+	private EvDeviceObserver.DeviceListener coreListener=new EvDeviceObserver.DeviceListener()
+		{
+		public void devicePropertyChange(Object source, EvDevice dev)
+			{
+			EvCoreDevice evcore=EvHardware.getCoreDevice();
+			if(dev==evcore)
+				{
+				try
+					{
+					String setAutofocus=trySetEvCoreDevice(evcore, "AutoFocus");
+					if(setAutofocus!=null)
+						core.setAutoFocusDevice(setAutofocus);
+					
+					String setCamera=trySetEvCoreDevice(evcore, "Camera");
+					if(setCamera!=null)
+						core.setCameraDevice(setCamera);
+					
+					String setFocus=trySetEvCoreDevice(evcore, "Focus");  //ZStage
+					if(setFocus!=null)
+						core.setFocusDevice(setFocus);
+					
+					String setSLM=trySetEvCoreDevice(evcore, "SLM");
+					if(setSLM!=null)
+						core.setSLMDevice(setSLM);
+					
+					String setShutter=trySetEvCoreDevice(evcore, "Shutter");
+					if(setShutter!=null)
+						core.setShutterDevice(setShutter);
+					
+					String setXYStage=trySetEvCoreDevice(evcore, "XYStage");
+					if(setXYStage!=null)
+						core.setXYStageDevice(setXYStage);
+
+					boolean setAutoshutter=evcore.getPropertyValueBoolean("AutoShutter");
+					if(!core.getAutoShutter()==setAutoshutter)
+						core.setAutoShutter(setAutoshutter);
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+				
+				}
+			}
+	};
+		
+	/**
+	 * Returns the device to use according to the endrov core. Returns null if there is no need to set it
+	 */
+	private String trySetEvCoreDevice(EvCoreDevice evcore, String devicePropertyName) throws Exception
+		{
+		String device=evcore.getPropertyValue(devicePropertyName);
+		String setDevice="";
+		if(!device.equals(""))
+			{
+			EvDevicePath devpath=new EvDevicePath(device);
+			if(devpath.path.length==2 && devpath.path[0].equals("um"))//core.getDeviceType(devpath.path[1])==deviceType)
+				setDevice=devpath.path[1];
+			}
+		
+		//Switch device if needed
+		String currentDevice=core.getProperty("Core", devicePropertyName);
+		if(!currentDevice.equals(setDevice))
+			return setDevice;
+		return null;
+		}
+	
+
+	/**
+	 * Constructor
+	 */
 	public MicroManager()
 		{
 		try
@@ -75,9 +144,10 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 			core.loadSystemConfiguration(fMMconfig.getPath());
 
 			
-			populateFromCore();
+			populateProviderFromMMCore();
 			
-
+			//Listen for core device selection of devices
+			EvHardware.getCoreDevice().event.addWeakListener(coreListener);
 			}
 		catch (Throwable e) 
 			{
@@ -89,135 +159,141 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 		}
 	
 	
-	private void populateFromCore()
+	private TreeSet<String> isXY;
+	private TreeSet<String> isStage;
+	private TreeSet<String> isShutter;
+	private TreeSet<String> isSerial;
+	private TreeSet<String> isAutoFocus;
+	private TreeSet<String> isCamera;
+	private TreeSet<String> isState;
+	private TreeSet<String> isSLM;
+	
+	private void populateProviderFromMMCore() throws Exception
 		{
-		// list devices
+
+		//Update list devices
+		System.out.println("Device status:");
+		for (String device:MMutil.getLoadedDevices(core))
+			{
+			System.out.println("device: "+device);
+			for(Map.Entry<String, String> prop:MMutil.getPropMap(core,device).entrySet())
+				{
+				System.out.print(" " + prop.getKey() + " = " + prop.getValue());
+				System.out.println("  "+MMutil.convVector(core.getAllowedPropertyValues(device, prop.getKey())));
+				}
+			}
+
+		//Micro-manager has a defunct getDeviceType(), this is a work-around
+		//or is it? I think they have a different notion of filter
+		//Collection<String> isMagnifier=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.MagnifierDevice));
+		isXY=new TreeSet<String>(MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.XYStageDevice)));
+		isStage=new TreeSet<String>(MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.StageDevice)));
+		isShutter=new TreeSet<String>(MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.ShutterDevice)));
+		isSerial=new TreeSet<String>(MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.SerialDevice)));
+		isAutoFocus=new TreeSet<String>(MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.AutoFocusDevice)));
+		isCamera=new TreeSet<String>(MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.CameraDevice)));
+		isState=new TreeSet<String>(MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.StateDevice)));
+		isSLM=new TreeSet<String>(MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.SLMDevice)));
 		
-		try
+		
+		//Register all devices
+		for(String devName:MMutil.convVector(core.getLoadedDevices()))
 			{
-			System.out.println("Device status:");
-			for (String device:MMutil.getLoadedDevices(core))
-				{
-				System.out.println("device: "+device);
-				for(Map.Entry<String, String> prop:MMutil.getPropMap(core,device).entrySet())
-					{
-					System.out.print(" " + prop.getKey() + " = " + prop.getValue());
-					System.out.println("  "+MMutil.convVector(core.getAllowedPropertyValues(device, prop.getKey())));
-					}
-				}
-
-			//Micro-manager has a defunct getDeviceType(), this is a work-around
-			//or is it? I think they have a different notion of filter
-			//Collection<String> isMagnifier=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.MagnifierDevice));
-			Collection<String> isXY=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.XYStageDevice));
-			Collection<String> isStage=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.StageDevice));
-			Collection<String> isShutter=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.ShutterDevice));
-			Collection<String> isSerial=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.SerialDevice));
-			Collection<String> isAutoFocus=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.AutoFocusDevice));
-			Collection<String> isCamera=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.CameraDevice));
-			Collection<String> isState=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.StateDevice));
+			//Device fundamentals
+			EvDevice adp;
+			if(isCamera.contains(devName))
+				adp=new MMCamera(this,devName);
+			//else if(isMagnifier.contains(devName))
+				//adp=new MMMagnifier(this,devName);
+			else if(isXY.contains(devName))
+				adp=new MMStage(this,devName,true);
+			else if(isStage.contains(devName))
+				adp=new MMStage(this,devName,false);
+			else if(isShutter.contains(devName))
+				adp=new MMShutter(this,devName);
+			else if(isAutoFocus.contains(devName))
+				adp=new MMAutoFocus(this,devName);
+			else if(isSLM.contains(devName))
+				adp=new MMSpatialLightModulator(this,devName);
+			else if(isSerial.contains(devName))
+				adp=new MMSerial(this,devName);
+			else if(isState.contains(devName))
+				adp=new MMState(this,devName);
+			else
+				adp=new MMDeviceAdapter(this,devName);
+			//System.out.println(devName+"---"+adp+" "+adp.getDescName()+" ???? "+core.getDeviceType(devName));
 			
-			
-			//Register all devices
-			for(String devName:MMutil.convVector(core.getLoadedDevices()))
-				{
-				//Device fundamentals
-				EvDevice adp;
-				if(isCamera.contains(devName))
-					adp=new MMCamera(this,devName);
-				//else if(isMagnifier.contains(devName))
-					//adp=new MMMagnifier(this,devName);
-				else if(isXY.contains(devName))
-					adp=new MMStage(this,devName,true);
-				else if(isStage.contains(devName))
-					adp=new MMStage(this,devName,false);
-				else if(isShutter.contains(devName))
-					adp=new MMShutter(this,devName);
-				else if(isAutoFocus.contains(devName))
-					adp=new MMAutoFocus(this,devName);
-				else if(isSerial.contains(devName))
-					adp=new MMSerial(this,devName);
-				else if(isState.contains(devName))
-					adp=new MMState(this,devName);
-				else
-					adp=new MMDeviceAdapter(this,devName);
-				//System.out.println(devName+"---"+adp+" "+adp.getDescName()+" ???? "+core.getDeviceType(devName));
-				
+			//Exclude the core device
+			if(!devName.equals("Core"))
 				hw.put(devName,adp);
-				}
-			
-			
-			/**
-			 * Read property blocks
-			 * 
-			 * Currently not used
-			 */
-			for(String blockName:MMutil.convVector(core.getAvailablePropertyBlocks()))
-				{
-				System.out.println("block: "+blockName);
-				PropertyBlock b=core.getPropertyBlockData(blockName);
-				HashMap<String, String> prop=new HashMap<String, String>(); 
-				try
-					{
-					for(int i=0;i<b.size();i++)
-						{
-						PropertyPair pair=b.getPair(i);
-						prop.put(pair.getPropertyName(), pair.getPropertyValue());
-						}
-					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					System.out.println("This should never happen");
-					}
-
-				System.out.println("Property blocks: "+prop);
-				}
-			
-			
-			/**
-			 * Convert micromanager config groups into endrov config groups.
-			 * These groups cannot control non-micromanager devices
-			 * 
-			 */
-			for(String configGroupName:core.getAvailableConfigGroups())
-				{
-				EvHardwareConfigGroup hwg=new EvHardwareConfigGroup();
-				for(String configGroupStateName:core.getAvailableConfigs(configGroupName))
-					{
-					mmcorej.Configuration config=core.getConfigState(configGroupName, configGroupStateName);
-					convertConfigState(hwg, configGroupStateName, config);
-					}
-				EvHardwareConfigGroup.putConfigGroup(configGroupName, hwg);
-				}
-			
-			/**
-			 * Convert micromanager pixel size configurations
-			 */
-			for(String pixelSizeName:core.getAvailablePixelSizeConfigs())
-				{
-				Configuration conf=core.getPixelSizeConfigData(pixelSizeName);
-				double umRes=core.getPixelSizeUmByID(pixelSizeName);
-
-				//Assign resolution to the first available camera
-				if(!isCamera.isEmpty())
-					{
-					EvDevicePath campath=mmDeviceToEndrov(isCamera.iterator().next());
-				
-					ResolutionState resState=new ResolutionState();
-					resState.state=convertConfigState(conf);
-					resState.cameraRes=new ResolutionManager.Resolution(umRes, umRes);
-					
-					ResolutionManager.getCreateResolutionStatesMap(campath).put(pixelSizeName, resState);
-					}
-				}
-			
-			
 			}
-		catch (Exception e)
+		
+		
+		/**
+		 * Read property blocks
+		 * 
+		 * Currently not used
+		 */
+		for(String blockName:MMutil.convVector(core.getAvailablePropertyBlocks()))
 			{
-			e.printStackTrace();
+			System.out.println("block: "+blockName);
+			PropertyBlock b=core.getPropertyBlockData(blockName);
+			HashMap<String, String> prop=new HashMap<String, String>(); 
+			try
+				{
+				for(int i=0;i<b.size();i++)
+					{
+					PropertyPair pair=b.getPair(i);
+					prop.put(pair.getPropertyName(), pair.getPropertyValue());
+					}
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				System.out.println("This should never happen");
+				}
+
+			System.out.println("Property blocks: "+prop);
 			}
+		
+		
+		/**
+		 * Convert micromanager config groups into endrov config groups.
+		 * These groups cannot control non-micromanager devices
+		 * 
+		 */
+		for(String configGroupName:core.getAvailableConfigGroups())
+			{
+			EvHardwareConfigGroup hwg=new EvHardwareConfigGroup();
+			for(String configGroupStateName:core.getAvailableConfigs(configGroupName))
+				{
+				mmcorej.Configuration config=core.getConfigState(configGroupName, configGroupStateName);
+				convertConfigState(hwg, configGroupStateName, config);
+				}
+			EvHardwareConfigGroup.putConfigGroup(configGroupName, hwg);
+			}
+		
+		/**
+		 * Convert micromanager pixel size configurations
+		 */
+		for(String pixelSizeName:core.getAvailablePixelSizeConfigs())
+			{
+			Configuration conf=core.getPixelSizeConfigData(pixelSizeName);
+			double umRes=core.getPixelSizeUmByID(pixelSizeName);
+
+			//Assign resolution to the first available camera
+			if(!isCamera.isEmpty())
+				{
+				EvDevicePath campath=mmDeviceToEndrov(isCamera.iterator().next());
+			
+				ResolutionState resState=new ResolutionState();
+				resState.state=convertConfigState(conf);
+				resState.cameraRes=new ResolutionManager.Resolution(umRes, umRes);
+				
+				ResolutionManager.getCreateResolutionStatesMap(campath).put(pixelSizeName, resState);
+				}
+			}
+
 		}
 	
 	
@@ -326,9 +402,17 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 	public boolean hasConfigureDialog(){return true;}
 	public void openConfigureDialog()
 		{
-		ConfiguratorDlg dlg=new ConfiguratorDlg(core,configFile.getAbsolutePath());
+		ConfiguratorDlg2 dlg=new ConfiguratorDlg2(core,configFile.getAbsolutePath());
 		dlg.setVisible(true);
-		populateFromCore();
+		try
+			{
+			populateProviderFromMMCore();
+			EvHardware.updateAvailableDevices();
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
 		}
 
 	
@@ -353,8 +437,8 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 	public static void initPlugin() {}
 	static
 		{
-		EvHardware.root.hw.put("um", new MicroManager());
-//		HardwareManager.registerHardwareProvider(new MicroManager());
+		EvHardware.getRoot().hw.put("um", new MicroManager());
+		
 		}
 
 	}

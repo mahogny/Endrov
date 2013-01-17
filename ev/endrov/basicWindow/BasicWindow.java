@@ -902,6 +902,9 @@ public abstract class BasicWindow extends JPanel
 	 */
 	public abstract void loadedFile(EvData data);
 
+	/**
+	 * Called when the window is closed. Should take care of deallocating and stopping any threads
+	 */
 	public abstract void freeResources();
 
 	

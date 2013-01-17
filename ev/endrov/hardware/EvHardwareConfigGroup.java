@@ -103,6 +103,25 @@ public class EvHardwareConfigGroup
 		public Map<EvDevicePropPath, String> propMap=new HashMap<EvDevicePropPath, String>();
 
 		/**
+		 * Make a string representation of the state 
+		 */
+		public String toString()
+			{
+			StringBuilder sb=new StringBuilder();
+			boolean first=true;
+			for(Map.Entry<EvDevicePropPath, String> e:propMap.entrySet())
+				{
+				if(!first)
+					sb.append(", ");
+				sb.append(e.getKey());
+				sb.append("=");
+				sb.append(e.getValue());
+				first=false;
+				}
+			return sb.toString();
+			}
+		
+		/**
 		 * Set state - change all other devices. Synchronization?
 		 */
 		public void activate()

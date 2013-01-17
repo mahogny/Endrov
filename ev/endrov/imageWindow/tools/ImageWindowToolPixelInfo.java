@@ -56,11 +56,9 @@ public class ImageWindowToolPixelInfo implements ImageWindowTool
 	
 	public void mouseClicked(MouseEvent e, Component invoker)
 		{
-		EvChannel c=w.getSelectedChannel();
+		EvChannel c=w.getCurrentChannel();
 		if(c!=null)
 			{
-
-			
 			EvDecimal frame=w.getFrame();
 			EvDecimal slice=w.getZ();
 			frame=c.closestFrame(frame);

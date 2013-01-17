@@ -77,8 +77,6 @@ public class ObjectDisplayList extends JPanel
 				add(cb,cr);
 				countb++;
 				
-				final ObjectDisplayList tthis=this;
-				
 				cb.addItemListener(new ItemListener()
 					{
 						public void itemStateChanged(ItemEvent e)
@@ -88,7 +86,7 @@ public class ObjectDisplayList extends JPanel
 							else
 								toNotDisplay.put(thisObject,null);
 							for(ChangeListener l:listeners)
-								l.stateChanged(new ChangeEvent(tthis));
+								l.stateChanged(new ChangeEvent(ObjectDisplayList.this));
 							}
 					});
 				}
@@ -98,6 +96,18 @@ public class ObjectDisplayList extends JPanel
 			add(new JLabel("<empty>"));
 			}
 		revalidate();
+		}
+	
+	
+	
+	
+	
+	public void hideObject(EvObject o)
+		{
+		toNotDisplay.put(o,null);
+		for(ChangeListener l:listeners)
+			l.stateChanged(new ChangeEvent(this));
+		
 		}
 	
 	

@@ -156,7 +156,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			private EvComboChannel chanCombo=new EvComboChannel(true, false);
 			private JButton bDelete=BasicIcon.getButtonDelete();
 			private EvComboColor colorCombo=new EvComboColor(false);
-			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
+			private WeakReference<EvChannel> lastImageset=new WeakReference<EvChannel>(null);
 			private HashMap<EvDecimal,Vector<IsosurfaceRenderer>> surfaces=new HashMap<EvDecimal,Vector<IsosurfaceRenderer>>(); 
 			
 			public ToolIsolayer()
@@ -248,19 +248,16 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					renderer.clean(gl);
 				removableRenderers.clear();
 				
-				//Make sure surfaces are for the right imageset
-				Imageset im=chanCombo.getImageset();
-				if(lastImageset.get()!=im)
-					surfaces.clear();
-				lastImageset=new WeakReference<Imageset>(im);
-				if(im==null)
-					im=new Imageset();
 				
 				//Get channel
-				String channelName=chanCombo.getChannelName();
-				if(channelName!=null)
+				EvChannel ch=chanCombo.getSelectedObject();//im.getChannel(channelName);
+
+				if(lastImageset.get()!=ch)
+					surfaces.clear();
+				lastImageset=new WeakReference<EvChannel>(ch);
+				
+				if(ch!=null)
 					{
-					EvChannel ch=im.getChannel(channelName);
 					EvDecimal cframe=ch.closestFrame(getFrame());
 
 					//Create surface if it wasn't there before
@@ -275,7 +272,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 						int numpl=(Integer)numplaneSpinner.getModel().getValue();
 						if(numpl==1)
 							{
-							GenerateIsosurface gi=new GenerateIsosurface(im,channelName,cframe,blursize,(float)cutoff,w);
+							GenerateIsosurface gi=new GenerateIsosurface(ch,cframe,blursize,(float)cutoff,w);
 							generators.add(gi);
 							gi.start();
 							}
@@ -285,7 +282,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 							double cutoffmin=Math.min(cutoff, cutoff2);
 							for(int pl=0;pl<numpl;pl++)
 								{
-								GenerateIsosurface gi=new GenerateIsosurface(im,channelName,cframe,blursize,(float)(cutoffmin+cutoffdiff*pl),w);
+								GenerateIsosurface gi=new GenerateIsosurface(ch,cframe,blursize,(float)(cutoffmin+cutoffdiff*pl),w);
 								generators.add(gi);
 								gi.start();
 								}
@@ -311,8 +308,8 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				{
 				private boolean stopFlag=false;
 				
-				private final Imageset im;
-				private final String channelName;
+				private final EvChannel chan;
+//				private final String channelName;
 				private final EvDecimal cframe;
 				private final int blursize;
 				private final float cutoff;
@@ -327,10 +324,10 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				final int totalPartConvertLists=totalPartLoading+100;
 
 				
-				public GenerateIsosurface(Imageset im, String channelName, EvDecimal cframe, int blursize, float cutoff, ModelWindow mw)
+				public GenerateIsosurface(EvChannel ch, EvDecimal cframe, int blursize, float cutoff, ModelWindow mw)
 					{
-					this.im=im;
-					this.channelName=channelName;
+					this.chan=ch;
+//					this.channelName=channelName;
 					this.cframe=cframe;
 					this.blursize=blursize;
 					this.cutoff=cutoff;
@@ -359,13 +356,12 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					float realw=0,realh=0,reald=0; //TODO: should be able to have different distances
 
 					float ptScalarField[]=null;
-					EvChannel chan=im.getChannel(channelName);
 					if(chan!=null && chan.getFrames().contains(cframe))
 						{
 						//double resZ=im.meta.resZ;
 
 						
-						EvStack stack=im.getChannel(channelName).getStack(cframe);
+						EvStack stack=chan.getStack(cframe);
 						final int numSlices=stack.getDepth();
 						int curslice=0;
 						if(stack!=null)

@@ -6,19 +6,19 @@
 package endrov.recording;
 import endrov.ev.PluginDef;
 import endrov.recording.bleachWindow.RecWindowQuickBleach;
-import endrov.recording.flipWindow.EvFLIPAcquisition;
-import endrov.recording.flipWindow.FlowUnitSumIntensityROI;
-import endrov.recording.flipWindow.RecWindowFLIP;
-import endrov.recording.frapWindow.EvFRAPAcquisition;
-import endrov.recording.frapWindow.FlowUnitCalcFRAP;
-import endrov.recording.frapWindow.FlowUnitShowGraph;
-import endrov.recording.frapWindow.RecWindowFRAP;
 import endrov.recording.liveWindow.LiveWindow;
 import endrov.recording.overviewWindow.OverviewWindow;
 import endrov.recording.positionsWindow.PositionsWindow;
 import endrov.recording.propertyWindow.PropertyWindow;
 import endrov.recording.recmetBurst.EvBurstAcquisition;
 import endrov.recording.recmetBurst.RecWindowBurst;
+import endrov.recording.recmetFLIP.EvFLIPAcquisition;
+import endrov.recording.recmetFLIP.FlowUnitSumIntensityROI;
+import endrov.recording.recmetFLIP.RecWindowFLIP;
+import endrov.recording.recmetFRAP.EvFRAPAcquisition;
+import endrov.recording.recmetFRAP.FlowUnitCalcFRAP;
+import endrov.recording.recmetFRAP.FlowUnitShowGraph;
+import endrov.recording.recmetFRAP.RecWindowFRAP;
 import endrov.recording.recmetMultidim.RecWindowMultiDim;
 import endrov.recording.resolutionConfigWindow.ResolutionConfigWindow;
 

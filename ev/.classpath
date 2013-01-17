@@ -144,5 +144,12 @@
 	<classpathentry kind="lib" path="libs/imglib_inc/imglib2-io-2.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/imglib_inc/imglib2-ops-2.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/imglib_inc/imglib2-realtransform-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/commons-codec.jar"/>
+	<classpathentry kind="lib" path="libs/commons-collections.jar"/>
+	<classpathentry kind="lib" path="libs/commons-httpclient.jar"/>
+	<classpathentry kind="lib" path="libs/commons-logging.jar"/>
+	<classpathentry kind="lib" path="libs/swingx-1.0.jar"/>
+	<classpathentry kind="lib" path="libs/swingx-beaninfo-1.0.jar"/>
+	<classpathentry kind="lib" path="libs/umanager_inc/bin_linux/MMJ_.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

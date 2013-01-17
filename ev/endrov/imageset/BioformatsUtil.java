@@ -11,6 +11,7 @@ import loci.common.services.ServiceFactory;
 import loci.formats.FormatTools;
 import loci.formats.IFormatWriter;
 import loci.formats.ImageWriter;
+import loci.formats.MetadataTools;
 import loci.formats.meta.IMetadata;
 import loci.formats.services.OMEXMLService;
 
@@ -43,46 +44,52 @@ public class BioformatsUtil
 			store.setChannelID("Channel:0:0", 0, 0);
 			store.setChannelSamplesPerPixel(new PositiveInteger(1), 0, 0);
 
+			boolean isLittleEndian=true; //what is optimal?  
+			store.setPixelsBinDataBigEndian(!isLittleEndian, 0, 0);
 
-
+			//TODO treat values as signed
+			
 			//Convert to byte array
-			int ptype;
+			int bfPixelFormat;
 			byte[] barr;
 			if(p.getType()==EvPixelsType.SHORT)
 				{
 				short[] array=p.getArrayShort();
-				ptype=FormatTools.INT16;
-				barr=DataTools.shortsToBytes(array, true);
+				bfPixelFormat=FormatTools.UINT16;
+				barr=DataTools.shortsToBytes(array, isLittleEndian);
 				}
 			else if(p.getType()==EvPixelsType.FLOAT)
 				{
 				float[] array=p.getArrayFloat();
-				ptype=FormatTools.FLOAT;
-				barr=DataTools.floatsToBytes(array, true);
+				bfPixelFormat=FormatTools.FLOAT;
+				barr=DataTools.floatsToBytes(array, isLittleEndian);
 				}
-			else
-				//TODO Double
+			else if(p.getType()==EvPixelsType.DOUBLE)
+				{
+				double[] array=p.getArrayDouble();
+				bfPixelFormat=FormatTools.DOUBLE;
+				barr=DataTools.doublesToBytes(array, isLittleEndian);
+				}			
+			else  ////// Everything else, use INT
 				{
 				p=p.convertToInt(true);
 				int[] array=p.getArrayInt();
-				ptype=FormatTools.INT32;
-				barr=DataTools.intsToBytes(array, true);
+				bfPixelFormat=FormatTools.UINT32;
+				barr=DataTools.intsToBytes(array, isLittleEndian);
 				}
 
-			store.setPixelsBinDataBigEndian(Boolean.FALSE, 0, 0);
+			store.setPixelsBinDataBigEndian(!isLittleEndian, 0, 0);
 			store.setPixelsDimensionOrder(DimensionOrder.XYZCT, 0);
-			store.setPixelsType(PixelType.fromString(FormatTools.getPixelTypeString(ptype)), 0);
+			store.setPixelsType(PixelType.fromString(FormatTools.getPixelTypeString(bfPixelFormat)), 0);
 
-
+			MetadataTools.verifyMinimumPopulated(store);
+			
 			///// store binary data
 			IFormatWriter writer = new ImageWriter();
 			writer.setMetadataRetrieve(store);
 			writer.setId(file.getAbsolutePath());
 			writer.saveBytes(0, barr);
 			writer.close();
-
-			//for(int i=0;i<barr.length;i+=4)
-			//	System.out.println("  "+barr[i]+" "+barr[i+1]+" "+barr[i+2]+" "+barr[i+3]);
 			}
 		catch (Exception e)
 			{

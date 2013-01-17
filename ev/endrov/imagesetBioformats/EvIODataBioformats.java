@@ -932,6 +932,11 @@ public class EvIODataBioformats implements EvIOData
 					if(resXf!=null && resXf.getValue()!=0) resX=resXf.getValue();
 					if(resYf!=null && resYf.getValue()!=0) resY=resYf.getValue();
 					if(resZf!=null && resZf.getValue()!=0) resZ=resZf.getValue();
+					if(Double.isInfinite(resX) || Double.isNaN(resX)) resX=1.0;
+					if(Double.isInfinite(resY) || Double.isNaN(resY)) resY=1.0;
+					if(Double.isInfinite(resZ) || Double.isNaN(resZ)) resZ=1.0;
+					
+					System.out.println("Detected resolution "+resX+" "+resY+" "+resZ);
 
 					//Calculate which frame this is. Note that we only consider the time of the first plane!
 					EvDecimal frame=null;

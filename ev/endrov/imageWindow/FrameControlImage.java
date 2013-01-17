@@ -18,7 +18,6 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.frameTime.*;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
 import endrov.util.EvMathUtil;
 import endrov.util.EvSwingUtil;
@@ -45,9 +44,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	private final ChangeListener listener;
 	
 	/** Which channel this control refers to */
-	private String channel=null;
-	private Imageset imageset;
-	//New version: will never be null unless imageset is null
+	private EvChannel channel;
 	
 	
 	private JButton buttonStepBack=new JButton(BasicIcon.iconFramePrev);
@@ -77,38 +74,6 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			return FrameControlImage.this.nextFrame();
 			}
 		};
-	
-	/*
-	
-	new SpinnerModel()
-		{
-		private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
-		public void addChangeListener(ChangeListener e){listeners.add(e);}
-		public void removeChangeListener(ChangeListener e){listeners.remove(e);}
-		public EvDecimal frame=new EvDecimal(0);
-		public Object getNextValue()
-			{
-			EvDecimal i=nextFrame();
-			if(i==null)	return frame;	else return i;
-			}
-		public Object getPreviousValue()
-			{
-			EvDecimal i=lastFrame();
-			if(i==null)	return frame;	else return i;
-			}
-		public Object getValue(){return frame;}
-		public void setValue(Object e)
-			{
-			if(e instanceof Double)
-				frame=new EvDecimal((Double)e);
-			else if(e instanceof Integer)
-				frame=new EvDecimal((Integer)e);
-			else if(e instanceof EvDecimal)
-				frame=(EvDecimal)e;
-			for(ChangeListener li:listeners)
-				li.stateChanged(new ChangeEvent(this));
-			}
-		};*/
 		
 	/** Z spinner behaviour */
 	private SpinnerModel zModel=new SpinnerModel()
@@ -147,17 +112,10 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		
 		
 		
-	public void setChannel(Imageset imageset, String channel)
+	public void setChannel(EvChannel channel)
 		{
-		this.imageset=imageset;
 		this.channel=channel;
 		}
-	
-	private Imageset getImageset()
-		{
-		return imageset;
-		}
-	
 
 	/**
 	 * @param l Object to receive updates on change
@@ -185,26 +143,9 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		spinnerGroup.setValue(FrameControl.getUniqueGroup());
 		
 		//Build list of play buttons
-		/*
-		JPanel playPanel=new JPanel(new GridLayout(1,6,0,0));
-		playPanel.add(buttonBeginning);
-		playPanel.add(buttonEnd);
-		playPanel.add(buttonStepBack);
-		playPanel.add(buttonStepForward);
-		playPanel.add(buttonPlayBack);
-		playPanel.add(buttonPlayForward);
-		*/
-		
 		JComponent playPanel=EvSwingUtil.layoutCompactHorizontal(
 				buttonBeginning,buttonEnd,buttonStepBack,buttonStepForward,
 				buttonPlayBack,buttonPlayForward);
-		
-
-		/*
-		setLayout(new GridLayout(1,2));
-		add(playPanel);
-		add(therest);
-		*/
 		
 		spinnerFrame=new JSpinner(frameModel);
 		
@@ -294,20 +235,10 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			stopStart(false);
 		else if(e.getSource()==timer)
 			{
-			//if(true)
-				//{
-				if(playingForward)
-					stepForward();
-				else
-					stepBack();
-			/*	}
+			if(playingForward)
+				stepForward();
 			else
-				{
-				if(playingForward)
-					setFrame(getFrame().add(new EvDecimal(0.1)));
-				else
-					setFrame(getFrame().subtract(new EvDecimal(0.1)));
-				}*/
+				stepBack();
 			}
 		
 		}
@@ -338,14 +269,14 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	
 	public void goFirstFrame()
 		{
-		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setFrame(getImageset().getChannel(channel).getFirstFrame());
+		if(channel!=null)
+			setFrame(channel.getFirstFrame());
 		}
 
 	public void goLastFrame()
 		{
-		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setFrame(getImageset().getChannel(channel).getLastFrame());
+		if(channel!=null)
+			setFrame(channel.getLastFrame());
 		}
 
 	/**
@@ -358,8 +289,8 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		}
 	private EvDecimal nextFrame()
 		{
-		if(channel!=null && getImageset().getChannel(channel)!=null)
-			return getImageset().getChannel(channel).closestFrameAfter(getFrame());
+		if(channel!=null)
+			return channel.closestFrameAfter(getFrame());
 		else
 			return null;
 		}
@@ -376,8 +307,8 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		}
 	private EvDecimal lastFrame()
 		{
-		if(channel!=null && getImageset().getChannel(channel)!=null)
-			return getImageset().getChannel(channel).closestFrameBefore(getFrame());
+		if(channel!=null)
+			return channel.closestFrameBefore(getFrame());
 		else
 			return null;
 		}
@@ -392,7 +323,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		}
 	private EvDecimal nextUp()
 		{
-		EvChannel ch=getImageset().getChannel(channel);
+		EvChannel ch=channel;
 		if(ch!=null)
 			{
 			EvStack stack=ch.getStack(new ProgressHandle(), getFrame());
@@ -419,7 +350,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		}
 	private EvDecimal nextDown()
 		{
-		EvChannel ch=getImageset().getChannel(channel);
+		EvChannel ch=channel;
 		if(ch!=null)
 			{
 			EvStack stack=ch.getStack(new ProgressHandle(), getFrame());
@@ -455,7 +386,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	public void setAll(EvDecimal frame, EvDecimal z)
 		{
 		//Find the closest z for this controller. Maybe one should just keep the value as-is?
-		EvChannel ch=getImageset().getChannel(channel);
+		EvChannel ch=channel;
 		if(ch!=null)
 			{
 			frame=ch.closestFrame(frame);
@@ -490,17 +421,15 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			z=getModelZ();
 		EvDecimal slicenum=w2sz(z);
 		
-		if(channel!=null && getImageset().getChannel(channel)!=null)
+		if(channel!=null)
 			{
-			EvChannel ch=getImageset().getChannel(channel);
+			EvChannel ch=channel;
 			frame=ch.closestFrame(frame);
 			EvStack stack=ch.getStack(new ProgressHandle(), frame);
 			
 			slicenum=new EvDecimal(stack.transformImageWorldZ(
 			EvMathUtil.clamp(Math.round(stack.transformWorldImageZ(z.doubleValue())), 0, stack.getDepth()-1)
 					));
-//			slicenum=stack.resZ.multiply(stack.closestZint(z.doubleValue()));
-			//slicenum=ch.closestZ(frame, slicenum);
 			}
 		removeChangeListener();
 		spinnerFrame.setValue(frame);

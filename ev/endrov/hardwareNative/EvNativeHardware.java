@@ -141,10 +141,8 @@ public class EvNativeHardware extends EvDeviceProvider implements EvDevice
 	public static void initPlugin() {}
 	static
 		{
-		EvHardware.root.hw.put("ev",new EvNativeHardware());
-		
-		//TODO synchronize needed?
-		
+		EvHardware.getRoot().hw.put("ev",new EvNativeHardware());
+		EvHardware.updateAvailableDevices();
 		}
 
 	}

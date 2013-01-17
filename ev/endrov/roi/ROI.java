@@ -224,12 +224,12 @@ public abstract class ROI extends EvObject
 	/**
 	 * Get which channels might be relevant
 	 */
-	public abstract Set<String> getChannels(Imageset rec);
+	public abstract Set<String> getChannels(EvContainer rec);
 	
 	/**
 	 * Get which frames might be relevant
 	 */
-	public abstract Set<EvDecimal> getFrames(Imageset rec, String channel);
+	public abstract Set<EvDecimal> getFrames(EvContainer rec, String channel);
 	
 	/**
 	 * Get which slices might be relevant
@@ -502,6 +502,12 @@ public abstract class ROI extends EvObject
 			}
 		}
 		
+	
+	
+	protected Map<String,EvChannel> getChannelMap(EvContainer ob)
+		{
+		return ob.getIdObjects(EvChannel.class);
+		}
 	
 
 	/******************************************************************************************************
