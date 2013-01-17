@@ -828,7 +828,14 @@ public class EvIODataOST implements EvIOData
 			}
 
 		
-		saveDatabaseCache33();
+		try
+			{
+			saveDatabaseCache33();
+			}
+		catch (Exception e)
+			{
+			System.out.println("Failed to store imagecache. continuing anyway. "+e.getMessage());
+			}
 		}
 	
 
@@ -1015,63 +1022,56 @@ public class EvIODataOST implements EvIOData
 	/**
 	 * Save database as a cache file
 	 */
-	public void saveDatabaseCache33()
+	public void saveDatabaseCache33() throws IOException
 		{
-		try
-			{
-			//System.out.println("# blobs "+mapBlobs.size());
-			for(Map.Entry<EvObject, DiskBlob> b:mapBlobs.entrySet())
-				if(b.getKey() instanceof EvChannel)
+		//System.out.println("# blobs "+mapBlobs.size());
+		for(Map.Entry<EvObject, DiskBlob> b:mapBlobs.entrySet())
+			if(b.getKey() instanceof EvChannel)
+				{
+				DiskBlob blob=b.getValue();
+				String lastExt="";
+				File cFile=getDatabaseCacheFile(blob);
+				if(!blob.getDirectory().exists())
 					{
-					DiskBlob blob=b.getValue();
-					String lastExt="";
-					File cFile=getDatabaseCacheFile(blob);
-					if(!blob.getDirectory().exists())
-						{
-						System.out.println("Not creating cache because "+blob.getDirectory()+" does not exist");
-						return;
-						}
-					BufferedWriter w=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cFile),"UTF-8"));
-
-					//w.write("version2\n");
-					w.write("version1\n");
-
-					w.write(""+blob.diskImageLoader33.size()+"\n");
-					for(EvDecimal frame:blob.diskImageLoader33.keySet())
-						{
-						//EvDecimal diskFrame=frame.divide(meta.metaTimestep);
-						//w.write(""+diskFrame+"\n");
-						w.write(""+frame+"\n");
-						w.write(""+blob.diskImageLoader33.get(frame).size()+"\n");
-						for(Map.Entry<Integer, File> fe:blob.diskImageLoader33.get(frame).entrySet())
-							{
-							File imagefile=fe.getValue();
-							//System.out.println("want to write down "+fe.getValue());
-							String filename=imagefile.getName();
-							String ext="";
-							if(filename.lastIndexOf('.')!=-1)
-								ext=filename.substring(filename.lastIndexOf('.'));
-							if(!ext.equals(lastExt))
-								{
-								w.write("ext"+ext+"\n");
-								lastExt=ext;
-								}
-							//if(filename.startsWith("b"))
-								w.write(""+filename.substring(0,filename.length()-ext.length())+"\n");
-							//else
-								//w.write(""+fe.getKey()+"\n");
-							}
-						}
-
-					w.close();
-					if(EV.debugMode)
-						EvLog.printLog("Wrote cache file "+cFile);
+					System.out.println("Not creating cache because "+blob.getDirectory()+" does not exist");
+					return;
 					}
-			}
-		catch (IOException e)
-			{
-			e.printStackTrace();
-			}
+				BufferedWriter w=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cFile),"UTF-8"));
+
+				//w.write("version2\n");
+				w.write("version1\n");
+
+				w.write(""+blob.diskImageLoader33.size()+"\n");
+				for(EvDecimal frame:blob.diskImageLoader33.keySet())
+					{
+					//EvDecimal diskFrame=frame.divide(meta.metaTimestep);
+					//w.write(""+diskFrame+"\n");
+					w.write(""+frame+"\n");
+					w.write(""+blob.diskImageLoader33.get(frame).size()+"\n");
+					for(Map.Entry<Integer, File> fe:blob.diskImageLoader33.get(frame).entrySet())
+						{
+						File imagefile=fe.getValue();
+						//System.out.println("want to write down "+fe.getValue());
+						String filename=imagefile.getName();
+						String ext="";
+						if(filename.lastIndexOf('.')!=-1)
+							ext=filename.substring(filename.lastIndexOf('.'));
+						if(!ext.equals(lastExt))
+							{
+							w.write("ext"+ext+"\n");
+							lastExt=ext;
+							}
+						//if(filename.startsWith("b"))
+							w.write(""+filename.substring(0,filename.length()-ext.length())+"\n");
+						//else
+							//w.write(""+fe.getKey()+"\n");
+						}
+					}
+
+				w.close();
+				if(EV.debugMode)
+					EvLog.printLog("Wrote cache file "+cFile);
+				}
 		}
 
 	

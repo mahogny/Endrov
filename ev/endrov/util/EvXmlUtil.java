@@ -158,10 +158,10 @@ public class EvXmlUtil
 	 */
 	public static void writeXmlData(Document doc, File file) throws Exception
 		{
-		FileWriter writer = new FileWriter(file);
+		//FileWriter writer = new FileWriter(file);
 		FileOutputStream writer2=new FileOutputStream(file);
 		writeXmlData(doc, writer2);
-		writer.close();
+		writer2.close();
 		}
 
 	/**

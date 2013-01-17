@@ -275,7 +275,7 @@ public class EvIODataBioformats implements EvIOData
 							resZ=s.resZ;
 							
 							EvImage evim=s.getFirstImage();
-							if(evim.io.getRawJPEGData()!=null)
+							if(evim.io!=null && evim.io.getRawJPEGData()!=null)
 								{
 								//isJPEG=true;
 								imageIdIsJPEG.add(imageIndex);
@@ -301,6 +301,11 @@ public class EvIODataBioformats implements EvIOData
 									saveFormatType=FormatTools.INT16; 
 								else
 									saveFormatType=FormatTools.INT32; 
+								
+								
+								//temp: 
+								//saveFormatType=FormatTools.INT16;
+								
 								}
 							}
 
@@ -636,6 +641,7 @@ public class EvIODataBioformats implements EvIOData
 										}
 									else if(formatType==FormatTools.INT8)
 										{
+										System.out.println("----------- storing as int8");
 										byte[] arr;
 										/*if(signed)
 							  				{

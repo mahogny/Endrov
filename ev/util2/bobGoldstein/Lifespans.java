@@ -10,7 +10,6 @@ import java.io.IOException;
 
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
-import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;

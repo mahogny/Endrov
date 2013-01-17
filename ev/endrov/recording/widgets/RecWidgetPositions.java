@@ -10,22 +10,18 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-
-import endrov.data.EvPath;
-import endrov.data.tree.DataTree;
+import javax.swing.JScrollPane;
+import endrov.recording.RecordingResource;
+import endrov.recording.RecordingResource.PositionListListener;
+import endrov.recording.positionsWindow.Position;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -33,7 +29,7 @@ import endrov.util.EvSwingUtil;
  * @author Johan Henriksson
  *
  */
-public class RecWidgetPositions extends JPanel implements ActionListener
+public class RecWidgetPositions extends JPanel implements ActionListener, PositionListListener
 	{
 	private static final long serialVersionUID = 1L;
 	
@@ -42,52 +38,25 @@ public class RecWidgetPositions extends JPanel implements ActionListener
 	//MM: switch of hw autofocus while moving xy
 	//MM: switch of hw autofocus while moving z
 	
-	private JCheckBox cUseGrid=new JCheckBox("Use grid");
-	private JButton bSetGrid=new JButton("Configure");
 	
-	private List<EvPath> roiList=new ArrayList<EvPath>();
-	
-	private DataTree dataTree=new DataTree();
 	
 	private JButton bAdd=new JButton("Add>");
 	private JButton bRemove=new JButton("<Remove");
 
 	
-	/**
-	 * GUI Model for the list of added ROIs
-	 */
-	private class ListModelROI implements ListModel
-		{
-		public List<ListDataListener> listeners=new LinkedList<ListDataListener>(); 
-		
-		public void addListDataListener(ListDataListener l)
-			{
-			listeners.add(l);
-			}
 	
-		public Object getElementAt(int index)
-			{
-			return roiList.get(index);
-			}
+	private DefaultListModel listModelAvailable=new DefaultListModel();
+	private JList posListAvailable=new JList(listModelAvailable);
+	private JScrollPane listScroller = new JScrollPane(posListAvailable);
 	
-		public int getSize()
-			{
-			return roiList.size();
-			}
-	
-		public void removeListDataListener(ListDataListener l)
-			{
-			listeners.remove(l);
-			}
-		}
-	
-	private ListModelROI listModelAdded=new ListModelROI();
-	private JList listUseROIs=new JList(listModelAdded);
+	private DefaultListModel listModelAdded=new DefaultListModel();
+	private JList posListAdded=new JList(listModelAdded);
+	private JScrollPane listScrollerAdded = new JScrollPane(posListAdded);
 	
 	
 	public RecSettingsPositions getSettings()
 		{
-		RecSettingsPositions settings=new RecSettingsPositions();
+		RecSettingsPositions settings=new RecSettingsPositions(getPositions());
 		return settings;
 		}
 	
@@ -95,44 +64,43 @@ public class RecWidgetPositions extends JPanel implements ActionListener
 		{
 		bAdd.addActionListener(this);
 		bRemove.addActionListener(this);
-		bSetGrid.addActionListener(this);
+		
+		RecordingResource.posListListeners.addWeakListener(this);
+
+		positionsUpdated();
 		
 		cbAutofocus.setToolTipText("Autofocus for each position the first time");
-		cUseGrid.setToolTipText("Take positions from a grid (typical for stitching)");
 
 		JPanel roiPanel=new JPanel(new GridBagLayout());
 		GridBagConstraints c=new GridBagConstraints();
 		c.fill=GridBagConstraints.BOTH;
+		c.weighty=1;
 		c.weightx=1;
 		c.gridx=0;
-		roiPanel.add(dataTree,c);
+		roiPanel.add(listScroller,c);
 		
 		c.weightx=0;
 		c.gridx=1;
-		roiPanel.add(EvSwingUtil.layoutCompactVertical(
-				//new JLabel("ROIs"),
-				bAdd,
-				bRemove),c);
+		roiPanel.add(EvSwingUtil.layoutMidVertical(
+				EvSwingUtil.layoutEvenVertical(bAdd,bRemove)
+				),c);
 		
 		c.weightx=1;
 		c.gridx=2;
-		roiPanel.add(listUseROIs,c);
+		roiPanel.add(listScrollerAdded,c);
+
 		
 		setLayout(new GridLayout(1,1));
 		add(
 			EvSwingUtil.withTitledBorder("Positions",
-					EvSwingUtil.layoutCompactVertical(
-							
-							EvSwingUtil.layoutCompactHorizontal(
-									cbAutofocus,
-									EvSwingUtil.layoutFlow(cUseGrid, bSetGrid)
-									),
-					
-							roiPanel
-					)
+					EvSwingUtil.layoutACB(
+							cbAutofocus,
+							roiPanel,
+							null)
 			));
 		
 		
+	
 		
 		}
 
@@ -141,34 +109,53 @@ public class RecWidgetPositions extends JPanel implements ActionListener
 		{
 		if(e.getSource()==bAdd)
 			{
-			//Add new path to list of selected ROIs
-			Set<EvPath> paths=new TreeSet<EvPath>();
-			paths.addAll(roiList);
-			for(EvPath p:dataTree.getSelectedPaths())
-				paths.add(p);
-			roiList.clear();
-			roiList.addAll(paths);
-			System.out.println(roiList);
-			for(ListDataListener l:listModelAdded.listeners)
-				l.contentsChanged(new ListDataEvent(listModelAdded, ListDataEvent.CONTENTS_CHANGED, 0, roiList.size()));
-			listUseROIs.repaint();
+			Object[] got=posListAvailable.getSelectedValues();
+			for(Object o:got)
+				{
+				listModelAvailable.removeElement(o);
+				listModelAdded.addElement(o);
+				positionsUpdated(); //TODO Ugly way
+				}
 			}
 		else if(e.getSource()==bRemove)
 			{
-			
+			Object[] got=posListAdded.getSelectedValues();
+			for(Object o:got)
+				{
+				listModelAdded.removeElement(o);
+				listModelAvailable.addElement(o);
+				positionsUpdated(); //TODO Ugly way
+				}
 			}
-		else if(e.getSource()==bSetGrid)
-			{
-			
-			}
-		
 		}
 	
 	
 	public void dataChangedEvent()
 		{
-		//TODO
-		//roiList.
+		}
+
+	public void positionsUpdated()
+		{
+		HashSet<Object> lastAddedObjects=new HashSet<Object>();
+		for(int i=0;i<listModelAdded.getSize();i++)
+			lastAddedObjects.add(listModelAdded.get(i));
+
+		listModelAdded.clear();
+		listModelAvailable.clear();
+		
+		for(Position pos:RecordingResource.posList)
+			if(lastAddedObjects.contains(pos))
+				listModelAdded.addElement(pos);
+			else
+				listModelAvailable.addElement(pos);
 		}
 	
-	}
+	public LinkedList<Position> getPositions()
+		{
+		LinkedList<Position> positions = new LinkedList<Position>();
+		for (int i = 0; i<listModelAdded.size(); i++)
+			positions.add((Position) listModelAdded.get(i));
+		return positions;
+		}
+	
+}

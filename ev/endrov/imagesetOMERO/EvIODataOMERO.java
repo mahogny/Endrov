@@ -6,7 +6,6 @@
 package endrov.imagesetOMERO;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.util.Set;
 
 import loci.common.DataTools;
@@ -168,7 +167,7 @@ public class EvIODataOMERO implements EvIOData
 		{
 		int omeroChannel=m.omeroChannel;
 
-		Timestamp acqDate=imd.getAcquisitionDate();
+		/*Timestamp acqDate=*/imd.getAcquisitionDate();
 
 		PixelsData pixels = imd.getDefaultPixels();  
 		int sizeZ = pixels.getSizeZ(); 

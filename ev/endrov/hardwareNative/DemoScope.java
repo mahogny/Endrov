@@ -76,7 +76,9 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 			
 			g.fillOval(100-r, 100-r, 2*r, 2*r);
 			
-			CameraImage cim=new CameraImage(im.getWidth(), im.getHeight(), 1, im, 1);
+			//TODO support other byte types
+
+			CameraImage cim=new CameraImage(im.getWidth(), im.getHeight(), 1, im, 1, "None");
 			
 			/*
 			int[] allpi=new int[im.getWidth()];
@@ -147,6 +149,14 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 			{
 			event.remove(listener);
 			}
+		public int getCamWidth() {
+			
+			return 320;
+		}
+		public int getCamHeight() {
+			
+			return 200;
+		}
 
 		}
 

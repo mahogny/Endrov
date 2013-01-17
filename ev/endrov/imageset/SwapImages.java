@@ -164,6 +164,7 @@ public class SwapImages
 				{
 				ObjectInputStream is=new ObjectInputStream(new FileInputStream(swapFile));
 				Object o=is.readObject();
+
 				EvPixels p=EvPixels.createFromObject(type, w, h, o);
 
 				return p;
@@ -199,18 +200,18 @@ public class SwapImages
 			//File.createTempFile("endrovswap", ".im");
 			
 			ObjectOutputStream os=new ObjectOutputStream(new FileOutputStream(tempFile));
-			
-			if(p.getArrayDouble()!=null)
+
+			if(p.getType()==EvPixelsType.DOUBLE)
 				os.writeObject(p.getArrayDouble());
-			else if(p.getArrayFloat()!=null)
+			else if(p.getType()==EvPixelsType.FLOAT)
 				os.writeObject(p.getArrayFloat());
-			else if(p.getArrayInt()!=null)
+			else if(p.getType()==EvPixelsType.INT)
 				os.writeObject(p.getArrayInt());
-			else if(p.getArrayShort()!=null)
+			else if(p.getType()==EvPixelsType.SHORT)
 				os.writeObject(p.getArrayShort());
-			else if(p.getArrayUnsignedByte()!=null)
+			else if(p.getType()==EvPixelsType.UBYTE)
 				os.writeObject(p.getArrayUnsignedByte());
-			else if(p.getAWT()!=null)
+			else if(p.getType()==EvPixelsType.AWT)
 				os.writeObject(p.getAWT());
 			else
 				{

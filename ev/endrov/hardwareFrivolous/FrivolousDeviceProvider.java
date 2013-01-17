@@ -33,6 +33,7 @@ import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDeviceProvider;
 import endrov.hardware.EvHardware;
+import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWImageScanner;
@@ -232,8 +233,13 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			int stagePosPixelsY=(int)(stagePos[1]/getRes());
 			
 			int[] im = model.convolve(stagePosPixelsX, stagePosPixelsY, simulatePSF, simulateNoise);
-			//int[]/*BufferedImage*/ im = model.getImage();
-			CameraImage cim = new CameraImage(model.imageWidth, model.imageHeight, 4, im, 1);
+			
+			EvPixels p=EvPixels.createFromInt(model.imageWidth, model.imageHeight, im); 
+
+			//TODO support other bit depths
+
+			CameraImage cim = new CameraImage(p);
+
 			return cim;
 			}
 
@@ -244,6 +250,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 			int offsetX=-(int)(stagePos[0]/getRes());
 			int offsetY=-(int)(stagePos[1]/getRes());
+
 			
 			//Bleach everything visible at the moment
 			for(FrivolousDiffusion d:model.cell.diffusers)
@@ -410,6 +417,16 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			//this.height=height;
 			}
 
+		public int getCamWidth() 
+			{
+			return width;
+			}
+
+		public int getCamHeight()
+			{
+			return  height;
+			}
+
 		}
 
 	
@@ -423,17 +440,17 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 		public String[] getAxisName()
 			{
-			return new String[]{ "x", "y", "z" };
+			return new String[]{ "X", "Y", "Z" };
 			}
 
 		public int getNumAxis()
 			{
 			return 3;
 			}
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		public double[] getStagePos()
 			{
-			return new double[]{ stagePos[0], stagePos[1], stagePos[2] };
+			return new double[]{ -stagePos[0], -stagePos[1], -stagePos[2] };
 			}
 
 		public void setRelStagePos(double[] axis)
@@ -469,7 +486,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 			
 			for (int i = 0; i<3; i++)
-				stagePos[i] = axis[i];
+				stagePos[i] = -axis[i];
 
 			model.getSettings().offsetZ = stagePos[2];
 			if(stagePos[2]!=oldZ)
