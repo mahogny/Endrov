@@ -5,7 +5,6 @@
  */
 package endrov.plateWindow;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,6 @@ import endrov.imageWindow.FrameControlImage;
 import endrov.imageset.*;
 import endrov.imagesetBD.EvIODataBD;
 import endrov.particleMeasure.ParticleMeasure;
-import endrov.particleMeasure.ParticleMeasure.Frame;
 import endrov.particleMeasure.ParticleMeasure.Well;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
@@ -93,6 +91,7 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	private final JMenu menuPlateWindow=new JMenu("PlateWindow");
 	private final JMenuItem miZoom=new JMenuItem("Zoom to fit");
 	private final JMenuItem miExportCSV=new JMenuItem("Export as CSV");
+	private final JMenuItem miEvaluate=new JMenuItem("Evaluate flow");
 	
 	
 	
@@ -175,9 +174,11 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 			
 		menuPlateWindow.add(miZoom);
 		menuPlateWindow.add(miExportCSV);
-
+		menuPlateWindow.add(miEvaluate);
+		
 		miZoom.addActionListener(this);
 		miExportCSV.addActionListener(this);
+		miEvaluate.addActionListener(this);
 
 		}
 	
@@ -443,17 +444,37 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	 */
 	private void updateCombo(JComboBox cb, List<String> alist)
 		{
-		String item=(String)cb.getSelectedItem();
-		cb.removeAllItems();
-		for(String s:alist)
-			cb.addItem(s);
-		if(item!=null)
+		//First check if anything has changed at all. If not, leave it be. This removes a lot of potential flicker
+		if(!comboNeedsUpdate(cb, alist))
 			{
-			int index=alist.indexOf(item);
-			if(index!=-1)
-				cb.setSelectedIndex(index);
+			String item=(String)cb.getSelectedItem();
+			cb.removeAllItems();
+			for(String s:alist)
+				cb.addItem(s);
+			if(item!=null)
+				{
+				int index=alist.indexOf(item);
+				if(index!=-1)
+					cb.setSelectedIndex(index);
+				}
 			}
 		}
+	
+	/**
+	 * Check if the combobox contains the given list of items
+	 */
+	private boolean comboNeedsUpdate(JComboBox cb, List<String> alist)
+		{
+		if(cb.getItemCount()!=alist.size())
+			return false;
+		for(int i=0;i<cb.getItemCount();i++)
+			{
+			if(!cb.getItemAt(i).equals(alist.get(i)))
+				return false;
+			}
+		return true;
+		}
+	
 	
 	/**
 	 * Get available particle attributes
@@ -515,6 +536,11 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 			dataChangedEvent();
 		else if(e.getSource()==comboAttribute1 || e.getSource()==comboAttribute2 || e.getSource()==comboDisplay)
 			dataChangedEvent();
+		else if(e.getSource()==miEvaluate)
+			{
+			imagePanel.execFlowAllWell();
+			dataChangedEvent();  //Overkill?
+			}
 		else if(e.getSource()==miZoom)
 			imagePanel.zoomToFit();
 		}
@@ -625,7 +651,7 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 				int id=0;
 						for(int i=0;i<100;i++)
 							{
-							HashMap<String, Object> m=fi.getCreateParticle(id++);
+							ParticleMeasure.Particle m=fi.getCreateParticle(id++);
 							double r=Math.random();
 							m.put("a", r);
 							m.put("b", r+Math.random());

@@ -32,9 +32,9 @@ public class EvOpFilterParticleMeasureDouble
 	 */
 	public ParticleMeasure exec(ParticleMeasure pm)
 		{
-		return pm.filter(new ParticleMeasure.Filter()
+		return pm.filter(new ParticleMeasure.ParticleFilter()
 			{
-				public boolean acceptParticle(int id, ParticleMeasure.ParticleMeasureParticle info)
+				public boolean acceptParticle(int id, ParticleMeasure.Particle info)
 					{
 					double value=info.getDouble(prop);
 					

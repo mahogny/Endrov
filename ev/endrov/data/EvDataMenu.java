@@ -280,17 +280,19 @@ public class EvDataMenu implements BasicWindowExtension
 			
 			
 			//Special entry: For all
-			if(!EvData.openedData.isEmpty())
+			//if(!EvData.openedData.isEmpty())
 				{
-				JMenu menuMetadata=new JMenu("For all data");
-				mData.add(menuMetadata);
+				//JMenu menuMetadata=new JMenu("For all data");
+				//mData.add(menuMetadata);
+				
+				JMenuItem miUnloadAllData=new JMenuItem("Unload all data");
+				JMenuItem miSaveAllData=new JMenuItem("Save all data");
+				miSaveAllData.setIcon(BasicIcon.iconMenuSave);
+				mData.add(miUnloadAllData);
+				mData.add(miSaveAllData);
+
 				mData.addSeparator();
 				
-				JMenuItem miUnload=new JMenuItem("Unload");
-				JMenuItem miSave=new JMenuItem("Save");
-				miSave.setIcon(BasicIcon.iconMenuSave);
-				menuMetadata.add(miUnload);
-				menuMetadata.add(miSave);
 				
 				//// Menu item Listener: Unload
 				ActionListener metaListenerUnload=new ActionListener()
@@ -329,7 +331,7 @@ public class EvDataMenu implements BasicWindowExtension
 							}
 						}
 					};
-				miUnload.addActionListener(metaListenerUnload);
+				miUnloadAllData.addActionListener(metaListenerUnload);
 
 				
 				//// Menu item Listener: Save
@@ -340,7 +342,7 @@ public class EvDataMenu implements BasicWindowExtension
 						GuiEvDataIO.saveFile(EvData.openedData);
 						}
 					};
-				miSave.addActionListener(metaListenerSave);
+				miSaveAllData.addActionListener(metaListenerSave);
 				
 				}
 			

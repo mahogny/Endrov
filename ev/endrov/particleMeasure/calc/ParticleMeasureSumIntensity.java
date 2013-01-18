@@ -59,7 +59,7 @@ public class ParticleMeasureSumIntensity implements MeasurePropertyType
 		//Write into particles
 		for(int id:sum.keySet())
 			{
-			HashMap<String, Object> p=info.getCreateParticle(id);
+			ParticleMeasure.Particle p=info.getCreateParticle(id);
 			p.put(propertyName, sum.get(id));
 			}
 		}

@@ -37,22 +37,24 @@ public class Scene2DText implements Scene2DElement
 		{
 		Graphics2D g2 = (Graphics2D)g; 			
 
-
+		g2.setColor(Color.RED);
 		if(font!=null)
 			g.setFont(font);
 		
 		int sw=g2.getFontMetrics().stringWidth(text);
 		int sh=g2.getFontMetrics().getHeight();
 
-		g2.setColor(Color.RED);
+		
 		int ax=x;
-		int ay=y+sh/3;
 		if(alignment==Alignment.Center)
 			ax-=sw/2;
 		else if(alignment==Alignment.Right)
 			ax-=sw;
-		g2.drawString(text, ax, ay);
 		
+		int ay=y+sh/3;
+
+		
+		g2.drawString(text, ax, ay);
 		}
 
 

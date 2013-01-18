@@ -602,7 +602,7 @@ public abstract class BasicWindow extends JPanel
 	public JMenu menuFile = new JMenu("File");
 	private JMenu menuMaintenance = new JMenu("Maintenance");
 	private JMenu menuWindows = new JMenu("Windows");
-	private JMenu menuBatch = new JMenu("Batch");
+	private JMenu menuOperation = new JMenu("Operation");
 	// private JMenu menuInfo=new JMenu("Info");
 	private JMenuItem miGC = new JMenuItem("Run garbage collection");
 	private JMenuItem miResetPC = new JMenuItem("Reset personal config");
@@ -650,11 +650,14 @@ public abstract class BasicWindow extends JPanel
 	
 
 	/**
-	 * Add to the menu Batch
+	 * Add to the menu Operation
 	 */
-	public void addMenuBatch(JMenuItem ni)
+	public void addMenuOperation(JMenuItem ni, String sortText)
 		{
-		addMenuItemSorted(menuBatch, ni);
+		if(sortText==null)
+			addMenuItemSorted(menuOperation, ni);
+		else
+			addMenuItemSorted(menuOperation, ni, sortText);
 		}
 
 	/**
@@ -675,7 +678,7 @@ public abstract class BasicWindow extends JPanel
 		// Menu structure
 		addMenubar(menuFile);
 		addMenubar(menuWindows);
-		addMenubar(menuBatch);
+		addMenubar(menuOperation);
 		BasicWindow.addMenuItemSorted(menuFile, menuMaintenance, "sys_maintenance");
 		menuMaintenance.add(miGC);
 		menuMaintenance.add(miResetPC);

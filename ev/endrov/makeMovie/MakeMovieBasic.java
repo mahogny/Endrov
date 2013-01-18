@@ -32,8 +32,8 @@ public class MakeMovieBasic implements BasicWindowExtension
 			{
 			miMakeMovie.addActionListener(this);
 			miMakeMovieImw.addActionListener(this);
-			w.addMenuBatch(miMakeMovie);
-			w.addMenuBatch(miMakeMovieImw);
+			w.addMenuOperation(miMakeMovie, null);
+			w.addMenuOperation(miMakeMovieImw, null);
 			}
 		
 		public void actionPerformed(ActionEvent e) 

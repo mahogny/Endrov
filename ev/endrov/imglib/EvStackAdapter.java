@@ -66,14 +66,12 @@ public class EvStackAdapter
 		return ( EvStackImg< T, ? > ) wrapLocal( imp );
 	}
 
-	@SuppressWarnings( { "rawtypes" } )
-	public static EvStackImg wrapReal( final EvStack imp )
+	public static EvStackImg<?,?> wrapReal( final EvStack imp )
 	{
 		return wrapLocalReal( imp );
 	}
 
-	@SuppressWarnings( { "rawtypes" } )
-	public static EvStackImg wrapNumeric( final EvStack imp )
+	public static EvStackImg<?,?> wrapNumeric( final EvStack imp )
 	{
 		return wrapLocal( imp );
 	}

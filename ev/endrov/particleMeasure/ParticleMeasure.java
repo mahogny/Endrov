@@ -5,15 +5,10 @@
  */
 package endrov.particleMeasure;
 
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.lang.ref.WeakReference;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,9 +24,6 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.flow.FlowType;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvStack;
-import endrov.particleMeasure.ParticleMeasure.Well;
 import endrov.particleMeasure.calc.MeasureProperty;
 import endrov.particleMeasure.calc.ParticleMeasureCenterOfMass;
 import endrov.particleMeasure.calc.ParticleMeasureCentroid;
@@ -45,7 +37,6 @@ import endrov.particleMeasure.calc.ParticleMeasureSumIntensity;
 import endrov.particleMeasure.calc.ParticleMeasureSurfaceArea;
 import endrov.particleMeasure.calc.ParticleMeasureVolume;
 import endrov.util.EvDecimal;
-import endrov.util.ProgressHandle;
 
 /**
  * Measurements of particles - identified regions in stacks.
@@ -75,45 +66,54 @@ public class ParticleMeasure extends EvObject
 	public static final String metaType="ParticleMeasure";
 	
 
-		
-	/******************************************************************************************************
-	 *                               Instance                                                             *
-	 *****************************************************************************************************/
+	public static final FlowType FLOWTYPE=new FlowType(ParticleMeasure.class);
 
+	
+
+	
+
+	/**
+	 * Filter of particle measure data
+	 * 
+	 * TODO can use the same structure also for adding data!
+	 */
+	public static interface ParticleFilter
+		{
+		/**
+		 * Accept a frame? if false then all particles will be discarded
+		 */
+		public boolean acceptFrame(EvDecimal frame);
+		
+		/**
+		 * Accept a particle?
+		 */
+		public boolean acceptParticle(int id, Particle info);
+		}
+	
 	
 	/**
 	 * Information about one well
 	 */
 	public static class Well 
 		{
-		private static final long serialVersionUID = 1L;
-//		private Runnable calcInfo;
-		
-		HashMap<EvDecimal,Frame> frameInfo=new HashMap<EvDecimal, ParticleMeasure.Frame>();
+		private TreeMap<EvDecimal,Frame> frameMap=new TreeMap<EvDecimal, ParticleMeasure.Frame>();
 		
 		
 		/**
 		 * Get data for one frame. Evaluate if necessary
 		 */
-		public Map<Integer,ParticleMeasureParticle> getFrame(EvDecimal frame)
+		public Frame getFrame(EvDecimal frame)
 			{
-			Frame info=frameInfo.get(frame);
+			Frame info=frameMap.get(frame);
 			if(info!=null)
-				{
-				if(info.calcInfo!=null)
-					{
-					info.calcInfo.run();
-					info.calcInfo=null;
-					}
-				return Collections.unmodifiableMap(info);
-				}
+				return info;
 			else
 				return null;
 			}
 
 		public void setFrame(EvDecimal frame, Frame info)
 			{
-			frameInfo.put(frame, info);
+			frameMap.put(frame, info);
 			}
 
 		/**
@@ -121,7 +121,7 @@ public class ParticleMeasure extends EvObject
 		 */
 		public SortedSet<EvDecimal> getFrames()
 			{
-			return Collections.unmodifiableSortedSet((SortedSet<EvDecimal>)frameInfo.keySet());
+			return Collections.unmodifiableSortedSet((SortedSet<EvDecimal>)frameMap.keySet());
 			}
 
 		
@@ -130,43 +130,34 @@ public class ParticleMeasure extends EvObject
 		 * Get a new particle measure where particles and frames have been filtered.
 		 * Will execute lazily.
 		 */
-		public Well filter(final Filter filter)
+		public Well filter(final ParticleFilter filter)
 			{
 			Well out=new Well();
 			
-			//Copy all the columns
-//			out.columns.addAll(columns);
-			
 			//Copy all frames
-			for(Map.Entry<EvDecimal, Frame> f:frameInfo.entrySet())
+			for(Map.Entry<EvDecimal, Frame> f:frameMap.entrySet())
 				if(filter.acceptFrame(f.getKey()))
 					{
 					//Create place-holder for frame
 					final Frame oldInfo=f.getValue();
 					final Frame newInfo=new Frame();
-					out.frameInfo.put(f.getKey(), newInfo);
+					out.frameMap.put(f.getKey(), newInfo);
 
-					//Filter need to execute lazily as well
-					newInfo.calcInfo=new Runnable()
+					//Filter can execute lazily as well
+					newInfo.registerLazyCalculation(
+					new Runnable()
 						{
 						public void run()
 							{
-							//Execute calculation if not done already
-							if(oldInfo.calcInfo!=null)
-								{
-								oldInfo.calcInfo.run();
-								oldInfo.calcInfo=null;
-								}
-
 							//Filter particles
-							for(int id:oldInfo.keySet())
+							for(int id:oldInfo.getParticleIDs())
 								{
-								ParticleMeasureParticle pInfo=oldInfo.get(id);
+								Particle pInfo=oldInfo.getParticle(id);
 								if(filter.acceptParticle(id, pInfo))
-									newInfo.put(id,pInfo);
+									newInfo.putParticle(id,pInfo);
 								}
 							}
-						};
+						});
 					}
 			
 			return out;
@@ -178,28 +169,87 @@ public class ParticleMeasure extends EvObject
 	/**
 	 * Information about one frame - Just a list of particles, with a lazy evaluator
 	 */
-	public static class Frame extends HashMap<Integer,ParticleMeasureParticle>
+	public static class Frame 
 		{
-		private static final long serialVersionUID = 1L;
-		public Runnable calcInfo;  //TODO this is bad!
-		
-		public HashMap<String, Object> getCreateParticle(int id)
+		private HashMap<Integer,Particle> particleMap=new HashMap<Integer, Particle>();
+		private List<Runnable> lazyCalc=new LinkedList<Runnable>();
+
+
+		/**
+		 * Calculate values using all lazy evaluations
+		 */
+		private void runLazyEvaluations()
 			{
-			ParticleMeasureParticle info=get(id);
+			if(!lazyCalc.isEmpty())
+				{
+				List<Runnable> c=new LinkedList<Runnable>(lazyCalc);
+				lazyCalc.clear();
+				for(Runnable r:c)
+					r.run();
+				}
+			}
+
+		
+		
+		public Particle getCreateParticle(int id)
+			{
+			runLazyEvaluations();
+			Particle info=particleMap.get(id);
 			if(info==null)
-				put(id,info=new ParticleMeasureParticle());
-			return info.map;
+				particleMap.put(id,info=new Particle());
+			return info;
+			}
+
+		public void putParticle(int id, Particle value)
+			{
+			runLazyEvaluations();
+			particleMap.put(id, value);
+			}
+
+		public Particle getParticle(int id)
+			{
+			runLazyEvaluations();
+			return particleMap.get(id);
+			}
+
+		public Set<Integer> getParticleIDs()
+			{
+			runLazyEvaluations();
+			return particleMap.keySet();
+			}
+
+		public Set<Map.Entry<Integer, Particle>> entrySet()
+			{
+			runLazyEvaluations();
+			return particleMap.entrySet();
+			}
+
+		public int size()
+			{
+			runLazyEvaluations();
+			return particleMap.size();
+			}
+
+		public Collection<Particle> getParticles()
+			{
+			runLazyEvaluations();
+			return particleMap.values();
+			}
+
+		public void registerLazyCalculation(Runnable runnable)
+			{
+			lazyCalc.add(runnable);
 			}
 		}
 	
 	
 
 	/**
-	 * Data for one particle
+	 * Data for one particle. It's in the form Key -> Value. Value can be of any type, but functions exist for automatic data conversions
 	 */
-	public static class ParticleMeasureParticle
+	public static class Particle
 		{
-		HashMap<String, Object> map=new HashMap<String, Object>();
+		private HashMap<String, Object> map=new HashMap<String, Object>();
 	
 		/**
 		 * Get value as double
@@ -252,25 +302,11 @@ public class ParticleMeasure extends EvObject
 			{
 			return map.get(s);
 			}
-		}
-	
-	/******************************************************************************************************
-	 *            Class: XML Reader and writer of this type of meta object                                *
-	 *****************************************************************************************************/
 
-	//TODO this barely qualifies as an object since it contains no data. is this fine?
-	
-	@Override
-	public void loadMetadata(Element e)
-		{
-		//TODO
-		}
-
-	@Override
-	public String saveMetadata(Element e)
-		{
-		//TODO
-		return metaType;
+		public void put(String key, Object value)
+			{
+			map.put(key, value);
+			}
 		}
 	
 	
@@ -278,40 +314,45 @@ public class ParticleMeasure extends EvObject
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
+	
+	
+	/******************************************************************************************************
+	 *                               Instance                                                             *
+	 *****************************************************************************************************/
+
 	/**
-	 * 
+	 * All wells (containing the particles) 
 	 */
-	private TreeMap<String, Well> wellInfo=new TreeMap<String, Well>();
+	private TreeMap<String, Well> wellMap=new TreeMap<String, Well>();
 
-	
-	public Well getCreateWell(String well)
-		{
-		Well info=wellInfo.get(well);
-		if(info==null)
-			wellInfo.put(well,info=new Well());
-		return info;
-		}
-	
-	public Well getWell(String wellName)
-		{
-		return wellInfo.get(wellName);
-		}
-
-	public void setWell(String wellName, Well well)
-		{
-		wellInfo.put(wellName, well);
-		}
-
-	
 	/**
 	 * Columns ie properties, for each particle
 	 */
 	private TreeSet<String> columns=new TreeSet<String>();
 
+	
+	
+
+	/**
+	 * Get a well
+	 */
+	public Well getWell(String wellName)
+		{
+		return wellMap.get(wellName);
+		}
+
+	/**
+	 * Set a well
+	 */
+	public void setWell(String wellName, Well well)
+		{
+		wellMap.put(wellName, well);
+		}
+
+	
 
 
 
-	public static final FlowType FLOWTYPE=new FlowType(ParticleMeasure.class);
 
 	/**
 	 * Empty measure
@@ -349,193 +390,6 @@ public class ParticleMeasure extends EvObject
 
 
 	
-	/**
-	 * Write data as a CSV-style table
-	 */
-	public void saveCSV(Writer io, boolean addHeader, String fieldDelim)
-		{
-		System.out.println("field delim:"+fieldDelim+":");
-		
-		PrintWriter pw=new PrintWriter(io);
-		
-		Set<String> col=getColumns();
-		
-		//Add header
-		if(addHeader)
-			{
-			pw.print("frame");
-			pw.print(fieldDelim);
-			pw.print("particle");
-			for(String s:col)
-				{
-				pw.print(fieldDelim);
-				pw.print(s);
-				}
-			pw.println();
-			}
-
-		//Write the data
-		for(String wellName:wellInfo.keySet())
-			{
-			Well well=wellInfo.get(wellName);
-			for(EvDecimal frame:well.getFrames())
-				{
-				for(Map.Entry<Integer, ParticleMeasureParticle> e:well.getFrame(frame).entrySet())
-					{
-					pw.print(wellName);
-					pw.print(fieldDelim);
-					pw.print(frame);
-					pw.print(fieldDelim);
-					pw.print(e.getKey());
-					Map<String,Object> props=e.getValue().map;
-					for(String columnName:col)
-						{
-						pw.print(fieldDelim);
-						pw.print(props.get(columnName));
-						}
-					pw.println();
-					}
-				
-				}
-			}
-		
-		pw.flush();
-		}
-	
-	
-	/**
-	 * Save data to SQL database
-	 */
-	public void saveSQL(Connection conn, String dataid, String tablename) throws SQLException
-		{
-		dropSQLtable(conn, dataid, tablename);
-
-		//Clean up this dataid
-		deleteFromSQLtable(conn, dataid, tablename);
-		
-		//Create table if needed. Make sure it has the right columns
-		createSQLtable(conn, dataid, tablename);
-		
-		
-		//Insert all data
-		insertIntoSQLtable(conn, dataid, tablename);
-		
-		}
-
-	/**
-	 * Create the table
-	 */
-	public void createSQLtable(Connection conn, String dataid, String tablename) throws SQLException
-		{
-		StringBuffer createTable=new StringBuffer();
-		createTable.append("create table "+tablename+" (");
-		createTable.append("dataid TEXT, well TEXT, frame DECIMAL, particle INTEGER");
-		for(String column:columns)
-			createTable.append(", "+column+" DECIMAL"); //TODO types
-		createTable.append(");");
-		PreparedStatement stmCreateTable=conn.prepareStatement(createTable.toString());
-		//for(String column:columns) //TODO also columns as ?
-		stmCreateTable.execute();
-		}
-
-	/**
-	 * Drop the entire table
-	 */
-	public void dropSQLtable(Connection conn, String dataid, String tablename) throws SQLException
-		{
-		StringBuffer dropTable=new StringBuffer();
-		dropTable.append("drop table "+tablename+";");
-		PreparedStatement stmDropTable=conn.prepareStatement(dropTable.toString());
-		stmDropTable.execute();
-		}
-
-	/**
-	 * Delete these values from the SQL table
-	 */
-	public void deleteFromSQLtable(Connection conn, String dataid, String tablename) throws SQLException
-		{
-		StringBuffer deleteTable=new StringBuffer();
-		deleteTable.append("delete from "+tablename+" where dataid=?;");
-		PreparedStatement stmDeleteTable=conn.prepareStatement(deleteTable.toString());
-		stmDeleteTable.setString(1, dataid);
-		stmDeleteTable.execute();
-		}
-		
-	/**
-	 * Insert values into table
-	 */
-	public void insertIntoSQLtable(Connection conn, String dataid, String tablename) throws SQLException
-		{
-		Set<String> col=getColumns();
-
-		StringBuffer insert=new StringBuffer();
-		insert.append("insert into "+tablename+" (");
-		insert.append("dataid, well, frame, particle");
-		for(String column:col)
-			insert.append(","+column); //TODO types
-		insert.append(") VALUES (");
-		insert.append("?, ?, ?, ?");
-		for(int i=0;i<col.size();i++)
-			insert.append(",?");
-		insert.append(");");
-		
-		System.out.println(insert);
-		PreparedStatement stmInsertTable=conn.prepareStatement(insert.toString());
-		
-		stmInsertTable.setString(1, dataid);
-		for(String wellName:wellInfo.keySet())
-			{
-			Well well=wellInfo.get(wellName);
-			stmInsertTable.setString(2, wellName);
-			for(EvDecimal frame:well.getFrames())
-				{
-				stmInsertTable.setBigDecimal(3, frame.toBigDecimal());			
-				for(Map.Entry<Integer, ParticleMeasureParticle> e:well.getFrame(frame).entrySet())
-					{
-					int particleID=e.getKey();
-					stmInsertTable.setInt(4, particleID);
-					
-					Map<String,Object> props=e.getValue().map;
-					int colid=5;
-					for(String columnName:col)
-						{
-						Object p=props.get(columnName);
-						if(p instanceof Double)
-							stmInsertTable.setDouble(colid, (Double)p);
-						else if(p instanceof Integer)
-							stmInsertTable.setInt(colid, (Integer)p);
-						else
-							stmInsertTable.setInt(colid, (Integer)(-1));
-						colid++;
-						}
-					
-					stmInsertTable.execute();
-					}
-				}
-			}
-		}
-
-	
-	
-	/**
-	 * Filter of particle measure data
-	 * 
-	 * TODO can use the same structure also for adding data!
-	 */
-	public static interface Filter
-		{
-		/**
-		 * Accept a frame? if false then all particles will be discarded
-		 */
-		public boolean acceptFrame(EvDecimal frame);
-		
-		/**
-		 * Accept a particle?
-		 */
-		public boolean acceptParticle(int id, ParticleMeasureParticle info);
-		}
-	
-	
 	
 	
 	@Override
@@ -551,7 +405,7 @@ public class ParticleMeasure extends EvObject
 		}
 
 	
-	public ParticleMeasure filter(final Filter filter)
+	public ParticleMeasure filter(final ParticleFilter filter)
 		{
 		ParticleMeasure out=new ParticleMeasure();
 		
@@ -559,11 +413,33 @@ public class ParticleMeasure extends EvObject
 		out.columns.addAll(columns);
 		
 		//Copy all wells
-		for(Map.Entry<String, Well> f:wellInfo.entrySet())
-			out.wellInfo.put(f.getKey(),f.getValue().filter(filter));
+		for(Map.Entry<String, Well> f:wellMap.entrySet())
+			out.wellMap.put(f.getKey(),f.getValue().filter(filter));
 		
 		return out;
 		}
+	
+
+	
+	/******************************************************************************************************
+	 *            Class: XML Reader and writer of this type of meta object                                *
+	 *****************************************************************************************************/
+
+	//TODO this barely qualifies as an object since it contains no data. is this fine?
+	
+	@Override
+	public void loadMetadata(Element e)
+		{
+		//TODO
+		}
+
+	@Override
+	public String saveMetadata(Element e)
+		{
+		//TODO
+		return metaType;
+		}
+	
 	
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -585,6 +461,12 @@ public class ParticleMeasure extends EvObject
 		MeasureProperty.registerMeasure("surface area", new ParticleMeasureSurfaceArea());
 		MeasureProperty.registerMeasure("perimeter", new ParticleMeasurePerimeter());
 		MeasureProperty.registerMeasure("Geometric PCA", new ParticleMeasureGeometricPCA());
+		}
+	
+	
+	public Set<String> getWellNames()
+		{
+		return wellMap.keySet();
 		}
 	
 	

@@ -16,9 +16,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.basicWindow.BasicWindowExtension;
+import endrov.basicWindow.BasicWindowHook;
 import endrov.data.DataMenuExtension;
 import endrov.data.EvData;
 import endrov.data.EvDataMenu;
+import endrov.makeMax.MakeMaxWindow;
 
 
 
@@ -97,135 +100,137 @@ public class EvUndo
 	public static void initPlugin() {}
 	static
 		{
-		
-		EvDataMenu.extensions.add(new DataMenuExtension()
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
 			{
-			public void buildData(JMenu menu)
+			public void newBasicWindow(BasicWindow w)
 				{
-				boolean supportDifferentOrder=false;
-				
-				
-				//////////////////// Undo //////////////////////
-					
-				final JMenu miUndo=new JMenu("Undo");
-				addMetamenu(menu,miUndo);
-				
-				ArrayList<UndoOp> undoOpsReverse=new ArrayList<UndoOp>(undoQueue);
-				Collections.reverse(undoOpsReverse);
-				int undoEntryCount=0;
-				for(final UndoOp op:undoOpsReverse)
-					{
-					JMenuItem mi;
-					if(undoEntryCount==0)
-						mi=new JMenuItem(op.getOpName());
-					else
-						mi=new JMenuItem("! "+op.getOpName());
-					miUndo.add(mi);
-					final int fcount=undoEntryCount;
-					if(undoEntryCount==0)
-						mi.addActionListener(new ActionListener()
+				w.basicWindowExtensionHook.put(this.getClass(), new BasicWindowHook()
+						{
+						public void createMenus(BasicWindow w)
 							{
-							public void actionPerformed(ActionEvent e)
+							
+
+							boolean supportDifferentOrder=false;
+							
+							
+							//////////////////// Undo //////////////////////
+								
+							final JMenu miUndo=new JMenu("Undo");
+							w.addMenuOperation(miUndo,"0_0undo");
+							
+							ArrayList<UndoOp> undoOpsReverse=new ArrayList<UndoOp>(undoQueue);
+							Collections.reverse(undoOpsReverse);
+							int undoEntryCount=0;
+							for(final UndoOp op:undoOpsReverse)
 								{
-								if(op.canUndo())
-									{
-									op.undo();
-									undoQueue.removeLast();
-									redoQueue.addFirst(op);
-									BasicWindow.updateWindows();
-									}
+								JMenuItem mi;
+								if(undoEntryCount==0)
+									mi=new JMenuItem(op.getOpName());
 								else
-									BasicWindow.showInformativeDialog("This operation does not support undo");
-								}
-							});
-					else
-						mi.addActionListener(new ActionListener()
-							{
-							public void actionPerformed(ActionEvent e)
-								{
-								if(op.canUndo())
-									{
-									int state=JOptionPane.showConfirmDialog(null, 
-											"This is not the last operation. Undoing it is can be incredibly unsafe unless you know what you are doing. Sure?", "Undo?", JOptionPane.YES_NO_OPTION);
-									if(state==JOptionPane.YES_OPTION)
+									mi=new JMenuItem("! "+op.getOpName());
+								miUndo.add(mi);
+								final int fcount=undoEntryCount;
+								if(undoEntryCount==0)
+									mi.addActionListener(new ActionListener()
 										{
-										op.undo();
-										for(int i=0;i<fcount+1;i++)
-											undoQueue.removeLast();
-										redoQueue.clear();
-										BasicWindow.updateWindows();
-										}
-									}
+										public void actionPerformed(ActionEvent e)
+											{
+											if(op.canUndo())
+												{
+												op.undo();
+												undoQueue.removeLast();
+												redoQueue.addFirst(op);
+												BasicWindow.updateWindows();
+												}
+											else
+												BasicWindow.showInformativeDialog("This operation does not support undo");
+											}
+										});
 								else
-									BasicWindow.showInformativeDialog("This operation does not support undo");
+									mi.addActionListener(new ActionListener()
+										{
+										public void actionPerformed(ActionEvent e)
+											{
+											if(op.canUndo())
+												{
+												int state=JOptionPane.showConfirmDialog(null, 
+														"This is not the last operation. Undoing it is can be incredibly unsafe unless you know what you are doing. Sure?", "Undo?", JOptionPane.YES_NO_OPTION);
+												if(state==JOptionPane.YES_OPTION)
+													{
+													op.undo();
+													for(int i=0;i<fcount+1;i++)
+														undoQueue.removeLast();
+													redoQueue.clear();
+													BasicWindow.updateWindows();
+													}
+												}
+											else
+												BasicWindow.showInformativeDialog("This operation does not support undo");
+											}
+										});
+									
+								if(!supportDifferentOrder)
+									break;
+								undoEntryCount++;
 								}
-							});
-						
-					if(!supportDifferentOrder)
-						break;
-					undoEntryCount++;
-					}
-				
-				//////////////////// Redo //////////////////////
+							
+							//////////////////// Redo //////////////////////
 
-				
-				final JMenu miRedo=new JMenu("Redo");
-				addMetamenu(menu,miRedo);
-				
-				int redoEntryCount=0;
-				for(final UndoOp op:redoQueue)
-					{
-					JMenuItem mi;
-					if(redoEntryCount==0)
-						mi=new JMenuItem(op.getOpName());
-					else
-						mi=new JMenuItem("! "+op.getOpName());
-					miRedo.add(mi);
-					if(redoEntryCount==0)
-						mi.addActionListener(new ActionListener()
-							{
-							public void actionPerformed(ActionEvent e)
+							
+							final JMenu miRedo=new JMenu("Redo");
+							w.addMenuOperation(miRedo,"0_1redo");
+							//addMetamenu(menu,miRedo);
+							
+							int redoEntryCount=0;
+							for(final UndoOp op:redoQueue)
 								{
-								undoQueue.add(op);
-								redoQueue.removeFirst();
-								op.redo();
-								BasicWindow.updateWindows(); //Needed?
+								JMenuItem mi;
+								if(redoEntryCount==0)
+									mi=new JMenuItem(op.getOpName());
+								else
+									mi=new JMenuItem("! "+op.getOpName());
+								miRedo.add(mi);
+								if(redoEntryCount==0)
+									mi.addActionListener(new ActionListener()
+										{
+										public void actionPerformed(ActionEvent e)
+											{
+											undoQueue.add(op);
+											redoQueue.removeFirst();
+											op.redo();
+											BasicWindow.updateWindows(); //Needed?
+											}
+										});
+								else
+									mi.addActionListener(new ActionListener()
+										{
+										public void actionPerformed(ActionEvent e)
+											{
+											int state=JOptionPane.showConfirmDialog(null, 
+													"This is not the first operation. Redoing it can be incredibly unsafe unless you know what you are doing. Sure?", "Redo?", JOptionPane.YES_NO_OPTION);
+											if(state==JOptionPane.YES_OPTION)
+												{
+												undoQueue.addLast(op);
+												redoQueue.clear();
+												op.redo();
+												BasicWindow.updateWindows(); //Needed?
+												}
+
+											}
+										});
+									
+								if(!supportDifferentOrder)
+									break;
+								redoEntryCount++;
 								}
-							});
-					else
-						mi.addActionListener(new ActionListener()
-							{
-							public void actionPerformed(ActionEvent e)
-								{
-								int state=JOptionPane.showConfirmDialog(null, 
-										"This is not the first operation. Redoing it can be incredibly unsafe unless you know what you are doing. Sure?", "Redo?", JOptionPane.YES_NO_OPTION);
-								if(state==JOptionPane.YES_OPTION)
-									{
-									undoQueue.addLast(op);
-									redoQueue.clear();
-									op.redo();
-									BasicWindow.updateWindows(); //Needed?
-									}
-
-								}
-							});
-						
-					if(!supportDifferentOrder)
-						break;
-					redoEntryCount++;
-					}
-
-				
-				
-				}
-			public void buildOpen(JMenu menu)
-				{
-
-				}
-			public void buildSave(JMenu menu, final EvData meta)
-				{
+							
+							}
+						public void buildMenu(BasicWindow w){}
+						});
 				}
 			});
+		
+		
 		
 		}
 

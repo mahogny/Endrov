@@ -36,6 +36,7 @@ import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flowWindow.FlowView;
 import endrov.particleMeasure.ParticleMeasure;
+import endrov.particleMeasure.ParticleMeasureIO;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
@@ -194,16 +195,16 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			}
 		
 		
-		public ParticleMeasure.ParticleMeasureParticle getCurrentPropMap(int id)
+		public ParticleMeasure.Particle getCurrentPropMap(int id)
 			{
 			ParticleMeasure.Well well=measure.getWell(wellName);
 			if(well!=null)
 				{
-				Map<Integer,ParticleMeasure.ParticleMeasureParticle> finfo=well.getFrame(getCurrentFrame());
+				ParticleMeasure.Frame finfo=well.getFrame(getCurrentFrame());
 				if(finfo==null)
 					return null;
 				else
-					return finfo.get(id);
+					return finfo.getParticle(id);
 				}
 			else
 				return null;
@@ -239,9 +240,9 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			ParticleMeasure.Well well=measure.getWell(wellName);
 			if(well!=null)
 				{
-				Map<Integer, ParticleMeasure.ParticleMeasureParticle> map=well.getFrame(getCurrentFrame());
+				ParticleMeasure.Frame map=well.getFrame(getCurrentFrame());
 				if(map!=null)
-					mapToID.addAll(map.keySet());
+					mapToID.addAll(map.getParticleIDs());
 				}
 					
 			
@@ -274,7 +275,7 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			ParticleMeasure.Well well=measure.getWell(wellName);
 			if(well!=null)
 				{
-				Map<Integer,ParticleMeasure.ParticleMeasureParticle> m=well.getFrame(getCurrentFrame());
+				ParticleMeasure.Frame m=well.getFrame(getCurrentFrame());
 				if(m==null)
 					return 0;
 				else
@@ -291,7 +292,7 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 				return id;
 			else
 				{
-				ParticleMeasure.ParticleMeasureParticle info=getCurrentPropMap(id);
+				ParticleMeasure.Particle info=getCurrentPropMap(id);
 				String prop=mapToColumn.get(columnIndex-1);
 				return info.getObject(prop).toString();
 				}
@@ -322,7 +323,7 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			if(e.getSource()==bCopyToClipboard)
 				{
 				StringWriter sw=new StringWriter();
-				measure.saveCSV(sw, true, "\t");
+				ParticleMeasureIO.saveCSV(measure, sw, true, "\t");
 				EvSwingUtil.setClipBoardString(sw.getBuffer().toString());
 				}
 			}

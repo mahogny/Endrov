@@ -47,7 +47,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 								new MakeMaxWindow();
 								}
 							});
-							w.addMenuBatch(mi);
+							w.addMenuOperation(mi,null);
 							}
 						public void buildMenu(BasicWindow w){}
 						});

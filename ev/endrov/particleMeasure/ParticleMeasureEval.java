@@ -13,20 +13,14 @@ import endrov.particleMeasure.calc.MeasureProperty;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 
+/**
+ * Functions to measure an image, and generate a particle measure lazily 
+ * 
+ * @author Johan Henriksson
+ *
+ */
 public class ParticleMeasureEval
 	{
-
-	
-	/**
-	 * Measure one entire channel
-	 */
-	/*
-	public ParticleMeasure(ProgressHandle progh, EvChannel chValue, EvChannel chMask, List<String> use)
-		{
-		prepareEvaluate(progh, chValue, chMask, use);
-		}
-*/	
-	
 	/**
 	 * Prepare all lazy evaluations. Measures should have been decided by this point
 	 */
@@ -38,22 +32,14 @@ public class ParticleMeasureEval
 		ParticleMeasure pm=new ParticleMeasure();
 		final Set<String> useMeasures=new HashSet<String>(use);
 
-		//Clear prior data
-//		useMeasures.clear();
-	//	useMeasures.addAll(use);
-//		columns.clear();
-//		frameInfo.clear();
-		
 		//Figure out columns
 		for(String s:useMeasures)
 			for(String col:MeasureProperty.measures.get(s).getColumns())
 				pm.addColumn(col);
 
-		//Lazily evaluate stacks
-		//for(Map.Entry<EvDecimal, EvStack> e:chValue.imageLoader.entrySet())
-		
-		
-		Well well=pm.getCreateWell(wellName);
+		//Make a new well (any reason to write into an existing one?)
+		Well well=new Well();
+		pm.setWell(wellName, well);
 		
 		for(final EvDecimal frame:chValue.getFrames())
 			{
@@ -64,14 +50,16 @@ public class ParticleMeasureEval
 			final WeakReference<EvChannel> weakChMask=new WeakReference<EvChannel>(chMask);
 			final WeakReference<Frame> weakInfo=new WeakReference<Frame>(info);
 			
-			info.calcInfo=new Runnable()
+			info.registerLazyCalculation(
+			new Runnable()
 				{
 				public void run()
 					{
+					//Run each measure
 					for(String s:useMeasures)
 						MeasureProperty.measures.get(s).analyze(progh, weakStackValue.get(), weakChMask.get().getStack(frame),weakInfo.get());
 					}
-				};
+				});
 			
 			well.setFrame(frame, info);
 			}

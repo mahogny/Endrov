@@ -157,7 +157,7 @@ public class EvStackImgFactory< T extends NativeType< T > > extends PlanarImgFac
 		return new ShortEvStack< T >( dimensions, entitiesPerPixel );
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public <S> ImgFactory<S> imgFactory( final S type ) throws IncompatibleTypeException
 	{

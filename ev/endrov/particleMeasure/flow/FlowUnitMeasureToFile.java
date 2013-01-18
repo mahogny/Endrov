@@ -27,6 +27,7 @@ import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flowWindow.FlowView;
 import endrov.particleMeasure.ParticleMeasure;
+import endrov.particleMeasure.ParticleMeasureIO;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -112,7 +113,7 @@ public class FlowUnitMeasureToFile extends FlowUnitBasic
 		lastOutput.put("out",measure);
 		
 		FileWriter fw=new FileWriter(file); 
-		measure.saveCSV(fw, addHeaders, fieldDelim);
+		ParticleMeasureIO.saveCSV(measure, fw, addHeaders, fieldDelim);
 		}
 	
 
