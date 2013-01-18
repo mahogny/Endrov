@@ -6,7 +6,6 @@
 package endrov.particleMeasure.flow;
 
 import endrov.particleMeasure.ParticleMeasure;
-import endrov.particleMeasure.ParticleMeasure.ParticleInfo;
 import endrov.util.EvDecimal;
 
 /**
@@ -35,7 +34,7 @@ public class EvOpFilterParticleMeasureDouble
 		{
 		return pm.filter(new ParticleMeasure.Filter()
 			{
-				public boolean acceptParticle(int id, ParticleInfo info)
+				public boolean acceptParticle(int id, ParticleMeasure.ParticleMeasureParticle info)
 					{
 					double value=info.getDouble(prop);
 					

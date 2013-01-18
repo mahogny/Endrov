@@ -24,7 +24,7 @@ public class ParticleMeasureCentroid implements MeasurePropertyType
 	{
 	private static String propertyName="centroid";
 
-	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.Frame info)
 		{
 		//TODO should thickness be taken into account? world or pixel coordinates?
 		

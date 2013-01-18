@@ -22,7 +22,7 @@ public class ParticleMeasureMeanIntensity implements MeasurePropertyType
 	{
 	private static String propertyName="meanI";
 
-	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.Frame info)
 		{
 		HashMap<Integer,Double> sum=new HashMap<Integer, Double>();
 		HashMap<Integer,Double> vol=new HashMap<Integer, Double>();

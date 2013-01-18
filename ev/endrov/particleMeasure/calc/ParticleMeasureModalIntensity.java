@@ -25,7 +25,7 @@ public class ParticleMeasureModalIntensity implements MeasurePropertyType
 	private static String propertyName="modalI";
 	
 	
-	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.Frame info)
 		{
 		HashMap<Integer,ArrayList<Double>> entryList=new HashMap<Integer, ArrayList<Double>>();
 		//TODO: a special map for this case could speed up plenty.

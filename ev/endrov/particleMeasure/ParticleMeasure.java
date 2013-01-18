@@ -31,6 +31,7 @@ import endrov.data.EvObject;
 import endrov.flow.FlowType;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
+import endrov.particleMeasure.ParticleMeasure.Well;
 import endrov.particleMeasure.calc.MeasureProperty;
 import endrov.particleMeasure.calc.ParticleMeasureCenterOfMass;
 import endrov.particleMeasure.calc.ParticleMeasureCentroid;
@@ -83,47 +84,123 @@ public class ParticleMeasure extends EvObject
 	/**
 	 * Information about one well
 	 */
-	public static class WellInfo extends HashMap<String,FrameInfo>
+	public static class Well 
 		{
 		private static final long serialVersionUID = 1L;
 //		private Runnable calcInfo;
 		
-		public FrameInfo getCreateFrame(String well)
+		HashMap<EvDecimal,Frame> frameInfo=new HashMap<EvDecimal, ParticleMeasure.Frame>();
+		
+		
+		/**
+		 * Get data for one frame. Evaluate if necessary
+		 */
+		public Map<Integer,ParticleMeasureParticle> getFrame(EvDecimal frame)
 			{
-			FrameInfo info=get(well);
-			if(info==null)
-				put(well,info=new FrameInfo());
-			return info;
+			Frame info=frameInfo.get(frame);
+			if(info!=null)
+				{
+				if(info.calcInfo!=null)
+					{
+					info.calcInfo.run();
+					info.calcInfo=null;
+					}
+				return Collections.unmodifiableMap(info);
+				}
+			else
+				return null;
 			}
+
+		public void setFrame(EvDecimal frame, Frame info)
+			{
+			frameInfo.put(frame, info);
+			}
+
+		/**
+		 * Get which frames exist
+		 */
+		public SortedSet<EvDecimal> getFrames()
+			{
+			return Collections.unmodifiableSortedSet((SortedSet<EvDecimal>)frameInfo.keySet());
+			}
+
+		
+		
+		/**
+		 * Get a new particle measure where particles and frames have been filtered.
+		 * Will execute lazily.
+		 */
+		public Well filter(final Filter filter)
+			{
+			Well out=new Well();
+			
+			//Copy all the columns
+//			out.columns.addAll(columns);
+			
+			//Copy all frames
+			for(Map.Entry<EvDecimal, Frame> f:frameInfo.entrySet())
+				if(filter.acceptFrame(f.getKey()))
+					{
+					//Create place-holder for frame
+					final Frame oldInfo=f.getValue();
+					final Frame newInfo=new Frame();
+					out.frameInfo.put(f.getKey(), newInfo);
+
+					//Filter need to execute lazily as well
+					newInfo.calcInfo=new Runnable()
+						{
+						public void run()
+							{
+							//Execute calculation if not done already
+							if(oldInfo.calcInfo!=null)
+								{
+								oldInfo.calcInfo.run();
+								oldInfo.calcInfo=null;
+								}
+
+							//Filter particles
+							for(int id:oldInfo.keySet())
+								{
+								ParticleMeasureParticle pInfo=oldInfo.get(id);
+								if(filter.acceptParticle(id, pInfo))
+									newInfo.put(id,pInfo);
+								}
+							}
+						};
+					}
+			
+			return out;
+			}
+
 		}
 
 	
 	/**
 	 * Information about one frame - Just a list of particles, with a lazy evaluator
 	 */
-	public static class FrameInfo extends HashMap<Integer,ParticleInfo>
+	public static class Frame extends HashMap<Integer,ParticleMeasureParticle>
 		{
 		private static final long serialVersionUID = 1L;
-		private Runnable calcInfo;
+		public Runnable calcInfo;  //TODO this is bad!
 		
 		public HashMap<String, Object> getCreateParticle(int id)
 			{
-			ParticleInfo info=get(id);
+			ParticleMeasureParticle info=get(id);
 			if(info==null)
-				put(id,info=new ParticleInfo());
+				put(id,info=new ParticleMeasureParticle());
 			return info.map;
 			}
 		}
 	
 	
-	
+
 	/**
 	 * Data for one particle
 	 */
-	public static class ParticleInfo
+	public static class ParticleMeasureParticle
 		{
-		private HashMap<String, Object> map=new HashMap<String, Object>();
-
+		HashMap<String, Object> map=new HashMap<String, Object>();
+	
 		/**
 		 * Get value as double
 		 */
@@ -139,7 +216,7 @@ public class ParticleMeasure extends EvObject
 			else
 				throw new RuntimeException("Bad type: "+o.getClass());
 			}
-
+	
 		/**
 		 * Get value as integer
 		 */
@@ -155,7 +232,7 @@ public class ParticleMeasure extends EvObject
 			else
 				throw new RuntimeException("Bad type: "+o.getClass());
 			}
-
+	
 		/**
 		 * Get value as string
 		 */
@@ -167,7 +244,7 @@ public class ParticleMeasure extends EvObject
 			else
 				return o.toString();
 			}
-
+	
 		/**
 		 * Get raw object
 		 */
@@ -176,8 +253,6 @@ public class ParticleMeasure extends EvObject
 			return map.get(s);
 			}
 		}
-	
-	
 	
 	/******************************************************************************************************
 	 *            Class: XML Reader and writer of this type of meta object                                *
@@ -206,7 +281,27 @@ public class ParticleMeasure extends EvObject
 	/**
 	 * 
 	 */
-	private TreeMap<EvDecimal, FrameInfo> frameInfo=new TreeMap<EvDecimal, FrameInfo>();
+	private TreeMap<String, Well> wellInfo=new TreeMap<String, Well>();
+
+	
+	public Well getCreateWell(String well)
+		{
+		Well info=wellInfo.get(well);
+		if(info==null)
+			wellInfo.put(well,info=new Well());
+		return info;
+		}
+	
+	public Well getWell(String wellName)
+		{
+		return wellInfo.get(wellName);
+		}
+
+	public void setWell(String wellName, Well well)
+		{
+		wellInfo.put(wellName, well);
+		}
+
 	
 	/**
 	 * Columns ie properties, for each particle
@@ -225,88 +320,11 @@ public class ParticleMeasure extends EvObject
 		{
 		}
 
-	/**
-	 * Measure one entire channel
-	 */
-	public ParticleMeasure(ProgressHandle progh, EvChannel chValue, EvChannel chMask, List<String> use)
-		{
-		prepareEvaluate(progh, chValue, chMask, use);
-		}
-	
-	/**
-	 * Prepare all lazy evaluations. Measures should have been decided by this point
-	 */
-	private void prepareEvaluate(final ProgressHandle progh, EvChannel chValue, final EvChannel chMask, List<String> use)
-		{
-		final Set<String> useMeasures=new HashSet<String>();
-
-		//Clear prior data
-		useMeasures.clear();
-		useMeasures.addAll(use);
-		columns.clear();
-		frameInfo.clear();
-		
-		//Figure out columns
-		for(String s:useMeasures)
-			columns.addAll(MeasureProperty.measures.get(s).getColumns());
-
-		//Lazily evaluate stacks
-		//for(Map.Entry<EvDecimal, EvStack> e:chValue.imageLoader.entrySet())
-		for(final EvDecimal frame:chValue.getFrames())
-			{
-			FrameInfo info=new FrameInfo();
-			EvStack thestack=chValue.getStack(frame);
-			
-			final WeakReference<EvStack> weakStackValue=new WeakReference<EvStack>(thestack);
-			final WeakReference<EvChannel> weakChMask=new WeakReference<EvChannel>(chMask);
-			final WeakReference<FrameInfo> weakInfo=new WeakReference<FrameInfo>(info);
-			
-			info.calcInfo=new Runnable()
-				{
-				public void run()
-					{
-					for(String s:useMeasures)
-						MeasureProperty.measures.get(s).analyze(progh, weakStackValue.get(), weakChMask.get().getStack(frame),weakInfo.get());
-					}
-				};
-			
-			frameInfo.put(frame, info);
-			}
-		}
 	
 	
 	
-	/**
-	 * Get data for one frame. Evaluate if necessary
-	 */
-	public Map<Integer,ParticleInfo> getFrame(EvDecimal frame)
-		{
-		FrameInfo info=frameInfo.get(frame);
-		if(info!=null)
-			{
-			if(info.calcInfo!=null)
-				{
-				info.calcInfo.run();
-				info.calcInfo=null;
-				}
-			return Collections.unmodifiableMap(info);
-			}
-		else
-			return null;
-		}
-
-	public void setFrame(EvDecimal frame, FrameInfo info)
-		{
-		frameInfo.put(frame, info);
-		}
 	
-	/**
-	 * Get which frames exist
-	 */
-	public SortedSet<EvDecimal> getFrames()
-		{
-		return Collections.unmodifiableSortedSet((SortedSet<EvDecimal>)frameInfo.keySet());
-		}
+	
 		
 	
 	/**
@@ -357,22 +375,28 @@ public class ParticleMeasure extends EvObject
 			}
 
 		//Write the data
-		for(EvDecimal frame:getFrames())
+		for(String wellName:wellInfo.keySet())
 			{
-			for(Map.Entry<Integer, ParticleInfo> e:getFrame(frame).entrySet())
+			Well well=wellInfo.get(wellName);
+			for(EvDecimal frame:well.getFrames())
 				{
-				pw.print(frame);
-				pw.print(fieldDelim);
-				pw.print(e.getKey());
-				Map<String,Object> props=e.getValue().map;
-				for(String columnName:col)
+				for(Map.Entry<Integer, ParticleMeasureParticle> e:well.getFrame(frame).entrySet())
 					{
+					pw.print(wellName);
 					pw.print(fieldDelim);
-					pw.print(props.get(columnName));
+					pw.print(frame);
+					pw.print(fieldDelim);
+					pw.print(e.getKey());
+					Map<String,Object> props=e.getValue().map;
+					for(String columnName:col)
+						{
+						pw.print(fieldDelim);
+						pw.print(props.get(columnName));
+						}
+					pw.println();
 					}
-				pw.println();
+				
 				}
-			
 			}
 		
 		pw.flush();
@@ -405,7 +429,7 @@ public class ParticleMeasure extends EvObject
 		{
 		StringBuffer createTable=new StringBuffer();
 		createTable.append("create table "+tablename+" (");
-		createTable.append("dataid TEXT, frame DECIMAL, particle INTEGER");
+		createTable.append("dataid TEXT, well TEXT, frame DECIMAL, particle INTEGER");
 		for(String column:columns)
 			createTable.append(", "+column+" DECIMAL"); //TODO types
 		createTable.append(");");
@@ -446,11 +470,11 @@ public class ParticleMeasure extends EvObject
 
 		StringBuffer insert=new StringBuffer();
 		insert.append("insert into "+tablename+" (");
-		insert.append("dataid, frame, particle");
+		insert.append("dataid, well, frame, particle");
 		for(String column:col)
 			insert.append(","+column); //TODO types
 		insert.append(") VALUES (");
-		insert.append("?, ?, ?");
+		insert.append("?, ?, ?, ?");
 		for(int i=0;i<col.size();i++)
 			insert.append(",?");
 		insert.append(");");
@@ -459,28 +483,34 @@ public class ParticleMeasure extends EvObject
 		PreparedStatement stmInsertTable=conn.prepareStatement(insert.toString());
 		
 		stmInsertTable.setString(1, dataid);
-		for(EvDecimal frame:getFrames())
+		for(String wellName:wellInfo.keySet())
 			{
-			stmInsertTable.setBigDecimal(2, frame.toBigDecimal());			
-			for(Map.Entry<Integer, ParticleInfo> e:getFrame(frame).entrySet())
+			Well well=wellInfo.get(wellName);
+			stmInsertTable.setString(2, wellName);
+			for(EvDecimal frame:well.getFrames())
 				{
-				stmInsertTable.setInt(3, e.getKey());
-				
-				Map<String,Object> props=e.getValue().map;
-				int colid=4;
-				for(String columnName:col)
+				stmInsertTable.setBigDecimal(3, frame.toBigDecimal());			
+				for(Map.Entry<Integer, ParticleMeasureParticle> e:well.getFrame(frame).entrySet())
 					{
-					Object p=props.get(columnName);
-					if(p instanceof Double)
-						stmInsertTable.setDouble(colid, (Double)p);
-					else if(p instanceof Integer)
-						stmInsertTable.setInt(colid, (Integer)p);
-					else
-						stmInsertTable.setInt(colid, (Integer)(-1));
-					colid++;
+					int particleID=e.getKey();
+					stmInsertTable.setInt(4, particleID);
+					
+					Map<String,Object> props=e.getValue().map;
+					int colid=5;
+					for(String columnName:col)
+						{
+						Object p=props.get(columnName);
+						if(p instanceof Double)
+							stmInsertTable.setDouble(colid, (Double)p);
+						else if(p instanceof Integer)
+							stmInsertTable.setInt(colid, (Integer)p);
+						else
+							stmInsertTable.setInt(colid, (Integer)(-1));
+						colid++;
+						}
+					
+					stmInsertTable.execute();
 					}
-				
-				stmInsertTable.execute();
 				}
 			}
 		}
@@ -502,55 +532,9 @@ public class ParticleMeasure extends EvObject
 		/**
 		 * Accept a particle?
 		 */
-		public boolean acceptParticle(int id, ParticleInfo info);
+		public boolean acceptParticle(int id, ParticleMeasureParticle info);
 		}
 	
-	
-	/**
-	 * Get a new particle measure where particles and frames have been filtered.
-	 * Will execute lazily.
-	 */
-	public ParticleMeasure filter(final Filter filter)
-		{
-		ParticleMeasure out=new ParticleMeasure();
-		
-		//Copy all the columns
-		out.columns.addAll(columns);
-		
-		//Copy all frames
-		for(Map.Entry<EvDecimal, FrameInfo> f:frameInfo.entrySet())
-			if(filter.acceptFrame(f.getKey()))
-				{
-				//Create place-holder for frame
-				final FrameInfo oldInfo=f.getValue();
-				final FrameInfo newInfo=new FrameInfo();
-				out.frameInfo.put(f.getKey(), newInfo);
-
-				//Filter need to execute lazily as well
-				newInfo.calcInfo=new Runnable()
-					{
-					public void run()
-						{
-						//Execute calculation if not done already
-						if(oldInfo.calcInfo!=null)
-							{
-							oldInfo.calcInfo.run();
-							oldInfo.calcInfo=null;
-							}
-
-						//Filter particles
-						for(int id:oldInfo.keySet())
-							{
-							ParticleInfo pInfo=oldInfo.get(id);
-							if(filter.acceptParticle(id, pInfo))
-								newInfo.put(id,pInfo);
-							}
-						}
-					};
-				}
-		
-		return out;
-		}
 	
 	
 	
@@ -566,6 +550,20 @@ public class ParticleMeasure extends EvObject
 		columns.add(s);
 		}
 
+	
+	public ParticleMeasure filter(final Filter filter)
+		{
+		ParticleMeasure out=new ParticleMeasure();
+		
+		//Copy all the columns
+		out.columns.addAll(columns);
+		
+		//Copy all wells
+		for(Map.Entry<String, Well> f:wellInfo.entrySet())
+			out.wellInfo.put(f.getKey(),f.getValue().filter(filter));
+		
+		return out;
+		}
 	
 	/******************************************************************************************************
 	 * Plugin declaration

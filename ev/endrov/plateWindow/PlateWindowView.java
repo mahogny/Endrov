@@ -357,32 +357,40 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				EvPath path=e.getKey();
 
 				String pathString=path.toString();
-				
-				//Should probably add another level here(?)
-				Map<Integer,ParticleMeasure.ParticleInfo> mapp=pm.getFrame(EvDecimal.ZERO);
 
 				//Extract relevant particle values
 				LinkedList<Double> listA=new LinkedList<Double>();
 				LinkedList<Double> listB=new LinkedList<Double>();
 				w.arrA=listA;
 				w.arrB=listB;
-				for(ParticleMeasure.ParticleInfo pi:mapp.values())
+				w.aggrValue=null;
+				
+				ParticleMeasure.Well pmw=pm.getWell(pathString);
+				if(pmw!=null)
 					{
-					String src=pi.getString("source");
-					if(src.equals(pathString))
+					//TODO closest frame
+					Map<Integer,ParticleMeasure.ParticleMeasureParticle> mapp=pmw.getFrame(currentFrame);
+					if(mapp!=null)
 						{
-						listA.add(pi.getDouble(attr1));
-						listB.add(pi.getDouble(attr2));
-						}
-					}
+						for(ParticleMeasure.ParticleMeasureParticle pi:mapp.values())
+							{
+							//String src=pi.getString("source");
+							//if(src.equals(pathString))
+							//	{
+								listA.add(pi.getDouble(attr1));
+								listB.add(pi.getDouble(attr2));
+						//		}
+							}
 
-				if(aggrMethod instanceof CalcAggregation.AggregationMethod)
-					{
-					CalcAggregation.AggregationMethod am=(CalcAggregation.AggregationMethod)aggrMethod;
-					w.aggrValue=am.calc(listA, listB);
+						if(aggrMethod instanceof CalcAggregation.AggregationMethod)
+							{
+							CalcAggregation.AggregationMethod am=(CalcAggregation.AggregationMethod)aggrMethod;
+							w.aggrValue=am.calc(listA, listB);
+							}
+						}
+					
+					
 					}
-				else
-					w.aggrValue=null;
 				}
 			
 			

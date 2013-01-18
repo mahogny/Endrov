@@ -33,7 +33,8 @@ import endrov.imageWindow.FrameControlImage;
 import endrov.imageset.*;
 import endrov.imagesetBD.EvIODataBD;
 import endrov.particleMeasure.ParticleMeasure;
-import endrov.particleMeasure.ParticleMeasure.FrameInfo;
+import endrov.particleMeasure.ParticleMeasure.Frame;
+import endrov.particleMeasure.ParticleMeasure.Well;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
@@ -605,24 +606,32 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 		
 		ParticleMeasure pm=new ParticleMeasure();
 		d.metaObject.put("pm",pm);
-		
-		FrameInfo fi=new FrameInfo();
-		pm.setFrame(EvDecimal.ZERO, fi);
-		pm.addColumn("source");
-		pm.addColumn("a");
-		pm.addColumn("b");
 
-		int id=0;
 		for(String letter:new String[]{"B","C","D","E","F"})
 			for(String num:new String[]{"02","03","04","05","06","07","08","09","10"})
-				for(int i=0;i<100;i++)
-					{
-					HashMap<String, Object> m=fi.getCreateParticle(id++);
-					double r=Math.random();
-					m.put("source", "#<unnamed>/"+letter+num);
-					m.put("a", r);
-					m.put("b", r+Math.random());
-					}
+				{
+				String wellName="#<unnamed>/"+letter+num;
+//				m.put("source", );
+
+				ParticleMeasure.Well pmw=new Well();
+				pm.setWell(wellName, pmw);
+				
+				ParticleMeasure.Frame fi=new ParticleMeasure.Frame();
+				pmw.setFrame(EvDecimal.ZERO, fi);
+//				pm.addColumn("source");
+				pm.addColumn("a");
+				pm.addColumn("b");
+
+				int id=0;
+						for(int i=0;i<100;i++)
+							{
+							HashMap<String, Object> m=fi.getCreateParticle(id++);
+							double r=Math.random();
+							m.put("a", r);
+							m.put("b", r+Math.random());
+							}
+
+				}
 		
 		EvData.registerOpenedData(d);
 		

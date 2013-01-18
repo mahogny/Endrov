@@ -22,7 +22,7 @@ public class ParticleMeasureVolume implements MeasurePropertyType
 	{
 	private static String propertyName="volume";
 
-	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.Frame info)
 		{
 		HashMap<Integer,Integer> vol=new HashMap<Integer, Integer>();
 		//TODO: a special map for this case could speed up plenty.

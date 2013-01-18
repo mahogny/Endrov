@@ -36,7 +36,6 @@ import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flowWindow.FlowView;
 import endrov.particleMeasure.ParticleMeasure;
-import endrov.particleMeasure.ParticleMeasure.ParticleInfo;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
@@ -195,13 +194,19 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			}
 		
 		
-		public ParticleInfo getCurrentPropMap(int id)
+		public ParticleMeasure.ParticleMeasureParticle getCurrentPropMap(int id)
 			{
-			Map<Integer,ParticleInfo> finfo=measure.getFrame(getCurrentFrame());
-			if(finfo==null)
-				return null;
+			ParticleMeasure.Well well=measure.getWell(wellName);
+			if(well!=null)
+				{
+				Map<Integer,ParticleMeasure.ParticleMeasureParticle> finfo=well.getFrame(getCurrentFrame());
+				if(finfo==null)
+					return null;
+				else
+					return finfo.get(id);
+				}
 			else
-				return finfo.get(id);
+				return null;
 			}
 		
 		/**
@@ -223,15 +228,23 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 				l.tableChanged(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
 			}
 
+		String wellName="";
+		
 		/**
 		 * Call whenever the frame is changed
 		 */
 		public void updateNewFrame()
 			{
 			mapToID.clear();
-			Map<Integer, ParticleInfo> map=measure.getFrame(getCurrentFrame());
-			if(map!=null)
-				mapToID.addAll(map.keySet());
+			ParticleMeasure.Well well=measure.getWell(wellName);
+			if(well!=null)
+				{
+				Map<Integer, ParticleMeasure.ParticleMeasureParticle> map=well.getFrame(getCurrentFrame());
+				if(map!=null)
+					mapToID.addAll(map.keySet());
+				}
+					
+			
 			
 			for(TableModelListener l:listeners)
 				l.tableChanged(new TableModelEvent(this));
@@ -258,11 +271,17 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 	
 		public int getRowCount()
 			{
-			Map<Integer,ParticleInfo> m=measure.getFrame(getCurrentFrame());
-			if(m==null)
-				return 0;
+			ParticleMeasure.Well well=measure.getWell(wellName);
+			if(well!=null)
+				{
+				Map<Integer,ParticleMeasure.ParticleMeasureParticle> m=well.getFrame(getCurrentFrame());
+				if(m==null)
+					return 0;
+				else
+					return m.size();
+				}
 			else
-				return m.size();
+				return 0;
 			}
 	
 		public Object getValueAt(int rowIndex, int columnIndex)
@@ -272,7 +291,7 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 				return id;
 			else
 				{
-				ParticleInfo info=getCurrentPropMap(id);
+				ParticleMeasure.ParticleMeasureParticle info=getCurrentPropMap(id);
 				String prop=mapToColumn.get(columnIndex-1);
 				return info.getObject(prop).toString();
 				}

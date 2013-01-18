@@ -23,7 +23,7 @@ public class ParticleMeasureMaxIntensity implements MeasurePropertyType
 	private static String propertyName="maxI";
 	
 	
-	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.Frame info)
 		{
 		HashMap<Integer,Double> max=new HashMap<Integer, Double>();
 		//TODO: a special map for this case could speed up plenty.

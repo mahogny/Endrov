@@ -23,7 +23,7 @@ public class ParticleMeasureMinIntensity implements MeasurePropertyType
 	private static String propertyName="minI";
 	
 	
-	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.Frame info)
 		{
 		HashMap<Integer,Double> min=new HashMap<Integer, Double>();
 		//TODO: a special map for this case could speed up plenty.

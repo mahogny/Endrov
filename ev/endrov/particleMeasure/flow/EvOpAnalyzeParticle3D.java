@@ -9,6 +9,7 @@ import java.util.*;
 
 import endrov.imageset.EvChannel;
 import endrov.particleMeasure.ParticleMeasure;
+import endrov.particleMeasure.ParticleMeasureEval;
 import endrov.util.ProgressHandle;
 
 /**
@@ -39,7 +40,7 @@ public class EvOpAnalyzeParticle3D
 	
 	public ParticleMeasure exec(ProgressHandle progh, EvChannel regions, EvChannel image)
 		{
-		ParticleMeasure data=new ParticleMeasure(progh, image, regions, new LinkedList<String>(enabled));
+		ParticleMeasure data=ParticleMeasureEval.prepareEvaluate(progh, "", image, regions, new LinkedList<String>(enabled));
 		return data;
 		}
 	

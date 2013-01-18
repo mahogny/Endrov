@@ -45,7 +45,7 @@ public class ParticleMeasureGeometricPCA implements MeasurePropertyType
 		public int count=0;
 		}
 	
-	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.Frame info)
 		{
 		//TODO should thickness be taken into account? world or pixel coordinates?
 		

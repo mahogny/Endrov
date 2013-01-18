@@ -23,6 +23,5 @@ public interface MeasurePropertyType
 	 * Evaluate a stack, store in info. If a particle is not in the list it must be
 	 * created. All particles in the map must receive data.
 	 */
-	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info);
-	// List<Integer, Map<String, Object>>
+	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.Frame info);
 	}
