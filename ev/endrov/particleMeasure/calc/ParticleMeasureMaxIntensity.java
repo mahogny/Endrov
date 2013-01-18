@@ -3,13 +3,14 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.calc;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 
 import endrov.imageset.EvStack;
+import endrov.particleMeasure.ParticleMeasure;
 import endrov.util.ProgressHandle;
 
 /**
@@ -17,7 +18,7 @@ import endrov.util.ProgressHandle;
  * @author Johan Henriksson
  *
  */
-public class ParticleMeasureMaxIntensity implements ParticleMeasure.MeasurePropertyType 
+public class ParticleMeasureMaxIntensity implements MeasurePropertyType 
 	{
 	private static String propertyName="maxI";
 	

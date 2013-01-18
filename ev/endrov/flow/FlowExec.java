@@ -53,10 +53,10 @@ public class FlowExec
 		}
 
 	
-	public FlowExec(EvData data2, EvPath path)
+	public FlowExec(EvData data2, EvPath pathToFlow)
 		{
 		data=new WeakReference<EvData>(data2);
-		currentPath=path;
+		currentPath=pathToFlow;
 		}
 
 	public EvData getData()

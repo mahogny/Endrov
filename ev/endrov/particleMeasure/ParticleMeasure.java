@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure;
 
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -31,6 +31,18 @@ import endrov.data.EvObject;
 import endrov.flow.FlowType;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
+import endrov.particleMeasure.calc.MeasureProperty;
+import endrov.particleMeasure.calc.ParticleMeasureCenterOfMass;
+import endrov.particleMeasure.calc.ParticleMeasureCentroid;
+import endrov.particleMeasure.calc.ParticleMeasureGeometricPCA;
+import endrov.particleMeasure.calc.ParticleMeasureMaxIntensity;
+import endrov.particleMeasure.calc.ParticleMeasureMeanIntensity;
+import endrov.particleMeasure.calc.ParticleMeasureMedianIntensity;
+import endrov.particleMeasure.calc.ParticleMeasureModalIntensity;
+import endrov.particleMeasure.calc.ParticleMeasurePerimeter;
+import endrov.particleMeasure.calc.ParticleMeasureSumIntensity;
+import endrov.particleMeasure.calc.ParticleMeasureSurfaceArea;
+import endrov.particleMeasure.calc.ParticleMeasureVolume;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 
@@ -62,49 +74,30 @@ public class ParticleMeasure extends EvObject
 	public static final String metaType="ParticleMeasure";
 	
 
-	/**
-	 * Register one property that can be measured
-	 */
-	public static void registerMeasure(String name, ParticleMeasure.MeasurePropertyType t)
-		{
-		synchronized (measures)
-			{
-			measures.put(name, t);
-			}
-		}
-
-	
-	/**
-	 * Property types
-	 */
-	protected static HashMap<String, ParticleMeasure.MeasurePropertyType> measures=new HashMap<String, ParticleMeasure.MeasurePropertyType>();
-	
-	
+		
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
+	
 	/**
-	 * One property to measure. Columns must be fixed. 
-	 * 
+	 * Information about one well
 	 */
-	public interface MeasurePropertyType
+	public static class WellInfo extends HashMap<String,FrameInfo>
 		{
-		public String getDesc();
+		private static final long serialVersionUID = 1L;
+//		private Runnable calcInfo;
 		
-		/**
-		 * Which properties, must be fixed and the same for all particles 
-		 */
-		public Set<String> getColumns();
-		
-		/**
-		 * Evaluate a stack, store in info. If a particle is not in the list it must be
-		 * created. All particles in the map must receive data.
-		 */
-		public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info);
+		public FrameInfo getCreateFrame(String well)
+			{
+			FrameInfo info=get(well);
+			if(info==null)
+				put(well,info=new FrameInfo());
+			return info;
+			}
 		}
 
-		
+	
 	/**
 	 * Information about one frame - Just a list of particles, with a lazy evaluator
 	 */
@@ -120,8 +113,6 @@ public class ParticleMeasure extends EvObject
 				put(id,info=new ParticleInfo());
 			return info.map;
 			}
-		
-		
 		}
 	
 	
@@ -132,10 +123,10 @@ public class ParticleMeasure extends EvObject
 	public static class ParticleInfo
 		{
 		private HashMap<String, Object> map=new HashMap<String, Object>();
-		
-		
-		//TODO maybe this rather should do auto-conversion? internally, better 
-		
+
+		/**
+		 * Get value as double
+		 */
 		public Double getDouble(String s)
 			{
 			Object o=map.get(s);
@@ -143,11 +134,15 @@ public class ParticleMeasure extends EvObject
 				return Double.parseDouble((String)o);
 			else if(o instanceof Number)
 				return ((Number)o).doubleValue();
+			else if(o==null)
+				return null;
 			else
 				throw new RuntimeException("Bad type: "+o.getClass());
-//			return (Double)map.get(s);
 			}
 
+		/**
+		 * Get value as integer
+		 */
 		public Integer getInt(String s)
 			{
 			Object o=map.get(s);
@@ -155,22 +150,31 @@ public class ParticleMeasure extends EvObject
 				return Integer.parseInt((String)o);
 			else if(o instanceof Number)
 				return ((Number)o).intValue();
+			else if(o==null)
+				return null;
 			else
 				throw new RuntimeException("Bad type: "+o.getClass());
 			}
 
+		/**
+		 * Get value as string
+		 */
 		public String getString(String s)
 			{
-			return map.get(s).toString();
+			Object o=map.get(s);
+			if(o==null)
+				return null;
+			else
+				return o.toString();
 			}
 
+		/**
+		 * Get raw object
+		 */
 		public Object getObject(String s)
 			{
 			return map.get(s);
 			}
-
-		
-		
 		}
 	
 	
@@ -209,10 +213,6 @@ public class ParticleMeasure extends EvObject
 	 */
 	private TreeSet<String> columns=new TreeSet<String>();
 
-	/**
-	 * Which measures to invoke
-	 */
-	private Set<String> useMeasures=new HashSet<String>();
 
 
 
@@ -226,18 +226,6 @@ public class ParticleMeasure extends EvObject
 		}
 
 	/**
-	 * Measure a stack
-	 */
-	public ParticleMeasure(ProgressHandle progh, EvStack stackValue, EvStack stackMask, List<String> use)
-		{
-		EvChannel chValue=new EvChannel();
-		chValue.putStack(EvDecimal.ZERO, stackValue);
-		EvChannel chMask=new EvChannel();
-		chMask.putStack(EvDecimal.ZERO, stackMask);
-		prepareEvaluate(progh, chValue, chMask, use);
-		}
-	
-	/**
 	 * Measure one entire channel
 	 */
 	public ParticleMeasure(ProgressHandle progh, EvChannel chValue, EvChannel chMask, List<String> use)
@@ -250,6 +238,8 @@ public class ParticleMeasure extends EvObject
 	 */
 	private void prepareEvaluate(final ProgressHandle progh, EvChannel chValue, final EvChannel chMask, List<String> use)
 		{
+		final Set<String> useMeasures=new HashSet<String>();
+
 		//Clear prior data
 		useMeasures.clear();
 		useMeasures.addAll(use);
@@ -258,7 +248,7 @@ public class ParticleMeasure extends EvObject
 		
 		//Figure out columns
 		for(String s:useMeasures)
-			columns.addAll(measures.get(s).getColumns());
+			columns.addAll(MeasureProperty.measures.get(s).getColumns());
 
 		//Lazily evaluate stacks
 		//for(Map.Entry<EvDecimal, EvStack> e:chValue.imageLoader.entrySet())
@@ -276,7 +266,7 @@ public class ParticleMeasure extends EvObject
 				public void run()
 					{
 					for(String s:useMeasures)
-						measures.get(s).analyze(progh, weakStackValue.get(), weakChMask.get().getStack(frame),weakInfo.get());
+						MeasureProperty.measures.get(s).analyze(progh, weakStackValue.get(), weakChMask.get().getStack(frame),weakInfo.get());
 					}
 				};
 			
@@ -494,10 +484,13 @@ public class ParticleMeasure extends EvObject
 				}
 			}
 		}
-		
+
+	
+	
 	/**
 	 * Filter of particle measure data
-	 *
+	 * 
+	 * TODO can use the same structure also for adding data!
 	 */
 	public static interface Filter
 		{
@@ -567,7 +560,12 @@ public class ParticleMeasure extends EvObject
 		return cloneUsingSerialize();
 		}
 	
-	
+
+	public void addColumn(String s)
+		{
+		columns.add(s);
+		}
+
 	
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -577,25 +575,21 @@ public class ParticleMeasure extends EvObject
 		{
 		EvData.supportedMetadataFormats.put(metaType,ParticleMeasure.class);
 		
-		ParticleMeasure.registerMeasure("max value", new ParticleMeasureMaxIntensity());
-		ParticleMeasure.registerMeasure("sum value", new ParticleMeasureSumIntensity());
-		ParticleMeasure.registerMeasure("mean value", new ParticleMeasureMeanIntensity());
-		ParticleMeasure.registerMeasure("modal value", new ParticleMeasureModalIntensity());
-		ParticleMeasure.registerMeasure("median value", new ParticleMeasureMedianIntensity());
+		MeasureProperty.registerMeasure("max value", new ParticleMeasureMaxIntensity());
+		MeasureProperty.registerMeasure("sum value", new ParticleMeasureSumIntensity());
+		MeasureProperty.registerMeasure("mean value", new ParticleMeasureMeanIntensity());
+		MeasureProperty.registerMeasure("modal value", new ParticleMeasureModalIntensity());
+		MeasureProperty.registerMeasure("median value", new ParticleMeasureMedianIntensity());
 		
-		ParticleMeasure.registerMeasure("volume", new ParticleMeasureVolume());
-		ParticleMeasure.registerMeasure("center of mass", new ParticleMeasureCenterOfMass());
-		ParticleMeasure.registerMeasure("centroid", new ParticleMeasureCentroid());
-		ParticleMeasure.registerMeasure("surface area", new ParticleMeasureSurfaceArea());
-		ParticleMeasure.registerMeasure("perimeter", new ParticleMeasurePerimeter());
-		ParticleMeasure.registerMeasure("Geometric PCA", new ParticleMeasureGeometricPCA());
+		MeasureProperty.registerMeasure("volume", new ParticleMeasureVolume());
+		MeasureProperty.registerMeasure("center of mass", new ParticleMeasureCenterOfMass());
+		MeasureProperty.registerMeasure("centroid", new ParticleMeasureCentroid());
+		MeasureProperty.registerMeasure("surface area", new ParticleMeasureSurfaceArea());
+		MeasureProperty.registerMeasure("perimeter", new ParticleMeasurePerimeter());
+		MeasureProperty.registerMeasure("Geometric PCA", new ParticleMeasureGeometricPCA());
 		}
 	
 	
-	public void addColumn(String s)
-		{
-		columns.add(s);
-		}
 	
 
 	}

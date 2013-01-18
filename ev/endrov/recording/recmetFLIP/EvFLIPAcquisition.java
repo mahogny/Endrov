@@ -11,7 +11,7 @@ import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.flow.Flow;
 import endrov.flow.FlowConn;
-import endrov.flowBasic.objects.FlowUnitObjectIO;
+import endrov.flowBasic.objects.FlowUnitObjectReference;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvChannel;
@@ -124,8 +124,8 @@ public class EvFLIPAcquisition extends EvAcquisition
 							FlowUnitSumIntensityROI unitCalc=new FlowUnitSumIntensityROI();
 							flow.units.add(unitCalc);
 							
-							FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO("ch");
-							FlowUnitObjectIO unitGetRoiObserve=new FlowUnitObjectIO("roiObserve");
+							FlowUnitObjectReference unitGetChan=new FlowUnitObjectReference("ch");
+							FlowUnitObjectReference unitGetRoiObserve=new FlowUnitObjectReference("roiObserve");
 							FlowUnitShowGraph unitShowSeries=new FlowUnitShowGraph();
 							
 							flow.units.add(unitGetChan);

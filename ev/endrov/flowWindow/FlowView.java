@@ -122,7 +122,7 @@ public class FlowView extends JPanel implements MouseListener, MouseMotionListen
 	 */
 	public void setFlow(Flow flow, EvData data, EvContainer parent, EvPath path)
 		{
-		enabled=flow!=null;
+		enabled = flow!=null;
 		if(flow==null)
 			flow=new Flow();
 		if(flow!=this.flow || data!=flowExec.getData() || parent!=flowExec.getParent() || !path.equals(flowExec.getPath()))
@@ -170,11 +170,8 @@ public class FlowView extends JPanel implements MouseListener, MouseMotionListen
 	 */
 	public void setUnitToPlace(FlowUnit u)
 		{
-		System.out.println("here, "+enabled);
 		if(enabled)
 			placingUnit=u;
-//		else
-//			BasicWindow.showErrorDialog("Create a new flow object first");
 		}
 	
 	

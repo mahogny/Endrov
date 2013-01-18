@@ -7,8 +7,11 @@ package endrov.flowBasic.objects;
 
 import java.awt.Color;
 
+import javax.swing.ImageIcon;
+
 public class CategoryInfo
 	{
+	public static Color bgColor=Color.GREEN;
 	public static String name="Objects";
-	public static Color bgColor=new Color(255,200,255);
+	public static ImageIcon icon=null;
 	}

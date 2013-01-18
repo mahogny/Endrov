@@ -3,67 +3,67 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.calc;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 
 import endrov.imageset.EvStack;
+import endrov.particleMeasure.ParticleMeasure;
 import endrov.util.ProgressHandle;
 
 /**
- * Measure: integral intensity
+ * Measure: minimum intensity
  * @author Johan Henriksson
  *
  */
-public class ParticleMeasureVolume implements ParticleMeasure.MeasurePropertyType 
+public class ParticleMeasureMinIntensity implements MeasurePropertyType 
 	{
-	private static String propertyName="volume";
-
+	private static String propertyName="minI";
+	
+	
 	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
-		HashMap<Integer,Integer> vol=new HashMap<Integer, Integer>();
+		HashMap<Integer,Double> min=new HashMap<Integer, Double>();
 		//TODO: a special map for this case could speed up plenty.
 		//also: only accept integer IDs? this would speed up hashing and indexing.
 		//can be made even faster as a non-hash
 
-		//Find maximas
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
+			double[] arrValue=stackValue.getInt(az).getPixels(progh).convertToDouble(true).getArrayDouble();
 			int[] arrID=stackMask.getInt(az).getPixels(progh).convertToInt(true).getArrayInt();
 			
-			for(int i=0;i<arrID.length;i++)
+			for(int i=0;i<arrValue.length;i++)
 				{
+				double v=arrValue[i];
 				int id=arrID[i];
 	
-				//TODO should 0 be ignored? sounds good.
-				//Can know that it should be ignored by scanning which IDs there are first, and then exclude 0.
-				//costs a bit more but convenience makes it worth it. no if needed here then.
-//				if(m==0)
 				if(id!=0)
 					{
-					Integer lastVol=vol.get(id);
-					if(lastVol==null)
-						lastVol=0;
-					vol.put(id, lastVol+1);
+					Double curMin=min.get(id);
+					if(curMin==null || curMin<v)
+						min.put(id, v);
 					}
 				
 				}
 			
+			
 			}
 		
 		//Write into particles
-		for(int id:vol.keySet())
+		for(int id:min.keySet())
 			{
 			HashMap<String, Object> p=info.getCreateParticle(id);
-			p.put(propertyName, vol.get(id));
+			p.put(propertyName, min.get(id));
 			}
+		
 		}
 
 	public String getDesc()
 		{
-		return "Volume";
+		return "Maximum intensity of any pixel";
 		}
 
 	public Set<String> getColumns()

@@ -27,13 +27,13 @@ import endrov.util.ProgressHandle;
  */
 public class Scene2DStack implements Scene2DElement
 	{
-	int z;
+	private int z;
 	private EvStack stack=null;
 	public double contrast=1;
 	public double brightness=0;
 	private BufferedImage bufi=null;
-	public EvColor color=EvColor.white;
 	
+	public EvColor color=EvColor.white;
 	public EvColor borderColor;
 	
 	

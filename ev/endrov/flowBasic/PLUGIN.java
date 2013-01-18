@@ -4,16 +4,17 @@
  * for the full text and how to cite.
  */
 package endrov.flowBasic;
+
 import endrov.ev.PluginDef;
 import endrov.flowBasic.collection.FlowUnitConcat;
 import endrov.flowBasic.collection.FlowUnitHeadTail;
 import endrov.flowBasic.collection.FlowUnitSize;
 import endrov.flowBasic.constants.*;
+import endrov.flowBasic.control.FlowUnitComments;
 import endrov.flowBasic.control.FlowUnitIf;
 import endrov.flowBasic.control.FlowUnitInput;
 import endrov.flowBasic.control.FlowUnitMap;
 import endrov.flowBasic.control.FlowUnitOutput;
-import endrov.flowBasic.control.FlowUnitScript;
 import endrov.flowBasic.control.FlowUnitShow;
 import endrov.flowBasic.convert.FlowUnitConvertFromVector2i;
 import endrov.flowBasic.convert.FlowUnitConvertFromVector3i;
@@ -30,8 +31,11 @@ import endrov.flowBasic.logic.FlowUnitNot;
 import endrov.flowBasic.logic.FlowUnitOr;
 import endrov.flowBasic.logic.FlowUnitXor;
 import endrov.flowBasic.math.*;
-import endrov.flowBasic.misc.FlowUnitComments;
-import endrov.flowBasic.objects.*;
+import endrov.flowBasic.objects.FlowUnitFlowParent;
+import endrov.flowBasic.objects.FlowUnitGetObjectsOfType;
+import endrov.flowBasic.objects.FlowUnitObjectReference;
+import endrov.flowBasic.objects.FlowUnitThisData;
+import endrov.flowBasic.objects.FlowUnitThisFlow;
 
 public class PLUGIN extends PluginDef
 	{
@@ -66,15 +70,33 @@ public class PLUGIN extends PluginDef
 		
 		return new Class[]{
 				//Collection
-				FlowUnitConcat.class,FlowUnitHeadTail.class,FlowUnitMap.class,FlowUnitSize.class,
+				FlowUnitConcat.class,
+				FlowUnitHeadTail.class,
+				FlowUnitMap.class,
+				FlowUnitSize.class,
 				
 				//Constants
-				FlowUnitConstBoolean.class,FlowUnitConstDouble.class,FlowUnitConstInteger.class,
-				FlowUnitConstString.class,FlowUnitConstClass.class,FlowUnitConstEvDecimal.class,
+				FlowUnitConstBoolean.class,
+				FlowUnitConstDouble.class,
+				FlowUnitConstInteger.class,
+				FlowUnitConstString.class,
+				FlowUnitConstClass.class,
+				FlowUnitConstEvDecimal.class,
 				FlowUnitConstFile.class,
-				
+
+				//Objects
+				FlowUnitGetObjectsOfType.class,
+				FlowUnitFlowParent.class,
+				FlowUnitObjectReference.class,
+				FlowUnitThisData.class,
+				FlowUnitThisFlow.class,
+
 				//Control
-				FlowUnitIf.class,FlowUnitInput.class,FlowUnitOutput.class,FlowUnitScript.class,FlowUnitShow.class,
+				FlowUnitIf.class,
+				FlowUnitInput.class,
+				FlowUnitOutput.class,
+				//FlowUnitScript.class,
+				FlowUnitShow.class,
 				FlowUnitComments.class,
 
 				//Convert
@@ -82,6 +104,7 @@ public class PLUGIN extends PluginDef
 				FlowUnitConvertFromVector3i.class,
 				FlowUnitConvertToVector2i.class,
 				FlowUnitConvertToVector3i.class,
+				FlowUnitWrapInChannel.class,
 
 				//db
 				FlowUnitConnectSQL.class,
@@ -97,8 +120,12 @@ public class PLUGIN extends PluginDef
 				FlowUnitCastPixelType.class,
 
 				//Logic
-				FlowUnitAnd.class,FlowUnitOr.class,FlowUnitXor.class,FlowUnitNot.class,
-				FlowUnitGreaterThan.class,FlowUnitEquals.class,
+				FlowUnitAnd.class,
+				FlowUnitOr.class,
+				FlowUnitXor.class,
+				FlowUnitNot.class,
+				FlowUnitGreaterThan.class,
+				FlowUnitEquals.class,
 
 				//Math
 				FlowUnitAdd.class,FlowUnitDiv.class,FlowUnitSub.class,FlowUnitMul.class,
@@ -108,12 +135,6 @@ public class PLUGIN extends PluginDef
 				FlowUnitAbsGradXY2.class,
 				FlowUnitComplexMul.class,
 				FlowUnitMinusSign.class,
-				
-				//Objects
-				FlowUnitGetObject.class,FlowUnitParent.class,FlowUnitObjectIO.class,FlowUnitThisData.class,FlowUnitThisFlow.class,
-				FlowUnitWrapInChannel.class,
-				
-				
 				
 				
 		};

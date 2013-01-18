@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.calc;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,17 +11,18 @@ import java.util.HashMap;
 import java.util.Set;
 
 import endrov.imageset.EvStack;
+import endrov.particleMeasure.ParticleMeasure;
 import endrov.util.EvListUtil;
 import endrov.util.ProgressHandle;
 
 /**
- * Measure: median intensity
+ * Measure: modal intensity
  * @author Johan Henriksson
  *
  */
-public class ParticleMeasureModalIntensity implements ParticleMeasure.MeasurePropertyType 
+public class ParticleMeasureMedianIntensity implements MeasurePropertyType 
 	{
-	private static String propertyName="modalI";
+	private static String propertyName="medianI";
 	
 	
 	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
@@ -60,16 +61,15 @@ public class ParticleMeasureModalIntensity implements ParticleMeasure.MeasurePro
 			{
 			HashMap<String, Object> p=info.getCreateParticle(id);
 			ArrayList<Double> entries=entryList.get(id);
-			double[] arr=EvListUtil.toDoubleArray(entries);
-			double median=EvListUtil.findPercentileDouble(arr,0.5);
-			p.put(propertyName, median);
+			double modal=EvListUtil.modalValue(EvListUtil.toDoubleArray(entries));
+			p.put(propertyName, modal);
 			}
 		
 		}
 
 	public String getDesc()
 		{
-		return "Median intensity of any pixel";
+		return "Modal (most common) intensity of any pixel";
 		}
 
 	public Set<String> getColumns()

@@ -3,9 +3,10 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.flow;
 
-import endrov.flowMeasure.ParticleMeasure.ParticleInfo;
+import endrov.particleMeasure.ParticleMeasure;
+import endrov.particleMeasure.ParticleMeasure.ParticleInfo;
 import endrov.util.EvDecimal;
 
 /**

@@ -29,11 +29,11 @@ import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.ev.PersonalConfig;
 import endrov.flow.Flow;
-import endrov.flowMeasure.ParticleMeasure;
-import endrov.flowMeasure.ParticleMeasure.FrameInfo;
 import endrov.imageWindow.FrameControlImage;
 import endrov.imageset.*;
 import endrov.imagesetBD.EvIODataBD;
+import endrov.particleMeasure.ParticleMeasure;
+import endrov.particleMeasure.ParticleMeasure.FrameInfo;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
@@ -81,16 +81,17 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	private JComboBox comboAttribute1=new JComboBox();
 	private JComboBox comboAttribute2=new JComboBox();
 	private JComboBox comboChannel=new JComboBox();
-	private JComboBox comboAggregation=new JComboBox(PlateWindowView.getAggrModes());
+	private JComboBox comboDisplay=new JComboBox(PlateWindowView.getAggrModes());
 	private final FrameControlImage frameControl=new FrameControlImage(this, false, true);
 	private PlateWindowView imagePanel=new PlateWindowView();	
 	private ChannelWidget cw=new ChannelWidget();
-	private JButton bExport=new JButton("Export as CSV");
+//	private JButton bExport=new JButton("Export as CSV");
 
 	private boolean disableDataChanged=false;
 
 	private final JMenu menuPlateWindow=new JMenu("PlateWindow");
 	private final JMenuItem miZoom=new JMenuItem("Zoom to fit");
+	private final JMenuItem miExportCSV=new JMenuItem("Export as CSV");
 	
 	
 	
@@ -106,7 +107,7 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 		comboData.addActionListener(this);
 		comboFeature.addActionListener(this);
 		comboFlow.addActionListener(this);
-		comboAggregation.addActionListener(this);
+		comboDisplay.addActionListener(this);
 		comboAttribute1.addActionListener(this);
 		comboAttribute2.addActionListener(this);
 		comboChannel.addActionListener(this);
@@ -139,11 +140,11 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 												comboAttribute1,
 												new JLabel("Secondary attribute:"),
 												comboAttribute2,
-												new JLabel("Attribute display:"),
-												comboAggregation)
+												new JLabel("Display:"),
+												comboDisplay)
 												)),
 						null,
-						bExport
+						null
 						)),
 				BorderLayout.CENTER);
 		add(
@@ -172,8 +173,11 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 		
 			
 		menuPlateWindow.add(miZoom);
+		menuPlateWindow.add(miExportCSV);
+
 		miZoom.addActionListener(this);
-		
+		miExportCSV.addActionListener(this);
+
 		}
 	
 
@@ -310,7 +314,13 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 		
 		public void fitRange()
 			{
-			//TODO
+			PlateWindowView.ValueRange range=imagePanel.getIntensityRange();
+			if(range!=null)
+				{
+				contrast=255.0/(range.max-range.min);
+				brightness=-range.min*contrast;
+				updatePanelContrastBrightness();
+				}
 			}
 		
 		public void stateChanged(ChangeEvent e)
@@ -331,7 +341,6 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	
 	public void updateWindowTitle()
 		{
-		System.out.println("title");
 		setTitleEvWindow("Plate Window");
 		}
 	
@@ -346,7 +355,6 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 		if(!disableDataChanged)
 			{
 			disableDataChanged=true;
-			System.out.println("data cahnge");
 			buildMenu();
 
 			comboData.updateList();
@@ -378,11 +386,15 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	 */
 	public void updateWells()
 		{
-		imagePanel.wellMap.clear();
+		imagePanel.clearWells();
 		EvContainer con=comboData.getSelectedObject();
 
 		imagePanel.setParticleMeasure(getParticleMeasure());
-		imagePanel.setAggrMethod(comboAggregation.getSelectedItem(), 
+		
+		EvPath pathToFlow=comboFlow.getSelectedPath();
+		imagePanel.setFlow(pathToFlow);
+		
+		imagePanel.setAggrMethod(comboDisplay.getSelectedItem(), 
 				(String)comboAttribute1.getSelectedItem(),
 				(String)comboAttribute2.getSelectedItem());
 		
@@ -500,7 +512,7 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 			dataChangedEvent();
 		else if(e.getSource()==comboChannel)
 			dataChangedEvent();
-		else if(e.getSource()==comboAttribute1 || e.getSource()==comboAttribute2 || e.getSource()==comboAggregation)
+		else if(e.getSource()==comboAttribute1 || e.getSource()==comboAttribute2 || e.getSource()==comboDisplay)
 			dataChangedEvent();
 		else if(e.getSource()==miZoom)
 			imagePanel.zoomToFit();

@@ -13,7 +13,7 @@ import endrov.flow.Flow;
 import endrov.flow.FlowConn;
 import endrov.flowBasic.constants.FlowUnitConstEvDecimal;
 import endrov.flowBasic.control.FlowUnitShow;
-import endrov.flowBasic.objects.FlowUnitObjectIO;
+import endrov.flowBasic.objects.FlowUnitObjectReference;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvChannel;
@@ -29,7 +29,7 @@ import endrov.roi.ROI;
 import endrov.util.EvDecimal;
 
 /**
- * 
+ * FRAP acquisition
  * 
  * @author Johan Henriksson
  *
@@ -109,8 +109,8 @@ public class EvFRAPAcquisition extends EvAcquisition
 						FlowUnitCalcFRAP unitCalc=new FlowUnitCalcFRAP();
 						flow.units.add(unitCalc);
 						
-						FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO("ch");
-						FlowUnitObjectIO unitGetROI=new FlowUnitObjectIO("roi");
+						FlowUnitObjectReference unitGetChan=new FlowUnitObjectReference("ch");
+						FlowUnitObjectReference unitGetROI=new FlowUnitObjectReference("roi");
 						FlowUnitConstEvDecimal unitFrame=new FlowUnitConstEvDecimal(EvDecimal.ZERO);
 						FlowUnitShow unitShowLifetime=new FlowUnitShow();
 						FlowUnitShow unitShowMobile=new FlowUnitShow();

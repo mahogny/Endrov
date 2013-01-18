@@ -25,8 +25,8 @@ import endrov.flow.FlowUnitDeclaration;
  */
 public class FlowUnitThisData extends FlowUnitBasic
 	{
-	private static final String metaType="getthisdata";
-	private static final String showName="ThisData";
+	private static final String metaType="getflowdata";
+	private static final String showName="FlowData";
 	
 	/******************************************************************************************************
 	 * Plugin declaration

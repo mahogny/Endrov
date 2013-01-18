@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.calc;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +15,7 @@ import cern.colt.matrix.tdouble.algo.decomposition.DoubleEigenvalueDecomposition
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 
 import endrov.imageset.EvStack;
+import endrov.particleMeasure.ParticleMeasure;
 import endrov.util.EvMathUtil;
 import endrov.util.ProgressHandle;
 
@@ -23,7 +24,7 @@ import endrov.util.ProgressHandle;
  * @author Johan Henriksson
  *
  */
-public class ParticleMeasureGeometricPCA implements ParticleMeasure.MeasurePropertyType 
+public class ParticleMeasureGeometricPCA implements MeasurePropertyType 
 	{
 	private static String propertyName="gpca";
 

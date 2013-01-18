@@ -17,6 +17,12 @@ import endrov.data.EvData;
 import endrov.data.EvObject;
 
 
+/**
+ * Model for tree of all objects
+ * 
+ * @author mahogny
+ *
+ */
 public class DataTreeModel implements TreeModel
 	{
 	LinkedList<TreeModelListener> listener=new LinkedList<TreeModelListener>(); 
@@ -24,7 +30,12 @@ public class DataTreeModel implements TreeModel
 	//needed?
 	//public WeakHashMap<Object, ROITreeElement> allElements=new WeakHashMap<Object, ROITreeElement>(); 
 	
-	DataTreeElement root=new DataTreeElement();
+	private DataTreeElement root;
+	
+	public DataTreeModel(boolean canCreate)
+		{
+		root=new DataTreeElement(canCreate);
+		}
 	
 	public void addTreeModelListener(TreeModelListener l)
 		{
@@ -34,7 +45,6 @@ public class DataTreeModel implements TreeModel
 	public Object getChild(Object parent, int index)
 		{
 		DataTreeElement eparent=(DataTreeElement)parent;
-		//System.out.println("+++++++++++++++++++++++++++++++++++++++++get child "+eparent.getChild(index));
 		return eparent.getChild(index);
 		}
 
@@ -44,9 +54,12 @@ public class DataTreeModel implements TreeModel
 		if(eparent.isRoot)
 			return EvData.openedData.size();
 		else
-			return eparent.getLeaf().metaObject.size();
+			{
+			return eparent.getChildCount();
+			}
 		}
 
+	
 	public int getIndexOfChild(Object parent, Object child)
 		{
 		DataTreeElement eparent=(DataTreeElement)parent;
@@ -65,7 +78,8 @@ public class DataTreeModel implements TreeModel
 					return i;
 				i++;
 				}
-			return -1;
+			return i;
+//			return -1;
 			}
 		}
 
@@ -77,11 +91,10 @@ public class DataTreeModel implements TreeModel
 	public boolean isLeaf(Object node)
 		{
 		DataTreeElement eparent=(DataTreeElement)node;
-		
 		if(eparent.isRoot)
 			return false;
 		else
-			return eparent.getLeaf().metaObject.isEmpty();
+			return eparent.getChildCount()==0;
 		}
 
 	public void removeTreeModelListener(TreeModelListener l)

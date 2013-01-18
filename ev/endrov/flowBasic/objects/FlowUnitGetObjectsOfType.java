@@ -19,14 +19,14 @@ import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 
 /**
- * Get the container that has this flow
+ * Get all objects of a type from a container
  * @author Johan Henriksson
  *
  */
-public class FlowUnitParent extends FlowUnitBasic
+public class FlowUnitGetObjectsOfType extends FlowUnitBasic
 	{
-	private static final String metaType="getthisparent";
-	private static final String showName="Parent";
+	private static final String metaType="getevobjectsoftype";
+	private static final String showName="GetObjectsOfType";
 	
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -34,24 +34,26 @@ public class FlowUnitParent extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitParent.class, null,"Get the EvContainer that has this flow"));		
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitGetObjectsOfType.class, null,"Get all objects of a type from a container"));		
 		}
-	
+
 	
 	public String getBasicShowName(){return showName;}
-	public ImageIcon getIcon(){return null;}	
+	public ImageIcon getIcon(){return null;}
 	public Color getBackground(){return CategoryInfo.bgColor;}
-	
+
 	
 	
 	/** Get types of flows in */
-	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
+	public void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
+		types.put("container", new FlowType(EvContainer.class));
+		types.put("class", new FlowType(Class.class));
 		}
 	/** Get types of flows out */
-	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
+	public void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("parent", new FlowType(EvContainer.class));
+		types.put("objects", null);
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -59,9 +61,10 @@ public class FlowUnitParent extends FlowUnitBasic
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
+		EvContainer con=(EvContainer)flow.getInputValue(this, exec, "container");
+		Class<?> cl=(Class<?>)flow.getInputValue(this, exec, "class");
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
-		lastOutput.put("parent", exec.getParent());
+		lastOutput.put("objects",con.getObjects(cl));
 		}
 	
 	}
-	

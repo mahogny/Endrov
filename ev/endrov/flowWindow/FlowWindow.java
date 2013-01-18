@@ -37,7 +37,7 @@ import endrov.data.tree.DataTreeElement;
 import endrov.ev.EV;
 import endrov.ev.PersonalConfig;
 import endrov.flow.*;
-import endrov.flowBasic.objects.FlowUnitObjectIO;
+import endrov.flowBasic.objects.FlowUnitObjectReference;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
@@ -103,7 +103,7 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 	
 	private JTree unitTree;
 	
-	private DataTree dataTree=new DataTree();
+	private DataTree dataTree=new DataTree(true);
 	
 	private JButton bCopy=BasicIcon.getButtonCopy();
 	private JButton bPaste=BasicIcon.getButtonPaste();
@@ -172,15 +172,22 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 			public void valueChanged(TreeSelectionEvent e)
 				{
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)e.getPath().getLastPathComponent();
-				if(node!=null && node.isLeaf() && e!=null)
+				
+				EvPath flowPath=objectCombo.getSelectedPath();
+				if(flowPath!=null)
 					{
-					FlowUnitDeclaration decl=(FlowUnitDeclaration)node.getUserObject();
-					System.out.println(decl);
-					FlowUnit unit=decl.createInstance();
-					if(unit!=null)
-						wthis.fp.setUnitToPlace(unit);
-					unitTree.setSelectionPath(null);
+					if(node!=null && node.isLeaf() && e!=null)
+						{
+						FlowUnitDeclaration decl=(FlowUnitDeclaration)node.getUserObject();
+						System.out.println(decl);
+						FlowUnit unit=decl.createInstance();
+						if(unit!=null)
+							wthis.fp.setUnitToPlace(unit);
+						unitTree.setSelectionPath(null);
+						}
 					}
+				else
+					BasicWindow.showErrorDialog("Create a new flow object first");
 				}
 		});
 		//TODO: new tree model, disable multiple selection
@@ -191,15 +198,20 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 			{
 			DataTreeElement node = (DataTreeElement)e.getPath().getLastPathComponent();
 			EvPath flowPath=objectCombo.getSelectedPath();
-			if(node!=null && !node.isRoot && e!=null && flowPath!=null)
+			if(flowPath!=null)
 				{
-				String path=node.getPath().getStringPathRelativeTo(flowPath.getParent());
-				FlowUnitObjectIO unit=new FlowUnitObjectIO(path);
-				
-				if(unit!=null)
-					wthis.fp.setUnitToPlace(unit);
-				dataTree.setSelectionPath(null);
+				if(flowPath!=null)
+					{
+					String path=node.getPath().getStringPathRelativeTo(flowPath.getParent());
+					FlowUnitObjectReference unit=new FlowUnitObjectReference(path);
+					
+					if(unit!=null)
+						wthis.fp.setUnitToPlace(unit);
+					dataTree.setSelectionPath(null);
+					}
 				}
+			else
+				BasicWindow.showErrorDialog("Create a new flow object first");
 			}
 		});
 		

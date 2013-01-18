@@ -3,8 +3,13 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure;
 import endrov.ev.PluginDef;
+import endrov.particleMeasure.flow.FlowUnitIdentifyParticles3D;
+import endrov.particleMeasure.flow.FlowUnitMeasureParticle;
+import endrov.particleMeasure.flow.FlowUnitMeasureToFile;
+import endrov.particleMeasure.flow.FlowUnitMeasureToSQL;
+import endrov.particleMeasure.flow.FlowUnitShowMeasure;
 
 public class PLUGIN extends PluginDef
 	{

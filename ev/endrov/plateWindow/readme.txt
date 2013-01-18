@@ -54,6 +54,10 @@ should this become a more general object? like, Table?
 only difference from a Table is that it has lazy functionality
 
 
+current measure:
+
+frame -> particleID -> columns
+
 
 
 

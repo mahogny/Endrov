@@ -13,6 +13,7 @@ import endrov.data.EvPath;
 
 /**
  * Node in the DataTree widget
+ * 
  * @author Johan Henriksson
  *
  */
@@ -20,25 +21,32 @@ public class DataTreeElement
 	{
 	public final boolean isRoot;
 	private EvPath path;
-	
+	private boolean canCreate;
 	private WeakReference<EvData> data; 
+	private boolean isCreate;
 
-	public DataTreeElement()
+	
+	public DataTreeElement(boolean canCreate)
 		{
 		isRoot=true;
+		this.canCreate=canCreate;
 		}
 
-	public DataTreeElement(EvData data, EvPath path)
+	public DataTreeElement(boolean isCreate, boolean canCreate, EvData data, EvPath path)
 		{
 		this.path=path;
 		this.data=new WeakReference<EvData>(data);
 		isRoot=false;
+		this.canCreate=canCreate;
+		this.isCreate=isCreate;
 		}
 	
 	public EvContainer getLeaf()
 		{
-		return path.getObject();
-//		return data.get().getChild(path);
+		if(isCreate)
+			throw new RuntimeException("Getting object for create-leaf");
+		else
+			return path.getObject();
 		}
 
 	public EvPath getPath()
@@ -58,7 +66,7 @@ public class DataTreeElement
 		if(isRoot)
 			{
 			EvData data=EvData.openedData.get(index);
-			return new DataTreeElement(data,new EvPath(data));
+			return new DataTreeElement(false, canCreate, data,new EvPath(data));
 			}
 		else
 			{
@@ -67,9 +75,11 @@ public class DataTreeElement
 			for(String s:c.metaObject.keySet())
 				{
 				if(i==index)
-					return new DataTreeElement(data.get(),new EvPath(path,s));
+					return new DataTreeElement(false, canCreate, data.get(),new EvPath(path,s));
 				i++;
 				}
+			if(canCreate && i==index)
+				return new DataTreeElement(true, false, data.get(),new EvPath(path,"<NEW>"));
 			return null;
 			}
 		}
@@ -87,6 +97,24 @@ public class DataTreeElement
 			else
 				return leaf;
 			}
+		}
+
+	public boolean isRealObject()
+		{
+		return !isCreate;
+		}
+
+	public int getChildCount()
+		{
+		if(isRealObject())
+			{
+			if(canCreate)
+				return getLeaf().metaObject.size()+1;
+			else
+				return getLeaf().metaObject.size();
+			}
+		else
+			return 0;
 		}
 	
 	

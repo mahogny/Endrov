@@ -42,8 +42,6 @@ import endrov.imageset.EvPixels;
  */
 public class DoublePSFMatrix2D {
 
-    private static final long serialVersionUID = -7503394849184235286L;
-
     private BoundaryType boundary;
 
     private ResizingType resizing;

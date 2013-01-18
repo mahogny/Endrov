@@ -16,7 +16,6 @@ import javax.swing.tree.TreePath;
 
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.bookmark.Bookmark;
-import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 
@@ -29,9 +28,9 @@ public class DataTree extends JTree
 	{
 	private static final long serialVersionUID = 1L;
 
-	public DataTree()
+	public DataTree(boolean canCreate)
 		{
-		super(new DataTreeModel());
+		super(new DataTreeModel(canCreate));
 		setCellRenderer(new MyRenderer());
 		setShowsRootHandles(true);
 		setRootVisible(false);
@@ -54,14 +53,9 @@ public class DataTree extends JTree
 				setIcon(BasicIcon.iconEndrov);
 			else
 				{
-				setIcon(elem.getLeaf().getContainerIcon());
-//				setIcon(BasicIcon.iconData);
-				
-				//Need generic object icon
-				
+				if(elem.isRealObject())
+					setIcon(elem.getLeaf().getContainerIcon());
 				}
-//			setToolTipText(decl.description);
-	//		setToolTipText(null);
 			
 			return this;
 			}
@@ -95,7 +89,7 @@ public class DataTree extends JTree
 		EvData.registerOpenedData(new EvData());
 
 	//	JTree tree=new JTree(new DataTreeModel());
-		DataTree tree=new DataTree();
+		DataTree tree=new DataTree(true);
 		frame.add(tree);
 //		tree.setCellRenderer(new MyRenderer());
 		//Tree must listen on data updates
@@ -126,7 +120,8 @@ public class DataTree extends JTree
 	/**
 	 * Get all selected objects
 	 */
-	public List<EvContainer> getSelectedObjects()
+	/*
+	private List<EvContainer> getSelectedObjects()
 		{
 		TreePath[] sel=getSelectionPaths();
 		LinkedList<EvContainer> paths=new LinkedList<EvContainer>();
@@ -134,6 +129,6 @@ public class DataTree extends JTree
 			paths.add(((DataTreeElement)o.getLastPathComponent()).getLeaf());
 		return paths;
 		}
-
+*/
 	
 	}

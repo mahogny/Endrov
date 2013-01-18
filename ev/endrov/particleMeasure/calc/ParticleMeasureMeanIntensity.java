@@ -3,27 +3,29 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.calc;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 
 import endrov.imageset.EvStack;
+import endrov.particleMeasure.ParticleMeasure;
 import endrov.util.ProgressHandle;
 
 /**
- * Measure: sum (integral) of intensity
+ * Measure: mean intensity
  * @author Johan Henriksson
  *
  */
-public class ParticleMeasureSumIntensity implements ParticleMeasure.MeasurePropertyType 
+public class ParticleMeasureMeanIntensity implements MeasurePropertyType 
 	{
-	private static String propertyName="sumI";
+	private static String propertyName="meanI";
 
 	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
 		HashMap<Integer,Double> sum=new HashMap<Integer, Double>();
+		HashMap<Integer,Double> vol=new HashMap<Integer, Double>();
 		//TODO: a special map for this case could speed up plenty.
 		//also: only accept integer IDs? this would speed up hashing and indexing.
 		//can be made even faster as a non-hash
@@ -44,10 +46,16 @@ public class ParticleMeasureSumIntensity implements ParticleMeasure.MeasurePrope
 //				if(m==0)
 				if(id!=0)
 					{
-					Double lastValue=sum.get(id);
-					if(lastValue==null)
-						lastValue=0.0;
-					sum.put(id, lastValue+v);
+					Double lastSum=sum.get(id);
+					if(lastSum==null)
+						lastSum=0.0;
+					sum.put(id, lastSum+v);
+					
+					Double lastVol=vol.get(id);
+					if(lastVol==null)
+						lastVol=0.0;
+					vol.put(id, lastVol+1);
+
 					}
 				
 				}
@@ -59,13 +67,13 @@ public class ParticleMeasureSumIntensity implements ParticleMeasure.MeasurePrope
 		for(int id:sum.keySet())
 			{
 			HashMap<String, Object> p=info.getCreateParticle(id);
-			p.put(propertyName, sum.get(id));
+			p.put(propertyName, sum.get(id)/vol.get(id));
 			}
 		}
 
 	public String getDesc()
 		{
-		return "Sum intensity of any pixel";
+		return "Mean intensity of any pixel";
 		}
 
 	public Set<String> getColumns()

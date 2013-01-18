@@ -73,7 +73,7 @@ public class FlowUnitConstFile extends FlowUnitConst
 	public Component getGUIcomponent(final FlowView p)
 		{
 		final JTextArea field=new JTextArea(var);
-		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
+		field.setMinimumSize(new Dimension(20,field.getMinimumSize().height));
 		EvSwingUtil.textAreaChangeListener(field, new ChangeListener(){
 		public void stateChanged(ChangeEvent e)
 			{

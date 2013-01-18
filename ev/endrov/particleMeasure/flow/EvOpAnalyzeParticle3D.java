@@ -3,11 +3,12 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.flow;
 
 import java.util.*;
 
 import endrov.imageset.EvChannel;
+import endrov.particleMeasure.ParticleMeasure;
 import endrov.util.ProgressHandle;
 
 /**

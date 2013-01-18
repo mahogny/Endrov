@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.flow;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -25,6 +25,9 @@ import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flowWindow.FlowView;
 import endrov.imageset.EvChannel;
+import endrov.particleMeasure.ParticleMeasure;
+import endrov.particleMeasure.calc.MeasurePropertyType;
+import endrov.particleMeasure.calc.MeasureProperty;
 
 /**
  * Flow unit: measure particle
@@ -43,7 +46,7 @@ public class FlowUnitMeasureParticle extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Measure particle 3d",metaType,FlowUnitMeasureParticle.class, 
+		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Measure particle 3D",metaType,FlowUnitMeasureParticle.class, 
 				CategoryInfo.icon,"Measure various properties of regions");
 		Flow.addUnitType(decl);
 		}
@@ -144,12 +147,12 @@ public class FlowUnitMeasureParticle extends FlowUnitBasic
 		
 		public TotalPanel()
 			{
-			int numCheck=ParticleMeasure.measures.size();
+			int numCheck=MeasureProperty.measures.size();
 			setLayout(new GridLayout(numCheck,1));
 			
-			for(final String propName:ParticleMeasure.measures.keySet())
+			for(final String propName:MeasureProperty.measures.keySet())
 				{
-				ParticleMeasure.MeasurePropertyType type=ParticleMeasure.measures.get(propName);
+				MeasurePropertyType type=MeasureProperty.measures.get(propName);
 				
 				final JCheckBox cbox=new JCheckBox(propName);
 				cbox.setToolTipText(type.getDesc());

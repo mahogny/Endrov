@@ -1,4 +1,4 @@
-package endrov.flowMeasure;
+package endrov.particleMeasure.flow;
 /**
  * Original plugin, Copyright 2009 Michael Doube
  * GPL3 or later

@@ -31,11 +31,12 @@ import endrov.util.EvSwingUtil;
 import endrov.util.Maybe;
 
 /**
- * Get all objects of a type from a container
+ * Get object, absolute path
+ * 
  * @author Johan Henriksson
  *
  */
-public class FlowUnitObjectIO extends FlowUnit
+public class FlowUnitObjectReference extends FlowUnit
 	{
 	private static final String metaType="evobjectio";
 	private static final String showName="ObjectRef";
@@ -48,7 +49,7 @@ public class FlowUnitObjectIO extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitObjectIO.class, null,"Load or store an object in the object hierarchy"));		
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitObjectReference.class, null,"Load or store an object in the object hierarchy"));		
 		}
 
 	
@@ -61,11 +62,11 @@ public class FlowUnitObjectIO extends FlowUnit
 		return showName;
 		}
 	
-	public FlowUnitObjectIO()
+	public FlowUnitObjectReference()
 		{
 		}
 	
-	public FlowUnitObjectIO(String path)
+	public FlowUnitObjectReference(String path)
 		{
 		nameOfObject=path;
 		}
@@ -73,7 +74,7 @@ public class FlowUnitObjectIO extends FlowUnit
 	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		int w=fm.stringWidth(getLabel());
-		Dimension d=new Dimension(3+w+3+comp.getWidth()+1,comp.getHeight()+2);
+		Dimension d=new Dimension(3+w+3+comp.getWidth()+1,comp.getHeight()+8);
 		return d;
 		}
 	
@@ -88,7 +89,8 @@ public class FlowUnitObjectIO extends FlowUnit
 		g.setColor(getTextColor());
 		g.drawString(getLabel(), x+3, y+d.height/2+fonta/2);
 		
-		panel.drawConnPointLeft(g,this,"in",x,y+d.height/2);
+		panel.drawConnPointLeft(g,this,"parent",x,y+4);
+		panel.drawConnPointLeft(g,this,"in",x,y+d.height-4);
 		panel.drawConnPointRight(g,this,"out",x+d.width,y+d.height/2);
 		}
 
@@ -103,6 +105,7 @@ public class FlowUnitObjectIO extends FlowUnit
 	public void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("in", new FlowType(EvObject.class));
+		types.put("parent", new FlowType(EvContainer.class));
 		}
 	
 	/** Get types of flows out */
@@ -132,7 +135,10 @@ public class FlowUnitObjectIO extends FlowUnit
 		int w=fm.stringWidth(getLabel());
 		return 3+w+3;
 		}
-	public int getGUIcomponentOffsetY(){return 1;}
+	public int getGUIcomponentOffsetY()
+		{
+		return 5;
+		}
 
 	
 	
@@ -180,6 +186,7 @@ public class FlowUnitObjectIO extends FlowUnit
 		//EvContainer parent=exec.getParent();
 
 		Maybe<EvContainer> con=flow.getInputValueMaybe(this, exec, "in",EvContainer.class);
+		Maybe<EvContainer> parent=flow.getInputValueMaybe(this, exec, "parent",EvContainer.class);
 		EvContainer obvalue;
 		
 		if(con.hasValue())
@@ -190,15 +197,25 @@ public class FlowUnitObjectIO extends FlowUnit
 				{
 				//TODO replace with new path system
 				//EvData currentData=exec.getData();
-				EvPath currentPath=exec.getPath().getParent();
+				EvContainer parentContainer;
+				if(parent.hasValue())
+					{
+					parentContainer=parent.get();
+					}
+				else
+					{
+					EvPath currentPath=exec.getPath().getParent();
+					EvPath path=currentPath.getRelativePath(nameOfObject);
+					parentContainer=path.getParent().getObject();
+					}
 				
-				EvPath path=currentPath.getRelativePath(nameOfObject);
-				//EvPath path=EvPath.parse(nameOfObject);
-				String childName=path.getLeafName();
-				EvContainer parentContainer=path.getParent().getObject();
+//				String childName=path.getLeafName();
+				String childName=nameOfObject;
 				
-				System.out.println("Parent: "+parentContainer);
-				System.out.println("leaf: "+childName);
+				
+				
+//				System.out.println("Parent: "+parentContainer);
+//				System.out.println("leaf: "+childName);
 
 				//Safety check
 				EvContainer oldObjectHere=parentContainer.metaObject.get(childName);

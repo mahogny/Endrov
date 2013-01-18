@@ -3,13 +3,14 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.calc;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import endrov.imageset.EvStack;
+import endrov.particleMeasure.ParticleMeasure;
 import endrov.util.ProgressHandle;
 
 /**
@@ -17,9 +18,9 @@ import endrov.util.ProgressHandle;
  * @author Johan Henriksson
  *
  */
-public class ParticleMeasurePerimeter implements ParticleMeasure.MeasurePropertyType 
+public class ParticleMeasureSurfaceArea implements MeasurePropertyType 
 	{
-	private static String propertyName="perimeter";
+	private static String propertyName="surfaceArea";
 
 	
 	
@@ -28,14 +29,14 @@ public class ParticleMeasurePerimeter implements ParticleMeasure.MeasureProperty
 		//TODO should thickness be taken into account? world or pixel coordinates?
 		
 		
-		HashMap<Integer,Integer> perimeter=new HashMap<Integer, Integer>();
+		HashMap<Integer,Integer> surfaceArea=new HashMap<Integer, Integer>();
 		//TODO: a special map for this case could speed up plenty.
 		//also: only accept integer IDs? this would speed up hashing and indexing.
 		//can be made even faster as a non-hash
 		
 		int[][] arrIDs=stackMask.getReadOnlyArraysInt(progh);
 
-		//int d=arrIDs.length;
+		int d=arrIDs.length;
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
 			int[] arrID=arrIDs[az];//stackValue.getInt(az).getPixels().convertToInt(true).getArrayInt();
@@ -56,17 +57,20 @@ public class ParticleMeasurePerimeter implements ParticleMeasure.MeasureProperty
 								//Boundary pixels are always open
 								ax==0 || ax==w-1 ||
 								ay==0 || ay==h-1 ||
+								az==0 || az==d-1 || //Can optimize away this
 								
 								//Check neighbours
 								arrID[ay*w+ax-1]!=id ||
 								arrID[ay*w+ax+1]!=id ||
 								arrID[(ay-1)*w+ax]!=id ||
-								arrID[(ay+1)*w+ax]!=id)
+								arrID[(ay+1)*w+ax]!=id ||
+								arrIDs[az-1][ay*w+ax]!=id ||
+								arrIDs[az+1][ay*w+ax]!=id)
 							{
-							Integer lastSurf=perimeter.get(id);
+							Integer lastSurf=surfaceArea.get(id);
 							if(lastSurf==null)
 								lastSurf=0;
-							perimeter.put(id, lastSurf+1);
+							surfaceArea.put(id, lastSurf+1);
 							}
 						}
 					}
@@ -74,17 +78,17 @@ public class ParticleMeasurePerimeter implements ParticleMeasure.MeasureProperty
 			}
 		
 		//Write into particles
-		for(int id:perimeter.keySet())
+		for(int id:surfaceArea.keySet())
 			{
 			HashMap<String, Object> p=info.getCreateParticle(id);
-			double v=perimeter.get(id);
+			double v=surfaceArea.get(id);
 			p.put(propertyName, v);
 			}
 		}
 
 	public String getDesc()
 		{
-		return "Perimeter (border pixels in fact, and sums them over all slices if more than one is selected for a particle)";
+		return "Surface area (borders pixels, and pixels with opening in any of 6 directions)";
 		}
 
 	public Set<String> getColumns()

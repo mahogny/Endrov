@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowBasic.misc;
+package endrov.flowBasic.control;
 
 
 import java.awt.Color;
@@ -46,7 +46,7 @@ public class FlowUnitComments extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		FlowUnitDeclaration decl=new FlowUnitDeclaration("Misc",showName,metaType,FlowUnitComments.class, icon,
+		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitComments.class, icon,
 		"A comment on the flow, does not do anything");
 		Flow.addUnitType(decl);
 		}

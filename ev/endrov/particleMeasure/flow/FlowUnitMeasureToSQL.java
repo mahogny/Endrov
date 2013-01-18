@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.flow;
 
 
 import java.awt.Color;
@@ -29,6 +29,7 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flowWindow.FlowView;
+import endrov.particleMeasure.ParticleMeasure;
 
 /**
  * Flow unit: Store measure result in SQL

@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.flow;
 
 import java.util.*;
 
@@ -79,7 +79,7 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 						{
 						double thisValue=inarr[z][y*w+x];
 
-						int cnt=0;
+//						int cnt=0;
 						
 						//Select id to mark with
 						int thisMarkID=markid;
@@ -92,7 +92,7 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 						eqVal.add(new Vector3i(x,y,z));
 						while(!eqVal.isEmpty())
 							{
-							cnt++;
+	//						cnt++;
 							
 							Vector3i v=eqVal.poll();
 							int vx=v.x;

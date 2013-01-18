@@ -3,42 +3,41 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.particleMeasure.calc;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.vecmath.Vector3d;
+
 import endrov.imageset.EvStack;
+import endrov.particleMeasure.ParticleMeasure;
 import endrov.util.ProgressHandle;
 
 /**
- * Measure: surface area (pixels open in any of 6 directions)
+ * Measure: centroid (pure geometry, no intensity)
  * @author Johan Henriksson
  *
  */
-public class ParticleMeasureSurfaceArea implements ParticleMeasure.MeasurePropertyType 
+public class ParticleMeasureCentroid implements MeasurePropertyType 
 	{
-	private static String propertyName="surfaceArea";
+	private static String propertyName="centroid";
 
-	
-	
 	public void analyze(ProgressHandle progh, EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
 		//TODO should thickness be taken into account? world or pixel coordinates?
 		
 		
-		HashMap<Integer,Integer> surfaceArea=new HashMap<Integer, Integer>();
+		HashMap<Integer,Vector3d> sum=new HashMap<Integer, Vector3d>();
+		HashMap<Integer,Integer> vol=new HashMap<Integer, Integer>();
 		//TODO: a special map for this case could speed up plenty.
 		//also: only accept integer IDs? this would speed up hashing and indexing.
 		//can be made even faster as a non-hash
-		
-		int[][] arrIDs=stackMask.getReadOnlyArraysInt(progh);
 
-		int d=arrIDs.length;
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
-			int[] arrID=arrIDs[az];//stackValue.getInt(az).getPixels().convertToInt(true).getArrayInt();
+			int[] arrID=stackMask.getInt(az).getPixels(progh).convertToInt(true).getArrayInt();
 			
 			int w=stackValue.getWidth();
 			int h=stackValue.getHeight();
@@ -52,48 +51,46 @@ public class ParticleMeasureSurfaceArea implements ParticleMeasure.MeasureProper
 		
 					if(id!=0)
 						{
-						if(
-								//Boundary pixels are always open
-								ax==0 || ax==w-1 ||
-								ay==0 || ay==h-1 ||
-								az==0 || az==d-1 || //Can optimize away this
-								
-								//Check neighbours
-								arrID[ay*w+ax-1]!=id ||
-								arrID[ay*w+ax+1]!=id ||
-								arrID[(ay-1)*w+ax]!=id ||
-								arrID[(ay+1)*w+ax]!=id ||
-								arrIDs[az-1][ay*w+ax]!=id ||
-								arrIDs[az+1][ay*w+ax]!=id)
-							{
-							Integer lastSurf=surfaceArea.get(id);
-							if(lastSurf==null)
-								lastSurf=0;
-							surfaceArea.put(id, lastSurf+1);
-							}
+						Vector3d lastSum=sum.get(id);
+						if(lastSum==null)
+							sum.put(id,lastSum=new Vector3d());
+						lastSum.add(new Vector3d(ax,ay,az));
+						
+						
+						Integer lastVol=vol.get(id);
+						if(lastVol==null)
+							lastVol=0;
+						vol.put(id, lastVol+1);
 						}
+
+					
 					}
 			
 			}
 		
 		//Write into particles
-		for(int id:surfaceArea.keySet())
+		for(int id:sum.keySet())
 			{
 			HashMap<String, Object> p=info.getCreateParticle(id);
-			double v=surfaceArea.get(id);
-			p.put(propertyName, v);
+			Vector3d s=sum.get(id);
+			double v=vol.get(id);
+			p.put(propertyName+"X", s.x/v);
+			p.put(propertyName+"Y", s.y/v);
+			p.put(propertyName+"Z", s.z/v);
 			}
 		}
 
 	public String getDesc()
 		{
-		return "Surface area (borders pixels, and pixels with opening in any of 6 directions)";
+		return "Centroid (does not take intensity into account, just geometry)";
 		}
 
 	public Set<String> getColumns()
 		{
 		HashSet<String> set=new HashSet<String>();
-		set.add(propertyName);
+		set.add(propertyName+"X");
+		set.add(propertyName+"Y");
+		set.add(propertyName+"Z");
 		return set;
 		}
 
