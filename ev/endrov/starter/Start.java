@@ -68,7 +68,15 @@ public class Start
 		if(OS.equals("mac os x"))
 			platformExt.add("mac");
 		else if(OS.startsWith("windows"))
+			{
 			platformExt.add("windows");
+			File jrejava=new File("c:\\Program Files\\Java\\jre6\\bin\\java.exe");
+			if(jrejava.exists())
+				{
+				javaexe="\""+jrejava.toString()+"\"";
+				System.out.println("Using JRE java");
+				}
+			}
 		else if(OS.startsWith("linux"))
 			platformExt.add("linux");
 		else if(OS.startsWith("sunos"))
