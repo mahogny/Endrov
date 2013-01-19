@@ -83,7 +83,18 @@ public abstract class BasicWindow extends JPanel
 	 * needed to avoid nasty infinite recursion if signal is emitted during
 	 * rendering. DEPRECATED!
 	 */
-	public static void updateWindows(BasicWindow from)
+	public static void updateWindows(final BasicWindow from)
+		{
+			SwingUtilities.invokeLater(new Runnable(){
+			public void run()
+				{
+				updateWindowsPrivate(from);
+				}
+			});
+		}
+
+
+	private static void updateWindowsPrivate(BasicWindow from)
 		{
 		for (BasicWindow w : getWindowList())
 			if (w!=from)
@@ -95,7 +106,7 @@ public abstract class BasicWindow extends JPanel
 		// TODO: is a lock needed to avoid infinite loops?
 		// should we describe what kind of change?
 		}
-
+	
 	/**
 	 * Tell all windows to update. DO NOT USE! DEPRECATED!
 	 */

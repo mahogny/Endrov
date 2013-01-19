@@ -15,6 +15,7 @@ import java.nio.*;
 import javax.media.opengl.*;
 import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.glu.*;
+import javax.swing.SwingUtilities;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
@@ -33,6 +34,7 @@ import endrov.modelWindow.gl.EvGLShader;
 import endrov.modelWindow.gl.EvGLTexture3D;
 import endrov.util.EvDecimal;
 import endrov.util.EvMathUtil;
+import endrov.util.EvSwingUtil;
 
 //http://fivedots.coe.psu.ac.th/~ad/jg2/ch15/jogl1v4.pdf
 //talks about -Dsun.java2d.opengl=true, uses gljpanel
@@ -497,7 +499,7 @@ public class ModelView extends GLJPanel
 				if(!EvSelection.currentHover.equals(lastHover))
 					{
 					System.out.println("nuc rerend for hover");
-					BasicWindow.updateWindows(window);
+					BasicWindow.updateWindows();
 					}
 				
 				
@@ -580,6 +582,7 @@ public class ModelView extends GLJPanel
 
 		
 		
+
 		public void setupLight(GL2 gl)
 			{
 			
