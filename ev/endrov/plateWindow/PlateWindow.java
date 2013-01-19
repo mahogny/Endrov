@@ -84,7 +84,6 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	private final FrameControlImage frameControl=new FrameControlImage(this, false, true);
 	private PlateWindowView imagePanel=new PlateWindowView();	
 	private ChannelWidget cw=new ChannelWidget();
-//	private JButton bExport=new JButton("Export as CSV");
 
 	private boolean disableDataChanged=false;
 
@@ -242,15 +241,6 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 			brightnessPanel.add(new JLabel(iconLabelBrightness), BorderLayout.WEST);
 			brightnessPanel.add(sliderBrightness,BorderLayout.CENTER);
 
-			/*
-			add(EvSwingUtil.layoutLCR(
-					null, 
-					EvSwingUtil.layoutLCR(
-							null,
-							comboChannel,
-							null),
-					null));
-			*/
 			add(contrastPanel);
 			add(EvSwingUtil.layoutLCR(
 					null,
@@ -258,11 +248,6 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 					EvSwingUtil.layoutEvenHorizontal(bFitRange)
 					));
 
-			
-			
-//			comboColor.addActionListener(this);
-//			comboChannel.addActionListener(this);
-	//		bRemoveChannel.addActionListener(this);
 			bFitRange.addActionListener(this);
 			
 			sliderContrast.addSnapListener(this);
@@ -294,20 +279,6 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 		
 		public void actionPerformed(ActionEvent e)
 			{
-			/*
-			if(e.getSource()==comboChannel)
-				{
-				frameControl.setChannel(getChannel()); //has been moved here
-				frameControl.setAll(frameControl.getFrame(), frameControl.getZ());
-				layoutImagePanel();
-				}
-			*/
-/*			else if(e.getSource()==comboColor)
-				updateImagePanel();
-			else if(e.getSource()==bRemoveChannel)
-				removeChannel(this);*/
-			
-			
 			if(e.getSource()==bFitRange)
 				fitRange();
 			else
@@ -343,7 +314,7 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	
 	public void updateWindowTitle()
 		{
-		setTitleEvWindow("Plate Window");
+		setTitleEvWindow("Plate Analysis Window");
 		}
 	
 	
@@ -370,13 +341,7 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 			updateCombo(comboAttribute1,alist);
 			updateCombo(comboAttribute2,alist);
 
-//			List<String> clist=getChannels();
-//			updateAttrCombo(comboChannel, clist);
-				
-
 			updateWindowTitle();
-//			imagePanel.zoomToFit(); //TODO
-			
 			
 			disableDataChanged=false;
 			}
@@ -497,16 +462,6 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 		return comboFeature.getSelectedObject();
 		}
 	
-	/*
-	private List<String> getChannels()
-		{
-		LinkedList<String> list=new LinkedList<String>();
-		list.add("");
-		list.add("foo chan");
-		
-		return list;
-		}
-*/
 	
 	/**
 	 * Upon state changes, update the window
@@ -549,16 +504,7 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	
 	public void eventUserLoadedFile(EvData data)
 		{
-		List<Imageset> ims=data.getObjects(Imageset.class);
-		if(!ims.isEmpty())
-			{
-			//EvComboChannel chw=getCurrentChannelWidget().comboChannel;
-			
-			//TODO try and set the last selected channel!
-			//TODO store state of window
-			
-			//setSelectedObject(ims.get(0), getCurrentChannelWidget().comboChannel.lastSelectChannel);
-			}
+		dataChangedEvent();
 		}
 
 	public void freeResources()
@@ -621,11 +567,10 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 		EvData d=new EvData();
 		try
 			{
-			new EvIODataBD(d, new File("/media/753C-F3A6/20121001_plate1"));
+			new EvIODataBD(d, new File("/win/images/20121001_plate1"));
 			}
 		catch (Exception e)
 			{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			}
 		
@@ -687,7 +632,7 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 					{
 					public void createMenus(BasicWindow w)
 						{
-						JMenuItem mi=new JMenuItem("Plate",BasicIcon.iconImage);
+						JMenuItem mi=new JMenuItem("Plate analysis",BasicIcon.iconImage);
 						mi.addActionListener(this);
 						w.addMenuWindow(mi);
 						}

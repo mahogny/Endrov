@@ -24,6 +24,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import endrov.ev.EvLog;
+
 /**
  * Utility functions for Swing
  * @author Johan Henriksson
@@ -291,5 +293,23 @@ public class EvSwingUtil
 			public void removeUpdate(DocumentEvent e) {change();}
 			public void insertUpdate(DocumentEvent e) {change();}
 		});
+		}
+
+	public static void invokeAndWaitIfNeeded(Runnable runnable)
+		{
+		if(SwingUtilities.isEventDispatchThread())
+			runnable.run();
+		else
+			{
+			try
+				{
+				SwingUtilities.invokeAndWait(runnable);
+				}
+			catch (Exception e)
+				{
+				EvLog.printError(e.getMessage(), e);
+				throw new RuntimeException("Error in invoke and wait");
+				}
+			}
 		}
 	}

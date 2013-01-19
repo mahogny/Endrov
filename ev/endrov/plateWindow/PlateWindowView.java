@@ -38,6 +38,7 @@ import endrov.plateWindow.scene.Scene2DText;
 import endrov.plateWindow.scene.Scene2DText.Alignment;
 import endrov.plateWindow.scene.Scene2DView;
 import endrov.util.EvDecimal;
+import endrov.util.EvSwingUtil;
 
 /**
  * View for plates
@@ -282,7 +283,9 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	private int scaleText=100;
 	private EvDecimal currentFrame=EvDecimal.ZERO;
 	private int currentZ=0;
-			
+
+	private Scene2DText sceneItemText=new Scene2DText(0,0,"");
+
 	/**
 	 * Construct panel
 	 */
@@ -295,6 +298,9 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		addMouseWheelListener(this);
 		
 		imageLoaderThread.start();
+		
+		sceneItemText.alignment=Alignment.Center;
+		sceneItemText.font=new Font("Arial", Font.PLAIN, 15*scaleText);
 		}
 
 
@@ -528,9 +534,29 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			}
 
 
+		addElem(sceneItemText);
 		repaint();
 		}
 
+	
+	private void setCalculatingText(final OneWell well)
+		{
+		EvSwingUtil.invokeAndWaitIfNeeded(new Runnable()
+			{
+			public void run()
+				{
+				if(well!=null)
+					{
+					sceneItemText.text="Calculating...";
+					sceneItemText.x=well.x+imageSize/2;
+					sceneItemText.y=well.y+imageSize/2;
+					}
+				else
+					sceneItemText.text="";
+				repaint();
+				}
+			});
+		}
 	
 	/**
 	 * Callback: Key pressed down
@@ -708,15 +734,20 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 							ParticleMeasure.Well pmw=pm.getWell(pathToWell.toString());
 							if(pmw==null)
 								{
-								System.out.println("submitting flow");
 								return new Runnable()
 									{
 									public void run()
 										{
+										OneWell well=wellMap.get(pathToWell.toString());
+										if(well!=null)
+											setCalculatingText(well);
 										wellMap.get(pathToWell).execFlow(pathToWell);
 										try
 											{
-											SwingUtilities.invokeAndWait(new Runnable(){public void run(){layoutImagePanel();}}); 
+											SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+												layoutImagePanel();
+												setCalculatingText(null);
+												}}); 
 											 //This does way more work than needed(?)
 											}
 										catch (Exception e)
@@ -751,6 +782,9 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		{
 		if(w.pixels==null)
 			{
+			if(w!=null)
+				setCalculatingText(w);
+
 			EvDecimal closestFrame=w.evChannel.closestFrame(currentFrame);
 			
 			EvStack stack=w.evChannel.getStack(closestFrame);
@@ -785,7 +819,10 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				
 				try
 					{
-					SwingUtilities.invokeAndWait(new Runnable(){public void run(){layoutImagePanel();}}); 
+					SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+						setCalculatingText(null);
+						layoutImagePanel();
+					}}); 
 					 //This does way more work than needed(?)
 					}
 				catch (Exception e)
@@ -793,7 +830,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 					e.printStackTrace();
 					}
 				}
-
+			else
+				setCalculatingText(null);
 			}
 		}
 
