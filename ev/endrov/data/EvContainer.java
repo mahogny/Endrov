@@ -15,7 +15,7 @@ import endrov.core.EndrovCore;
 import endrov.core.EndrovUtil;
 import endrov.core.log.EvLog;
 import endrov.gui.icon.BasicIcon;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 
 /**

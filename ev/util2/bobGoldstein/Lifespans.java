@@ -10,10 +10,10 @@ import java.io.IOException;
 
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
-import endrov.annotationLineage.Lineage;
 import endrov.core.EndrovCore;
-import endrov.util.EvDecimal;
-import endrov.util.EvFileUtil;
+import endrov.typeLineage.Lineage;
+import endrov.util.io.EvFileUtil;
+import endrov.util.math.EvDecimal;
 
 public class Lifespans 
 	{

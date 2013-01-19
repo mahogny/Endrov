@@ -8,10 +8,10 @@ package endrov.flowFlooding;
 import java.util.*;
 
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector3i;
+import endrov.util.math.Vector3i;
 
 /**
  * Floodfill area with the same color+-range
@@ -55,11 +55,11 @@ public class EvOpFloodSelectColorRange3D extends EvOpStack1
 		double vRangePlus=rangePlus.doubleValue();
 		
 		EvStack markstack=new EvStack();
-		markstack.getMetaFrom(stack);
+		markstack.copyMetaFrom(stack);
 		markstack.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		double[][] inarr=stack.getReadOnlyArraysDouble(progh);
-		int[][] outarr=markstack.getReadOnlyArraysInt(progh);
+		double[][] inarr=stack.getArraysDoubleReadOnly(progh);
+		int[][] outarr=markstack.getArraysIntReadOnly(progh);
 		
 		LinkedList<Vector3i> q=new LinkedList<Vector3i>();
 		q.add(new Vector3i(startpos.x,startpos.y,startpos.z));

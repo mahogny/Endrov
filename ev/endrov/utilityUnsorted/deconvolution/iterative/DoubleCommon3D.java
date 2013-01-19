@@ -27,9 +27,9 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
 import cern.jet.math.tdcomplex.DComplex;
 import cern.jet.math.tdouble.DoubleFunctions;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 import endrov.utilityUnsorted.deconvolution.DeconvPixelsStack;
 import endrov.utilityUnsorted.deconvolution.iterative.IterativeEnums.PaddingType;
@@ -219,7 +219,7 @@ public class DoubleCommon3D {
      * 
      */
     public static void updatePixelsInStack(final EvStack stack, final DoubleMatrix3D X) {
-    EvImage[] p=stack.getImages();    
+    EvImagePlane[] p=stack.getImagePlanes();    
     final int slices = X.slices();
         for (int s = 0; s < slices; s++) {
         		p[s].setPixelsReference(DoubleCommon2D.assignPixelsToProcessor(X.rows(),X.columns(),X.viewSlice(s)));
@@ -253,7 +253,7 @@ public class DoubleCommon3D {
      * 
      */
     public static void updatePixelsInStackPadded(final EvStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, double threshold) {
-    EvImage[] p=stack.getImages();    
+    EvImagePlane[] p=stack.getImagePlanes();    
         for (int s = 0; s < slices; s++) {
         	p[s].setPixelsReference(DoubleCommon2D.assignPixelsToProcessorPadded(X.viewSlice(s + sOff), rows, cols, rOff, cOff, threshold));
         }
@@ -282,7 +282,7 @@ public class DoubleCommon3D {
      *            color model
      */
     public static void updatePixelsInStackPadded(final EvStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff) {
-    EvImage[] p=stack.getImages();    
+    EvImagePlane[] p=stack.getImagePlanes();    
     for (int s = 0; s < slices; s++) {
             p[s].setPixelsReference(DoubleCommon2D.assignPixelsToProcessorPadded(X.viewSlice(s + sOff), rows, cols, rOff, cOff));
         }
@@ -303,7 +303,7 @@ public class DoubleCommon3D {
      * 
      */
     public static void updatePixelsInStack(final EvStack stack, final DoubleMatrix3D X, double threshold) {
-    EvImage[] p=stack.getImages();    
+    EvImagePlane[] p=stack.getImagePlanes();    
         final int slices = X.slices();
         for (int s = 0; s < slices; s++) {
             p[s].setPixelsReference(DoubleCommon2D.assignPixelsToProcessor(X.viewSlice(s), threshold));
@@ -387,7 +387,7 @@ public class DoubleCommon3D {
         final int rows = xsize3D[1];
         final int cols = xsize3D[2];
         final int sliceStride = rows * cols;
-        EvImage[] p=stack.getImages();    
+        EvImagePlane[] p=stack.getImagePlanes();    
 
         for (int s = 0; s < slices; s++) {
             //EvPixels ip = stack.getPixels()[s + 1];

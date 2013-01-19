@@ -23,9 +23,9 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flowWindow.FlowView;
-import endrov.util.JMultilineLabel;
-import endrov.util.Maybe;
+import endrov.gui.component.JMultilineLabel;
+import endrov.util.collection.Maybe;
+import endrov.windowFlow.FlowView;
 
 /**
  * Flow unit: show value

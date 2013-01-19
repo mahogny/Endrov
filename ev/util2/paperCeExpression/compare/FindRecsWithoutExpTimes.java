@@ -7,9 +7,9 @@ import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.imageset.EvChannel;
-import endrov.imageset.Imageset;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.Imageset;
+import endrov.util.math.EvDecimal;
 
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 

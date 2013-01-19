@@ -29,7 +29,7 @@ import cern.colt.matrix.tdouble.algo.DoubleSorting;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
 import cern.jet.math.tdcomplex.DComplexFunctions;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.utilityUnsorted.deconvolution.DeconvPixelsStack;
 import endrov.utilityUnsorted.deconvolution.iterative.DoubleCommon3D;
 import endrov.utilityUnsorted.deconvolution.spectral.AbstractDoubleSpectralDeconvolver3D;

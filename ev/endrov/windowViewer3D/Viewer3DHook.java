@@ -14,7 +14,7 @@ import javax.vecmath.Vector3d;
 import org.jdom.Element;
 
 import endrov.data.EvObject;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 
 /**

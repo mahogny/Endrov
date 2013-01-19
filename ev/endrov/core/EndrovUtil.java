@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import org.jdom.Element;
 
 import endrov.starter.EvSystemUtil;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 public class EndrovUtil
 	{

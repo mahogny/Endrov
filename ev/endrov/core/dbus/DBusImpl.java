@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 
 import endrov.core.EndrovCore;
 import endrov.data.EvData;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 
 /**
  * Implementation of the Endrov DBUS connection
@@ -35,7 +35,7 @@ public class DBusImpl implements DBus
 			else
 				{
 				EvData.registerOpenedData(d);
-				BasicWindow.updateLoadedFile(d);
+				EvBasicWindow.updateLoadedFile(d);
 				}
 			}}).start(); 
 			

@@ -13,7 +13,7 @@ import endrov.core.log.EvLogStdout;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.imageset.EvChannel;
+import endrov.typeImageset.EvChannel;
 
 
 /**

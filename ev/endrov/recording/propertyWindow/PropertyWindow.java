@@ -26,22 +26,22 @@ import org.jdom.*;
 
 import endrov.data.EvData;
 import endrov.gui.component.JNumericField;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.component.JSmartToggleCombo;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.hardware.DevicePropertyType;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.hardware.EvHardwareConfigGroup;
-import endrov.util.JSmartToggleCombo;
 import endrov.util.EvStringUtil;
 
 /**
  * Property window - shows every property available
  * @author Johan Henriksson 
  */
-public class PropertyWindow extends BasicWindow implements ActionListener, EvHardwareConfigGroup.GroupsChangedListener
+public class PropertyWindow extends EvBasicWindow implements ActionListener, EvHardwareConfigGroup.GroupsChangedListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -58,12 +58,8 @@ public class PropertyWindow extends BasicWindow implements ActionListener, EvHar
 	private JTabbedPane tabs=new JTabbedPane();
 	private JButton bNewGroup=new JButton("New group");
 	
-	public PropertyWindow()
-		{
-		this(new Rectangle(600,300));
-		}
 	
-	public PropertyWindow(Rectangle bounds)
+	public PropertyWindow()
 		{
 		updateAllPanel(allPropertyPanel);
 		updatePalettePanel(defaultPropertyPanel);
@@ -79,15 +75,16 @@ public class PropertyWindow extends BasicWindow implements ActionListener, EvHar
 		add(tabs, BorderLayout.CENTER);
 	
 		
+		EvHardwareConfigGroup.groupsChangedListeners.addWeakListener(this);
+		
 		//Window overall things
 		setTitleEvWindow("Property");
 		packEvWindow();
+		Rectangle bounds=new Rectangle(600,300);
 		if(bounds.width<getWidth())
 			bounds.width=getWidth();
 		setBoundsEvWindow(bounds);
-		setVisibleEvWindow(true);
-		
-		EvHardwareConfigGroup.groupsChangedListeners.addWeakListener(this);
+		setVisibleEvWindow(true);		
 		}
 	
 	
@@ -195,13 +192,11 @@ public class PropertyWindow extends BasicWindow implements ActionListener, EvHar
 //		objectCombo.updateList();
 		}
 
-	public void eventUserLoadedFile(EvData data){}
+	public void windowEventUserLoadedFile(EvData data){}
 
-	public void windowSavePersonalSettings(Element e)
-		{
-		
-		} 
-	public void freeResources()
+	public void windowSavePersonalSettings(Element e){}
+	public void windowLoadPersonalSettings(Element e){}
+	public void windowFreeResources()
 		{
 		}
 	
@@ -357,19 +352,19 @@ public class PropertyWindow extends BasicWindow implements ActionListener, EvHar
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 			{
-			public void newBasicWindow(BasicWindow w)
+			public void newBasicWindow(EvBasicWindow w)
 				{
 				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 				}
-			class Hook implements BasicWindowHook, ActionListener
+			class Hook implements EvBasicWindowHook, ActionListener
 				{
-				public void createMenus(BasicWindow w)
+				public void createMenus(EvBasicWindow w)
 					{
 					JMenuItem mi=new JMenuItem("Property",new ImageIcon(getClass().getResource("iconWindow.png")));
 					mi.addActionListener(this);
-					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+					EvBasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}
 	
 				public void actionPerformed(ActionEvent e) 
@@ -377,7 +372,7 @@ public class PropertyWindow extends BasicWindow implements ActionListener, EvHar
 					new PropertyWindow();
 					}
 	
-				public void buildMenu(BasicWindow w){}
+				public void buildMenu(EvBasicWindow w){}
 				}
 			});
 		

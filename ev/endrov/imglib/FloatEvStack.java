@@ -37,8 +37,8 @@ package endrov.imglib;
  */
 
 
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import net.imglib2.exception.ImgLibException;
 import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.type.NativeType;
@@ -74,7 +74,7 @@ public class FloatEvStack< T extends NativeType< T > > extends EvStackImg< T, Fl
 //			for ( int t = 0; t < frames; ++t )
 				for ( int z = 0; z < depth; ++z )
 //					for ( int c = 0; c < channels; ++c )
-					mirror.add( new FloatArray( ( float[] )imp.getInt(z).getPixels().getArrayFloat() ) );
+					mirror.add( new FloatArray( ( float[] )imp.getPlane(z).getPixels().getArrayFloat() ) );
 //						mirror.add( new ByteArray( ( byte[] )imp.getStack().getProcessor( imp.getStackIndex( c + 1, z + 1 , t + 1 ) ).getPixels() ) );
 		}
 		else
@@ -103,7 +103,7 @@ public class FloatEvStack< T extends NativeType< T > > extends EvStackImg< T, Fl
 //		for ( int t = 0; t < frames; ++t )
 			for ( int z = 0; z < depth; ++z )
 	//			for ( int c = 0; c < channels; ++c )
-				mirror.add( new FloatArray( ( float[] )imp.getInt(z).getPixels().getArrayFloat() ) );
+				mirror.add( new FloatArray( ( float[] )imp.getPlane(z).getPixels().getArrayFloat() ) );
 //					mirror.add( new ByteArray( ( byte[] )imp.getStack().getProcessor( imp.getStackIndex( c + 1, z + 1 , t + 1 ) ).getPixels() ) );
 	}
 

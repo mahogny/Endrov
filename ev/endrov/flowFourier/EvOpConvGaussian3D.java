@@ -8,9 +8,9 @@ package endrov.flowFourier;
 import endrov.flow.EvOpStack1;
 import endrov.flowBasic.math.EvOpImageComplexMulImage;
 import endrov.flowGenerateImage.GenerateSpecialImage;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 /**
  * Convolve by gaussian

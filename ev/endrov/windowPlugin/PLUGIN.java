@@ -10,7 +10,7 @@ public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{
-		return "Plugin Window";
+		return "Plugin viewer";
 		}
 
 	public String getAuthor()

@@ -7,9 +7,9 @@ package endrov.flowFourier;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 import endrov.flow.EvOpStack;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 /**
  * Inverse fourier transform. FFT if possible, otherwise DFT.
@@ -46,7 +46,7 @@ public class EvOpFourierComplexInverse3D extends EvOpStack
 		
 		//Copy out resolution so inRe can be GC:ed early
 		EvStack stackMeta=new EvStack();
-		stackMeta.getMetaFrom(inRe);
+		stackMeta.copyMetaFrom(inRe);
 		
 		//Transform
 		double[] swizzle=FourierTransform.swizzle3d(progh, inRe, inIm, w, h, d);

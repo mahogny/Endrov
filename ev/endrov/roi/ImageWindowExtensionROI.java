@@ -12,10 +12,10 @@ import java.io.IOException;
 import endrov.bindingIJ.roi.ImageJroiImport;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
-import endrov.gui.window.BasicWindow;
-import endrov.imageset.EvChannel;
+import endrov.gui.window.EvBasicWindow;
 import endrov.roi.window.*;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.*;
 
 /*
@@ -49,11 +49,11 @@ public class ImageWindowExtensionROI implements Viewer2DExtension
 		JMenu miComposite=new JMenu("Composite");
 		JMenu miAnalyze=new JMenu("Analyze");
 		JMenuItem miImportIJ=new JMenuItem("Import ImageJ");
-		BasicWindow.addMenuItemSorted(miROI, miNew, "roi_1new");
-		BasicWindow.addMenuItemSorted(miROI, miModify, "roi_2modify");
-		BasicWindow.addMenuItemSorted(miROI, miComposite, "roi_3composite");
-		BasicWindow.addMenuItemSorted(miROI, miAnalyze, "roi_4analyze");
-		BasicWindow.addMenuItemSorted(miROI, miImportIJ, "roi_5IJ");
+		EvBasicWindow.addMenuItemSorted(miROI, miNew, "roi_1new");
+		EvBasicWindow.addMenuItemSorted(miROI, miModify, "roi_2modify");
+		EvBasicWindow.addMenuItemSorted(miROI, miComposite, "roi_3composite");
+		EvBasicWindow.addMenuItemSorted(miROI, miAnalyze, "roi_4analyze");
+		EvBasicWindow.addMenuItemSorted(miROI, miImportIJ, "roi_5IJ");
 
 		//ROI Window
 		JMenuItem miROIWindow=new JMenuItem("ROI Window...");
@@ -76,7 +76,7 @@ public class ImageWindowExtensionROI implements Viewer2DExtension
 						ImageRendererROI renderer=w.getRendererClass(ImageRendererROI.class);
 						w.setTool(new ToolDragCreateROI(w,rt.makeInstance(),renderer));
 						}});
-				BasicWindow.addMenuItemSorted(miNew, miNewROIthis);
+				EvBasicWindow.addMenuItemSorted(miNew, miNewROIthis);
 				}
 			}
 
@@ -101,7 +101,7 @@ public class ImageWindowExtensionROI implements Viewer2DExtension
 							croi.openEditWindow();
 							}
 						}});
-				BasicWindow.addMenuItemSorted(miComposite, miNewROIthis);
+				EvBasicWindow.addMenuItemSorted(miComposite, miNewROIthis);
 				}
 			}
 		
@@ -125,7 +125,7 @@ public class ImageWindowExtensionROI implements Viewer2DExtension
 						}
 					catch (IOException e1)
 						{
-						BasicWindow.showErrorDialog("Could not read file");
+						EvBasicWindow.showErrorDialog("Could not read file");
 						e1.printStackTrace();
 						}
 					}

@@ -5,6 +5,7 @@
  */
 package endrov.opMakeMovie;
 import endrov.core.*;
+import endrov.opMakeMovie.gui.MakeMovieWindow;
 
 public class PLUGIN extends EvPluginDefinition
 	{

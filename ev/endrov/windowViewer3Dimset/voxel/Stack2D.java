@@ -18,10 +18,10 @@ import com.sun.opengl.util.texture.*;
 
 import endrov.gl.EvGLCamera;
 import endrov.gl.EvGLShader;
-import endrov.imageset.*;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.*;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.BoundingBox3D;
 import endrov.windowViewer3D.Viewer3DView;
 import endrov.windowViewer3D.Viewer3DWindow;
@@ -136,7 +136,7 @@ public class Stack2D extends StackRendererInterface
 						///// TODO better interaction with progress meter
 						
 						skipcount=0;
-						EvImage evim=stack.getInt(az);
+						EvImagePlane evim=stack.getPlane(az);
 						Tuple<TextureRenderer,OneSlice> proc=processImage(progh, stack, evim, az, chsel);
 						procList.add(proc);
 						}
@@ -150,7 +150,7 @@ public class Stack2D extends StackRendererInterface
 	
 	
 
-	public Tuple<TextureRenderer,OneSlice> processImage(ProgressHandle progh, EvStack stack, EvImage evim, int az, StackRendererInterface.ChannelSelection chsel)
+	public Tuple<TextureRenderer,OneSlice> processImage(ProgressHandle progh, EvStack stack, EvImagePlane evim, int az, StackRendererInterface.ChannelSelection chsel)
 		{
 		EvPixels p=evim.getPixels(progh);
 		BufferedImage bim=p.quickReadOnlyAWT();

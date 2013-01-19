@@ -18,7 +18,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 
 /**
  * Flow unit: create kernel from pixel plane

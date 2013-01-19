@@ -12,8 +12,8 @@ import javax.swing.JOptionPane;
 
 import endrov.data.*;
 import endrov.gl.EvGLCamera;
-import endrov.gui.window.BasicWindow;
-import endrov.util.*;
+import endrov.gui.window.EvBasicWindow;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.Viewer2DWindow;
 import endrov.windowViewer3D.Viewer3DWindow;
 import endrov.windowViewer3D.Viewer3DWindowExtension;
@@ -44,14 +44,14 @@ public class Bookmark extends EvObject
 	public static String addBookmarkDialog(JComponent w, EvContainer data)
 		{
 		if(data==null)
-			BasicWindow.showErrorDialog("No container selected");
+			EvBasicWindow.showErrorDialog("No container selected");
 		else
 			{
 			String name=JOptionPane.showInputDialog(w, "Name of bookmark");
 			if(name!=null)
 				{
 				if(data.metaObject.containsKey(name))
-					BasicWindow.showErrorDialog("Object with this name exists already");
+					EvBasicWindow.showErrorDialog("Object with this name exists already");
 				else
 					{
 					return name;

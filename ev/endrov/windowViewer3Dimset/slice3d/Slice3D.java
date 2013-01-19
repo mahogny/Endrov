@@ -15,10 +15,10 @@ import javax.vecmath.Vector3d;
 
 import com.sun.opengl.util.texture.*;
 
-import endrov.imageset.*;
-import endrov.util.EvDecimal;
-import endrov.util.ImVector3d;
+import endrov.typeImageset.*;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
+import endrov.util.math.ImVector3d;
 import endrov.windowViewer3D.BoundingBox3D;
 
 /**
@@ -93,7 +93,7 @@ public class Slice3D
 			if(zplane>stack.getDepth())
 				zplane=stack.getDepth();
 			worldZ=zplane*stack.resZ;
-			EvImage evim=stack.getInt(zplane);
+			EvImagePlane evim=stack.getPlane(zplane);
 			EvPixels p=evim.getPixels(progh);
 			w=p.getWidth();
 			h=p.getHeight();

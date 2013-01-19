@@ -9,12 +9,12 @@ import java.io.*;
 import java.util.*;
 
 
-import endrov.annotationLineage.Lineage;
 import endrov.core.*;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.*;
-import endrov.util.EvDecimal;
+import endrov.typeLineage.Lineage;
+import endrov.util.math.EvDecimal;
 
 
 //Do not use rigid transforms, use point dist.

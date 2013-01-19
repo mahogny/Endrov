@@ -19,7 +19,7 @@ package endrov.utilityUnsorted.deconvolution.iterative.psf;
 
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 
 /**
  * This class keeps information about 2D PSF images.

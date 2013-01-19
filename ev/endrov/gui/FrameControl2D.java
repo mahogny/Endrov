@@ -12,16 +12,17 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import endrov.annotationFrameTime.*;
+import org.jdom.Element;
+
 import endrov.gui.component.EvDecimalEditor;
 import endrov.gui.component.EvFrameControl;
 import endrov.gui.icon.BasicIcon;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
-import endrov.util.EvMathUtil;
-import endrov.util.EvSwingUtil;
+import endrov.typeFrameTime.*;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
+import endrov.util.math.EvMathUtil;
 
 
 
@@ -498,5 +499,14 @@ public class FrameControl2D extends JPanel implements ActionListener, ChangeList
 		{
 		setAll(getFrame(), z);
 		}
-	
+
+	public void storeSettings(Element root)
+		{
+		root.setAttribute("framecontrol_group",""+getGroup());
+		}
+	public void getSettings(Element root)
+		{
+		setGroup(Integer.parseInt(root.getAttributeValue("framecontrol_group")));
+		}
+
 	}

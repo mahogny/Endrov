@@ -16,8 +16,8 @@ import javax.vecmath.Vector2d;
 
 import endrov.core.log.EvLog;
 import endrov.gui.EvColor;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 
 /**
  * Scene element: One raster image

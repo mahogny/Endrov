@@ -5,12 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import endrov.annotationLineage.Lineage;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvStack;
+import endrov.typeLineage.Lineage;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector3i;
+import endrov.util.math.EvDecimal;
+import endrov.util.math.Vector3i;
 
 /**
  * Given an image with detected features, create a lineage 
@@ -73,7 +73,7 @@ public class EvOpFeatureImageToLineage
 			List<Vector3i> points=new LinkedList<Vector3i>();
 			for(int az=0;az<stFeatures.getDepth();az++)
 				{
-				int[] p=stFeatures.getInt(az).getPixels(progh).convertToInt(true).getArrayInt();//featurePixels[az];
+				int[] p=stFeatures.getPlane(az).getPixels(progh).convertToInt(true).getArrayInt();//featurePixels[az];
 				for(int i=0;i<p.length;i++)
 					if(p[i]!=0)
 						points.add(new Vector3i(i%w, i/w, az));
@@ -86,7 +86,7 @@ public class EvOpFeatureImageToLineage
 				{
 				System.out.println("Weighting by priority");
 				EvStack stPriority=chPriority.getStack(progh, frame);
-				int[][] priorityPixels=stPriority.getReadOnlyArraysInt(progh);
+				int[][] priorityPixels=stPriority.getArraysIntReadOnly(progh);
 				
 				PriorityQueue<WPoint> pq=new PriorityQueue<WPoint>();
 				for(Vector3i point:points)

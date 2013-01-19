@@ -18,11 +18,11 @@ import org.jdom.Element;
 
 import endrov.core.observer.SimpleObserver;
 import endrov.data.*;
-import endrov.gui.window.BasicWindow;
-import endrov.imageset.*;
+import endrov.gui.window.EvBasicWindow;
 import endrov.roi.window.WindowROI;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.*;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.*;
 
 /**
@@ -85,7 +85,7 @@ public abstract class ROI extends EvObject
 			}
 		selected.clear();
 //		selectionChanged.emit(null);
-		BasicWindow.updateWindows(null); //to remove TODO updateWindows
+		EvBasicWindow.updateWindows(null); //to remove TODO updateWindows
 		}
 	
 	//maybe all objects should have a parent assigned
@@ -265,7 +265,7 @@ public abstract class ROI extends EvObject
 	/**
 	 * Get iterator over ROI
 	 */
-	public abstract LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImage im, String channel, EvDecimal frame, double z);
+	public abstract LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImagePlane im, String channel, EvDecimal frame, double z);
 	
 	/**
 	 * Check if a given point (world coordinates) is in a ROI

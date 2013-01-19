@@ -14,7 +14,7 @@ import java.util.TreeMap;
 import javax.vecmath.Vector3d;
 
 
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 public class Cluster
 	{

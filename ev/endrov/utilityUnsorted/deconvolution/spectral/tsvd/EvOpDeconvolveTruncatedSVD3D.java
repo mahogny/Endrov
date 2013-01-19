@@ -5,7 +5,7 @@
  */
 package endrov.utilityUnsorted.deconvolution.spectral.tsvd;
 
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.utilityUnsorted.deconvolution.DeconvPixelsStack;
 import endrov.utilityUnsorted.deconvolution.Deconvolver3D;
 import endrov.utilityUnsorted.deconvolution.spectral.SpectralEnums.SpectralPaddingType;

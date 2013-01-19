@@ -18,8 +18,8 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.AnyEvImage;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.AnyEvImage;
+import endrov.typeImageset.EvStack;
 
 /**
  * Flow unit: Circular convolution 3D

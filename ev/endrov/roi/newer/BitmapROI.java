@@ -15,13 +15,13 @@ import org.jdom.Element;
 
 import endrov.data.EvContainer;
 import endrov.data.EvObject;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvStack;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 
 /**
  * ROI based on a bitmap
@@ -44,7 +44,7 @@ public class BitmapROI extends ROI
 	public int thisValue;
 
 	@Override
-	public LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImage im,
+	public LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImagePlane im,
 			String channel, EvDecimal frame, double z)
 		{
 		// TODO Auto-generated method stub

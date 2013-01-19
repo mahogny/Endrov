@@ -10,8 +10,10 @@ import java.awt.BorderLayout;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import org.jdom.Element;
+
 import endrov.gui.component.EvFrameControl;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 
 /**
@@ -105,5 +107,16 @@ public class FrameControlLineage extends JPanel implements EvFrameControl.Synch
 		listener.stateChanged(new ChangeEvent(this));
 		EvFrameControl.replicateSettings(this);
 		this.z=null;
+		}
+
+
+
+	public void storeSettings(Element root)
+		{
+		root.setAttribute("framecontrol_group",""+getGroup());
+		}
+	public void getSettings(Element root)
+		{
+		setGroup(Integer.parseInt(root.getAttributeValue("framecontrol_group")));
 		}
 	}

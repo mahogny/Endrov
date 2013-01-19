@@ -7,10 +7,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
-import endrov.gui.window.BasicWindow;
+import endrov.gui.EvSwingUtil;
+import endrov.gui.window.EvBasicWindow;
 import endrov.hardware.EvHardwareConfigGroup;
 import endrov.recording.widgets.RecWidgetSelectProperties;
-import endrov.util.EvSwingUtil;
 
 /**
  * Dialog for creating a new config group - have to specify properties to include
@@ -67,7 +67,7 @@ public class NewConfigGroupWindow extends JFrame implements ActionListener
 				dispose();
 				}
 			else
-				BasicWindow.showErrorDialog("No name specified for the group");			
+				EvBasicWindow.showErrorDialog("No name specified for the group");			
 			
 			}
 		else if(e.getSource()==bCancel)

@@ -11,8 +11,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import endrov.flowBasic.EvImageHistogram;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
 
 

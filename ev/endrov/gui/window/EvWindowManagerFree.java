@@ -38,20 +38,20 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 	
 	
 	
-	private WeakReference<BasicWindow> bw;
+	private WeakReference<EvBasicWindow> bw;
 	private boolean shouldHaveBeenDisposed=false;
 	
 	
-	private BasicWindow getBasicWindow()
+	private EvBasicWindow getBasicWindow()
 		{
 		return bw.get();
 		}
 	
 	
-	public EvWindowManagerFree(BasicWindow bw)
+	public EvWindowManagerFree(EvBasicWindow bw)
 		{
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		this.bw=new WeakReference<BasicWindow>(bw);
+		this.bw=new WeakReference<EvBasicWindow>(bw);
 		addWindowListener(this);
 		add(bw);
 
@@ -70,7 +70,7 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 		super.setTitle(EndrovCore.programName+" "+title+" ["+getBasicWindow().windowInstance+"]");
 		}
 	
-	private static WeakReference<BasicWindow> lastActiveWindow=new WeakReference<BasicWindow>(null);
+	private static WeakReference<EvBasicWindow> lastActiveWindow=new WeakReference<EvBasicWindow>(null);
 	
 	public void windowClosing(WindowEvent e) 
 		{
@@ -78,7 +78,7 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 		}
 	public void windowActivated(WindowEvent e)
 		{
-		lastActiveWindow=new WeakReference<BasicWindow>(getBasicWindow());
+		lastActiveWindow=new WeakReference<EvBasicWindow>(getBasicWindow());
 		}
 	public void windowDeactivated(WindowEvent arg0)	{}
 	public void windowDeiconified(WindowEvent arg0)	{}
@@ -111,9 +111,9 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 		}
 
 	
-	public static class Manager implements BasicWindow.EvWindowManagerMaker
+	public static class Manager implements EvBasicWindow.EvWindowManagerMaker
 		{
-		public EvWindowManager createWindow(BasicWindow bw)
+		public EvWindowManager createWindow(EvBasicWindow bw)
 			{
 			EvWindowManager w=new EvWindowManagerFree(bw);
 			return w;
@@ -122,21 +122,21 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 		/**
 		 * Get a list of all windows
 		 */
-		public List<BasicWindow> getAllWindows()
+		public List<EvBasicWindow> getAllWindows()
 			{
-			LinkedList<BasicWindow> list=new LinkedList<BasicWindow>();
+			LinkedList<EvBasicWindow> list=new LinkedList<EvBasicWindow>();
 			for(Window w:get15Windows())
 				if(w instanceof EvWindowManagerFree)
 					{
 					EvWindowManagerFree ww=(EvWindowManagerFree)w;
-					BasicWindow bw=ww.getBasicWindow();
+					EvBasicWindow bw=ww.getBasicWindow();
 					if(!ww.shouldHaveBeenDisposed)
 						list.add(bw);
 					}
 			return list;
 			}
 
-		public BasicWindow getFocusWindow()
+		public EvBasicWindow getFocusWindow()
 			{
 			return lastActiveWindow.get();
 			}

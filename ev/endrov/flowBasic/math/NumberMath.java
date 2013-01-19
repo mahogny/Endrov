@@ -5,7 +5,7 @@
  */
 package endrov.flowBasic.math;
 
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 
 /**

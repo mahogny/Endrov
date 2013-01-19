@@ -21,7 +21,6 @@ import javax.vecmath.Vector3d;
 
 import com.sun.opengl.util.awt.TextRenderer;
 
-import endrov.annotationCoordinateSystem.CoordinateSystem;
 import endrov.core.*;
 import endrov.core.log.EvLog;
 import endrov.data.EvSelection;
@@ -30,9 +29,10 @@ import endrov.gl.EvGLMeshVBO;
 import endrov.gl.EvGLShader;
 import endrov.gl.EvGLTexture3D;
 import endrov.gui.EvColor;
-import endrov.gui.window.BasicWindow;
-import endrov.util.EvDecimal;
-import endrov.util.EvMathUtil;
+import endrov.gui.window.EvBasicWindow;
+import endrov.typeCoordinateSystem.CoordinateSystem;
+import endrov.util.math.EvDecimal;
+import endrov.util.math.EvMathUtil;
 import endrov.windowViewer3D.TransparentRenderer3D.RenderState;
 
 //http://fivedots.coe.psu.ac.th/~ad/jg2/ch15/jogl1v4.pdf
@@ -498,7 +498,7 @@ public class Viewer3DView extends GLJPanel
 				if(!EvSelection.currentHover.equals(lastHover))
 					{
 					System.out.println("nuc rerend for hover");
-					BasicWindow.updateWindows();
+					EvBasicWindow.updateWindows();
 					}
 				
 				

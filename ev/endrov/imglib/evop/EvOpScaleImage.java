@@ -21,11 +21,11 @@ import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import endrov.flow.EvOpStack1;
 import endrov.flowBasic.images.EvOpImageConvertPixel;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
 import endrov.imglib.EvStackAdapter;
 import endrov.imglib.EvStackImgFactory;
 import endrov.imglib.FloatEvStack;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -126,7 +126,7 @@ public class EvOpScaleImage extends EvOpStack1
 			EvStack out=
 					s2.getEvStack();
 			
-			out.getMetaFrom(in);
+			out.copyMetaFrom(in);
 			out.setRes(
 					in.getRes().x*scaleX,
 					in.getRes().y*scaleY,

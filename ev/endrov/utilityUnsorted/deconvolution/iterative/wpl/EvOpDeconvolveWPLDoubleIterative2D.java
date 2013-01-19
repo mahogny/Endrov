@@ -39,7 +39,7 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.jet.math.tdouble.DoubleFunctions;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
 import endrov.core.log.EvLog;
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 import endrov.utilityUnsorted.deconvolution.iterative.DoubleCommon2D;
 import endrov.utilityUnsorted.deconvolution.iterative.IterativeEnums.BoundaryType;
 import endrov.utilityUnsorted.deconvolution.iterative.IterativeEnums.PaddingType;

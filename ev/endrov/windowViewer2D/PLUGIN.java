@@ -10,7 +10,7 @@ public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{
-		return "Image Window";
+		return "2D viewer";
 		}
 
 	public String getAuthor()

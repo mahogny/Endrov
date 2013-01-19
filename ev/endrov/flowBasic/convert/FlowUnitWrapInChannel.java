@@ -18,12 +18,12 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.AnyEvImage;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.AnyEvImage;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
+import endrov.util.math.EvDecimal;
 
 /**
  * Flow unit: turn image or stack into channel
@@ -78,7 +78,7 @@ public class FlowUnitWrapInChannel extends FlowUnitBasic
 			{
 			EvStack stack=new EvStack();
 			stack.setTrivialResolution();
-			stack.putInt(0, new EvImage((EvPixels)in));
+			stack.putPlane(0, new EvImagePlane((EvPixels)in));
 			EvChannel chan=new EvChannel();
 			chan.putStack(new EvDecimal(0), stack);
 			lastOutput.put("out", chan);

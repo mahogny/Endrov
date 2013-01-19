@@ -11,7 +11,7 @@ import java.lang.ref.WeakReference;
 import javax.swing.*;
 
 import endrov.core.observer.SimpleObserver;
-import endrov.util.EvMutableBoolean;
+import endrov.util.mutable.EvMutableBoolean;
 
 /**
  * JCheckBox connected to a mutable boolean

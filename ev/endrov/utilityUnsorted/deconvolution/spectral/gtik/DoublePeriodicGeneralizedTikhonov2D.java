@@ -25,7 +25,7 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.jet.math.tdcomplex.DComplexFunctions;
 import cern.jet.math.tdouble.DoubleFunctions;
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 import endrov.utilityUnsorted.deconvolution.iterative.DoubleCommon2D;
 import endrov.utilityUnsorted.deconvolution.spectral.AbstractDoubleSpectralDeconvolver2D;
 import endrov.utilityUnsorted.deconvolution.spectral.SpectralEnums.SpectralPaddingType;

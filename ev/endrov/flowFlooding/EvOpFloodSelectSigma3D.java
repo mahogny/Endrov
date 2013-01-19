@@ -9,11 +9,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
-import endrov.util.EvMathUtil;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector3i;
+import endrov.util.math.EvMathUtil;
+import endrov.util.math.Vector3i;
 
 /**
  * Floodfill area. Keep adding pixels as long as neighbour is within [mu-f sigma, mu+f sigma]
@@ -45,11 +45,11 @@ public class EvOpFloodSelectSigma3D extends EvOpStack1
 		int d=stack.getDepth();
 
 		EvStack markstack=new EvStack();
-		markstack.getMetaFrom(stack);
+		markstack.copyMetaFrom(stack);
 		markstack.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		double[][] inarr=stack.getReadOnlyArraysDouble(progh);
-		int[][] outarr=markstack.getReadOnlyArraysInt(progh);
+		double[][] inarr=stack.getArraysDoubleReadOnly(progh);
+		int[][] outarr=markstack.getArraysIntReadOnly(progh);
 
 		double sum=0;
 		double sum2=0;

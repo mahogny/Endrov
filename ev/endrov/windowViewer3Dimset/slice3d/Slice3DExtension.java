@@ -21,9 +21,10 @@ import org.jdom.Element;
 import endrov.data.*;
 import endrov.gui.component.EvComboColor;
 import endrov.gui.icon.BasicIcon;
-import endrov.imageset.*;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.*;
+import endrov.typeImageset.gui.EvComboChannel;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.*;
 
 

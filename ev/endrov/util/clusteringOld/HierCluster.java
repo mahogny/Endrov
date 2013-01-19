@@ -10,7 +10,7 @@ import java.util.*;
 import javax.vecmath.Vector3d;
 
 
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 /**
  * Hierarchial clustering.

@@ -5,11 +5,11 @@
  */
 package endrov.flowFourier;
 
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 /**
  * Fourier transform helper functions
@@ -48,8 +48,8 @@ class FourierTransform
 	 */
 	public static double[] swizzle3d(ProgressHandle progh, EvStack inRe, EvStack inIm, int w, int h, int d)
 		{
-		double[][] arrRe=inRe.getReadOnlyArraysDouble(progh);
-		double[][] arrIm=inIm.getReadOnlyArraysDouble(progh);
+		double[][] arrRe=inRe.getArraysDoubleReadOnly(progh);
+		double[][] arrIm=inIm.getArraysDoubleReadOnly(progh);
 
 		double[] swizzle=new double[w*h*d*2];
 

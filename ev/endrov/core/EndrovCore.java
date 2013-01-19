@@ -7,6 +7,7 @@ package endrov.core;
 
 //can be useful to improve performance, not used right now: -Dsun.java2d.opengl=true
 
+
 import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.prefs.*;
@@ -19,8 +20,8 @@ import org.jdom.output.*;
 
 import endrov.core.log.EvLog;
 import endrov.starter.EvSystemUtil;
-import endrov.util.EvXmlUtil;
-import endrov.util.Mutable;
+import endrov.util.io.EvXmlUtil;
+import endrov.util.mutable.Mutable;
 
 /**
  * Support functions for the EV framework
@@ -317,7 +318,7 @@ public class EndrovCore
 		{
 		synchronized (swapDirectory)
 			{
-			swapDirectory.set(d);
+			swapDirectory.setValue(d);
 			}
 		}
 

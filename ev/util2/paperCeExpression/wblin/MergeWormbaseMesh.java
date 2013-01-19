@@ -15,13 +15,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 
-import endrov.annotationLineage.Lineage;
-import endrov.annotationMesh3d.Mesh3D;
 import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.util.EvDecimal;
+import endrov.typeLineage.Lineage;
+import endrov.typeMesh3d.Mesh3D;
+import endrov.util.math.EvDecimal;
 
 public class MergeWormbaseMesh
 	{

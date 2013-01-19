@@ -57,7 +57,7 @@ public class ScriptBinding
 	public static void initPlugin() {}
 	static
 		{
-		EndrovCore.personalConfigLoaders.put("scriptBinding",new PersonalConfig()
+		EndrovCore.addPersonalConfigLoader("scriptBinding",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
 				{

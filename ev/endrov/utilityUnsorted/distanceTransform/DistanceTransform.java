@@ -1,7 +1,7 @@
 package endrov.utilityUnsorted.distanceTransform;
 
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 
 /**
  * General representation of a distance transformation class.

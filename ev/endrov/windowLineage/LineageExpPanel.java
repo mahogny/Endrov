@@ -34,12 +34,12 @@ import javax.swing.ListCellRenderer;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import endrov.gui.EvSwingUtil;
 import endrov.gui.component.EvComboColor;
+import endrov.gui.component.JImageButton;
+import endrov.gui.component.JSnapBackSlider;
+import endrov.gui.component.JSnapBackSlider.SnapChangeListener;
 import endrov.gui.icon.BasicIcon;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
-import endrov.util.SnapBackSlider;
-import endrov.util.SnapBackSlider.SnapChangeListener;
 
 /**
  * Select expressions and how they should be rendered
@@ -242,7 +242,7 @@ public class LineageExpPanel extends JPanel
 		public JButton bDown=new JImageButton(BasicIcon.iconButtonDown,"Move renderer down");
 		public JButton bRemoveRenderer=new JImageButton(BasicIcon.iconButtonDelete,"Remove renderer");
 		
-		public SnapBackSlider snapContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL,-10000,10000);
+		public JSnapBackSlider snapContrast=new JSnapBackSlider(JSnapBackSlider.HORIZONTAL,-10000,10000);
 		public JComboBox cExp1=new JComboBox(cm1);
 		public JComboBox cExp2=new JComboBox(cm2);
 		
@@ -434,7 +434,7 @@ public class LineageExpPanel extends JPanel
 			updateLinView();
 			}
 		
-		public void slideChange(SnapBackSlider source, int change)
+		public void slideChange(JSnapBackSlider source, int change)
 			{
 			exp.scale1*=Math.exp(change/5000.0);
 			//System.out.println("new scale "+exp.scale1);

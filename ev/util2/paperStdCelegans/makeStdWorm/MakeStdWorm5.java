@@ -10,13 +10,13 @@ import java.util.*;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Vector3d;
 
-import endrov.annotationLineage.Lineage;
-import endrov.annotationLineage.LineageSelParticle;
 import endrov.core.*;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.*;
-import endrov.util.EvDecimal;
+import endrov.typeLineage.Lineage;
+import endrov.typeLineage.LineageSelParticle;
+import endrov.util.math.EvDecimal;
 
 //with OST3+, frametime concept gone, solved
 
@@ -409,16 +409,16 @@ public class MakeStdWorm5
 							}
 						one.curpos=new Vector3d(one.curposAvg[0].getMean(), one.curposAvg[1].getMean(), one.curposAvg[2].getMean());
 						Vector3d dv=new Vector3d(one.curpos);
-						double sumsquare=0;
+//						double sumsquare=0;
 						double sumabsr=0;
 						for(Vector3d u:poshere)
 							{
 							Vector3d v=new Vector3d(dv);
 							v.sub(u);
-							sumsquare+=v.lengthSquared();
+	//						sumsquare+=v.lengthSquared();
 							sumabsr+=v.length();
 							}
-						sumsquare/=poshere.size();
+		//				sumsquare/=poshere.size();
 						sumabsr/=poshere.size();
 //						one.rvar=sumsquare;
 						one.raverror=sumabsr;

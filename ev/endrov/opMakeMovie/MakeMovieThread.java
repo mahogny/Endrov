@@ -13,8 +13,8 @@ import java.util.*;
 import java.util.List;
 
 import endrov.core.batch.BatchThread;
-import endrov.imageset.*;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.*;
+import endrov.util.math.EvDecimal;
 
 
 /**
@@ -22,8 +22,6 @@ import endrov.util.EvDecimal;
  */
 public final class MakeMovieThread extends BatchThread 
 	{
-	//private final Imageset rec;
-	
 	private final EvDecimal startFrame, endFrame;
 
 	private final int oneW;
@@ -36,13 +34,13 @@ public final class MakeMovieThread extends BatchThread
 		{
 		public String name;
 		public EvChannel chan;
-		public MovieDescString desc;
+		public MakeMovieDescriptionFormat desc;
 		public EvDecimal z;
 		public MovieChannel(String name, EvChannel chan,  String desc, EvDecimal z)
 			{
 			this.name=name;
 			this.chan=chan;
-			this.desc=new MovieDescString(desc);
+			this.desc=new MakeMovieDescriptionFormat(desc);
 			this.z=z;
 			}
 		}
@@ -103,12 +101,10 @@ public final class MakeMovieThread extends BatchThread
 					EvChannel ch=movieChan.chan;//rec.getChannel(cName.name);
 					EvDecimal frame=ch.closestFrame(curframe);
 					EvStack stack=ch.getStack(frame);
-					int tz=stack.closestZint(movieChan.z.doubleValue());
+					int tz=stack.getClosestPlaneIndex(movieChan.z.doubleValue());
 					if(tz<0)
 						System.out.println("Error for channel "+movieChan.name+"   "+stack.getDepth()+"  "+movieChan.z+"   ");
-					EvImage imload=stack.getInt(tz);
-					//EvDecimal tz=ch.closestZ(frame, z);
-					//EvImage imload=ch.getImageLoader(frame, tz);
+					EvImagePlane imload=stack.getPlane(tz);
 					if(imload==null)
 						{
 						batchError("Failure: Could not collect EvImage for ch:"+movieChan.name+" f:"+frame+" z:"+tz);
@@ -140,7 +136,7 @@ public final class MakeMovieThread extends BatchThread
 					}
 
 				//Go to next frame. End if there are no more frames.
-				EvDecimal newcurframe=channels.get(0).chan/*rec.getChannel(channels.get(0).name)*/.closestFrameAfter(curframe);
+				EvDecimal newcurframe=channels.get(0).chan.closestFrameAfter(curframe);
 				if(newcurframe.equals(curframe))
 					break;
 				curframe=newcurframe;
@@ -205,14 +201,7 @@ public final class MakeMovieThread extends BatchThread
 			
 			g.setColor(Color.WHITE);
 			
-			g.drawString(channels.get(i).desc.decode(channels.get(i).name,frame), oneW*i, h-1);
-
-			
-			/*
-			if(i==0)
-				g.drawString(ch.name+" ("+frame+")", oneW*i, h-1);
-			else
-				g.drawString(ch.name, oneW*i, h-1);*/
+			g.drawString(channels.get(i).desc.formatString(channels.get(i).name,frame), oneW*i, h-1);
 			}
 		
 

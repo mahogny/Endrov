@@ -12,8 +12,8 @@ import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import endrov.util.EvFileUtil;
-import endrov.util.EvXmlUtil;
+import endrov.util.io.EvFileUtil;
+import endrov.util.io.EvXmlUtil;
 
 /**
  * Information about existing hardware

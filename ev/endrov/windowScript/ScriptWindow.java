@@ -20,12 +20,13 @@ import javax.swing.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import endrov.core.*;
 import endrov.core.log.EvLog;
 import endrov.data.EvData;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.script.*;
-import endrov.util.EvFileUtil;
+import endrov.util.io.EvFileUtil;
 import endrov.windowConsole.ConsoleWindow;
 
 import org.jdom.*;
@@ -38,7 +39,7 @@ import org.jdom.*;
  * 
  * @author Johan Henriksson
  */
-public class ScriptWindow extends BasicWindow implements ActionListener
+public class ScriptWindow extends EvBasicWindow implements ActionListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -72,28 +73,20 @@ public class ScriptWindow extends BasicWindow implements ActionListener
 	 */
 	public void windowSavePersonalSettings(Element root)
 		{
-		Element e=new Element("scriptwindow");
-		setXMLbounds(e);
-		root.addContent(e);
+		}
+	public void windowLoadPersonalSettings(Element e)
+		{
 		}
 
-	
-	/**
-	 * Make a new window at default location
-	 */
-	public ScriptWindow()
-		{
-		this(50,50,500,500);
-		}
 	
 	
 	public ScriptEngineFactory currentLanguage=null;
 
 	
 	/**
-	 * Make a new window at some specific location
+	 * Make a new window 
 	 */
-	public ScriptWindow(int x, int y, int w, int h)
+	public ScriptWindow()
 		{
 		//Menu
 		addMenubar(scriptMenu);
@@ -121,7 +114,7 @@ public class ScriptWindow extends BasicWindow implements ActionListener
 		//Window overall things
 		setCurrentFile(null);
 		packEvWindow();
-		setBoundsEvWindow(x,y,w,h);
+		setBoundsEvWindow(50,50,500,500);
 		setVisibleEvWindow(true);
 		}
 	
@@ -342,9 +335,9 @@ public class ScriptWindow extends BasicWindow implements ActionListener
 		{
 		currentFile=f;
 		if(f==null)
-			setTitleEvWindow("Script Window - <new>");
+			setTitleEvWindow("Script editor - <new>");
 		else
-			setTitleEvWindow("Script Window - "+f.getName());
+			setTitleEvWindow("Script editor - "+f.getName());
 		}
 	
 	/*
@@ -435,36 +428,40 @@ public class ScriptWindow extends BasicWindow implements ActionListener
 	
 	
 	
-	public void eventUserLoadedFile(EvData data){}
-	public void freeResources(){}
+	public void windowEventUserLoadedFile(EvData data){}
+	public void windowFreeResources(){}
 
 	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/
+	private static ImageIcon iconWindow=new ImageIcon(ScriptWindow.class.getResource("tangoScript.png"));
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new ConsoleBasic());
-		EndrovCore.personalConfigLoaders.put("scriptwindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					new ScriptWindow(x,y,w,h);
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
+					public void newBasicWindow(EvBasicWindow w)
+						{
+						w.basicWindowExtensionHook.put(ScriptWindow.class,new Hook());
+						}
+					class Hook implements EvBasicWindowHook, ActionListener
+						{
+						public void createMenus(EvBasicWindow w)
+							{
+							JMenuItem mi=new JMenuItem("Script editor",iconWindow);
+							mi.addActionListener(this);
+							w.addMenuWindow(mi);
+							}
+						
+						public void actionPerformed(ActionEvent e) 
+							{
+							new ScriptWindow();
+							}
+						
+						public void buildMenu(EvBasicWindow w){}
+						}
+					});
 		}
 
 	

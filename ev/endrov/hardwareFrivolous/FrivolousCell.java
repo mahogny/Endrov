@@ -16,7 +16,7 @@ import javax.imageio.ImageIO;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import endrov.util.EvXmlUtil;
+import endrov.util.io.EvXmlUtil;
 
 /**
  * @author David Johansson, Arvid Johansson, Johan Henriksson

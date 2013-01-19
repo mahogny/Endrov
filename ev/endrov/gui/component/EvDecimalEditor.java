@@ -15,7 +15,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 /**
  * Editor for EvDecimal spinners

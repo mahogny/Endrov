@@ -18,8 +18,8 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.AnyEvImage;
-import endrov.util.Maybe;
+import endrov.typeImageset.AnyEvImage;
+import endrov.util.collection.Maybe;
 
 /**
  * Flow unit: Fourier transform 3D

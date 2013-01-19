@@ -9,8 +9,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import endrov.imageset.EvPixels;
-import endrov.util.Vector3i;
+import endrov.typeImageset.EvPixels;
+import endrov.util.math.Vector3i;
 import static endrov.utilityUnsorted.generics.EvGenerics.*;
 
 public class Test2

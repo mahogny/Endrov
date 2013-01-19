@@ -10,13 +10,14 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import org.jdom.Element;
+
 import java.util.*;
 
-import endrov.annotationFrameTime.*;
 import endrov.gui.component.EvFrameControl;
 import endrov.gui.icon.BasicIcon;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
+import endrov.typeFrameTime.*;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.Viewer3DWindow;
 import endrov.windowViewer3D.Viewer3DHook;
 
@@ -410,5 +411,16 @@ public class FrameControl3D extends JPanel implements ActionListener, ChangeList
 		return null;
 		}
 	
+
+	public void storeSettings(Element root)
+		{
+		root.setAttribute("framecontrol_group",""+getGroup());
+		}
+	public void getSettings(Element root)
+		{
+		setGroup(Integer.parseInt(root.getAttributeValue("framecontrol_group")));
+		}
+
+
 	
 	}

@@ -14,15 +14,10 @@ import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.flowBasic.math.EvOpImageAddImage;
 import endrov.flowBasic.math.EvOpImageDivScalar;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.hardware.EvHardwareConfigGroup;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
 import endrov.recording.RecordingResource;
@@ -38,8 +33,13 @@ import endrov.recording.widgets.RecSettingsRecDesc;
 import endrov.recording.widgets.RecSettingsSlices;
 import endrov.recording.widgets.RecSettingsTimes;
 import endrov.recording.widgets.RecSettingsTimes.TimeType;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
+import endrov.typeImageset.Imageset;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 
 
 /**
@@ -133,7 +133,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 							}
 						pix=new EvOpImageDivScalar(currentChannel.averaging).exec1(ph, pix);
 						}
-					EvImage evim=new EvImage(pix);
+					EvImagePlane evim=new EvImagePlane(pix);
 
 					
 //					EvContainer container=imset;
@@ -189,12 +189,12 @@ public class EvMultidimAcquisition extends EvAcquisition
 					
 					int zpos=(currentZCount-currentChannel.z0)/currentChannel.zInc;
 					
-					stack.putInt(zpos,evim);   //Need to account for the possibility to skip slices!!! and offset!!!
+					stack.putPlane(zpos,evim);   //Need to account for the possibility to skip slices!!! and offset!!!
 					//int zpos=currentZCount-currentChannel.z0;
 					//stack.putInt(zpos, evim);
 					
 					//Update the GUI
-					BasicWindow.updateWindows(); //TODO use hooks
+					EvBasicWindow.updateWindows(); //TODO use hooks
 					emitAcquisitionEventStatus(""+currentChannel.name+"/"+currentFrameCount+"/"+dz.multiply(currentZCount));
 					}
 				
@@ -506,7 +506,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 					}
 
 					//TODO signal update on the object
-					BasicWindow.updateWindows();
+					EvBasicWindow.updateWindows();
 
 					
 					

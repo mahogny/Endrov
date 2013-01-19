@@ -9,7 +9,7 @@ package endrov.starter;
 import endrov.core.*;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.gui.window.EvSplashScreen;
 import endrov.gui.window.EvWindowManagerMDI;
 import endrov.windowViewer2D.*;
@@ -48,10 +48,10 @@ public class MDI
 		try
 			{
 			EndrovCore.loadPlugins();
-			BasicWindow.windowManager=new EvWindowManagerMDI.Manager();
+			EvBasicWindow.windowManager=new EvWindowManagerMDI.Manager();
 //			BasicWindowExitLast.integrate();
 			EndrovCore.loadPersonalConfig();		
-			if(BasicWindow.getWindowList().size()==0)
+			if(EvBasicWindow.getWindowList().size()==0)
 				{
 				//Make sure at least one window is open
 				new Viewer2DWindow();

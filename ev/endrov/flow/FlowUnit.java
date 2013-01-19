@@ -17,7 +17,7 @@ import java.util.*;
 
 import org.jdom.Element;
 
-import endrov.flowWindow.FlowView;
+import endrov.windowFlow.FlowView;
 
 //think of how to do sub-flows later
 

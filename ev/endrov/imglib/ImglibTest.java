@@ -18,9 +18,9 @@ import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.flowBasic.images.EvOpImageConvertPixel;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 
 public class ImglibTest
 	{
@@ -47,7 +47,7 @@ public class ImglibTest
 
 		try
 			{
-			BufferedImage bim=s2.getEvStack().getInt(0).getPixels().quickReadOnlyAWT();
+			BufferedImage bim=s2.getEvStack().getPlane(0).getPixels().quickReadOnlyAWT();
 			
 			JFrame f=new JFrame();
 			f.add(new JLabel(new ImageIcon(bim)));

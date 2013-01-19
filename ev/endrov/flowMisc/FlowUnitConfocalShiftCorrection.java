@@ -18,7 +18,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.AnyEvImage;
+import endrov.typeImageset.AnyEvImage;
 
 /**
  * Flow unit: shift every second line to correct for confocal scanning

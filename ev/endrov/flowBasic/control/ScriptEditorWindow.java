@@ -31,7 +31,7 @@ import org.jdom.Element;
 
 import endrov.data.EvData;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 
 
 /**
@@ -39,7 +39,7 @@ import endrov.gui.window.BasicWindow;
  * @author Johan Henriksson
  *
  */
-public class ScriptEditorWindow extends BasicWindow implements ActionListener
+public class ScriptEditorWindow extends EvBasicWindow implements ActionListener
 	{
 	static final long serialVersionUID=0;
 	//To avoid double-opening windows
@@ -133,8 +133,8 @@ public class ScriptEditorWindow extends BasicWindow implements ActionListener
 		
 		setTitleEvWindow("Edit Script "+u.getScriptID());
 		packEvWindow();
-		setVisibleEvWindow(true);
 		setBoundsEvWindow(new Rectangle(300,400));
+		setVisibleEvWindow(true);
 		}
 	
 	
@@ -163,9 +163,10 @@ public class ScriptEditorWindow extends BasicWindow implements ActionListener
 		}
 	
 	
-	public void eventUserLoadedFile(EvData data){}
+	public void windowEventUserLoadedFile(EvData data){}
 	public void windowSavePersonalSettings(Element e){}
-	public void freeResources()
+	public void windowLoadPersonalSettings(Element e){}
+	public void windowFreeResources()
 		{
 		textArea.getActionMap().clear();
 		}

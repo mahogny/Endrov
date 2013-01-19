@@ -6,10 +6,10 @@
 package endrov.flowProjection;
 
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -43,11 +43,11 @@ public abstract class EvOpProjectZ extends EvOpStack1
 	public EvStack project(ProgressHandle ph, EvStack in)
 		{
 		EvStack out=new EvStack();
-		out.getMetaFrom(in);
+		out.copyMetaFrom(in);
 
-		EvImage proto=in.getFirstImage();
+		EvImagePlane proto=in.getFirstPlane();
 		EvPixels ptot=new EvPixels(EvPixelsType.INT,proto.getPixels(ph).getWidth(),proto.getPixels(ph).getHeight());
-		for(EvImage plane:in.getImages())
+		for(EvImagePlane plane:in.getImagePlanes())
 			{
 			//System.out.println("plane type "+plane.getValue().getPixels().getTypeString());
 			ptot=combine(ph,ptot,plane.getPixels(ph));
@@ -57,13 +57,13 @@ public abstract class EvOpProjectZ extends EvOpStack1
 		//Should not include 0-image
 		
 		
-		EvImage imout=new EvImage();
+		EvImagePlane imout=new EvImagePlane();
 		imout.setPixelsReference(ptot);
 		//out.put(EvDecimal.ZERO,imout);
 		
 		int numZ=in.getDepth();
 		for(int cz=0;cz<numZ;cz++)
-			out.putInt(cz,imout.makeShadowCopy());
+			out.putPlane(cz,imout.makeShadowCopy());
 
 //		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
 //			out.put(plane.getKey(), imout); //incorrect TODO

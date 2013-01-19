@@ -8,18 +8,18 @@ import java.util.Map;
 
 import javax.vecmath.Vector3d;
 
-import endrov.annotationLineage.Lineage;
-import endrov.annotationLineage.LineageSelParticle;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvIOImage;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
-import endrov.util.MemoizeX;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvImageReader;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
+import endrov.typeLineage.Lineage;
+import endrov.typeLineage.LineageSelParticle;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.MemoizeX;
+import endrov.util.collection.Tuple;
+import endrov.util.math.EvDecimal;
 
 /**
  * Calculate Voronoi regions from particles - assign points to closest particles 
@@ -74,7 +74,7 @@ public class EvOpVoroniNuc
 			{
 			EvStack oldstack=ch.getStack(progh, frame);
 			final EvStack newstack=new EvStack(); 
-			newstack.getMetaFrom(oldstack);
+			newstack.copyMetaFrom(oldstack);
 			chout.putStack(frame, newstack);
 			
 			final int w=oldstack.getWidth();
@@ -113,8 +113,8 @@ public class EvOpVoroniNuc
 			for(int taz=0;taz<oldstack.getDepth();taz++)
 				{
 				final int az=taz;
-				EvImage evim=new EvImage();
-				evim.io=new EvIOImage()
+				EvImagePlane evim=new EvImagePlane();
+				evim.io=new EvImageReader()
 					{
 					public File getRawJPEGData()
 						{
@@ -163,7 +163,7 @@ public class EvOpVoroniNuc
 						}
 					};
 				evim.io.dependsOn(interLazy);
-				newstack.putInt(taz, evim);
+				newstack.putPlane(taz, evim);
 				}
 			
 			}

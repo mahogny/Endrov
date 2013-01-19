@@ -21,42 +21,40 @@ import javax.swing.event.DocumentListener;
 
 import org.jdom.Element;
 
-import endrov.core.EndrovCore;
-import endrov.core.PersonalConfig;
 import endrov.data.EvData;
 import endrov.gui.component.EvComboData;
 import endrov.gui.component.EvComboObject;
+import endrov.gui.component.JImageButton;
+import endrov.gui.component.JImageToggleButton;
 import endrov.gui.component.JNumericField;
+import endrov.gui.component.JSmartToggleCombo;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.hardware.DevicePropertyType;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
 import endrov.recording.*;
 import endrov.recording.device.HWCamera;
 import endrov.recording.device.HWShutter;
 import endrov.recording.device.HWStage;
 import endrov.recording.device.HWState;
-import endrov.util.EvDecimal;
-import endrov.util.JImageButton;
-import endrov.util.JImageToggleButton;
-import endrov.util.JSmartToggleCombo;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvStack;
+import endrov.typeImageset.Imageset;
 import endrov.util.EvStringUtil;
+import endrov.util.math.EvDecimal;
 
 /**
  * Microscope control: Manual
  * 
  * @author Johan Henriksson
  */
-public class RecControlWindow extends BasicWindow
+public class RecControlWindow extends EvBasicWindow
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -117,15 +115,15 @@ public class RecControlWindow extends BasicWindow
 		cp.dataChangedEvent();
 		}
 
-	public void eventUserLoadedFile(EvData data){}
+	public void windowEventUserLoadedFile(EvData data){}
 
 	public void windowSavePersonalSettings(Element root)
 		{
-		Element e=new Element("reccontrolwindow");
-		setXMLbounds(e);
-		root.addContent(e);
 		} 
-	public void freeResources(){}
+	public void windowLoadPersonalSettings(Element e)
+		{
+		}
+	public void windowFreeResources(){}
 	
 	
 
@@ -413,7 +411,7 @@ public class RecControlWindow extends BasicWindow
 					String channelName=tChannel.getText();
 					EvData data=comboData.getData();
 					if(data==null || channelName.equals(""))
-						BasicWindow.showErrorDialog("Select where to store image and choose a proper channel name");
+						EvBasicWindow.showErrorDialog("Select where to store image and choose a proper channel name");
 					else
 						{
 						String imsetName;
@@ -432,11 +430,11 @@ public class RecControlWindow extends BasicWindow
 						
 						//TODO RGB support
 						
-						EvImage evim=new EvImage();
+						EvImagePlane evim=new EvImagePlane();
 						evim.setPixelsReference(cim.getPixels()[0]);
-						stack.putInt(0,evim);
+						stack.putPlane(0,evim);
 						
-						BasicWindow.updateWindows(); //TODO trigger on data
+						EvBasicWindow.updateWindows(); //TODO trigger on data
 						
 						}
 					}
@@ -504,19 +502,19 @@ public class RecControlWindow extends BasicWindow
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 			{
-			public void newBasicWindow(BasicWindow w)
+			public void newBasicWindow(EvBasicWindow w)
 				{
 				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 				}
-			class Hook implements BasicWindowHook, ActionListener
+			class Hook implements EvBasicWindowHook, ActionListener
 			{
-			public void createMenus(BasicWindow w)
+			public void createMenus(EvBasicWindow w)
 				{
 				JMenuItem mi=new JMenuItem("Old Control",new ImageIcon(getClass().getResource("iconWindow.png")));
 				mi.addActionListener(this);
-				BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+				EvBasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 				}
 
 			public void actionPerformed(ActionEvent e) 
@@ -524,20 +522,8 @@ public class RecControlWindow extends BasicWindow
 				new RecControlWindow();
 				}
 
-			public void buildMenu(BasicWindow w){}
+			public void buildMenu(EvBasicWindow w){}
 			}
-			});
-		
-		
-		EndrovCore.personalConfigLoaders.put("reccontrolwindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				new RecControlWindow(BasicWindow.getXMLposition(e));
-				}
-			public void savePersonalConfig(Element e)
-				{
-				}
 			});
 		}
 	

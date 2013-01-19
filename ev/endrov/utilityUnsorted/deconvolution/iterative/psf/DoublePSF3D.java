@@ -19,7 +19,7 @@ package endrov.utilityUnsorted.deconvolution.iterative.psf;
 
 import cern.colt.matrix.tdouble.DoubleMatrix3D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.utilityUnsorted.deconvolution.iterative.DoubleCommon3D;
 
 /**

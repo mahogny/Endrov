@@ -13,7 +13,7 @@ import javax.swing.*;
 import javax.vecmath.Vector2d;
 
 
-import endrov.util.Matrix2d;
+import endrov.util.math.Matrix2d;
 
 
 /**

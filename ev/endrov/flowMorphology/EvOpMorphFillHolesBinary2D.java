@@ -8,10 +8,10 @@ package endrov.flowMorphology;
 import java.util.LinkedList;
 
 import endrov.flow.EvOpSlice1;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector3i;
+import endrov.util.math.Vector3i;
 
 /**
  * Fill holes in binary image. The algorithm is optimized for images with small holes. O(w h)

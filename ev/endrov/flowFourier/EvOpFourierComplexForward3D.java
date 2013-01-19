@@ -7,9 +7,9 @@ package endrov.flowFourier;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 import endrov.flow.EvOpStack;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 /**
  * Fourier transform. FFT if possible, otherwise DFT.

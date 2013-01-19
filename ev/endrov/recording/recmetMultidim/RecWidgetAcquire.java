@@ -20,12 +20,12 @@ import javax.swing.SwingUtilities;
 import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.data.EvObject;
+import endrov.gui.EvSwingUtil;
 import endrov.gui.component.EvComboObject;
+import endrov.gui.component.JImageButton;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.recording.EvAcquisition;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
 
 
 /**
@@ -86,7 +86,7 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 			else
 				{
 				if(comboStorageLocation.getSelectedObject()==null)
-					BasicWindow.showErrorDialog("Need to select a place to store the acquisition (e.g. File -> New)");
+					EvBasicWindow.showErrorDialog("Need to select a place to store the acquisition (e.g. File -> New)");
 				else
 					{
 					try
@@ -102,7 +102,7 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 						{
 						EvLog.printError("Failed to run acquisition: "+e1.getMessage(),null);
 						e1.printStackTrace();
-						BasicWindow.showErrorDialog(e1.getMessage());
+						EvBasicWindow.showErrorDialog(e1.getMessage());
 						}
 					}
 				}

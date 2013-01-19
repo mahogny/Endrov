@@ -16,14 +16,14 @@ import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.flowProjection.EvOpProjectMaxZ;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
 import endrov.opMakeMovie.EvMovieMakerFactory;
 import endrov.opMakeMovie.MakeMovieThread;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
+import endrov.typeImageset.Imageset;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 
 /**
  * Go through all imagesets in a directory and make movies
@@ -101,7 +101,7 @@ public class BatchMovie
 					//Get original image size
 					EvChannel ch=(EvChannel)imset.metaObject.get(name);
 					EvStack stack=ch.getFirstStack(null);
-					EvPixels p=stack.getFirstImage().getPixels(ph);
+					EvPixels p=stack.getFirstPlane().getPixels(ph);
 					width=p.getWidth();
 					}
 	

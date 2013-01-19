@@ -9,13 +9,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import endrov.annotationLineage.Lineage;
 import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.util.EvDecimal;
+import endrov.typeLineage.Lineage;
+import endrov.util.math.EvDecimal;
 
 /**
  * Get traveled distance & relative division time error for all nuclei

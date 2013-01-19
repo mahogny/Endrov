@@ -16,13 +16,13 @@ import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-import endrov.annotationLineage.Lineage;
-import endrov.annotationLineage.LineageExp;
 import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.util.EvDecimal;
+import endrov.typeLineage.Lineage;
+import endrov.typeLineage.LineageExp;
+import endrov.util.math.EvDecimal;
 import gnu.jpdf.PDFJob;
 
 

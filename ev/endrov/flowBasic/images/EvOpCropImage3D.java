@@ -10,11 +10,11 @@ import java.io.File;
 import javax.vecmath.Vector3d;
 
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvIOImage;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
 import endrov.roi.primitive.BoxROI;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvImageReader;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 
@@ -99,9 +99,9 @@ public class EvOpCropImage3D extends EvOpStack1
 		EvStack stackOut=new EvStack();
 
 		//Add offset etc
-		stackOut.getMetaFrom(stack); 
+		stackOut.copyMetaFrom(stack); 
 		//Remove all loaders, since the number of slices can be different
-		stackOut.clearStack();
+		stackOut.removeAllPlanes();
 		
 		Vector3d disp=stack.getDisplacement();
 		Vector3d res=stack.getRes();
@@ -115,13 +115,13 @@ public class EvOpCropImage3D extends EvOpStack1
 		//Crop images
 		for(int az=fromZ;az<toZ;az++)
 			{
-			EvImage newim=new EvImage();
+			EvImagePlane newim=new EvImagePlane();
 			final int inZ=az;
-			newim.io=new EvIOImage()
+			newim.io=new EvImageReader()
 				{
 				protected EvPixels eval(ProgressHandle ph)
 					{
-					return new EvOpCropImage2D(fromX, toX, fromY, toY).exec1(ph, stack.getInt(inZ).getPixels(ph));
+					return new EvOpCropImage2D(fromX, toX, fromY, toY).exec1(ph, stack.getPlane(inZ).getPixels(ph));
 					}
 				public File getRawJPEGData()
 					{
@@ -130,7 +130,7 @@ public class EvOpCropImage3D extends EvOpStack1
 				};
 			newim.registerLazyOp(newim.io); //TODO
 			int outZindex=az-fromZ;
-			stackOut.putInt(outZindex, newim);
+			stackOut.putPlane(outZindex, newim);
 			}
 		
 		System.out.println("Depth "+stackOut.getDepth());

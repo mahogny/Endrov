@@ -8,12 +8,12 @@ package util2.paperStdCelegans.makeCellContactMap2;
 import java.io.*;
 import java.util.*;
 
-import endrov.annotationParticleContactMap.neighmap.NeighMap;
-import endrov.annotationParticleContactMap.neighmap.RenderNeighmap;
 import endrov.core.*;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
+import endrov.typeParticleContactMap.neighmap.NeighMap;
+import endrov.typeParticleContactMap.neighmap.RenderNeighmap;
 
 
 /**

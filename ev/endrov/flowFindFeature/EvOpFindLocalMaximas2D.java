@@ -8,10 +8,10 @@ package endrov.flowFindFeature;
 import java.util.*;
 
 import endrov.flow.EvOpSlice1;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector3i;
+import endrov.util.math.Vector3i;
 
 
 /**

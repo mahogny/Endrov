@@ -8,7 +8,7 @@ package endrov.unsortedImageFilters;
 import endrov.flowBasic.EvImageUtil;
 import endrov.flowBasic.math.EvOpImageMulImage;
 import endrov.flowGenerateImage.GenerateSpecialImage;
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 import endrov.util.ProgressHandle;
 
 /**

@@ -29,9 +29,10 @@ import com.sun.opengl.util.BufferUtil;
 import endrov.data.*;
 import endrov.gui.component.EvComboColor;
 import endrov.gui.icon.BasicIcon;
-import endrov.imageset.*;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.*;
+import endrov.typeImageset.gui.EvComboChannel;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.*;
 
 
@@ -373,7 +374,7 @@ public class IsosurfaceExtension implements Viewer3DWindowExtension
 
 								ProgressHandle progh=new ProgressHandle();  //////////////////////// TODO quicker abortion of building image 
 								
-								EvImage evim=stack.getInt(az);
+								EvImagePlane evim=stack.getPlane(az);
 								BufferedImage bim=evim.getPixels(progh).quickReadOnlyAWT();
 
 								/////////////// TODO do not use AWT...

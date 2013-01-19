@@ -15,7 +15,7 @@ import javax.swing.*;
 
 import endrov.data.EvData;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 
 import org.jdom.*;
 
@@ -23,27 +23,19 @@ import org.jdom.*;
  * Adjust Frame-Time mapping
  * @author Johan Henriksson
  */
-public class WindowKeyBinding extends BasicWindow implements ActionListener
+public class WindowKeyBinding extends EvBasicWindow implements ActionListener
 	{
 	static final long serialVersionUID=0;
 
-
-	/**
-	 * Make a new window at default location
-	 */
-	public WindowKeyBinding()
-		{
-		this(50,100,300,600);
-		}
 
 	private JPanel listPane=new JPanel();
 
 	private JButton bNewScriptBinding=new JButton("New script binding");
 	
 	/**
-	 * Make a new window at some specific location
+	 * Make a new window
 	 */
-	public WindowKeyBinding(int x, int y, int w, int h)
+	public WindowKeyBinding()
 		{				
 		
 		JPanel wholePane=new JPanel(new BorderLayout());
@@ -56,13 +48,13 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 		add(spane, BorderLayout.CENTER);
 		add(bNewScriptBinding, BorderLayout.SOUTH);
 
+		fillList();
+
 		//Window overall things
 		setTitleEvWindow("Key Bindings");
 		packEvWindow();
-		setBoundsEvWindow(x,y,w,h);
+		setBoundsEvWindow(50,100,300,600);
 		setVisibleEvWindow(true);
-
-		fillList();
 		}
 
 	
@@ -194,12 +186,8 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 		repaint();
 		}
 	
-	/**
-	 * Store down settings for window into personal config file
-	 */
-	public void windowSavePersonalSettings(Element root)
-		{
-		}
+	public void windowSavePersonalSettings(Element e){}
+	public void windowLoadPersonalSettings(Element e){}
 	
 	/*
 	 * (non-Javadoc)
@@ -209,7 +197,7 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 		{
 		}
 
-	public void eventUserLoadedFile(EvData data){}
+	public void windowEventUserLoadedFile(EvData data){}
 
 	
 	/**
@@ -248,7 +236,7 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 		public void keyTyped(KeyEvent e){}
 		}
 	
-	public void freeResources(){}
+	public void windowFreeResources(){}
 
 	
 	}

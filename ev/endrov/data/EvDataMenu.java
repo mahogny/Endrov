@@ -16,29 +16,29 @@ import javax.swing.*;
 import endrov.core.EndrovCore;
 import endrov.core.EndrovUtil;
 import endrov.core.log.EvLog;
+import endrov.gui.EvSwingUtil;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
-import endrov.gui.window.BasicWindow.DialogReturnStatus;
-import endrov.util.EvSwingUtil;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
+import endrov.gui.window.EvBasicWindow.DialogReturnStatus;
 
 /**
  * Extension to BasicWindow
  * 
  * @author Johan Henriksson
  */
-public class EvDataMenu implements BasicWindowExtension
+public class EvDataMenu implements EvBasicWindowExtension
 	{
 	public static Vector<DataMenuExtension> extensions=new Vector<DataMenuExtension>();
 
 
 	
-	public void newBasicWindow(BasicWindow w)
+	public void newBasicWindow(EvBasicWindow w)
 		{
 		w.basicWindowExtensionHook.put(this.getClass(),new BasicHook());
 		}
-	private class BasicHook implements BasicWindowHook, ActionListener
+	private class BasicHook implements EvBasicWindowHook, ActionListener
 		{
 		private JMenu mData=new JMenu("Data");
 		private JMenuItem miNew=new JMenuItem("New");
@@ -47,7 +47,7 @@ public class EvDataMenu implements BasicWindowExtension
 		private JMenuItem miOpenFile=new JMenuItem("Load file");
 		private JMenuItem miOpenFilePath=new JMenuItem("Load file by path");
 		
-		public void createMenus(BasicWindow w)
+		public void createMenus(EvBasicWindow w)
 			{
 			w.addMenubar(mData);
 			JMenu mFile=w.menuFile;
@@ -57,10 +57,10 @@ public class EvDataMenu implements BasicWindowExtension
 			miOpenFilePath.setIcon(BasicIcon.iconMenuLoad);
 			mRecent.setIcon(BasicIcon.iconMenuLoad);
 			
-			BasicWindow.addMenuItemSorted(mFile, miNew, "data_1new");
-			BasicWindow.addMenuItemSorted(mFile, mRecent, "data_recent");
-			BasicWindow.addMenuItemSorted(mFile, miOpenFile, "data_open_file");			
-			BasicWindow.addMenuItemSorted(mFile, miOpenFilePath, "data_open_file_by_path");
+			EvBasicWindow.addMenuItemSorted(mFile, miNew, "data_1new");
+			EvBasicWindow.addMenuItemSorted(mFile, mRecent, "data_recent");
+			EvBasicWindow.addMenuItemSorted(mFile, miOpenFile, "data_open_file");			
+			EvBasicWindow.addMenuItemSorted(mFile, miOpenFilePath, "data_open_file_by_path");
 			
 			for(DataMenuExtension e:extensions)
 				e.buildOpen(mFile);
@@ -77,7 +77,7 @@ public class EvDataMenu implements BasicWindowExtension
 			if(e.getSource()==miNew)
 				{
 				EvData.registerOpenedData(new EvData());
-				BasicWindow.updateWindows();
+				EvBasicWindow.updateWindows();
 				}
 			else if(e.getSource()==miOpenFile)
 				{
@@ -151,10 +151,10 @@ public class EvDataMenu implements BasicWindowExtension
 							{
 							public void actionPerformed(ActionEvent e)
 								{
-								if(BasicWindow.showConfirmYesNoDialog("Do you really want to store this object permanently?"))
+								if(EvBasicWindow.showConfirmYesNoDialog("Do you really want to store this object permanently?"))
 									{
 									ob.isGeneratedData=false;
-									BasicWindow.updateWindows();
+									EvBasicWindow.updateWindows();
 									}
 								}
 							});
@@ -177,10 +177,10 @@ public class EvDataMenu implements BasicWindowExtension
 						{
 						public void actionPerformed(ActionEvent e)
 							{
-							if(BasicWindow.showConfirmYesNoDialog("Are you sure you want to delete "+ob.getMetaTypeDesc()+" "+obId+"?"))
+							if(EvBasicWindow.showConfirmYesNoDialog("Are you sure you want to delete "+ob.getMetaTypeDesc()+" "+obId+"?"))
 								{
 								thisMeta.metaObject.remove(obId);
-								BasicWindow.updateWindows();
+								EvBasicWindow.updateWindows();
 								thisMeta.setMetadataModified();
 								}
 							}
@@ -200,7 +200,7 @@ public class EvDataMenu implements BasicWindowExtension
 								EvObject ob=thisMeta.metaObject.remove(obId);
 								if(ob!=null)
 									thisMeta.metaObject.put(newId, ob);
-								BasicWindow.updateWindows();
+								EvBasicWindow.updateWindows();
 								}
 							}
 						};
@@ -218,7 +218,7 @@ public class EvDataMenu implements BasicWindowExtension
 								{
 								thisMeta.author=newId;
 								thisMeta.setMetadataModified();
-								BasicWindow.updateWindows();
+								EvBasicWindow.updateWindows();
 								}
 							}
 						};
@@ -250,7 +250,7 @@ public class EvDataMenu implements BasicWindowExtension
 		/**
 		 * Top level function to build menus
 		 */
-		public void buildMenu(BasicWindow w)
+		public void buildMenu(EvBasicWindow w)
 			{
 			EvSwingUtil.tearDownMenu(mData);
 			EvSwingUtil.tearDownMenu(mRecent);
@@ -276,7 +276,7 @@ public class EvDataMenu implements BasicWindowExtension
 					public void actionPerformed(ActionEvent e)
 						{
 						EvData.recentlyLoadedFiles.clear();
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 						}
 					});
 			
@@ -309,7 +309,7 @@ public class EvDataMenu implements BasicWindowExtension
 						//Give the user the option of saving if any file has been modified
 						if(anyMod)
 							{
-							BasicWindow.DialogReturnStatus status=BasicWindow.showConfirmYesNoCancelDialog("Metadata has been modified. Save before closing all?");
+							EvBasicWindow.DialogReturnStatus status=EvBasicWindow.showConfirmYesNoCancelDialog("Metadata has been modified. Save before closing all?");
 							if(status==DialogReturnStatus.CANCEL)
 								return;
 							else if(status==DialogReturnStatus.YES)
@@ -333,7 +333,7 @@ public class EvDataMenu implements BasicWindowExtension
 
 						//Close all files
 						EvData.openedData.clear();
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 						System.gc();
 						}
 					};
@@ -392,7 +392,7 @@ public class EvDataMenu implements BasicWindowExtension
 						GuiEvDataIO.saveFileDialog(thisMeta);
 						//thisMeta.saveFileDialog(null);
 						thisMeta.setMetadataNotModified();//this might be wrong if save not supported
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 						}
 					};
 				miSaveAs.addActionListener(metaListenerSaveAs);
@@ -425,7 +425,7 @@ public class EvDataMenu implements BasicWindowExtension
 						{
 						if(thisMeta.isMetadataModified())
 							{
-							BasicWindow.DialogReturnStatus ret=BasicWindow.showConfirmYesNoCancelDialog("Metadata has been modified. Save before close?");
+							EvBasicWindow.DialogReturnStatus ret=EvBasicWindow.showConfirmYesNoCancelDialog("Metadata has been modified. Save before close?");
 							if(ret==DialogReturnStatus.YES)
 								{
 								try
@@ -443,7 +443,7 @@ public class EvDataMenu implements BasicWindowExtension
 								return;
 							}
 						EvData.openedData.remove(thisMeta);
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 						System.gc();
 						}
 					};

@@ -14,12 +14,12 @@ import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.flowThreshold.EvOpThresholdFukunaga2D;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.util.EvFileUtil;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
+import endrov.util.io.EvFileUtil;
 
 public class Signal 
 	{
@@ -29,7 +29,7 @@ public class Signal
 		if(data==null)
 			System.out.println("No such file");
 		EvChannel im=data.getIdObjectsRecursive(EvChannel.class).values().iterator().next();
-		EvImage evim=im.getFirstStack(new ProgressHandle()).getFirstImage();
+		EvImagePlane evim=im.getFirstStack(new ProgressHandle()).getFirstPlane();
 		EvPixels pixels=evim.getPixels(new ProgressHandle()).getReadOnly(EvPixelsType.DOUBLE);
 		return pixels;
 		}

@@ -17,14 +17,14 @@ import endrov.keybinding.JinputListener;
  */
 public class JInputModeBasicWindow implements JInputMode
 	{
-	public static BasicWindow getWindow()
+	public static EvBasicWindow getWindow()
 		{
-		return BasicWindow.windowManager.getFocusWindow();
+		return EvBasicWindow.windowManager.getFocusWindow();
 		}
 	
 	public void bindAxisPerformed(JInputManager.EvJinputStatus status)
 		{
-		BasicWindow w=getWindow();
+		EvBasicWindow w=getWindow();
 		if(w!=null)
 			{
 			for(JinputListener listener:w.jinputListeners.keySet())
@@ -35,7 +35,7 @@ public class JInputModeBasicWindow implements JInputMode
 	
 	public void bindKeyPerformed(JInputManager.EvJinputButtonEvent e)
 		{
-		BasicWindow w=getWindow();
+		EvBasicWindow w=getWindow();
 		if(w!=null)
 			{
 			for(JinputListener listener:w.jinputListeners.keySet())

@@ -19,7 +19,7 @@ import javax.vecmath.Vector3d;
 import org.jdom.*;
 
 import endrov.data.EvObject;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.BoundingBox3D;
 import endrov.windowViewer3D.Viewer3DWindow;
 import endrov.windowViewer3D.Viewer3DWindowExtension;

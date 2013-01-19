@@ -6,7 +6,7 @@
 package endrov.flowProjection;
 
 import endrov.flowBasic.math.EvOpImageAddImage;
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 import endrov.util.ProgressHandle;
 
 /**

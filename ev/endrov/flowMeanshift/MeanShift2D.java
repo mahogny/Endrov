@@ -13,10 +13,10 @@ import endrov.flow.EvOpGeneral;
 import endrov.flowBasic.math.EvOpImageMulImage;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.flowImageStats.EvOpSumRect;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector2i;
+import endrov.util.math.Vector2i;
 
 /**
  * Find pixels or classify areas using the Mean-shift algorithm 

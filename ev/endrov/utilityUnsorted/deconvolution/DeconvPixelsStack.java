@@ -7,7 +7,7 @@ package endrov.utilityUnsorted.deconvolution;
 
 import java.util.ArrayList;
 
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 
 /**
  * Just a stack of pixels. No metadata.

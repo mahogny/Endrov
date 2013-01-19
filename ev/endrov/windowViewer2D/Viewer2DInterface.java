@@ -2,7 +2,7 @@ package endrov.windowViewer2D;
 
 import endrov.data.EvContainer;
 import endrov.gui.WorldScreenTransformer;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 public interface Viewer2DInterface extends WorldScreenTransformer
 	{

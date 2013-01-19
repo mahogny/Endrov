@@ -11,7 +11,7 @@ import java.io.IOException;
 import endrov.core.*;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.starter.Start;
 import endrov.windowViewer3D.Viewer3DWindow;
 
@@ -69,7 +69,7 @@ public class AppletGUI extends JApplet
 			
 			
 			EvWindowManagerApplet manager=new EvWindowManagerApplet(2,applet==null);
-			BasicWindow.windowManager=manager;
+			EvBasicWindow.windowManager=manager;
 			new endrov.windowLineage.LineageWindow();
 			new Viewer3DWindow();
 			

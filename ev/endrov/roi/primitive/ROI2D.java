@@ -10,9 +10,9 @@ import java.util.*;
 import org.jdom.*;
 
 import endrov.data.EvContainer;
-import endrov.imageset.*;
 import endrov.roi.*;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.*;
+import endrov.util.math.EvDecimal;
 
 
 

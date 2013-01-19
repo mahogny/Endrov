@@ -13,9 +13,9 @@ import javax.swing.*;
 import javax.vecmath.*;
 
 import endrov.gui.GeneralTool;
-import endrov.gui.window.BasicWindow;
-import endrov.util.EvDecimal;
-import endrov.util.Tuple;
+import endrov.gui.window.EvBasicWindow;
+import endrov.util.collection.Tuple;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.*;
 
 /**
@@ -85,7 +85,7 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 						w.getRootObject().metaObject.remove(roiName);
 						ROI.setSelected(new LinkedList<ROI>());
 						currentROI=null;
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 						}
 					});
 		

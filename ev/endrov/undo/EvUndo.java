@@ -15,9 +15,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 
 
 
@@ -96,13 +96,13 @@ public class EvUndo
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 			{
-			public void newBasicWindow(BasicWindow w)
+			public void newBasicWindow(EvBasicWindow w)
 				{
-				w.basicWindowExtensionHook.put(this.getClass(), new BasicWindowHook()
+				w.basicWindowExtensionHook.put(this.getClass(), new EvBasicWindowHook()
 						{
-						public void createMenus(BasicWindow w)
+						public void createMenus(EvBasicWindow w)
 							{
 							
 
@@ -136,10 +136,10 @@ public class EvUndo
 												op.undo();
 												undoQueue.removeLast();
 												redoQueue.addFirst(op);
-												BasicWindow.updateWindows();
+												EvBasicWindow.updateWindows();
 												}
 											else
-												BasicWindow.showInformativeDialog("This operation does not support undo");
+												EvBasicWindow.showInformativeDialog("This operation does not support undo");
 											}
 										});
 								else
@@ -149,18 +149,18 @@ public class EvUndo
 											{
 											if(op.canUndo())
 												{
-												if(BasicWindow.showConfirmYesNoDialog(
+												if(EvBasicWindow.showConfirmYesNoDialog(
 														"This is not the last operation. Undoing it is can be incredibly unsafe unless you know what you are doing. Sure?"))
 													{
 													op.undo();
 													for(int i=0;i<fcount+1;i++)
 														undoQueue.removeLast();
 													redoQueue.clear();
-													BasicWindow.updateWindows();
+													EvBasicWindow.updateWindows();
 													}
 												}
 											else
-												BasicWindow.showInformativeDialog("This operation does not support undo");
+												EvBasicWindow.showInformativeDialog("This operation does not support undo");
 											}
 										});
 									
@@ -193,7 +193,7 @@ public class EvUndo
 											undoQueue.add(op);
 											redoQueue.removeFirst();
 											op.redo();
-											BasicWindow.updateWindows(); //Needed?
+											EvBasicWindow.updateWindows(); //Needed?
 											}
 										});
 								else
@@ -208,7 +208,7 @@ public class EvUndo
 												undoQueue.addLast(op);
 												redoQueue.clear();
 												op.redo();
-												BasicWindow.updateWindows(); //Needed?
+												EvBasicWindow.updateWindows(); //Needed?
 												}
 
 											}
@@ -220,7 +220,7 @@ public class EvUndo
 								}
 							
 							}
-						public void buildMenu(BasicWindow w){}
+						public void buildMenu(EvBasicWindow w){}
 						});
 				}
 			});

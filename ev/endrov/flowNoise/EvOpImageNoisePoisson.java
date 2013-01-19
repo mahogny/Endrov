@@ -8,10 +8,10 @@ package endrov.flowNoise;
 import java.util.Random;
 
 import endrov.flow.EvOpSlice1;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.util.EvMathUtil;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvMathUtil;
 
 /**
  * Add poisson noise

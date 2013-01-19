@@ -10,7 +10,7 @@ public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{
-		return "Lineage Window";
+		return "Lineage viewer";
 		}
 
 	public String getAuthor()

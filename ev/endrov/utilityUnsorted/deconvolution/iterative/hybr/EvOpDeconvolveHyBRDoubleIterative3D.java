@@ -32,7 +32,7 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
 import cern.jet.math.tdouble.DoubleFunctions;
 import cern.jet.stat.tdouble.DoubleDescriptive;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.utilityUnsorted.deconvolution.DeconvPixelsStack;
 import endrov.utilityUnsorted.deconvolution.iterative.DoubleCommon2D;
 import endrov.utilityUnsorted.deconvolution.iterative.DoubleCommon3D;

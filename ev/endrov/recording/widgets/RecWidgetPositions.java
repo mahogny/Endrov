@@ -19,10 +19,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import endrov.gui.EvSwingUtil;
 import endrov.recording.RecordingResource;
 import endrov.recording.StoredStagePosition;
 import endrov.recording.RecordingResource.PositionListListener;
-import endrov.util.EvSwingUtil;
 
 /**
  * Widget for recording settings: Position settings

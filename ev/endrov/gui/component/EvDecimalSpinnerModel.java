@@ -11,7 +11,7 @@ import javax.swing.SpinnerModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 /**
  * Model of EvDecimal for JSpinner

@@ -26,15 +26,14 @@ import endrov.gui.*;
 import endrov.gui.EvColor.ColorMenuListener;
 import endrov.gui.component.EvComboObject;
 import endrov.gui.component.EvHidableSidePaneRight;
+import endrov.gui.component.JSnapBackSlider;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.keybinding.*;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
-import endrov.util.EvXmlUtil;
-import endrov.util.SnapBackSlider;
+import endrov.util.io.EvXmlUtil;
+import endrov.util.math.EvDecimal;
 import endrov.windowConsole.*;
 import endrov.windowViewer3D.basicExtensions.CrossHandler;
 
@@ -44,8 +43,8 @@ import endrov.windowViewer3D.basicExtensions.CrossHandler;
  * Model window - displays a navigatable 3d model
  * @author Johan Henriksson
  */
-public class Viewer3DWindow extends BasicWindow
-		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, ChangeListener, JinputListener, TimedDataWindow
+public class Viewer3DWindow extends EvBasicWindow
+		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, ChangeListener, JinputListener, TimedDataWindowInterface
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -58,25 +57,6 @@ public class Viewer3DWindow extends BasicWindow
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
-
-	private void setPersonalConfig(Element e)
-		{
-		try
-			{
-			Rectangle r=BasicWindow.getXMLbounds(e);
-			setBoundsEvWindow(r);
-			frameControl.setGroup(e.getAttribute("group").getIntValue());
-			
-			for(Viewer3DHook hook:modelWindowHooks)
-				hook.readPersonalConfig(e);
-
-			sidePanelSplitPane.setPanelVisible(e.getAttribute("sidePanelVisible").getBooleanValue());
-			}
-		catch (Exception e1)
-			{
-			e1.printStackTrace();
-			}
-		}
 
 	
 	private int mouseLastX, mouseLastY;
@@ -91,8 +71,8 @@ public class Viewer3DWindow extends BasicWindow
 	private JProgressBar progress=new JProgressBar(0,1000);	
 	public final Viewer3DView view;
 	private final FrameControl3D frameControl;
-	private SnapBackSlider barZoom=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
-	private SnapBackSlider barRotate=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);	
+	private JSnapBackSlider barZoom=new JSnapBackSlider(JScrollBar.VERTICAL,0,1000);
+	private JSnapBackSlider barRotate=new JSnapBackSlider(JScrollBar.VERTICAL,0,1000);	
 	private ObjectDisplayList objectDisplayList=new ObjectDisplayList();
 	public final CrossHandler crossHandler=new CrossHandler();
 	
@@ -107,7 +87,7 @@ public class Viewer3DWindow extends BasicWindow
 	private final JButton buttonCenter=new JButton("Center");
 	private final EvHidableSidePaneRight sidePanelSplitPane;
 	
-	public JMenu menuModel=new JMenu("ModelWindow");	
+	public JMenu menuModel=new JMenu("3D viewer");	
 	private JMenu miView=new JMenu("Default views");
 	private JMenuItem miViewFront=new JMenuItem("Front");
 	private JMenuItem miViewBack=new JMenuItem("Back");
@@ -239,15 +219,15 @@ public class Viewer3DWindow extends BasicWindow
 		zoomrotPanel.add(EvSwingUtil.layoutACB(new JLabel(BasicIcon.iconLabelRotate), barRotate, null));
 
 		
-		barZoom.addSnapListener(new SnapBackSlider.SnapChangeListener(){
-			public void slideChange(SnapBackSlider source, int change)
+		barZoom.addSnapListener(new JSnapBackSlider.SnapChangeListener(){
+			public void slideChange(JSnapBackSlider source, int change)
 				{
 				view.pan(0,0,change*5,false);
 				view.repaint();
 				}
 		});
-		barRotate.addSnapListener(new SnapBackSlider.SnapChangeListener(){
-			public void slideChange(SnapBackSlider source, int change)
+		barRotate.addSnapListener(new JSnapBackSlider.SnapChangeListener(){
+			public void slideChange(JSnapBackSlider source, int change)
 				{
 				view.camera.rotateCamera(0, 0, change/200.0);
 				view.repaint();
@@ -359,18 +339,31 @@ public class Viewer3DWindow extends BasicWindow
 	 */
 	public void windowSavePersonalSettings(Element root)
 		{
-		Element e=new Element("modelwindow");
-		setXMLbounds(e);
-		e.setAttribute("group",""+frameControl.getGroup());
-		e.setAttribute("sidePanelVisible",""+sidePanelSplitPane.getPanelVisible());
+		frameControl.storeSettings(root);
+		root.setAttribute("sidePanelVisible",""+sidePanelSplitPane.getPanelVisible());
 		
 		for(Viewer3DHook hook:modelWindowHooks)
-			hook.savePersonalConfig(e);
-		
-		root.addContent(e);
+			hook.savePersonalConfig(root);
 		}
 
-	
+	public void windowLoadPersonalSettings(Element e)
+		{
+		try
+			{
+			frameControl.getSettings(e);
+			
+			for(Viewer3DHook hook:modelWindowHooks)
+				hook.readPersonalConfig(e);
+
+			sidePanelSplitPane.setPanelVisible(e.getAttribute("sidePanelVisible").getBooleanValue());
+			}
+		catch (Exception e1)
+			{
+			e1.printStackTrace();
+			}
+		}
+
+
 
 	
 	/**
@@ -403,7 +396,7 @@ public class Viewer3DWindow extends BasicWindow
 			windowSavePersonalSettings(root);
 			try
 				{
-				String out=EvXmlUtil.xmlToString(new Document((Element)root.getChild("modelwindow").clone()));
+				String out=EvXmlUtil.xmlToString(new Document(root));
 				EvSwingUtil.setClipBoardString(out);
 				}
 			catch (Exception e1)
@@ -415,7 +408,7 @@ public class Viewer3DWindow extends BasicWindow
 			{
 			try
 				{
-				setPersonalConfig(EvXmlUtil.stringToXml(EvSwingUtil.getClipBoardString()));
+				windowLoadPersonalSettings(EvXmlUtil.stringToXml(EvSwingUtil.getClipBoardString()));
 				}
 			catch (Exception e1)
 				{
@@ -619,7 +612,6 @@ public class Viewer3DWindow extends BasicWindow
 			{
 			view.frame=frameControl.getFrame();
 			view.repaint(); //TODO modw repaint
-			//System.out.println("repainting");
 			}
 			
 		}
@@ -648,21 +640,15 @@ public class Viewer3DWindow extends BasicWindow
 	/**
 	 * Called whenever a new file is loaded, and this window should change active set
 	 */
-	public void eventUserLoadedFile(EvData data)
+	public void windowEventUserLoadedFile(EvData data)
 		{
 		metaCombo.setSelectedObject(data);
-		//metaCombo.setMeta(data);
-		}
-	
-	public void finalize()
-		{
-		System.out.println("removing model window");
 		}
 	
 	
-
 	
 	private List<ProgressMeter> progressMeters=new LinkedList<ProgressMeter>();
+	
 	/**
 	 * Progress meters
 	 */
@@ -675,8 +661,8 @@ public class Viewer3DWindow extends BasicWindow
 		/** Set progress, 0-1000 */
 		public void set(final int v)
 			{
-			progress=v;	SwingUtilities.invokeLater(new Runnable(){public void run(){updateProgressMeter();}});
-//			SwingUtilities.invokeLater(new Runnable(){public void run(){pbar.setValue(v);}});
+			progress=v;	
+			SwingUtilities.invokeLater(new Runnable(){public void run(){updateProgressMeter();}});
 			}
 		/** Remove progress bar. update view */
 		public void done()
@@ -690,7 +676,6 @@ public class Viewer3DWindow extends BasicWindow
 				}});
 			}
 		private int progress=0; 
-//		private JProgressBar pbar=new JProgressBar(0,1000);
 		}
 	
 	/**
@@ -700,7 +685,6 @@ public class Viewer3DWindow extends BasicWindow
 		{
 		synchronized(progressMeters)
 			{
-//			int tot=progressMeters.size()*1000;
 			int sum=0;
 			for(ProgressMeter pm:progressMeters)
 				sum+=pm.progress;
@@ -708,22 +692,6 @@ public class Viewer3DWindow extends BasicWindow
 				progress.setValue(1000);
 			else
 				progress.setValue(sum/progressMeters.size());
-			/*
-			if(progressMeters.isEmpty())
-				{
-				progress.setVisible(false);
-				progress.removeAll();
-				}
-			else
-				{
-				progress.removeAll();
-				progress.setLayout(new GridLayout(1,progressMeters.size()));
-				for(ProgressMeter pm:progressMeters)
-					progress.add(pm.pbar);
-				progress.revalidate();
-				progress.setVisible(true);
-				}
-				*/
 			}
 		}
 	
@@ -742,22 +710,22 @@ public class Viewer3DWindow extends BasicWindow
 		}
 
 	//
-	private static final int AXIS_ROTX=KeyBinding.register(new KeyBinding("Model Window","Rot X",new KeyBinding.TypeJInput("y",0)));
-	private static final int AXIS_ROTY=KeyBinding.register(new KeyBinding("Model Window","Rot Y",new KeyBinding.TypeJInput("x",0)));
-	private static final int AXIS_PANZ=KeyBinding.register(new KeyBinding("Model Window","Axis pan Z",new KeyBinding.TypeJInput("rz",0)));
-	private static final int AXIS_ROTZ=KeyBinding.register(new KeyBinding("Model Window","Axis rot",new KeyBinding.TypeJInput("z",0)));
+	private static final int AXIS_ROTX=KeyBinding.register(new KeyBinding("3D viewer","Rot X",new KeyBinding.TypeJInput("y",0)));
+	private static final int AXIS_ROTY=KeyBinding.register(new KeyBinding("3D viewer","Rot Y",new KeyBinding.TypeJInput("x",0)));
+	private static final int AXIS_PANZ=KeyBinding.register(new KeyBinding("3D viewer","Axis pan Z",new KeyBinding.TypeJInput("rz",0)));
+	private static final int AXIS_ROTZ=KeyBinding.register(new KeyBinding("3D viewer","Axis rot",new KeyBinding.TypeJInput("z",0)));
 
 	private static final int ALTERNATIVECONTROLS=KeyBinding.register(new KeyBinding("Model Window","Toggle Alternative",new KeyBinding.TypeJInput("5",1)));
 
-	private static final int ALT_FORWARD=KeyBinding.register(new KeyBinding("Model Window","Alt/Forward",new KeyBinding.TypeJInput("4",1)));
-	private static final int ALT_BACKWARD=KeyBinding.register(new KeyBinding("Model Window","Alt/Backward",new KeyBinding.TypeJInput("6",1)));
-	private static final int AXIS_ALTPANX=KeyBinding.register(new KeyBinding("Model Window","Alt/Pan X",new KeyBinding.TypeJInput("x",0)));
-	private static final int AXIS_ALTPANY=KeyBinding.register(new KeyBinding("Model Window","Alt/Pan Y",new KeyBinding.TypeJInput("y",0)));
-	private static final int AXIS_ALTROTX=KeyBinding.register(new KeyBinding("Model Window","Alt/Rot X",new KeyBinding.TypeJInput("rz",0)));
-	private static final int AXIS_ALTROTY=KeyBinding.register(new KeyBinding("Model Window","Alt/Rot Y",new KeyBinding.TypeJInput("z",0)));
+	private static final int ALT_FORWARD=KeyBinding.register(new KeyBinding("3D viewer","Alt/Forward",new KeyBinding.TypeJInput("4",1)));
+	private static final int ALT_BACKWARD=KeyBinding.register(new KeyBinding("3D viewer","Alt/Backward",new KeyBinding.TypeJInput("6",1)));
+	private static final int AXIS_ALTPANX=KeyBinding.register(new KeyBinding("3D viewer","Alt/Pan X",new KeyBinding.TypeJInput("x",0)));
+	private static final int AXIS_ALTPANY=KeyBinding.register(new KeyBinding("3D viewer","Alt/Pan Y",new KeyBinding.TypeJInput("y",0)));
+	private static final int AXIS_ALTROTX=KeyBinding.register(new KeyBinding("3D viewer","Alt/Rot X",new KeyBinding.TypeJInput("rz",0)));
+	private static final int AXIS_ALTROTY=KeyBinding.register(new KeyBinding("3D viewer","Alt/Rot Y",new KeyBinding.TypeJInput("z",0)));
 
-	private static final int KEY_NEXTFRAME=KeyBinding.register(new KeyBinding("Model Window","Next frame",new KeyBinding.TypeJInput("2",1)));
-	private static final int KEY_PREVFRAME=KeyBinding.register(new KeyBinding("Model Window","Prev frame",new KeyBinding.TypeJInput("0",1)));
+	private static final int KEY_NEXTFRAME=KeyBinding.register(new KeyBinding("3D viewer","Next frame",new KeyBinding.TypeJInput("2",1)));
+	private static final int KEY_PREVFRAME=KeyBinding.register(new KeyBinding("3D viewer","Prev frame",new KeyBinding.TypeJInput("0",1)));
 
 	public void bindAxisPerformed(JInputManager.EvJinputStatus status)
 		{
@@ -817,7 +785,7 @@ public class Viewer3DWindow extends BasicWindow
 	
 	
 	
-	public void freeResources(){}
+	public void windowFreeResources(){}
 
 	
 	public <E extends EvObject> Collection<E> getVisibleObjects(Class<E> c)
@@ -849,17 +817,17 @@ public class Viewer3DWindow extends BasicWindow
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(
-				new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(
+				new EvBasicWindowExtension()
 					{
-					public void newBasicWindow(BasicWindow w)
+					public void newBasicWindow(EvBasicWindow w)
 						{
 						w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 						}
 					
-					class Hook implements BasicWindowHook, ActionListener
+					class Hook implements EvBasicWindowHook, ActionListener
 						{
-						public void createMenus(BasicWindow w)
+						public void createMenus(EvBasicWindow w)
 							{
 							JMenuItem mi=new JMenuItem("3D viewer",new ImageIcon(getClass().getResource("iconWindow.png")));
 							mi.addActionListener(this);
@@ -871,29 +839,9 @@ public class Viewer3DWindow extends BasicWindow
 							new Viewer3DWindow();
 							}
 						
-						public void buildMenu(BasicWindow w){}
+						public void buildMenu(EvBasicWindow w){}
 						}
 					});
-		
-		
-		
-		EndrovCore.personalConfigLoaders.put("modelwindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					Rectangle r=BasicWindow.getXMLbounds(e);
-					Viewer3DWindow m=new Viewer3DWindow(r);
-					m.setPersonalConfig(e);
-					}
-				catch (Exception e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
 		}
 
 	

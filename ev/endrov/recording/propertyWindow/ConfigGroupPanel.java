@@ -11,13 +11,13 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import endrov.gui.EvSwingUtil;
+import endrov.gui.component.JImageButton;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePropPath;
 import endrov.hardware.EvHardwareConfigGroup;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
 
 /**
  * Panel to choose state using config groups
@@ -95,10 +95,10 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 			{
 			if(e.getSource()==bRemoveGroup)
 				{
-				if(BasicWindow.showConfirmYesNoDialog("Do you really want to remove the group "+groupName+"?"))
+				if(EvBasicWindow.showConfirmYesNoDialog("Do you really want to remove the group "+groupName+"?"))
 					{
 					EvHardwareConfigGroup.removeConfigGroup(groupName);
-					BasicWindow.updateWindows();
+					EvBasicWindow.updateWindows();
 					}
 				}
 			else if(e.getSource()==bAddState)
@@ -108,16 +108,16 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 					{
 					EvHardwareConfigGroup.getConfigGroup(groupName).captureCurrentStateAsNew(stateName);
 					//lastComboSetting.put(groupName, stateName);
-					BasicWindow.updateWindows();
+					EvBasicWindow.updateWindows();
 					}
 				}
 			else if(e.getSource()==bRemoveState)
 				{
 				if(cState.getSelectedIndex()!=0)
-					if(BasicWindow.showConfirmYesNoDialog("Do you really want to remove the state "+cState.getSelectedItem()+"?"))
+					if(EvBasicWindow.showConfirmYesNoDialog("Do you really want to remove the state "+cState.getSelectedItem()+"?"))
 						{
 						EvHardwareConfigGroup.getConfigGroup(groupName).removeState((String)cState.getSelectedItem());
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 						}
 				}
 			else if(e.getSource()==cState)

@@ -18,12 +18,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
+import endrov.gui.EvSwingUtil;
+import endrov.gui.component.JImageToggleButton;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDevicePath;
 import endrov.recording.device.HWStage;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageToggleButton;
 
 /**
  * Widget to move microscope stage 

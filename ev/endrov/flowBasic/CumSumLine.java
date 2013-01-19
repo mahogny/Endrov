@@ -5,8 +5,8 @@
  */
 package endrov.flowBasic;
 
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 
 /**
  * Operations to work with cumulative sums

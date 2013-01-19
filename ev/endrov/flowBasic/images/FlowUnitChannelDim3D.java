@@ -18,12 +18,12 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.AnyEvImage;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
-import endrov.util.Vector2i;
-import endrov.util.Vector3i;
+import endrov.typeImageset.AnyEvImage;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
+import endrov.util.math.Vector2i;
+import endrov.util.math.Vector3i;
 
 /**
  * Flow unit: Get dimensions of any image object

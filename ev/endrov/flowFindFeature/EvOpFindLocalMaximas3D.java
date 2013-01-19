@@ -9,10 +9,10 @@ import java.util.*;
 
 import endrov.flow.EvOpStack1;
 import endrov.flowBasic.math.EvOpImageMulScalar;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector3i;
+import endrov.util.math.Vector3i;
 
 
 /**
@@ -51,7 +51,7 @@ public class EvOpFindLocalMaximas3D extends EvOpStack1
 		boolean visited[][][]=new boolean[d][h][w];
 		//TODO faster with hashset?
 		
-		double[][] inarr=stack.getReadOnlyArraysDouble(progh);
+		double[][] inarr=stack.getArraysDoubleReadOnly(progh);
 		for(int z=1;z<d-1;z++)
 			for(int y=1;y<h-1;y++)
 				for(int x=1;x<w-1;x++)
@@ -189,7 +189,7 @@ public class EvOpFindLocalMaximas3D extends EvOpStack1
 		EvStack pout=new EvStack();
 		pout.allocate(p.getWidth(), p.getHeight(), p.getDepth(), EvPixelsType.INT, p);
 		
-		int[][] arr=pout.getOrigArraysInt(progh);
+		int[][] arr=pout.getArraysIntOrig(progh);
 		int w=p.getWidth();
 		List<Vector3i> vlist=findMaximas(progh, p);
 		for(Vector3i v:vlist)

@@ -20,8 +20,8 @@ import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flowWindow.FlowView;
-import endrov.util.EvSwingUtil;
+import endrov.gui.EvSwingUtil;
+import endrov.windowFlow.FlowView;
 
 /**
  * Flow unit: input variable

@@ -13,12 +13,12 @@ import javax.vecmath.Vector2d;
 
 import org.apache.commons.io.IOUtils;
 
-import endrov.imageset.EvStack;
 import endrov.roi.ROI;
 import endrov.roi.primitive.BoxROI;
 import endrov.roi.primitive.EllipseROI;
 import endrov.roi.primitive.PolygonROI;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvStack;
+import endrov.util.math.EvDecimal;
 
 /**
  * Load ImageJ ROIs and convert them to Endrov equivalent

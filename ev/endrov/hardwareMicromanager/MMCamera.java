@@ -13,7 +13,7 @@ import endrov.hardware.DevicePropertyType;
 import endrov.hardware.EvDeviceObserver;
 import endrov.recording.CameraImage;
 import endrov.recording.device.HWCamera;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 /**
  * Micro-manager camera

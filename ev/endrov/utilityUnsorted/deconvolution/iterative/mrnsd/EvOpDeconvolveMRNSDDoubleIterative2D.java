@@ -22,7 +22,7 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.jet.math.tdouble.DoubleFunctions;
 import endrov.core.log.EvLog;
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 import endrov.utilityUnsorted.deconvolution.iterative.DoubleCommon2D;
 import endrov.utilityUnsorted.deconvolution.iterative.DoubleIterativeDeconvolver2D;
 import endrov.utilityUnsorted.deconvolution.iterative.IterativeEnums.BoundaryType;

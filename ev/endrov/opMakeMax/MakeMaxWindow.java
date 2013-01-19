@@ -10,11 +10,11 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import endrov.data.*;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
-import endrov.gui.window.BatchWindow;
-import endrov.imageset.*;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
+import endrov.gui.window.EvBatchWindow;
+import endrov.typeImageset.gui.EvComboChannel;
 
 import org.jdom.*;
 
@@ -23,7 +23,7 @@ import org.jdom.*;
  * 
  * @author Johan Henriksson
  */
-public class MakeMaxWindow extends BasicWindow implements ActionListener
+public class MakeMaxWindow extends EvBasicWindow implements ActionListener
 	{
 	static final long serialVersionUID=0;
 	
@@ -35,13 +35,13 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 	public static void initPlugin()	{}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 			{
-			public void newBasicWindow(BasicWindow w)
+			public void newBasicWindow(EvBasicWindow w)
 				{
-				w.basicWindowExtensionHook.put(this.getClass(), new BasicWindowHook()
+				w.basicWindowExtensionHook.put(this.getClass(), new EvBasicWindowHook()
 						{
-						public void createMenus(BasicWindow w)
+						public void createMenus(EvBasicWindow w)
 							{
 							JMenuItem mi=new JMenuItem("Make Max Channel");
 							mi.addActionListener(new ActionListener(){
@@ -52,7 +52,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 							});
 							w.addMenuOperation(mi,null);
 							}
-						public void buildMenu(BasicWindow w){}
+						public void buildMenu(EvBasicWindow w){}
 						});
 				}
 			});
@@ -113,9 +113,8 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public void windowSavePersonalSettings(Element root)
-		{
-		}
+	public void windowSavePersonalSettings(Element e){}
+	public void windowLoadPersonalSettings(Element e){}
 
 	
 	
@@ -136,7 +135,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 				CalcThread thread=new CalcThread(channelCombo.getSelectObjectParent(), 
 						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), channelCombo.getChannelName());
 
-				new BatchWindow(thread);
+				new EvBatchWindow(thread);
 				}
 			}
 		}
@@ -151,7 +150,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 		channelCombo.updateList();
 		}
 	
-	public void eventUserLoadedFile(EvData data){}
-	public void freeResources(){}
+	public void windowEventUserLoadedFile(EvData data){}
+	public void windowFreeResources(){}
 
 	}

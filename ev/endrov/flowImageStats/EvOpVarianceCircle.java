@@ -8,8 +8,8 @@ package endrov.flowImageStats;
 import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.math.EvOpImagePowScalar;
 import endrov.flowGenerateImage.GenerateSpecialImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
 
 /**

@@ -7,8 +7,8 @@ package endrov.gui.component;
 
 import javax.swing.JSpinner;
 
-import endrov.annotationFrameTime.EvFrameEditor;
-import endrov.util.EvDecimal;
+import endrov.typeFrameTime.EvFrameEditor;
+import endrov.util.math.EvDecimal;
 
 /**
  * Simple frame selector

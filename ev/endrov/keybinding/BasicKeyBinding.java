@@ -5,11 +5,11 @@
  */
 package endrov.keybinding;
 
+import endrov.gui.EvSwingUtil;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
-import endrov.util.EvSwingUtil;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 
 import java.awt.event.*;
 import javax.swing.JMenu;
@@ -20,24 +20,24 @@ import javax.swing.JRadioButtonMenuItem;
  * Extension to BasicWindow
  * @author Johan Henriksson
  */
-public class BasicKeyBinding implements BasicWindowExtension
+public class BasicKeyBinding implements EvBasicWindowExtension
 	{
-	public void newBasicWindow(BasicWindow w)
+	public void newBasicWindow(EvBasicWindow w)
 		{
 		w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 		}
-	private class Hook implements BasicWindowHook, ActionListener
+	private class Hook implements EvBasicWindowHook, ActionListener
 		{
 		JMenu mInput=new JMenu("Input");
 		
-		public void createMenus(BasicWindow w)
+		public void createMenus(EvBasicWindow w)
 			{
 			JMenuItem mi=new JMenuItem("Key bindings",BasicIcon.iconKeyboard);
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			
 			//BasicWindow.addMenuItemSorted(menu, ni, itemName)
-			BasicWindow.addMenuItemSorted(w.menuFile, mInput, "input");
+			EvBasicWindow.addMenuItemSorted(w.menuFile, mInput, "input");
 			//w.menuFile
 			}
 		
@@ -46,7 +46,7 @@ public class BasicKeyBinding implements BasicWindowExtension
 			new WindowKeyBinding();
 			}
 		
-		public void buildMenu(BasicWindow w)
+		public void buildMenu(EvBasicWindow w)
 			{
 			EvSwingUtil.tearDownMenu(mInput);
 			String selected=JInputManager.selectedGamepadMode;
@@ -62,7 +62,7 @@ public class BasicKeyBinding implements BasicWindowExtension
 					public void actionPerformed(ActionEvent e)
 						{
 						JInputManager.selectedGamepadMode=name;
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 						}
 					});
 				

@@ -23,8 +23,8 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flowWindow.FlowView;
-import endrov.util.EvSwingUtil;
+import endrov.gui.EvSwingUtil;
+import endrov.windowFlow.FlowView;
 
 /**
  * Flow unit: Get dimensions of any image object

@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
-import endrov.annotationLineage.Lineage;
 import endrov.core.log.EvLog;
 import endrov.data.EvData;
-import endrov.util.EvDecimal;
+import endrov.typeLineage.Lineage;
+import endrov.util.math.EvDecimal;
 
 /**
  * This is an example of how coordinates can be extracted from Lineages and put into a simpler CSV file.

@@ -8,7 +8,7 @@ package endrov.gui.icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-import endrov.util.JImageButton;
+import endrov.gui.component.JImageButton;
 
 /**
  * Commonly used icons

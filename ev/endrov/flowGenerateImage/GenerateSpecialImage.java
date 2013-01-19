@@ -6,10 +6,10 @@
 package endrov.flowGenerateImage;
 
 import endrov.flowBasic.math.EvOpImageMulImage;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -166,6 +166,11 @@ public class GenerateSpecialImage
 		}
 
 
+	public static double calcMidCoordinate(int w)
+		{
+		return (w-1)/2.0;
+		}
+
 	
 	/**
 	 * 3D Gaussian function placed in the middle
@@ -180,9 +185,9 @@ public class GenerateSpecialImage
 		double mul2y=-1/(2*sigmaY*sigmaY);
 		double mul2z=-1/(2*sigmaZ*sigmaZ);
 		
-		double midx=EvStack.calcMidCoordinate(w);
-		double midy=EvStack.calcMidCoordinate(h);
-		double midz=EvStack.calcMidCoordinate(d);
+		double midx=calcMidCoordinate(w);
+		double midy=calcMidCoordinate(h);
+		double midz=calcMidCoordinate(d);
 		
 		//Could generate a single plane and multiply by Math.exp(mul2 dz2) if it makes any difference
 		
@@ -213,7 +218,7 @@ public class GenerateSpecialImage
 					}
 				}
 			
-			s.putInt(curd, new EvImage(p));
+			s.putPlane(curd, new EvImagePlane(p));
 			}
 		sum=1.0/sum;
 		for(EvPixels p:s.getPixels(progh))
@@ -271,13 +276,13 @@ public class GenerateSpecialImage
 	 * Copy an image over several focal planes. Adapts size according to a template stack, likely
 	 * the stack the new stack will be combined with 
 	 */
-	public static EvStack repeatImageZ(EvImage im, EvStack template)
+	public static EvStack repeatImageZ(EvImagePlane im, EvStack template)
 		{
 		EvStack s=new EvStack();
-		s.getMetaFrom(template);
+		s.copyMetaFrom(template);
 		//for(EvDecimal d:template.keySet())
 		for(int az=0;az<template.getDepth();az++)
-			s.putInt(az, im.makeShadowCopy());
+			s.putPlane(az, im.makeShadowCopy());
 		return s;
 		}
 	
@@ -288,7 +293,7 @@ public class GenerateSpecialImage
 	 */
 	public static EvStack repeatImageZ(EvPixels p, EvStack template)
 		{
-		EvImage im=new EvImage();
+		EvImagePlane im=new EvImagePlane();
 		im.setPixelsReference(p);
 		return repeatImageZ(im, template);
 		}

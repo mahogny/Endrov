@@ -16,9 +16,9 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import endrov.gui.EvSwingUtil;
+import endrov.gui.component.JImageButton;
 import endrov.gui.icon.BasicIcon;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
 
 /**
  * Widget for recording settings: Order of dimensions settings

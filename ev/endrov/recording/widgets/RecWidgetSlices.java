@@ -17,12 +17,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import endrov.gui.EvSwingUtil;
+import endrov.gui.component.JImageButton;
 import endrov.gui.component.JSpinnerSimpleEvDecimal;
 import endrov.gui.component.JSpinnerSimpleInteger;
 import endrov.recording.RecordingResource;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
+import endrov.util.math.EvDecimal;
 
 /**
  * Widget for recording settings: Slice settings

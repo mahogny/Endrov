@@ -24,9 +24,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import endrov.gui.component.EvFrameControl;
-import endrov.gui.window.BasicWindow;
-import endrov.util.EvFileUtil;
+import endrov.gui.window.EvBasicWindow;
 import endrov.util.ProgressHandle;
+import endrov.util.io.EvFileUtil;
 import endrov.windowViewer2D.Viewer2DWindow;
 import endrov.windowViewer2D.Viewer2DTool;
 
@@ -75,7 +75,7 @@ public class ImageWindowToolScreenshot implements Viewer2DTool, ActionListener
 			//TODO  allow cancel if it is too slow
 			image=w.getScreenshotOriginal(new ProgressHandle());
 			if(image==null)
-				BasicWindow.showErrorDialog("No picture to store!");
+				EvBasicWindow.showErrorDialog("No picture to store!");
 			}
 		
 		//Choose location

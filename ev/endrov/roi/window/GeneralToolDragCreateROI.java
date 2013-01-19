@@ -15,10 +15,10 @@ import javax.vecmath.Vector2d;
 
 import endrov.data.EvContainer;
 import endrov.gui.GeneralTool;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.Viewer2DInterface;
 
 /**
@@ -105,7 +105,7 @@ public class GeneralToolDragCreateROI implements GeneralTool
 			setRendererROI(null);
 			w.unsetTool();
 			w.updateImagePanel();
-			BasicWindow.updateWindows();
+			EvBasicWindow.updateWindows();
 			}
 		}
 	

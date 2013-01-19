@@ -10,7 +10,7 @@ import java.awt.Graphics;
 
 import javax.vecmath.Vector2d;
 
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 /**
  * 

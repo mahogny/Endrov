@@ -16,21 +16,21 @@ import java.util.TreeSet;
 
 import javax.swing.SwingUtilities;
 
-import endrov.annotationParticleMeasure.ParticleMeasure;
 import endrov.core.log.EvLog;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowExecListener;
 import endrov.gui.EvColor;
-import endrov.gui.window.BasicWindow;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
+import endrov.gui.EvSwingUtil;
+import endrov.gui.window.EvBasicWindow;
 import endrov.imglib.evop.EvOpScaleImage;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
+import endrov.typeParticleMeasure.ParticleMeasure;
+import endrov.util.math.EvDecimal;
 import endrov.windowPlateAnalysis.CalcAggregation.AggregationMethod;
 import endrov.windowPlateAnalysis.scene.Scene2DHistogram;
 import endrov.windowPlateAnalysis.scene.Scene2DImage;
@@ -799,7 +799,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 					
 				//Fetch image from channel
 				stack=new EvOpScaleImage(scaleFactor, scaleFactor).exec1(null, stack);  //TODO no reason to scale all stack
-				EvImage evim=stack.getInt(z);
+				EvImagePlane evim=stack.getPlane(z);
 				EvPixels pixels=evim.getPixels();
 				w.pixels=pixels;
 
@@ -1000,7 +1000,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 
 		if(pm==null)
 			{
-			BasicWindow.showErrorDialog("No particle measured selected");
+			EvBasicWindow.showErrorDialog("No particle measured selected");
 			return;
 			}
 		

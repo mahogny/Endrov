@@ -13,11 +13,11 @@ import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.flow.FlowExec;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExitLast;
+import endrov.gui.RepeatingKeyEventsFixer;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.BasicWindowExtensionExitLast;
 import endrov.gui.window.EvRegistrationDialog;
 import endrov.gui.window.EvSplashScreen;
-import endrov.util.RepeatingKeyEventsFixer;
 import endrov.windowViewer2D.*;
 
 import java.io.File;
@@ -126,10 +126,10 @@ public class MW
 				System.out.println("Could not start DBUS server, skipping");
 			
 			EndrovCore.loadPlugins();
-			BasicWindowExitLast.integrate();
+			BasicWindowExtensionExitLast.integrate();
 			EndrovCore.loadPersonalConfig();		
 			EndrovCore.setHasStartedUp();
-			if(BasicWindow.getWindowList().size()==0)
+			if(EvBasicWindow.getWindowList().size()==0)
 				{
 				//Make sure at least one window is open
 				EvLog.printLog("Opening up first window");
@@ -170,7 +170,7 @@ public class MW
 						else
 							{
 							EvData.registerOpenedData(d);
-							BasicWindow.updateLoadedFile(d);
+							EvBasicWindow.updateLoadedFile(d);
 							}
 						}
 					}}).start(); 

@@ -8,7 +8,7 @@ package endrov.utilityUnsorted.springGraph;
 import java.util.HashSet;
 import java.util.Set;
 
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 /**
  * 

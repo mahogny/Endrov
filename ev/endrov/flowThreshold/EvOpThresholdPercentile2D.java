@@ -5,10 +5,10 @@
  */
 package endrov.flowThreshold;
 
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.util.EvListUtil;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
+import endrov.util.collection.EvListUtil;
 
 /**
  * Threshold given as percentile

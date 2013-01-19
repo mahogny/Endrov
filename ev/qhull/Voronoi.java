@@ -10,7 +10,7 @@ import java.util.*;
 
 import javax.vecmath.Vector3d;
 
-import endrov.util.EvFileUtil;
+import endrov.util.io.EvFileUtil;
 
 /**
  * Interface to Qhull - Voronoi

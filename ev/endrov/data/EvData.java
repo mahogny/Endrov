@@ -20,7 +20,7 @@ import org.jdom.input.SAXBuilder;
 
 import endrov.core.EndrovCore;
 import endrov.core.PersonalConfig;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.starter.EvSystemUtil;
 
 /**
@@ -97,7 +97,7 @@ public class EvData extends EvContainer
 	public void unregisterOpenedData()
 		{
 		EvData.openedData.remove(this);
-		BasicWindow.updateWindows();
+		EvBasicWindow.updateWindows();
 		}
 	
 	
@@ -125,7 +125,7 @@ public class EvData extends EvContainer
 					}
 				}
 			SwingUtilities.invokeLater(new Runnable(){
-				public void run(){BasicWindow.updateWindows();}
+				public void run(){EvBasicWindow.updateWindows();}
 			});
 			}
 		}
@@ -423,13 +423,13 @@ public class EvData extends EvContainer
 		{		
 	
 		//Store recent entries in personal config
-		EndrovCore.personalConfigLoaders.put("recentlyLoaded",new PersonalConfig()
+		EndrovCore.addPersonalConfigLoader("recentlyLoaded",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
 				{
 				RecentReference rref=new RecentReference(e.getAttributeValue("desc"),e.getAttributeValue("url"));
 				recentlyLoadedFiles.add(rref);
-				BasicWindow.updateWindows(); //Semi-ugly. Done many times.
+				EvBasicWindow.updateWindows(); //Semi-ugly. Done many times.
 				}
 			public void savePersonalConfig(Element root)
 				{
@@ -450,7 +450,7 @@ public class EvData extends EvContainer
 				}
 			});
 		
-		BasicWindow.addBasicWindowExtension(new EvDataMenu());
+		EvBasicWindow.addBasicWindowExtension(new EvDataMenu());
 //		BasicWindow.updateWindows();
 		//maybe update on new extension?
 		//priorities on update? windows should really go last. then the updateWindows call here is solved.

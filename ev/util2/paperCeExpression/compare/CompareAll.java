@@ -32,9 +32,6 @@ import util2.paperCeExpression.IntegrateAllExp;
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 import util2.paperCeExpression.profileRenderer.RenderHTML;
 
-import endrov.annotationFrameTime.FrameTime;
-import endrov.annotationLineage.Lineage;
-import endrov.annotationLineage.LineageExp;
 import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
@@ -42,19 +39,22 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
-import endrov.util.EvDecimal;
-import endrov.util.EvFileUtil;
-import endrov.util.EvListUtil;
-import endrov.util.EvParallel;
-import endrov.util.EvXmlUtil;
+import endrov.typeFrameTime.FrameTime;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
+import endrov.typeImageset.Imageset;
+import endrov.typeLineage.Lineage;
+import endrov.typeLineage.LineageExp;
 import endrov.util.FuncAB;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.EvListUtil;
+import endrov.util.collection.EvParallel;
+import endrov.util.collection.Tuple;
+import endrov.util.io.EvFileUtil;
+import endrov.util.io.EvXmlUtil;
+import endrov.util.math.EvDecimal;
 
 /**
  * Pairwise comparison of recordings
@@ -289,8 +289,8 @@ public class CompareAll
 			int numz=stackA.getDepth();
 			for(int i=0;i<numz;i++)
 				{
-				EvPixels pA=stackA.getInt(i).getPixels(progh);
-				EvPixels pB=stackB.getInt(i).getPixels(progh);
+				EvPixels pA=stackA.getPlane(i).getPixels(progh);
+				EvPixels pB=stackB.getPlane(i).getPixels(progh);
 				if(pA==null || pB==null)
 					System.out.println("Null pixels at frame "+frameA+" vs "+frameB);
 				if(pA.getType()==EvPixelsType.FLOAT && pB.getType()==EvPixelsType.FLOAT)
@@ -398,7 +398,7 @@ public class CompareAll
 				System.out.println("---------------------------------------------------------------- wtf. numz "+numz+"  should be "+xyzSize+"  for frame: "+closestFrameA+"  channameA "+chanNameA);
 			for(int cz=0;cz<xyzSize;cz++)
 				{
-				EvPixels p=stackA.getInt(cz).getPixels(progh).convertToDouble(true);
+				EvPixels p=stackA.getPlane(cz).getPixels(progh).convertToDouble(true);
 				double[] inarr=p.getArrayDouble();
 				double arrmin=getMin(inarr);
 				double arrmax=getMax(inarr);

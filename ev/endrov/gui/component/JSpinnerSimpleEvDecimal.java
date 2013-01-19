@@ -7,7 +7,7 @@ package endrov.gui.component;
 
 import javax.swing.JSpinner;
 
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 /**
  * Simple evdecimal selector

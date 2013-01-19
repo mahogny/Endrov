@@ -15,10 +15,10 @@ import java.util.*;
 
 import javax.swing.*;
 
+import endrov.gui.EvSwingUtil;
 import endrov.hardware.DevicePropertyType;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.HWSerial;
-import endrov.util.EvSwingUtil;
 
 /**
  * Virtual serial device. 

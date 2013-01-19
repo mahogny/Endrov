@@ -5,7 +5,7 @@
  */
 package endrov.unsortedImageFilters.unfinished;
 
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 
 public interface oldLUT
 	{

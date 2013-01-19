@@ -8,10 +8,10 @@ package endrov.flowMorphology;
 import java.util.LinkedList;
 
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector3i;
+import endrov.util.math.Vector3i;
 
 /**
  * Fill holes in binary image. The algorithm is optimized for images with small holes. O(w h d)
@@ -34,11 +34,11 @@ public class EvOpMorphFillHolesBinary3D extends EvOpStack1
 		int d=stack.getDepth();
 
 		EvStack markstack=new EvStack();
-		markstack.getMetaFrom(stack);
+		markstack.copyMetaFrom(stack);
 		markstack.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		int[][] inarr=stack.getReadOnlyArraysInt(progh);
-		int[][] markarr=markstack.getReadOnlyArraysInt(progh);
+		int[][] inarr=stack.getArraysIntReadOnly(progh);
+		int[][] markarr=markstack.getArraysIntReadOnly(progh);
 		
 		//Move along border and mark all open pixels as starting point
 		LinkedList<Vector3i> q=new LinkedList<Vector3i>();

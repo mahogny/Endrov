@@ -20,7 +20,7 @@ import cern.colt.matrix.AbstractMatrix3D;
 import cern.colt.matrix.tdouble.DoubleMatrix3D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.utilityUnsorted.deconvolution.Deconvolver3D;
 import endrov.utilityUnsorted.deconvolution.iterative.DoubleCommon3D;
 import endrov.utilityUnsorted.deconvolution.spectral.SpectralEnums.SpectralPaddingType;

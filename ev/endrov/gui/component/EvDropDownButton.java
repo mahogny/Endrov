@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import endrov.util.JImageButton;
 
 /**
  * Button with drop-down menu

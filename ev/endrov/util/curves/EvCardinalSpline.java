@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import endrov.util.Vector2i;
 import endrov.util.curves.WrongParameterSplineException;
+import endrov.util.math.Vector2i;
+
 import com.graphbuilder.curve.CardinalSpline;
 import com.graphbuilder.curve.ControlPath;
 import com.graphbuilder.curve.GroupIterator;

@@ -9,7 +9,7 @@ package endrov.keybinding;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 
 import net.java.games.input.*;
 
@@ -74,7 +74,7 @@ public class JInputManager implements Runnable
 			if(makeDefault)
 				selectedGamepadMode=name;
 			}
-		BasicWindow.updateWindows();
+		EvBasicWindow.updateWindows();
 		}
 	
 	/**

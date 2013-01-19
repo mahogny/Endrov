@@ -9,12 +9,12 @@ import java.io.File;
 import java.sql.Connection;
 import java.util.*;
 
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
 import endrov.roi.ROI;
-import endrov.util.Vector2i;
-import endrov.util.Vector3i;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
+import endrov.util.math.Vector2i;
+import endrov.util.math.Vector3i;
 
 
 /**

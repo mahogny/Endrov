@@ -10,7 +10,7 @@ import javax.media.opengl.*;
 
 import org.jdom.Element;
 
-import endrov.util.EvXmlUtil;
+import endrov.util.io.EvXmlUtil;
 
 
 public class EvGLCamera

@@ -7,7 +7,7 @@ package endrov.flowFourier;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -38,7 +38,7 @@ public class EvOpCircConv3D extends EvOpStack1
 		int d=ima.getDepth();
 
 		//Change memory layout
-		double[][] arr=ima.getReadOnlyArraysDouble(progh);
+		double[][] arr=ima.getArraysDoubleReadOnly(progh);
 		double[] swizzle=new double[w*h*d*2];
 		for(int az=0;az<d;az++)
 			System.arraycopy(arr[az],0,swizzle, w*h*az,w*h);
@@ -59,7 +59,7 @@ public class EvOpCircConv3D extends EvOpStack1
 
 		//Copy out resolution so arrays can be GC:ed early
 		EvStack stackMeta=new EvStack();
-		stackMeta.getMetaFrom(imb);
+		stackMeta.copyMetaFrom(imb);
 		
 		//Into fourier space
 		kernel=new EvOpWrapImage3D(null,null,null).exec1(ph, kernel);

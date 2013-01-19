@@ -18,11 +18,11 @@ import endrov.core.observer.SimpleObserver;
 import endrov.data.*;
 import endrov.gui.component.EvComboObjectOne;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
-import endrov.imageset.Imageset;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.roi.*;
+import endrov.typeImageset.Imageset;
 
 
 
@@ -34,16 +34,16 @@ import endrov.roi.*;
  * 
  * @author Johan Henriksson
  */
-public class WindowROI extends BasicWindow implements ActionListener, TreeSelectionListener, TreeExpansionListener
+public class WindowROI extends EvBasicWindow implements ActionListener, TreeSelectionListener, TreeExpansionListener
 	{
 	static final long serialVersionUID=0;
 
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	public static class ThisBasicHook implements BasicWindowHook, ActionListener
+	public static class ThisBasicHook implements EvBasicWindowHook, ActionListener
 		{
-		public void createMenus(BasicWindow w)
+		public void createMenus(EvBasicWindow w)
 			{
 			JMenuItem mi=new JMenuItem("ROI",new ImageIcon(getClass().getResource("iconWindow.png")));
 			mi.addActionListener(this);
@@ -53,7 +53,7 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 			{
 			WindowROI.getRoiWindow();
 			}
-		public void buildMenu(BasicWindow w){}
+		public void buildMenu(EvBasicWindow w){}
 		}
 	
 	
@@ -64,7 +64,7 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 	 */
 	public static WindowROI getRoiWindow()
 		{
-		for(BasicWindow w:BasicWindow.getWindowList())
+		for(EvBasicWindow w:EvBasicWindow.getWindowList())
 			if(w instanceof WindowROI)
 				return (WindowROI)w;
 		return new WindowROI();
@@ -97,18 +97,11 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 		};
 
 	
-	/**
-	 * Make a new window at default location
-	 */
-	public WindowROI()
-		{
-		this(600,200,400,500);
-		}
 	
 	/**
-	 * Make a new window at some specific location
+	 * Make a new window
 	 */
-	public WindowROI(int x, int y, int w, int h)
+	public WindowROI()
 		{		
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 
@@ -154,7 +147,7 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 		//Window overall things
 		setTitleEvWindow("ROI");
 		packEvWindow();
-		setBoundsEvWindow(x,y,w,h);
+		setBoundsEvWindow(600,200,400,500);
 	//	dataChangedEvent();
 		setVisibleEvWindow(true);
 		}
@@ -172,12 +165,8 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 		}
 
 	
-	/**
-	 * Store down settings for window into personal config file
-	 */
-	public void windowSavePersonalSettings(Element root)
-		{
-		}
+	public void windowSavePersonalSettings(Element e){}
+	public void windowLoadPersonalSettings(Element e){}
 
 	
 	
@@ -329,8 +318,8 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 		}
 
 	
-	public void eventUserLoadedFile(EvData data){}
-	public void freeResources(){}
+	public void windowEventUserLoadedFile(EvData data){}
+	public void windowFreeResources(){}
 
 
 
@@ -340,9 +329,9 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 	public static void initPlugin()	{}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 			{
-			public void newBasicWindow(BasicWindow w)
+			public void newBasicWindow(EvBasicWindow w)
 				{
 				w.basicWindowExtensionHook.put(this.getClass(),new ThisBasicHook());
 				}

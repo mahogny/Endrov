@@ -28,10 +28,6 @@ import endrov.core.observer.GeneralObserver;
 import endrov.data.EvData;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
 import endrov.keybinding.JInputManager;
 import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWImageScanner;
@@ -39,9 +35,13 @@ import endrov.recording.device.HWStage;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
 import endrov.roi.LineIterator.LineRange;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.EvSound;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 
 /**
  * Resources associated with controlling microscope hardware
@@ -154,7 +154,7 @@ public class RecordingResource
 		int[] ret = new int[w*h];
 
 		EvPixels p = new EvPixels(EvPixelsType.UBYTE, w, h); // TODO avoid this allocation
-		EvImage image = new EvImage(p);
+		EvImagePlane image = new EvImagePlane(p);
 		EvStack stack = new EvStack();
 
 		ResolutionManager.Resolution res = ResolutionManager.getCurrentResolutionNotNull(scannerpath);

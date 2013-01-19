@@ -12,8 +12,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 
 
 /**

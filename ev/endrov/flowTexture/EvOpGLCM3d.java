@@ -5,8 +5,8 @@
  */
 package endrov.flowTexture;
 
-import endrov.imageset.EvStack;
-import endrov.util.Vector3i;
+import endrov.typeImageset.EvStack;
+import endrov.util.math.Vector3i;
 
 /**
  * http://www.mathworks.com/access/helpdesk/help/toolbox/images/f11-27972.html

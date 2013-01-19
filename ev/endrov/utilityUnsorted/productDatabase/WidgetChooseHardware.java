@@ -15,7 +15,8 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import endrov.util.EvSwingUtil;
+
+import endrov.gui.EvSwingUtil;
 
 /**
  * Swing widget to choose hardware from database, and enter additional info

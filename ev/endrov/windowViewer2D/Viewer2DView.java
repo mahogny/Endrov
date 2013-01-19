@@ -16,9 +16,9 @@ import javax.vecmath.Vector2d;
 import endrov.core.log.EvLog;
 import endrov.gui.EvColor;
 //import endrov.filterBasic.ContrastBrightnessOp;
-import endrov.imageset.*;
-import endrov.util.Matrix2d;
+import endrov.typeImageset.*;
 import endrov.util.ProgressHandle;
+import endrov.util.math.Matrix2d;
 
 
 /**
@@ -197,7 +197,7 @@ public class Viewer2DView extends JPanel
 	 */
 	public static class ImagePanelImage
 		{
-		private EvImage image=null;
+		private EvImagePlane image=null;
 		private EvStack stack=null;
 		public double contrast=1;
 		public double brightness=0;
@@ -279,7 +279,7 @@ public class Viewer2DView extends JPanel
 		
 		
 		
-		public void setImage(EvStack stack, EvImage image)
+		public void setImage(EvStack stack, EvImagePlane image)
 			{
 			/*
 			if(image==null)
@@ -293,7 +293,7 @@ public class Viewer2DView extends JPanel
 			this.stack=stack;
 			}
 		
-		public EvImage getImage()
+		public EvImagePlane getImage()
 			{
 			return image;
 			}

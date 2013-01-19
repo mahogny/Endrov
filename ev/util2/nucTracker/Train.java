@@ -169,12 +169,12 @@ public class Train
 					lastPcorrect=pCorrect;
 					
 					//Update weights
-					double totalEps=0;
+//					double totalEps=0;
 					for(TImage tim:images)
 						{
 						double e=feat.eval(tim,standardSize,0,0);
-						if(e!=tim.valueY)
-							totalEps+=tim.weightD;
+	//					if(e!=tim.valueY)
+		//					totalEps+=tim.weightD;
 						tim.weightD*=Math.exp(-alphat*tim.valueY*e);
 //						if(e!=tim.valueY && e>0) //prioritize false positive
 //							tim.weightD*=3;

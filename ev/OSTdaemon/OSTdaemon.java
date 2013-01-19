@@ -14,6 +14,7 @@ import java.nio.channels.*;
 
 import javax.imageio.*;
 import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageInputStream;
 
 import loci.formats.IFormatReader;
@@ -21,11 +22,10 @@ import loci.formats.ImageReader;
 
 import org.jdom.*;
 
-import endrov.imageset.BioformatsSliceIO;
-import endrov.imageset.EvPixels;
-import endrov.util.EvImageIOUtils;
-import endrov.util.EvXmlUtil;
+import endrov.typeImageset.BioformatsSliceIO;
+import endrov.typeImageset.EvPixels;
 import endrov.util.ProgressHandle;
+import endrov.util.io.EvXmlUtil;
 
 
 
@@ -757,7 +757,7 @@ public class OSTdaemon extends Thread
 		String fileEnding=getFileEnding(toFile.getName());
 		if(fileEnding.equals("jpg") || fileEnding.equals("jpeg"))
 			{
-			EvImageIOUtils.saveJPEG(im, toFile, quality);
+			saveJPEG(im, toFile, quality);
 /*	    FileOutputStream toStream = new FileOutputStream(toFile); 
 	    JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(toStream); 
 	    JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(im); 
@@ -771,6 +771,21 @@ public class OSTdaemon extends Thread
 			}
 		}
 	
+	
+
+	public static void saveJPEG(BufferedImage im, File out, float quality) throws IOException
+		{
+		Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpeg");
+		ImageWriter writer=iter.next();
+		ImageWriteParam iwp=writer.getDefaultWriteParam();
+		iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+		iwp.setCompressionQuality(quality);
+		FileImageOutputStream toStream=new FileImageOutputStream(out);
+		writer.setOutput(toStream);
+		writer.write(null, new IIOImage(im,null,null), iwp);
+		}
+
+
 
 
 	/**

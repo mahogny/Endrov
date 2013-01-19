@@ -25,18 +25,16 @@ import endrov.core.EndrovUtil;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.gui.EvSwingUtil;
 import endrov.gui.GeneralTool;
 import endrov.gui.component.EvComboObject;
 import endrov.gui.component.EvHidableSidePaneBelow;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.component.JImageButton;
+import endrov.gui.component.JImageToggleButton;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.hardware.*;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
@@ -45,11 +43,13 @@ import endrov.roi.GeneralToolROI;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
 import endrov.roi.window.GeneralToolDragCreateROI;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
-import endrov.util.JImageToggleButton;
-import endrov.util.Vector2i;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
+import endrov.typeImageset.Imageset;
+import endrov.util.math.EvDecimal;
+import endrov.util.math.Vector2i;
 import endrov.windowViewer2D.Viewer2DWindow;
 import endrov.windowViewer2D.Viewer2DInterface;
 import endrov.windowViewer2D.Viewer2DRenderer;
@@ -60,7 +60,7 @@ import endrov.windowViewer2D.Viewer2DRendererExtension;
  * 
  * @author Johan Henriksson 
  */
-public class LiveWindow extends BasicWindow implements ActionListener, Viewer2DInterface
+public class LiveWindow extends EvBasicWindow implements ActionListener, Viewer2DInterface
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -594,7 +594,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, Viewer2DI
 			EvChannel ch=im.getCreateChannel("live"); //pick a better name if possible
 			
 			EvStack stack=new EvStack();
-			stack.putInt(0, new EvImage(p[0]));
+			stack.putPlane(0, new EvImagePlane(p[0]));
 			stack.resX=lastResolution.x;
 			stack.resY=lastResolution.y;
 			stack.resZ=1;
@@ -637,12 +637,10 @@ public class LiveWindow extends BasicWindow implements ActionListener, Viewer2DI
 		comboStorageLocation.updateList();
 		}
 
-	public void eventUserLoadedFile(EvData data){}
-
-	public void windowSavePersonalSettings(Element e)
-		{
-		} 
-	public void freeResources()
+	public void windowEventUserLoadedFile(EvData data){}
+	public void windowSavePersonalSettings(Element e){}
+	public void windowLoadPersonalSettings(Element e){}
+	public void windowFreeResources()
 		{
 		timer.stop();
 		
@@ -810,19 +808,19 @@ public class LiveWindow extends BasicWindow implements ActionListener, Viewer2DI
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 			{
-			public void newBasicWindow(BasicWindow w)
+			public void newBasicWindow(EvBasicWindow w)
 				{
 				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 				}
-			class Hook implements BasicWindowHook, ActionListener
+			class Hook implements EvBasicWindowHook, ActionListener
 			{
-			public void createMenus(BasicWindow w)
+			public void createMenus(EvBasicWindow w)
 				{
 				JMenuItem mi=new JMenuItem("Live view",new ImageIcon(getClass().getResource("tangoCamera.png")));
 				mi.addActionListener(this);
-				BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+				EvBasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 				}
 
 			public void actionPerformed(ActionEvent e) 
@@ -830,7 +828,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, Viewer2DI
 				new LiveWindow();
 				}
 
-			public void buildMenu(BasicWindow w){}
+			public void buildMenu(EvBasicWindow w){}
 			}
 			});
 		

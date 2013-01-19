@@ -12,13 +12,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import endrov.gui.EvSwingUtil;
 import endrov.gui.component.JSpinnerSimpleEvFrame;
 import endrov.gui.component.JSpinnerSimpleInteger;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
 import endrov.recording.device.HWTrigger;
 import endrov.recording.widgets.RecSettingsTimes.TimeType;
-import endrov.util.EvSwingUtil;
 
 /**
  * Widget for recording settings: Time settings

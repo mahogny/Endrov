@@ -10,8 +10,8 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -77,11 +77,11 @@ public class EvOpMorphFillHolesGray3D extends EvOpStack1
 		int d=in.getDepth();
 
 		EvStack out=new EvStack();
-		out.getMetaFrom(in);
+		out.copyMetaFrom(in);
 		out.allocate(w, h, d, EvPixelsType.DOUBLE, in);
 		
-		double[][] inarr=in.getReadOnlyArraysDouble(progh);
-		double[][] outarr=out.getReadOnlyArraysDouble(progh);
+		double[][] inarr=in.getArraysDoubleReadOnly(progh);
+		double[][] outarr=out.getArraysDoubleReadOnly(progh);
 		
 		//Have all pixels unmarked
 		for(double[] plane:outarr)

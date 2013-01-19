@@ -8,13 +8,13 @@ package endrov.recording;
 import java.util.HashMap;
 import java.util.Map;
 
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
 import endrov.keybinding.JInputManager;
 import endrov.keybinding.JInputMode;
 import endrov.recording.device.HWStage;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 
 /**
@@ -57,7 +57,7 @@ public class JInputModeRecording implements JInputMode
 						if(axisName[i].equals(t.snd()))
 							axis[i]+=e.getValue();
 					stage.setRelStagePos(axis);
-					BasicWindow.updateWindows();
+					EvBasicWindow.updateWindows();
 					
 					}
 				else

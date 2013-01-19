@@ -81,7 +81,7 @@ public class EvWindowManagerMDI extends JPanel implements /*WindowListener,*/ Ev
 	
 	
 	
-	public EvWindowManagerMDI(BasicWindow bw)
+	public EvWindowManagerMDI(EvBasicWindow bw)
 		{
 	//	this.bw=bw;
 		//addWindowListener(this);
@@ -112,20 +112,20 @@ public class EvWindowManagerMDI extends JPanel implements /*WindowListener,*/ Ev
 	
 	
 	
-	public static class Manager implements BasicWindow.EvWindowManagerMaker
+	public static class Manager implements EvBasicWindow.EvWindowManagerMaker
 		{
-		public EvWindowManager createWindow(BasicWindow bw)
+		public EvWindowManager createWindow(EvBasicWindow bw)
 			{
 			EvWindowManagerMDI w=new EvWindowManagerMDI(bw);
 			return w;
 			}
 
-		public List<BasicWindow> getAllWindows()
+		public List<EvBasicWindow> getAllWindows()
 			{
 			return null;//TODO
 			}
 
-		public BasicWindow getFocusWindow()
+		public EvBasicWindow getFocusWindow()
 			{
 			return null;
 			}

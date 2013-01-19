@@ -38,7 +38,7 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
 import cern.jet.math.tdouble.DoubleFunctions;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
 import endrov.core.log.EvLog;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.utilityUnsorted.deconvolution.DeconvPixelsStack;
 import endrov.utilityUnsorted.deconvolution.iterative.DoubleCommon3D;
 import endrov.utilityUnsorted.deconvolution.iterative.IterativeEnums.BoundaryType;

@@ -19,7 +19,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 
 
 /**

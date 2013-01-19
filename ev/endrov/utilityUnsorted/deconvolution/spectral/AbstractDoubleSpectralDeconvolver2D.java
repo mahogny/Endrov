@@ -21,7 +21,7 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
 import endrov.core.log.EvLog;
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 import endrov.utilityUnsorted.deconvolution.iterative.DoubleCommon2D;
 import endrov.utilityUnsorted.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
 import endrov.utilityUnsorted.deconvolution.spectral.SpectralEnums.SpectralResizingType;

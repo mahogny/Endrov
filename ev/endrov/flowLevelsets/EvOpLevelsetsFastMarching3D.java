@@ -12,11 +12,11 @@ import org.jgrapht.util.FibonacciHeap;
 import org.jgrapht.util.FibonacciHeapNode;
 
 import endrov.flow.EvOpStack;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
-import endrov.util.Vector3i;
+import endrov.util.collection.Tuple;
+import endrov.util.math.Vector3i;
 
 /**
  * 3D levelsets distance calculation by fast marching.
@@ -55,13 +55,13 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 	 */
 	public static EvStack collectIntensities(ProgressHandle progh, EvStack s, Vector3i[][] origin)
 		{
-		double[][] inArr=s.getReadOnlyArraysDouble(progh);
+		double[][] inArr=s.getArraysDoubleReadOnly(progh);
 		int w=s.getWidth();
 		int h=s.getHeight();
 		int d=s.getDepth();
 		EvStack out=new EvStack();
 		out.allocate(w, h, d, EvPixelsType.DOUBLE, s);
-		double[][] outArr=out.getOrigArraysDouble(progh);
+		double[][] outArr=out.getArraysDoubleOrig(progh);
 		
 		for(int z=0;z<d;z++)
 			for(int y=0;y<h;y++)
@@ -89,12 +89,12 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 		int height=stackSpeed.getHeight();
 		int depth=stackSpeed.getDepth();
 
-		double[][] startPointArray=stackStartPoints.getReadOnlyArraysDouble(progh);
-		double[][] W=stackSpeed.getReadOnlyArraysDouble(progh);
+		double[][] startPointArray=stackStartPoints.getArraysDoubleReadOnly(progh);
+		double[][] W=stackSpeed.getArraysDoubleReadOnly(progh);
 		
 		EvStack stackDist=new EvStack();
 		stackDist.allocate(width, height, depth, EvPixelsType.DOUBLE, stackSpeed);
-		double[][] Ddistance=stackDist.getOrigArraysDouble(progh);
+		double[][] Ddistance=stackDist.getArraysDoubleOrig(progh);
 		
 		byte[][] Sstate=new byte[depth][width*height]; //State of point
 		Vector3i[][] Qorigin=new Vector3i[depth][width*height];

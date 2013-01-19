@@ -7,9 +7,9 @@ package endrov.flowFourier;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 import endrov.flow.EvOpStack;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 /**
  * Inverse fourier transform. FFT if possible, otherwise DFT.
@@ -44,7 +44,7 @@ public class EvOpFourierRealInverseFull3D extends EvOpStack
 		int h=inRe.getHeight();
 		int d=inRe.getDepth();
 		
-		double[][] arr=inRe.getReadOnlyArraysDouble(progh);
+		double[][] arr=inRe.getArraysDoubleReadOnly(progh);
 		double[] swizzle=new double[w*h*d*2];
 		for(int az=0;az<d;az++)
 			System.arraycopy(arr[az],0,swizzle, w*h*az,w*h);

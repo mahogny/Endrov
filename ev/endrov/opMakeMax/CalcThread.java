@@ -11,10 +11,10 @@ import endrov.core.batch.BatchThread;
 import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.flowProjection.EvOpProjectMaxZ;
-import endrov.gui.window.BasicWindow;
-import endrov.imageset.*;
-import endrov.util.EvDecimal;
+import endrov.gui.window.EvBasicWindow;
+import endrov.typeImageset.*;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 
 
 /**
@@ -170,7 +170,7 @@ public final class CalcThread extends BatchThread
 						chto.putStack(curframe,max);
 						
 						//chto.setImage(curframe, EvDecimal.ZERO, toim);
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 //						}
 					
 					
@@ -195,7 +195,7 @@ public final class CalcThread extends BatchThread
 			batchLog("Failure: "+e.getMessage());
 			e.printStackTrace();
 			}
-		BasicWindow.updateWindows();
+		EvBasicWindow.updateWindows();
 		batchDone();
 		}
 

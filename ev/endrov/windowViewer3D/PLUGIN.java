@@ -14,7 +14,7 @@ public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{
-		return "Model Window";
+		return "3D viewer";
 		}
 
 	public String getAuthor()

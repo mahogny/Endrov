@@ -6,7 +6,7 @@
 package endrov.utilityUnsorted.deconvolution.spectral.gtik;
 
 import cern.colt.matrix.tdouble.DoubleMatrix3D;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.utilityUnsorted.deconvolution.DeconvPixelsStack;
 import endrov.utilityUnsorted.deconvolution.Deconvolver3D;
 import endrov.utilityUnsorted.deconvolution.spectral.SpectralEnums.SpectralPaddingType;

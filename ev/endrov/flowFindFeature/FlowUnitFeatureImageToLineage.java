@@ -14,13 +14,13 @@ import javax.swing.ImageIcon;
 import org.jdom.Element;
 
 
-import endrov.annotationLineage.Lineage;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.EvChannel;
+import endrov.typeImageset.EvChannel;
+import endrov.typeLineage.Lineage;
 
 /**
  * Flow unit: Find local maximas

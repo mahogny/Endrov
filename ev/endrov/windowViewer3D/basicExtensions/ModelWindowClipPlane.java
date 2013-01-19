@@ -18,10 +18,10 @@ import javax.vecmath.Vector3d;
 import org.jdom.Element;
 
 import endrov.data.*;
+import endrov.gui.EvSwingUtil;
 import endrov.gui.component.JNumericField;
 import endrov.gui.icon.BasicIcon;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.*;
 
 

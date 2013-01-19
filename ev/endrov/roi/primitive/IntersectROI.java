@@ -14,10 +14,10 @@ import org.jdom.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.imageset.*;
 import endrov.roi.*;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.*;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 
 //TODO: restrict region better
 
@@ -65,7 +65,7 @@ public class IntersectROI extends CompoundROI
 				}*/
 			}
 		
-		public ThisLineIterator(EvImage im, LineIterator ita, LineIterator itb, String channel, EvDecimal frame, double z)
+		public ThisLineIterator(EvImagePlane im, LineIterator ita, LineIterator itb, String channel, EvDecimal frame, double z)
 			{
 			this.z=z;
 			this.ita=new OneIt(ita);
@@ -223,7 +223,7 @@ public class IntersectROI extends CompoundROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImage im, final String channel, final EvDecimal frame, final double z)
+	public LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImagePlane im, final String channel, final EvDecimal frame, final double z)
 		{
 		List<ROI> subRoi=getSubRoi();
 		if(imageInRange(channel, frame, z) && !subRoi.isEmpty())

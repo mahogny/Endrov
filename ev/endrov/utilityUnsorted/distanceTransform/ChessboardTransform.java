@@ -1,7 +1,7 @@
 
 package endrov.utilityUnsorted.distanceTransform;
 
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 
 public class ChessboardTransform extends TwoScanDiscreteTransform
 	{

@@ -8,7 +8,7 @@ package endrov.gui.component;
 import java.lang.ref.WeakReference;
 
 import endrov.core.observer.SimpleObserver;
-import endrov.util.EvMutableInteger;
+import endrov.util.mutable.EvMutableInteger;
 
 /**
  * Numeric field linked to a mutable integer

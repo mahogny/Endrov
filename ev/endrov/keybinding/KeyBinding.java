@@ -12,7 +12,7 @@ import org.jdom.*;
 
 import endrov.core.EndrovCore;
 import endrov.core.PersonalConfig;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 
 //TODO: support gamepad repeat type
 
@@ -410,12 +410,14 @@ public class KeyBinding implements Comparable<KeyBinding>
 		*/
 		
 		
-		BasicWindow.addBasicWindowExtension(new BasicKeyBinding());
+		EvBasicWindow.addBasicWindowExtension(new BasicKeyBinding());
 		
-		EndrovCore.personalConfigLoaders.put("keyBinding",new PersonalConfig()
+		EndrovCore.addPersonalConfigLoader("keyBinding",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
-				{register(readXML(e),true);}
+				{
+				register(readXML(e),true);
+				}
 			public void savePersonalConfig(Element root)
 				{
 				for(KeyBinding b:bindings.values())

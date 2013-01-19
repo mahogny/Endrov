@@ -23,8 +23,8 @@ import endrov.hardware.EvDeviceProvider;
 import endrov.recording.CameraImage;
 import endrov.recording.device.HWCamera;
 import endrov.recording.device.HWStage;
-import endrov.util.EvDecimal;
-import endrov.util.EvMathUtil;
+import endrov.util.math.EvDecimal;
+import endrov.util.math.EvMathUtil;
 
 /**
  * Demo microscope

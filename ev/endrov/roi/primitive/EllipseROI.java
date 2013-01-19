@@ -14,10 +14,10 @@ import org.jdom.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.imageset.*;
 import endrov.roi.*;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.*;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 
 /**
  * Ellipse, flat
@@ -197,7 +197,7 @@ public class EllipseROI extends ROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImage im, final String channel, final EvDecimal frame, final double z)
+	public LineIterator getLineIterator(ProgressHandle progh, EvStack stack, EvImagePlane im, final String channel, final EvDecimal frame, final double z)
 		{
 		if(imageInRange(channel, frame, z))
 			{

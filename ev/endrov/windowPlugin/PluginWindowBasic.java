@@ -5,9 +5,9 @@
  */
 package endrov.windowPlugin;
 
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 
 import java.awt.event.*;
 
@@ -18,15 +18,15 @@ import javax.swing.JMenuItem;
  * Extension to BasicWindow
  * @author Johan Henriksson
  */
-public class PluginWindowBasic implements BasicWindowExtension
+public class PluginWindowBasic implements EvBasicWindowExtension
 	{
-	public void newBasicWindow(BasicWindow w)
+	public void newBasicWindow(EvBasicWindow w)
 		{
 		w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 		}
-	private class Hook implements BasicWindowHook, ActionListener
+	private class Hook implements EvBasicWindowHook, ActionListener
 		{
-		public void createMenus(BasicWindow w)
+		public void createMenus(EvBasicWindow w)
 			{
 			JMenuItem mi=new JMenuItem("Plugins",new ImageIcon(getClass().getResource("silkPluginWindow.png")));
 			mi.addActionListener(this);
@@ -38,6 +38,6 @@ public class PluginWindowBasic implements BasicWindowExtension
 			new PluginWindow();
 			}
 		
-		public void buildMenu(BasicWindow w){}
+		public void buildMenu(EvBasicWindow w){}
 		}
 	}

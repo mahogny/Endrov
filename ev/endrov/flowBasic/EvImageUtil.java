@@ -5,8 +5,8 @@
  */
 package endrov.flowBasic;
 
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 
 /**
  * Math ops on images. with EvImage, use convenience functions to make a common size and position

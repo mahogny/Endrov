@@ -27,8 +27,8 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.jet.math.tdcomplex.DComplex;
 import cern.jet.math.tdouble.DoubleFunctions;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.utilityUnsorted.deconvolution.iterative.IterativeEnums.PaddingType;
 
 /**

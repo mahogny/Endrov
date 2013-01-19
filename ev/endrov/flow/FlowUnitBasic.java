@@ -14,8 +14,8 @@ import java.util.Collections;
 
 import javax.swing.ImageIcon;
 
-import endrov.flowWindow.FlowView;
-import endrov.util.EvMathUtil;
+import endrov.util.math.EvMathUtil;
+import endrov.windowFlow.FlowView;
 
 /**
  * Basic shape flow unit

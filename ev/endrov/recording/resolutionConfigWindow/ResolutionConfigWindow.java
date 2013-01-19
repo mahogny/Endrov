@@ -19,13 +19,13 @@ import javax.swing.table.DefaultTableModel;
 import org.jdom.Element;
 
 import endrov.data.EvData;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.EvSwingUtil;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardwareConfigGroup.State;
-import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
@@ -33,7 +33,7 @@ import endrov.recording.ResolutionManager.ResolutionState;
 import endrov.recording.device.HWCamera;
 import endrov.recording.widgets.RecWidgetComboDevice;
 import endrov.recording.widgets.RecWidgetSelectProperties;
-import endrov.util.EvSwingUtil;
+import endrov.typeImageset.EvPixels;
 
 /**
  * Configuring resolutions
@@ -41,7 +41,7 @@ import endrov.util.EvSwingUtil;
  * @author Johan Henriksson
  * @author Kim Nordlöf, Erik Vernersson
  */
-public class ResolutionConfigWindow extends BasicWindow implements ActionListener
+public class ResolutionConfigWindow extends EvBasicWindow implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
 
@@ -194,7 +194,7 @@ public class ResolutionConfigWindow extends BasicWindow implements ActionListene
 			}
 		catch (NumberFormatException e1)
 			{
-			BasicWindow.showErrorDialog("Invalid number");
+			EvBasicWindow.showErrorDialog("Invalid number");
 			return;
 			}
 
@@ -260,18 +260,12 @@ public class ResolutionConfigWindow extends BasicWindow implements ActionListene
 		// cCaptureDevice.updateOptions();
 		}
 
-	@Override
-	public void windowSavePersonalSettings(Element root)
-		{
-		}
+	public void windowSavePersonalSettings(Element e){}
+	public void windowLoadPersonalSettings(Element e){}
+	public void windowEventUserLoadedFile(EvData data){}
 
 	@Override
-	public void eventUserLoadedFile(EvData data)
-		{
-		}
-
-	@Override
-	public void freeResources()
+	public void windowFreeResources()
 		{
 		}
 
@@ -284,21 +278,21 @@ public class ResolutionConfigWindow extends BasicWindow implements ActionListene
 
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 			{
-				public void newBasicWindow(BasicWindow w)
+				public void newBasicWindow(EvBasicWindow w)
 					{
 					w.basicWindowExtensionHook.put(this.getClass(), new Hook());
 					}
 
-				class Hook implements BasicWindowHook, ActionListener
+				class Hook implements EvBasicWindowHook, ActionListener
 					{
-					public void createMenus(BasicWindow w)
+					public void createMenus(EvBasicWindow w)
 						{
 						JMenuItem mi = new JMenuItem("Configure resolution", new ImageIcon(
 								getClass().getResource("jhResolutionConfigWindow.png")));
 						mi.addActionListener(this);
-						BasicWindow.addMenuItemSorted(
+						EvBasicWindow.addMenuItemSorted(
 								w.getCreateMenuWindowCategory("Recording"), mi);
 						}
 
@@ -307,7 +301,7 @@ public class ResolutionConfigWindow extends BasicWindow implements ActionListene
 						new ResolutionConfigWindow();
 						}
 
-					public void buildMenu(BasicWindow w)
+					public void buildMenu(EvBasicWindow w)
 						{
 						}
 					}

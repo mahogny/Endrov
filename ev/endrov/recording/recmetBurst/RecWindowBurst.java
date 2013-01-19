@@ -7,7 +7,6 @@ package endrov.recording.recmetBurst;
 
 
 import java.awt.BorderLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
@@ -18,24 +17,24 @@ import org.jdom.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.gui.EvSwingUtil;
 import endrov.gui.component.EvComboObject;
 import endrov.gui.component.JSpinnerSimpleEvDecimal;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
 import endrov.recording.EvAcquisition;
 import endrov.recording.device.HWTrigger;
 import endrov.recording.widgets.RecWidgetComboDevice;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
+import endrov.util.math.EvDecimal;
 
 /**
  * Burst acquisition
  * @author Johan Henriksson 
  */
-public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcquisition.AcquisitionListener
+public class RecWindowBurst extends EvBasicWindow implements ActionListener, EvAcquisition.AcquisitionListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -67,6 +66,7 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 
 	private RecWidgetComboDeviceTrigger comboTriggerDeviceOn=new RecWidgetComboDeviceTrigger();
 	private RecWidgetComboDeviceTrigger comboTriggerDeviceOff=new RecWidgetComboDeviceTrigger();
+	private JTextField tChannelName=new JTextField("ch");
 	
 		
 	
@@ -83,15 +83,10 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 			}
 		};
 	
-	private JTextField tChannelName=new JTextField("ch");
 
 	
-	public RecWindowBurst()
-		{
-		this(new Rectangle(300,120));
-		}
 	
-	public RecWindowBurst(Rectangle bounds)
+	public RecWindowBurst()
 		{
 		acq.addListener(this);
 		
@@ -167,7 +162,6 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 		setTitleEvWindow("Burst acquisition");
 		packEvWindow();
 		setVisibleEvWindow(true);
-		//setBoundsEvWindow(bounds);
 		}
 	
 	
@@ -226,22 +220,12 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 		objectCombo.updateList();
 		}
 
-	public void eventUserLoadedFile(EvData data){}
-
-	public void windowSavePersonalSettings(Element e)
-		{
-		
-		} 
-	public void freeResources()
+	public void windowEventUserLoadedFile(EvData data){}
+	public void windowSavePersonalSettings(Element e){}
+	public void windowLoadPersonalSettings(Element e){}
+	public void windowFreeResources()
 		{
 		}
-	
-	public static void main(String[] args)
-		{
-		new RecWindowBurst();
-		
-		}
-
 	
 
 	public void acquisitionEventStatus(String s)
@@ -275,19 +259,19 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 			{
-			public void newBasicWindow(BasicWindow w)
+			public void newBasicWindow(EvBasicWindow w)
 				{
 				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 				}
-			class Hook implements BasicWindowHook, ActionListener
+			class Hook implements EvBasicWindowHook, ActionListener
 				{
-				public void createMenus(BasicWindow w)
+				public void createMenus(EvBasicWindow w)
 					{
 					JMenuItem mi=new JMenuItem("Acquire: Burst",new ImageIcon(getClass().getResource("tangoCamera.png")));
 					mi.addActionListener(this);
-					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+					EvBasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}
 	
 				public void actionPerformed(ActionEvent e) 
@@ -295,7 +279,7 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 					new RecWindowBurst();
 					}
 	
-				public void buildMenu(BasicWindow w){}
+				public void buildMenu(EvBasicWindow w){}
 				}
 			});
 		

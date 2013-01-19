@@ -16,10 +16,10 @@ import javax.vecmath.Vector3d;
 import endrov.gl.EvGLCamera;
 import endrov.gl.EvGLShader;
 import endrov.gl.EvGLTexture3D;
-import endrov.imageset.*;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.*;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.BoundingBox3D;
 import endrov.windowViewer3D.Viewer3DView;
 import endrov.windowViewer3D.Viewer3DWindow;
@@ -116,7 +116,7 @@ public class Stack3D extends StackRendererInterface
 						pm.set(progressSlices+progressChan);
 						
 						//Get image for this plane
-						EvImage evim=stack.getInt(az);
+						EvImagePlane evim=stack.getPlane(az);
 						EvPixels p=evim.getPixels(progh);
 						BufferedImage bim=p.quickReadOnlyAWT();   //TODO this is BAD; handle more types
 

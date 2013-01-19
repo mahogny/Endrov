@@ -18,8 +18,8 @@ package endrov.utilityUnsorted.deconvolution;
 
 import endrov.core.log.EvLog;
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -52,14 +52,14 @@ public abstract class Deconvolver3D extends EvOpStack1
 		DeconvPixelsStack d=internalDeconvolve(imB);
    	
    	EvStack s=new EvStack();
-   	s.getMetaFrom(imB);
+   	s.copyMetaFrom(imB);
    	//Iterator<EvDecimal> itz=imB.keySet().iterator();
    	for(int i=0;i<d.p.size();i++)
    		{
-   		EvImage im=new EvImage();
+   		EvImagePlane im=new EvImagePlane();
    		im.setPixelsReference(d.p.get(i));
    		//EvDecimal z=itz.next();
-   		s.putInt(i, im);
+   		s.putPlane(i, im);
    		}
    	
    	return s;

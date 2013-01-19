@@ -17,13 +17,13 @@ import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.flowMisc.EvOpAutoContrastBrightness2D;
 import endrov.flowProjection.EvOpProjectMaxZ;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
-import endrov.util.EvDecimal;
-import endrov.util.EvFileUtil;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
+import endrov.typeImageset.Imageset;
 import endrov.util.ProgressHandle;
+import endrov.util.io.EvFileUtil;
+import endrov.util.math.EvDecimal;
 
 public class CollectMovies
 	{
@@ -90,9 +90,9 @@ public class CollectMovies
 
 
 				EvStack stack=ch.getStack(frame);
-				int zu=stack.closestZint(z.doubleValue());
+				int zu=stack.getClosestPlaneIndex(z.doubleValue());
 				
-				EvPixels p=stack.getInt(zu).getPixels(ph);
+				EvPixels p=stack.getPlane(zu).getPixels(ph);
 				
 				BufferedImage bim=p.quickReadOnlyAWT();
 				

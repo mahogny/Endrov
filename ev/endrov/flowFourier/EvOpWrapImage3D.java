@@ -6,8 +6,8 @@
 package endrov.flowFourier;
 
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -47,7 +47,7 @@ public class EvOpWrapImage3D extends EvOpStack1
 		int d=in.getDepth();
 
 		EvStack out=new EvStack();
-		out.getMetaFrom(in);
+		out.copyMetaFrom(in);
 
 		int thepz;
 		if(pz==null)
@@ -55,12 +55,12 @@ public class EvOpWrapImage3D extends EvOpStack1
 		else
 			thepz=pz;
 
-		EvImage[] inIm=in.getImages();
+		EvImagePlane[] inIm=in.getImagePlanes();
 		for(int az=0;az<inIm.length;az++)
 			{
 			int to=(az+thepz)%d;
-			EvImage rot2d=new EvImage(EvOpWrapImage2D.apply(ph, inIm[az].getPixels(ph), px, py));
-			out.putInt(to, rot2d);
+			EvImagePlane rot2d=new EvImagePlane(EvOpWrapImage2D.apply(ph, inIm[az].getPixels(ph), px, py));
+			out.putPlane(to, rot2d);
 			//az++;
 			}
 		return out;

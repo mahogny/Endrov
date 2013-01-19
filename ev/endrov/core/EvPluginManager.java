@@ -13,7 +13,7 @@ import javax.swing.*;
 
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogMemory;
-import endrov.util.EvFileUtil;
+import endrov.util.io.EvFileUtil;
 
 /**
  * Load plugins. Every plugin is located in evplugin/.../ and has a PLUGIN.java describing how to load it.

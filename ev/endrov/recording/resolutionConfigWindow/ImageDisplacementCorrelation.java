@@ -7,9 +7,10 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.complex.ComplexFloatType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.DevUtil;
-
-import endrov.imageset.EvPixels;
+import endrov.imglib.EvStackAdapter;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
 
 /**
  * Finding displacement between two overlapping images using method by A.
@@ -39,6 +40,14 @@ public class ImageDisplacementCorrelation
 			{
 			int w = firstImg.getWidth();
 			int h = firstImg.getHeight();
+			
+			EvStack firstStack=EvStack.createFromPlane(new EvImagePlane(firstImg.convertToFloat(true)));
+			EvStack secondStack=EvStack.createFromPlane(new EvImagePlane(secondImg.convertToFloat(true)));
+
+			Img<FloatType> imageA=EvStackAdapter.wrapEvStack(firstStack);
+			Img<FloatType> imageB=EvStackAdapter.wrapEvStack(secondStack);
+			
+	/*		
 			float[] firstFloatImg = firstImg.convertToFloat(true).getArrayFloat();
 			float[] secondFloatImg = secondImg.convertToFloat(true).getArrayFloat();
 			Img<FloatType> imageA = DevUtil.createImageFromArray(firstFloatImg,
@@ -47,7 +56,7 @@ public class ImageDisplacementCorrelation
 			Img<FloatType> imageB = DevUtil.createImageFromArray(secondFloatImg,
 					new long[]
 						{ secondImg.getWidth(), secondImg.getHeight() });
-
+*/
 			if (firstImg.getWidth()!=secondImg.getWidth()
 					||firstImg.getHeight()!=secondImg.getHeight())
 				throw new RuntimeException("Images of different size");

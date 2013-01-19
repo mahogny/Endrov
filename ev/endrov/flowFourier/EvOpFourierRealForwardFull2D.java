@@ -7,10 +7,10 @@ package endrov.flowFourier;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import endrov.flow.EvOpSlice;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 /**
  * Fourier transform. FFT if possible, otherwise DFT.

@@ -18,25 +18,23 @@ import javax.vecmath.*;
 
 import org.jdom.*;
 
-import endrov.core.EndrovCore;
-import endrov.core.PersonalConfig;
 import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.gui.*;
 import endrov.gui.component.EvComboColor;
+import endrov.gui.component.JImageButton;
+import endrov.gui.component.JSnapBackSlider;
+import endrov.gui.component.JSnapBackSlider.SnapChangeListener;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
-import endrov.imageset.*;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.keybinding.*;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
+import endrov.typeImageset.*;
+import endrov.typeImageset.gui.EvComboChannel;
 import endrov.util.ProgressHandle;
-import endrov.util.SnapBackSlider;
-import endrov.util.SnapBackSlider.SnapChangeListener;
+import endrov.util.math.EvDecimal;
 import endrov.windowConsole.*;
 import endrov.windowViewer2D.Viewer2DView.ImagePanelImage;
 import endrov.windowViewer2D.basicExtensions.ImageWindowToolChannelDisp;
@@ -49,8 +47,8 @@ import endrov.windowViewer2D.basicExtensions.ImageWindowToolScreenshot;
  *
  * @author Johan Henriksson
  */
-public class Viewer2DWindow extends BasicWindow 
-			implements ActionListener, MouseListener, MouseMotionListener, KeyListener, ChangeListener, MouseWheelListener, TimedDataWindow, 
+public class Viewer2DWindow extends EvBasicWindow 
+			implements ActionListener, MouseListener, MouseMotionListener, KeyListener, ChangeListener, MouseWheelListener, TimedDataWindowInterface, 
 			Viewer2DInterface
 	{	
 	/******************************************************************************************************
@@ -61,11 +59,11 @@ public class Viewer2DWindow extends BasicWindow
 	private static final Vector<Viewer2DExtension> imageWindowExtensions=new Vector<Viewer2DExtension>();
 	public static final Vector<Viewer2DRendererExtension> imageWindowRendererExtensions=new Vector<Viewer2DRendererExtension>();
 
-	private static final int KEY_STEP_BACK    =KeyBinding.register(new KeyBinding("Image Window","Step back",'a'));
-	private static final int KEY_STEP_FORWARD =KeyBinding.register(new KeyBinding("Image Window","Step forward",'d'));
-	private static final int KEY_STEP_UP      =KeyBinding.register(new KeyBinding("Image Window","Step up",'w'));
-	private static final int KEY_STEP_DOWN    =KeyBinding.register(new KeyBinding("Image Window","Step down",'s'));
-	private static final int KEY_HIDE_MARKINGS=KeyBinding.register(new KeyBinding("Image Window","Hide markings",' '));
+	private static final int KEY_STEP_BACK    =KeyBinding.register(new KeyBinding("2D viewer","Step back",'a'));
+	private static final int KEY_STEP_FORWARD =KeyBinding.register(new KeyBinding("2D viewer","Step forward",'d'));
+	private static final int KEY_STEP_UP      =KeyBinding.register(new KeyBinding("2D viewer","Step up",'w'));
+	private static final int KEY_STEP_DOWN    =KeyBinding.register(new KeyBinding("2D viewer","Step down",'s'));
+	private static final int KEY_HIDE_MARKINGS=KeyBinding.register(new KeyBinding("2D viewer","Hide markings",' '));
 
 	private static ImageIcon iconLabelBrightness=new ImageIcon(BasicIcon.class.getResource("labelBrightness.png"));
 	private static ImageIcon iconLabelContrast=new ImageIcon(BasicIcon.class.getResource("labelContrast.png"));
@@ -90,16 +88,14 @@ public class Viewer2DWindow extends BasicWindow
 	 */
 	public void windowSavePersonalSettings(Element root)
 		{
-		Element e=new Element("imagewindow");
-		setXMLbounds(e);
-		e.setAttribute("group", ""+frameControl.getGroup());
-		/*String lastChan=null;//channelWidget.get(0).comboChannel.lastSelectChannel;  //To be redone
-		if(lastChan==null)
-			lastChan="";
-		e.setAttribute("lastSelectChannel", lastChan);
-		*/
-		root.addContent(e);
+		frameControl.storeSettings(root);
 		}
+	@Override
+	public void windowLoadPersonalSettings(Element root)
+		{
+		frameControl.getSettings(root);
+		}
+
 
 
 	/** Register an extension to image window */
@@ -138,8 +134,8 @@ public class Viewer2DWindow extends BasicWindow
 	public boolean mouseInWindow=false;
 
 	//GUI components
-	private final SnapBackSlider sliderZoom2=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);	
-	private SnapBackSlider sliderRotate=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
+	private final JSnapBackSlider sliderZoom2=new JSnapBackSlider(JScrollBar.VERTICAL,0,1000);	
+	private JSnapBackSlider sliderRotate=new JSnapBackSlider(JScrollBar.VERTICAL,0,1000);
 	
 	private final JImageButton bAddChannel=new JImageButton(BasicIcon.iconAdd, "Add a channel");
 	
@@ -149,7 +145,7 @@ public class Viewer2DWindow extends BasicWindow
 	
 	private final JPanel channelPanel=new JPanel();
 
-	private final JMenu menuImageWindow=new JMenu("ImageWindow");
+	private final JMenu menuImageWindow=new JMenu("2D Viewer");
 	private final JCheckBoxMenuItem miToolNone=new JCheckBoxMenuItem("No tool");
 	private final JMenuItem miZoomToFit=new JMenuItem("Zoom to fit");
 	private final JMenuItem miReset=new JMenuItem("Reset view");
@@ -223,15 +219,15 @@ public class Viewer2DWindow extends BasicWindow
 	/**
 	 * One row of channel settings in the GUI
 	 */
-	public class ChannelWidget extends JPanel implements ActionListener, ChangeListener, SnapBackSlider.SnapChangeListener
+	public class ChannelWidget extends JPanel implements ActionListener, ChangeListener, JSnapBackSlider.SnapChangeListener
 		{
 		static final long serialVersionUID=0;
 		
 		private final JRadioButton rSelect=new JRadioButton();
 		private final EvComboChannel comboChannel=new EvComboChannel(false,false);
 		
-		private final SnapBackSlider sliderContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -10000,10000);
-		private final SnapBackSlider sliderBrightness=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -200,200);
+		private final JSnapBackSlider sliderContrast=new JSnapBackSlider(JSnapBackSlider.HORIZONTAL, -10000,10000);
+		private final JSnapBackSlider sliderBrightness=new JSnapBackSlider(JSnapBackSlider.HORIZONTAL, -200,200);
 		
 		private final EvComboColor comboColor=new EvComboColor(false, channelColorList, EvColor.white);
 		private final JImageButton bRemoveChannel=new JImageButton(BasicIcon.iconRemove,"Remove channel");
@@ -284,7 +280,7 @@ public class Viewer2DWindow extends BasicWindow
 		double brightness=0;
 		double contrast=1;
 
-		public void slideChange(SnapBackSlider source, int change)
+		public void slideChange(JSnapBackSlider source, int change)
 			{
 			if(source==sliderBrightness)
 				{
@@ -320,7 +316,7 @@ public class Viewer2DWindow extends BasicWindow
 			{
 			int index=channelWidget.indexOf(this);
 			
-			EvImage evim=imagePanel.images.get(index).getImage();
+			EvImagePlane evim=imagePanel.images.get(index).getImage();
 			if(evim!=null)
 				{
 				//Find min and max intensity
@@ -449,8 +445,6 @@ public class Viewer2DWindow extends BasicWindow
 			e.newImageWindow(this);
 				
 		imagePanel.setFocusable(true);
-//		setFocusable(true);  //really useful?
-//		addKeyListener(this);  //really useful?
 		
 		ChangeListener chListenerNoInvalidate=new ChangeListener()
 			{public void stateChanged(ChangeEvent e) {updateImagePanelNoInvalidate();}};
@@ -461,15 +455,15 @@ public class Viewer2DWindow extends BasicWindow
 		imagePanel.addMouseMotionListener(this);
 		imagePanel.addMouseWheelListener(this);
 		sliderZoom2.addSnapListener(new SnapChangeListener(){
-			public void slideChange(SnapBackSlider source, int change){zoom(change/50.0);}
+			public void slideChange(JSnapBackSlider source, int change){zoom(change/50.0);}
 		});
 		
 		miShowOverlay.addChangeListener(chListenerNoInvalidate);
 		bAddChannel.addActionListener(this);
 		
 		
-		sliderRotate.addSnapListener(new SnapBackSlider.SnapChangeListener(){
-		public void slideChange(SnapBackSlider source, int change)
+		sliderRotate.addSnapListener(new JSnapBackSlider.SnapChangeListener(){
+		public void slideChange(JSnapBackSlider source, int change)
 			{
 			imagePanel.rotateCamera(change/200.0);
 			}
@@ -506,7 +500,6 @@ public class Viewer2DWindow extends BasicWindow
 		add(rightPanel,BorderLayout.EAST);
 
 		
-		//setShow3Color(bShow3colors.isSelected());
 		buildChannelPanel();
 		
 		addMenubar(menuImageWindow);
@@ -518,11 +511,12 @@ public class Viewer2DWindow extends BasicWindow
 		for(ChannelWidget w:channelWidget)
 			w.comboChannel.updateList();
 		packEvWindow();
-		frameControl.setChannel(getCurrentChannel());
-		frameControl.setFrame(EvDecimal.ZERO);
 		setBoundsEvWindow(bounds);
 		updateWindowTitle();
 		setVisibleEvWindow(true);
+		
+		frameControl.setChannel(getCurrentChannel());
+		frameControl.setFrame(EvDecimal.ZERO);
 		updateImagePanel();
 		}
 
@@ -748,11 +742,11 @@ public class Viewer2DWindow extends BasicWindow
 					pi.setImage(null,null);
 				else
 					{
-					int closestZ=stack.closestZint(z.doubleValue());
+					int closestZ=stack.getClosestPlaneIndex(z.doubleValue());
 					//System.out.println("----closest z: "+closestZ+"   depth:"+stack.getDepth());
 					if(closestZ!=-1)
 						{
-						EvImage evim=stack.getInt(closestZ);
+						EvImagePlane evim=stack.getPlane(closestZ);
 						//System.out.println("--- got stack 2: "+evim+"   "+evim.getPixels(null));
 						
 						if(evim!=null)
@@ -872,7 +866,7 @@ public class Viewer2DWindow extends BasicWindow
 			StringBuffer sb=new StringBuffer();
 			for(ImagePanelImage im:imagePanel.images)
 				{
-				EvImage evim=im.getImage();
+				EvImagePlane evim=im.getImage();
 				if(evim==null)
 					sb.append("Null slice");
 				else
@@ -896,7 +890,7 @@ public class Viewer2DWindow extends BasicWindow
 				}
 			String s=sb.toString();
 			if(!s.equals(""))
-				BasicWindow.showInformativeDialog(s);
+				EvBasicWindow.showInformativeDialog(s);
 			}
 		else if(e.getSource()==miToolNone)
 			setTool(null);
@@ -1094,7 +1088,7 @@ public class Viewer2DWindow extends BasicWindow
 		repaint();
 		}
 	
-	public void eventUserLoadedFile(EvData data)
+	public void windowEventUserLoadedFile(EvData data)
 		{
 		List<EvChannel> ims=data.getObjects(EvChannel.class);
 		if(!ims.isEmpty())
@@ -1108,7 +1102,7 @@ public class Viewer2DWindow extends BasicWindow
 			}
 		}
 
-	public void freeResources(){}
+	public void windowFreeResources(){}
 	
 	
 	public void finalize()
@@ -1233,16 +1227,16 @@ public class Viewer2DWindow extends BasicWindow
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(
-				new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(
+				new EvBasicWindowExtension()
 				{
-				public void newBasicWindow(BasicWindow w)
+				public void newBasicWindow(EvBasicWindow w)
 					{
 					w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 					}
-				class Hook implements BasicWindowHook, ActionListener
+				class Hook implements EvBasicWindowHook, ActionListener
 					{
-					public void createMenus(BasicWindow w)
+					public void createMenus(EvBasicWindow w)
 						{
 						JMenuItem mi=new JMenuItem("2D viewer",BasicIcon.iconImage);
 						mi.addActionListener(this);
@@ -1254,24 +1248,9 @@ public class Viewer2DWindow extends BasicWindow
 						new Viewer2DWindow();
 						}
 					
-					public void buildMenu(BasicWindow w){}
+					public void buildMenu(EvBasicWindow w){}
 					}
 				});
-		
-		EndrovCore.personalConfigLoaders.put("imagewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					Viewer2DWindow win=new Viewer2DWindow(BasicWindow.getXMLbounds(e));
-					win.frameControl.setGroup(e.getAttribute("group").getIntValue());
-					//win.channelWidget.get(0).comboChannel.lastSelectChannel=e.getAttributeValue("lastSelectChannel");
-					}
-				catch (Exception e1){e1.printStackTrace();}
-				}
-			public void savePersonalConfig(Element e){}
-			});
 		
 		Viewer2DWindow.addImageWindowExtension(new Viewer2DExtension()
 			{

@@ -14,7 +14,7 @@ import endrov.core.EndrovCore;
 import endrov.core.PersonalConfig;
 import endrov.core.log.EvLog;
 import endrov.core.observer.GeneralObserver;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 
 
 /**
@@ -220,7 +220,7 @@ public class EvHardwareConfigGroup
 		{
 		
 		
-		EndrovCore.personalConfigLoaders.put("configgroups",new PersonalConfig()
+		EndrovCore.addPersonalConfigLoader("configgroups",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
 				{
@@ -265,7 +265,7 @@ public class EvHardwareConfigGroup
 							}
 					}
 				//May need to update GUI if windows already loaded
-				BasicWindow.updateWindows();
+				EvBasicWindow.updateWindows();
 				}
 			
 			public void savePersonalConfig(Element e)

@@ -6,11 +6,11 @@
 package endrov.flowImageStats;
 
 import endrov.flow.EvOpSlice1;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.util.EvListUtil;
-import endrov.util.EvMathUtil;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
+import endrov.util.collection.EvListUtil;
+import endrov.util.math.EvMathUtil;
 
 /**
  * Compute percentile for a local square area around every pixel. Percentile should be within [0,1],

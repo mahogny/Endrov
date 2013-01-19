@@ -36,10 +36,9 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
+import endrov.gui.EvSwingUtil;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
+import endrov.gui.window.EvBasicWindow;
 import endrov.util.EvStringUtil;
 
 /**
@@ -426,7 +425,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 					con.metaObject.put(name,newObject);
 					updateList();
 					setSelectedObject(newObject);
-					BasicWindow.updateWindows();
+					EvBasicWindow.updateWindows();
 					}
 				}
 				

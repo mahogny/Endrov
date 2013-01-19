@@ -16,13 +16,13 @@ import javax.swing.JMenuItem;
 import javax.vecmath.Vector2d;
 
 import endrov.core.log.EvLog;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 import endrov.windowConsole.ConsoleWindow;
 import endrov.windowViewer2D.Viewer2DWindow;
 import endrov.windowViewer2D.Viewer2DTool;
@@ -63,7 +63,7 @@ public class ImageWindowToolPixelInfo implements Viewer2DTool
 			EvDecimal slice=w.getZ();
 			frame=c.closestFrame(frame);
 			EvStack stack=c.getStack(frame);
-			int closestZ=stack.closestZint(slice.doubleValue());
+			int closestZ=stack.getClosestPlaneIndex(slice.doubleValue());
 			
 			Vector2d mpos=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 			Vector2d ppos=stack.transformWorldImage(mpos);
@@ -72,7 +72,7 @@ public class ImageWindowToolPixelInfo implements Viewer2DTool
 			
 			ConsoleWindow.openConsole();
 			
-			EvImage image=stack.getInt(closestZ);
+			EvImagePlane image=stack.getPlane(closestZ);
 			if(image!=null)
 				{
 				if(px<stack.getWidth() && py<stack.getHeight() && px>=0 && py>=0)

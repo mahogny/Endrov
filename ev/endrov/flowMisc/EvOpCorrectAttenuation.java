@@ -10,13 +10,13 @@ import java.util.List;
 import endrov.flow.EvOpStack1;
 import endrov.flowBasic.EvImageUtil;
 import endrov.flowBasic.math.EvOpImageAddScalar;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
-import endrov.util.EvMathUtil;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
+import endrov.util.math.EvMathUtil;
 
 /**
  * Correct for light attenuation
@@ -50,12 +50,12 @@ public class EvOpCorrectAttenuation extends EvOpStack1
 
 		
 		EvStack out=new EvStack();
-		out.getMetaFrom(in);
+		out.copyMetaFrom(in);
 
 		for(int i=0;i<p.length;i++)
 			{
 			double correct=km.fst()*i;
-			out.putInt(i, new EvImage(EvOpImageAddScalar.plus(p[i], -correct)));
+			out.putPlane(i, new EvImagePlane(EvOpImageAddScalar.plus(p[i], -correct)));
 			}
 				
 		return out;

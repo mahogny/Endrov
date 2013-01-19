@@ -7,7 +7,7 @@ package endrov.data;
 
 import javax.swing.*;
 
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 
 /**
  * This class is extended to add additional items to the Data-menu
@@ -18,7 +18,7 @@ public abstract class DataMenuExtension
 	{
 	public void addMetamenu(JMenu menu, JMenuItem mi)
 		{
-		BasicWindow.addMenuItemSorted(menu, mi);
+		EvBasicWindow.addMenuItemSorted(menu, mi);
 		}
 
 	public abstract void buildData(JMenu menu);

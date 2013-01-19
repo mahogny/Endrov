@@ -16,16 +16,16 @@ import java.util.*;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
-import endrov.annotationLineage.Lineage;
 import endrov.core.*;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.*;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvStack;
+import endrov.typeImageset.Imageset;
+import endrov.typeLineage.Lineage;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 
 
 public class CollectImages2
@@ -129,8 +129,8 @@ public class CollectImages2
 								frame=ost.getChannel(channelName).closestFrame(frame);
 								//EvDecimal z=ost.getChannel(channelName).closestZ(frame, new EvDecimal(pos.z/**ost.meta.resZ*/));
 								EvStack stack=ost.getChannel(channelName).getStack(progh, frame);
-								int closestZ=stack.closestZint(pos.z);
-								EvImage im=stack.getInt(closestZ);//ost.getChannel(channelName).getImageLoader(frame, z);
+								int closestZ=stack.getClosestPlaneIndex(pos.z);
+								EvImagePlane im=stack.getPlane(closestZ);//ost.getChannel(channelName).getImageLoader(frame, z);
 								
 								Vector2d mid=stack.transformWorldImage(new Vector2d(pos.x, pos.y));
 								int midx=(int)mid.x;//stack.transformWorldImageX(pos.x);

@@ -18,13 +18,13 @@ import endrov.flow.EvOpGeneral;
 import endrov.flowBasic.math.EvOpImageMulImage;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.flowImageStats.EvOpSumRect;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector3i;
+import endrov.util.math.Vector3i;
 
 /**
  * Find pixels or classify areas using the Mean-shift algorithm 
@@ -122,11 +122,11 @@ public class MeanShift3D
 			
 			//Output colored image
 			EvStack outs=new EvStack();
-			outs.getMetaFrom(s);
+			outs.copyMetaFrom(s);
 //			outs.allocate(w, h, EvPixelsType.TYPE_INT, s);
 			//int[][] outarr=outs.getArraysInt();
 			//int cz=0;
-			EvImage[] inArr=s.getImages();
+			EvImagePlane[] inArr=s.getImagePlanes();
 			for(int cz=0;cz<inArr.length;cz++)
 			//for(Map.Entry<EvDecimal, EvImage> entry:s.entrySet())
 				{
@@ -139,7 +139,7 @@ public class MeanShift3D
 					if(lev!=null)
 						pa[i]=lev;
 					}
-				outs.putInt(cz,new EvImage(p));
+				outs.putPlane(cz,new EvImagePlane(p));
 				//cz++;
 				}
 			
@@ -168,7 +168,7 @@ public class MeanShift3D
 
 			int xyIndex=(int)(Math.round(pos.x)+Math.round(pos.y)*w);
 			
-			EvImage[] imArr=momentX.getImages();
+			EvImagePlane[] imArr=momentX.getImagePlanes();
 			for(int az=0;az<imArr.length;az++)
 			//for(Map.Entry<EvDecimal, EvImage> entry:momentX.entrySet())
 				{
@@ -180,8 +180,8 @@ public class MeanShift3D
 				//Later, can use a cut-off. should make it a lot faster. might run into convergence problems!!!
 				
 				EvPixels pX=imArr[az].getPixels(progh).getReadOnly(EvPixelsType.DOUBLE);
-				EvPixels pY=momentY.getInt(az).getPixels(progh).getReadOnly(EvPixelsType.DOUBLE);
-				EvPixels p0=moment0.getInt(az).getPixels(progh).getReadOnly(EvPixelsType.DOUBLE);
+				EvPixels pY=momentY.getPlane(az).getPixels(progh).getReadOnly(EvPixelsType.DOUBLE);
+				EvPixels p0=moment0.getPlane(az).getPixels(progh).getReadOnly(EvPixelsType.DOUBLE);
 				double[] apX=pX.getArrayDouble();
 				double[] apY=pY.getArrayDouble();
 				double[] ap0=p0.getArrayDouble();

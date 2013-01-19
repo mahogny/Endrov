@@ -18,7 +18,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.util.Vector2i;
+import endrov.util.math.Vector2i;
 
 /**
  * Flow unit: generate gaussian in 2d

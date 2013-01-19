@@ -16,21 +16,21 @@ import javax.swing.event.*;
 
 import org.jdom.*;
 
-import endrov.annotationLineage.*;
-import endrov.core.*;
 import endrov.data.*;
 import endrov.gui.*;
 import endrov.gui.component.EvComboObjectOne;
 import endrov.gui.component.EvFrameControl;
 import endrov.gui.component.EvHidableSidePaneRight;
-import endrov.gui.window.BasicWindow;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
-import endrov.util.EvUtilRegexp;
-import endrov.util.JImageButton;
-import endrov.util.JImageToggleButton;
-import endrov.util.SnapBackSlider;
-import endrov.util.SnapBackSlider.SnapChangeListener;
+import endrov.gui.component.JImageButton;
+import endrov.gui.component.JImageToggleButton;
+import endrov.gui.component.JSnapBackSlider;
+import endrov.gui.component.JSnapBackSlider.SnapChangeListener;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
+import endrov.typeLineage.*;
+import endrov.util.EvRegexpUtil;
+import endrov.util.math.EvDecimal;
 import endrov.windowLineage.LineageView.ClickRegion;
 import endrov.windowLineage.LineageView.ClickRegionName;
 
@@ -39,8 +39,8 @@ import endrov.windowLineage.LineageView.ClickRegionName;
  * Lineage Window - an editable tree of the lineage
  * @author Johan Henriksson
  */
-public class LineageWindow extends BasicWindow
-		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, TimedDataWindow
+public class LineageWindow extends EvBasicWindow
+		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, TimedDataWindowInterface
 	{
 	static final long serialVersionUID=0;
 	
@@ -60,8 +60,8 @@ public class LineageWindow extends BasicWindow
 	private final EvHidableSidePaneRight sidePanelSplitPane;
 
 	
-	private SnapBackSlider sliderZoomX=new SnapBackSlider(JSlider.HORIZONTAL, -10000,10000); 
-	private SnapBackSlider sliderZoomY=new SnapBackSlider(JSlider.VERTICAL, -10000,10000);
+	private JSnapBackSlider sliderZoomX=new JSnapBackSlider(JSlider.HORIZONTAL, -10000,10000); 
+	private JSnapBackSlider sliderZoomY=new JSnapBackSlider(JSlider.VERTICAL, -10000,10000);
 	private JButton buttonGoToRoot=new JImageButton(iconShowRoot,"Go to root");
 	private JButton buttonGoToSelected=new JImageButton(iconShowSelected,"Go to selected");
 	private JButton buttonZoomAll=new JImageButton(iconZoomAll,"Fit everything into screen");
@@ -129,12 +129,12 @@ public class LineageWindow extends BasicWindow
 				//EvSelection.selectOnly(sels.toArray(new NucSel[]{}));
 				}
 			
-			Pattern match=EvUtilRegexp.wildcardToRegex(inp);
+			Pattern match=EvRegexpUtil.wildcardToRegex(inp);
 			for(String name:lin.particle.keySet())
 				if(match.matcher(name).matches())
 					EvSelection.select(new LineageSelParticle(lin,name));
 			getInpSelectByName().addActionListener(this);
-			BasicWindow.updateWindows();
+			EvBasicWindow.updateWindows();
 			}
 		};
 	
@@ -199,8 +199,8 @@ public class LineageWindow extends BasicWindow
 		
 
 
-		sliderZoomX.addSnapListener(new SnapChangeListener(){public void slideChange(SnapBackSlider source, int change){zoomX(change);repaint();}});
-		sliderZoomY.addSnapListener(new SnapChangeListener(){public void slideChange(SnapBackSlider source, int change){zoomY(change);repaint();}});
+		sliderZoomX.addSnapListener(new SnapChangeListener(){public void slideChange(JSnapBackSlider source, int change){zoomX(change);repaint();}});
+		sliderZoomY.addSnapListener(new SnapChangeListener(){public void slideChange(JSnapBackSlider source, int change){zoomY(change);repaint();}});
 		
 		ButtonGroup expGroup=new ButtonGroup();
 		expGroup.add(miShowExpLine);
@@ -267,7 +267,7 @@ public class LineageWindow extends BasicWindow
 		copyShowSettings();	
 		
 		//Window overall things
-		setTitleEvWindow("Lineage Window");
+		setTitleEvWindow("Lineage viewer");
 		packEvWindow();
 		setBoundsEvWindow(bounds);
 		setVisibleEvWindow(true);
@@ -283,10 +283,11 @@ public class LineageWindow extends BasicWindow
 	 */
 	public void windowSavePersonalSettings(Element root)
 		{
-		Element e=new Element("lineagewindow");
-		setXMLbounds(e);
-		e.setAttribute("group",""+frameControl.getGroup());
-		root.addContent(e);
+		frameControl.storeSettings(root);
+		}
+	public void windowLoadPersonalSettings(Element e)
+		{
+		frameControl.getSettings(e);
 		}
 
 	
@@ -542,7 +543,7 @@ public class LineageWindow extends BasicWindow
 								particle.pos.remove(frame);
 								if(particle.pos.isEmpty())
 									lin.removeParticle(partName);
-								BasicWindow.updateWindows();
+								EvBasicWindow.updateWindows();
 								}
 							}.execute();
 						}
@@ -591,7 +592,7 @@ public class LineageWindow extends BasicWindow
 									//Connect old and new nuc
 									newParticle.parents.add(oldName);
 									oldParticle.child.add(newName);
-									BasicWindow.updateWindows();
+									EvBasicWindow.updateWindows();
 									}
 								}
 							}.execute();
@@ -683,11 +684,11 @@ public class LineageWindow extends BasicWindow
 		repaint();
 		}
 	
-	public void eventUserLoadedFile(EvData data)
+	public void windowEventUserLoadedFile(EvData data)
 		{
 		dataChangedEvent();
 		}
-	public void freeResources(){}
+	public void windowFreeResources(){}
 
 
 	
@@ -709,26 +710,33 @@ public class LineageWindow extends BasicWindow
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new ExtBasic());
-		EndrovCore.personalConfigLoaders.put("lineagewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 					{
-					Rectangle r=BasicWindow.getXMLbounds(e);
-					LineageWindow w=new LineageWindow(r);
-					w.frameControl.setGroup(e.getAttribute("group").getIntValue());
-					}
-				catch(Exception e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
+					public void newBasicWindow(EvBasicWindow w)
+						{
+						w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+						}
+					class Hook implements EvBasicWindowHook, ActionListener
+						{
+						public void createMenus(EvBasicWindow w)
+							{
+							JMenuItem mi=new JMenuItem("Lineage viewer",new ImageIcon(getClass().getResource("iconWindow.png")));
+							mi.addActionListener(this);
+							w.addMenuWindow(mi);
+							}
+						
+						public void actionPerformed(ActionEvent e) 
+							{
+							new LineageWindow();
+							}
+						
+						public void buildMenu(EvBasicWindow w){}
+
+						}
+					});
 		}
 	
 	
+
 
 	}

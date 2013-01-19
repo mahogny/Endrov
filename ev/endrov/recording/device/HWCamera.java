@@ -7,7 +7,7 @@ package endrov.recording.device;
 
 import endrov.hardware.*;
 import endrov.recording.CameraImage;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 /**
  * Hardware with recording capabilities

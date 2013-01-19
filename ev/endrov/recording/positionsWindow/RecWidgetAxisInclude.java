@@ -12,12 +12,12 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import endrov.gui.EvSwingUtil;
 import endrov.hardware.EvHardware;
 import endrov.recording.RecordingResource;
 import endrov.recording.StoredStagePosition;
 import endrov.recording.StoredStagePositionAxis;
 import endrov.recording.device.HWStage;
-import endrov.util.EvSwingUtil;
 
 /**
  * Checkbox list used to select desired hardware when creating positions

@@ -6,7 +6,7 @@ package endrov.recording.widgets;
 import java.util.LinkedList;
 import java.util.List;
 
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 public class RecSettingsChannel
 	{

@@ -15,7 +15,7 @@ import javax.swing.tree.TreePath;
 
 import endrov.data.EvContainer;
 import endrov.data.EvObject;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.windowDataBrowser.DataBrowserTree.Node;
 
 
@@ -198,7 +198,7 @@ public class DataBrowserTreeDnD
 				parentCon.metaObject.put(n.name, (EvObject)n.con);
 				}
 			
-			BasicWindow.updateWindows();
+			EvBasicWindow.updateWindows();
 			return true;
 			}
 

@@ -9,18 +9,18 @@ import javax.vecmath.Vector3d;
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
 
-import endrov.annotationLineage.Lineage;
-import endrov.annotationLineage.LineageSelParticle;
-import endrov.annotationLineage.Lineage.InterpolatedParticle;
-import endrov.annotationLineage.util.LineageMergeUtil;
-import endrov.annotationLineage.util.LineageVoronoi;
-import endrov.annotationLineage.util.MakeParticleContactMap;
 import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.util.EvDecimal;
+import endrov.typeLineage.Lineage;
+import endrov.typeLineage.LineageSelParticle;
+import endrov.typeLineage.Lineage.InterpolatedParticle;
+import endrov.typeLineage.util.LineageMergeUtil;
+import endrov.typeLineage.util.LineageVoronoi;
+import endrov.typeLineage.util.MakeParticleContactMap;
+import endrov.util.math.EvDecimal;
 
 /**
  * Test how well it works to map single-cell model onto 4 cells + time points.

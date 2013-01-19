@@ -12,14 +12,9 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.gui.component.EvFrameControl;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
-import endrov.imageset.SwapImages;
 import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
 import endrov.recording.RecordingResource;
@@ -27,7 +22,12 @@ import endrov.recording.ResolutionManager;
 import endrov.recording.device.HWCamera;
 import endrov.recording.device.HWTrigger;
 import endrov.recording.device.HWTrigger.TriggerListener;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvImageSwap;
+import endrov.typeImageset.EvStack;
+import endrov.typeImageset.Imageset;
+import endrov.util.math.EvDecimal;
 
 /**
  * Burst acquisition - Using camera in video mode for fast frame rate
@@ -256,7 +256,7 @@ public class EvBurstAcquisition extends EvAcquisition
 								}
 
 							//TODO signal update on the object
-							BasicWindow.updateWindows();
+							EvBasicWindow.updateWindows();
 
 							//Start one sequence acquisition
 							while(shouldContinue() && semTriggered.availablePermits()>0)
@@ -327,16 +327,16 @@ public class EvBurstAcquisition extends EvAcquisition
 													0
 													));
 											
-											EvImage evim=new EvImage(camIm.getPixels()[0]);
+											EvImagePlane evim=new EvImagePlane(camIm.getPixels()[0]);
 											
 											System.out.println(camIm.getPixels());
 											System.out.println(camIm.getNumComponents());
 											
-											stack.putInt(0, evim);
+											stack.putPlane(0, evim);
 											ch.putStack(curFrame, stack);
 											
 											if(settings.earlySwap)
-												SwapImages.hintSwapImage(evim);
+												EvImageSwap.hintSwapImage(evim);
 											}
 											
 										//Increase frame and time count

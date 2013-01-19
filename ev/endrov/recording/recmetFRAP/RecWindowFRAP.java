@@ -7,7 +7,6 @@ package endrov.recording.recmetFRAP;
 
 
 import java.awt.BorderLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
@@ -18,23 +17,23 @@ import org.jdom.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.gui.EvSwingUtil;
 import endrov.gui.component.EvComboObject;
 import endrov.gui.component.JSpinnerSimpleEvDecimal;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.recording.EvAcquisition;
 import endrov.recording.RecordingResource;
 import endrov.recording.recmetMultidim.RecWidgetAcquire;
 import endrov.roi.ROI;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
+import endrov.util.math.EvDecimal;
 
 /**
  * FRAP acquisition
  * @author Johan Henriksson 
  */
-public class RecWindowFRAP extends BasicWindow 
+public class RecWindowFRAP extends EvBasicWindow 
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -47,7 +46,7 @@ public class RecWindowFRAP extends BasicWindow
 
 	private EvFRAPAcquisition acq=new EvFRAPAcquisition();
 
-	RecWidgetAcquire wAcq=new RecWidgetAcquire()
+	private RecWidgetAcquire wAcq=new RecWidgetAcquire()
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -88,11 +87,6 @@ public class RecWindowFRAP extends BasicWindow
 
 	
 	public RecWindowFRAP()
-		{
-		this(new Rectangle(300,120));
-		}
-	
-	public RecWindowFRAP(Rectangle bounds)
 		{
 		
 		roiCombo.setRoot(RecordingResource.getData());
@@ -156,13 +150,10 @@ public class RecWindowFRAP extends BasicWindow
 		wAcq.dataChangedEvent();
 		}
 
-	public void eventUserLoadedFile(EvData data){}
-
-	public void windowSavePersonalSettings(Element e)
-		{
-		
-		} 
-	public void freeResources()
+	public void windowEventUserLoadedFile(EvData data){}
+	public void windowSavePersonalSettings(Element e){}
+	public void windowLoadPersonalSettings(Element e){}
+	public void windowFreeResources()
 		{
 		}
 	
@@ -179,19 +170,19 @@ public class RecWindowFRAP extends BasicWindow
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 			{
-			public void newBasicWindow(BasicWindow w)
+			public void newBasicWindow(EvBasicWindow w)
 				{
 				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 				}
-			class Hook implements BasicWindowHook, ActionListener
+			class Hook implements EvBasicWindowHook, ActionListener
 				{
-				public void createMenus(BasicWindow w)
+				public void createMenus(EvBasicWindow w)
 					{
 					JMenuItem mi=new JMenuItem("Acquire: FRAP",new ImageIcon(getClass().getResource("tangoCamera.png")));
 					mi.addActionListener(this);
-					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+					EvBasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}
 	
 				public void actionPerformed(ActionEvent e) 
@@ -199,7 +190,7 @@ public class RecWindowFRAP extends BasicWindow
 					new RecWindowFRAP();
 					}
 	
-				public void buildMenu(BasicWindow w){}
+				public void buildMenu(EvBasicWindow w){}
 				}
 			});
 		

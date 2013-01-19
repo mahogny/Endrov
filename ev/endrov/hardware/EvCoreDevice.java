@@ -12,7 +12,7 @@ import endrov.recording.device.HWImageScanner;
 import endrov.recording.device.HWShutter;
 import endrov.recording.device.HWSpatialLightModulator;
 import endrov.recording.device.HWStage;
-import endrov.util.EvMathUtil;
+import endrov.util.math.EvMathUtil;
 
 
 public class EvCoreDevice implements EvDevice

@@ -28,11 +28,11 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flowWindow.FlowView;
+import endrov.gui.EvSwingUtil;
+import endrov.gui.component.JImageButton;
 import endrov.gui.icon.BasicIcon;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
-import endrov.util.Vector2i;
+import endrov.util.math.Vector2i;
+import endrov.windowFlow.FlowView;
 
 /**
  * Flow unit: kernel constant

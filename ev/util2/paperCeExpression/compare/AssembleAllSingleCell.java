@@ -14,16 +14,16 @@ import java.util.Set;
 import util2.paperCeExpression.IntegrateAllExp;
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
-import endrov.annotationFrameTime.FrameTime;
-import endrov.annotationLineage.Lineage;
-import endrov.annotationLineage.LineageExp;
-import endrov.annotationLineage.util.LineageMergeUtil;
 import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.util.EvDecimal;
+import endrov.typeFrameTime.FrameTime;
+import endrov.typeLineage.Lineage;
+import endrov.typeLineage.LineageExp;
+import endrov.typeLineage.util.LineageMergeUtil;
+import endrov.util.math.EvDecimal;
 
 /**
  * Pairwise comparison of recordings

@@ -3,7 +3,7 @@ package endrov.windowPlateAnalysis;
 import java.util.Collection;
 import java.util.Iterator;
 
-import endrov.util.EvMathUtil;
+import endrov.util.math.EvMathUtil;
 
 /**
  * Aggregation math functions

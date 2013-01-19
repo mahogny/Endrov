@@ -3,13 +3,13 @@ package endrov.recording.bleachWindow;
 import java.util.LinkedList;
 import java.util.List;
 
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.recording.RecordingResource;
 import endrov.recording.device.HWImageScanner;
 import endrov.roi.ROI;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 /**
  * 
@@ -96,7 +96,7 @@ public class QuickBleach
 					try
 						{
 						//Acquire image before bleaching
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 
 						//Bleach ROI
 						double stageX=RecordingResource.getCurrentStageX();
@@ -114,7 +114,7 @@ public class QuickBleach
 
 		//			RecordingResource.unblockLiveCamera(lockCamera);
 					
-					BasicWindow.updateWindows();
+					EvBasicWindow.updateWindows();
 					}
 
 				}

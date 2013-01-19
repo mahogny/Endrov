@@ -19,11 +19,11 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import endrov.data.EvContainer;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 //import endrov.imageWindow.ImageWindowInterface;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvStack;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.Viewer2DWindow;
 import endrov.windowViewer2D.Viewer2DTool;
 
@@ -77,7 +77,7 @@ public class ImageWindowToolChannelDisp implements Viewer2DTool
 					//TODO handle rotation of stacks?
 					}
 				
-				BasicWindow.updateWindows();
+				EvBasicWindow.updateWindows();
 				rec.setMetadataModified();
 				}
 			}

@@ -37,8 +37,8 @@
 
 package endrov.imglib;
 
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import net.imglib2.Cursor;
 import net.imglib2.converter.Converter;
 import net.imglib2.img.Img;

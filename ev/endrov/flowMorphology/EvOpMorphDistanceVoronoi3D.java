@@ -8,8 +8,8 @@ package endrov.flowMorphology;
 import java.util.*;
 
 import endrov.flow.EvOpStack;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -84,16 +84,16 @@ public class EvOpMorphDistanceVoronoi3D extends EvOpStack
 		int d=stack.getDepth();
 		
 		EvStack stackGroup=new EvStack();
-		stackGroup.getMetaFrom(stack);
+		stackGroup.copyMetaFrom(stack);
 		stackGroup.allocate(w, h, d, EvPixelsType.DOUBLE, stack);
 
 		EvStack stackDist=new EvStack();
-		stackDist.getMetaFrom(stack);
+		stackDist.copyMetaFrom(stack);
 		stackDist.allocate(w, h, d, EvPixelsType.DOUBLE, stack);
 
-		double[][] inarr=stack.getReadOnlyArraysDouble(progh);
-		double[][] distArr=stackDist.getOrigArraysDouble(progh);
-		double[][] groupArr=stackGroup.getOrigArraysDouble(progh);
+		double[][] inarr=stack.getArraysDoubleReadOnly(progh);
+		double[][] distArr=stackDist.getArraysDoubleOrig(progh);
+		double[][] groupArr=stackGroup.getArraysDoubleOrig(progh);
 		PriorityQueue<QEeuclidian> q=new PriorityQueue<QEeuclidian>();
 		
 		double sqrt2=Math.sqrt(2);

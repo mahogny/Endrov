@@ -8,7 +8,7 @@ package endrov.flowMisc;
 import java.util.HashMap;
 import java.util.Map;
 
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -38,7 +38,7 @@ public class EvOpParticleConnectivity
 		//Would it be faster if it was not a hashmap?
 
 		//Find relations, at least in one way
-		int[][] arrs=stack.getReadOnlyArraysInt(progh);
+		int[][] arrs=stack.getArraysIntReadOnly(progh);
 		int w=stack.getWidth();
 		int h=stack.getHeight();
 		for(int az=0;az<arrs.length;az++)

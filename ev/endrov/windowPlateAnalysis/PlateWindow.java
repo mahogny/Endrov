@@ -17,10 +17,6 @@ import javax.swing.*;
 import javax.swing.event.*;
 import org.jdom.*;
 
-import endrov.annotationParticleMeasure.ParticleMeasure;
-import endrov.annotationParticleMeasure.ParticleMeasure.Well;
-import endrov.core.EndrovCore;
-import endrov.core.PersonalConfig;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvContainer;
@@ -28,26 +24,28 @@ import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
 import endrov.flow.Flow;
+import endrov.gui.EvSwingUtil;
 import endrov.gui.FrameControl2D;
 import endrov.gui.component.EvComboObject;
 import endrov.gui.component.EvComboObjectOne;
+import endrov.gui.component.JImageButton;
+import endrov.gui.component.JSnapBackSlider;
 import endrov.gui.icon.BasicIcon;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
-import endrov.imageset.*;
-import endrov.imagesetBD.EvIODataBD;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
-import endrov.util.SnapBackSlider;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
+import endrov.ioBD.EvIODataBD;
+import endrov.typeImageset.*;
+import endrov.typeParticleMeasure.ParticleMeasure;
+import endrov.typeParticleMeasure.ParticleMeasure.Well;
+import endrov.util.math.EvDecimal;
 
 /**
  * Plate window - For high-throughput analysis
  *
  * @author Johan Henriksson
  */
-public class PlateWindow extends BasicWindow implements ChangeListener, ActionListener
+public class PlateWindow extends EvBasicWindow implements ChangeListener, ActionListener
 	{	
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -60,6 +58,11 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	 */
 	public void windowSavePersonalSettings(Element root)
 		{
+		frameControl.storeSettings(root);
+		}
+	public void windowLoadPersonalSettings(Element e)
+		{
+		frameControl.getSettings(e);
 		}
 
 	private static ImageIcon iconLabelBrightness=new ImageIcon(BasicIcon.class.getResource("labelBrightness.png"));
@@ -220,12 +223,12 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	/**
 	 * One row of channel settings in the GUI
 	 */
-	public class ChannelWidget extends JPanel implements ActionListener, ChangeListener, SnapBackSlider.SnapChangeListener
+	public class ChannelWidget extends JPanel implements ActionListener, ChangeListener, JSnapBackSlider.SnapChangeListener
 		{
 		static final long serialVersionUID=0;
 		
-		private final SnapBackSlider sliderContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -10000,10000);
-		private final SnapBackSlider sliderBrightness=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -200,200);
+		private final JSnapBackSlider sliderContrast=new JSnapBackSlider(JSnapBackSlider.HORIZONTAL, -10000,10000);
+		private final JSnapBackSlider sliderBrightness=new JSnapBackSlider(JSnapBackSlider.HORIZONTAL, -200,200);
 		
 		private final JImageButton bFitRange=new JImageButton(iconLabelFitRange,"Fit range");
 		
@@ -263,7 +266,7 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 		private double brightness=0;
 		private double contrast=0.1;
 
-		public void slideChange(SnapBackSlider source, int change)
+		public void slideChange(JSnapBackSlider source, int change)
 			{
 			if(source==sliderBrightness)
 				{
@@ -318,7 +321,7 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	
 	public void updateWindowTitle()
 		{
-		setTitleEvWindow("Plate Analysis Window");
+		setTitleEvWindow("Plate Analysis");
 		}
 	
 	
@@ -506,12 +509,12 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 
 	
 	
-	public void eventUserLoadedFile(EvData data)
+	public void windowEventUserLoadedFile(EvData data)
 		{
 		dataChangedEvent();
 		}
 
-	public void freeResources()
+	public void windowFreeResources()
 		{
 		imagePanel.freeResources();
 		}
@@ -613,10 +616,6 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 		
 		}
 	
-	public void finalize()
-		{
-		System.out.println("removing image window");
-		}
 
 	
 
@@ -626,15 +625,15 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 				{
-				public void newBasicWindow(BasicWindow w)
+				public void newBasicWindow(EvBasicWindow w)
 					{
 					w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 					}
-				class Hook implements BasicWindowHook, ActionListener
+				class Hook implements EvBasicWindowHook, ActionListener
 					{
-					public void createMenus(BasicWindow w)
+					public void createMenus(EvBasicWindow w)
 						{
 						JMenuItem mi=new JMenuItem("Plate analysis",BasicIcon.iconImage);
 						mi.addActionListener(this);
@@ -646,23 +645,9 @@ public class PlateWindow extends BasicWindow implements ChangeListener, ActionLi
 						new PlateWindow(null);
 						}
 					
-					public void buildMenu(BasicWindow w){}
+					public void buildMenu(EvBasicWindow w){}
 					}
 				});
-		
-		EndrovCore.personalConfigLoaders.put("platewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					PlateWindow win=new PlateWindow(BasicWindow.getXMLbounds(e));
-					win.frameControl.setGroup(e.getAttribute("group").getIntValue());
-					}
-				catch (Exception e1){e1.printStackTrace();}
-				}
-			public void savePersonalConfig(Element e){}
-			});
 		
 		}
 	

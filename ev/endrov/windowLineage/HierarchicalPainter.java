@@ -246,9 +246,10 @@ public class HierarchicalPainter
 		{
 		BoundingBox screen=new BoundingBox(cam.toWorldX(0),cam.toWorldY(0),cam.toWorldX(width),cam.toWorldY(height));
 		//System.out.println("screenbb "+screen);
-		int totDraw=0;
+		//int totDraw=0;
 		for(DrawNode n:topNodes)
-			totDraw+=paint_(g, width, height, cam, screen, n);
+			//totDraw+=
+			paint_(g, width, height, cam, screen, n);
 		//System.out.println("Drawn regions: "+totDraw);
 		}
 	

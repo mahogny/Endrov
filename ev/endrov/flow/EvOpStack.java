@@ -8,14 +8,14 @@ package endrov.flow;
 
 import java.io.File;
 
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvIOImage;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
-import endrov.util.MemoizeX;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvImageReader;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
+import endrov.util.collection.MemoizeX;
+import endrov.util.math.EvDecimal;
 
 /**
  * Image operation defined by operation on stacks
@@ -31,14 +31,14 @@ public abstract class EvOpStack extends EvOpGeneral
 		{
 		//TODO only one pixel supported
 		//TODO where is lazyness? where is events?
-		EvImage im=new EvImage();
+		EvImagePlane im=new EvImagePlane();
 		im.setPixelsReference(p[0]);
 		EvStack stack[]=new EvStack[]{new EvStack()};
-		stack[0].putInt(0, im);
+		stack[0].putPlane(0, im);
 		stack=exec(ph, stack);
 		EvPixels[] ret=new EvPixels[stack.length];
 		for(int ac=0;ac<ret.length;ac++)
-			ret[ac]=stack[ac].getInt(0).getPixels(ph);
+			ret[ac]=stack[ac].getPlane(0).getPixels(ph);
 		return ret;
 		}
 	
@@ -101,7 +101,7 @@ public abstract class EvOpStack extends EvOpGeneral
 				{
 				final EvStack curInputStack=refChannel.getStack(progh, channelEntryFrame);
 				final EvStack curReturnStack=new EvStack();
-				curReturnStack.getMetaFrom(curInputStack);
+				curReturnStack.copyMetaFrom(curInputStack);
 				curReturnChan.putStack(channelEntryFrame, curReturnStack);
 				
 				//TODO register lazy operation
@@ -129,16 +129,16 @@ public abstract class EvOpStack extends EvOpGeneral
 
 				for(int az=0;az<curInputStack.getDepth();az++)
 					{
-					EvImage newim=new EvImage();
-					curReturnStack.putInt(az, newim);
+					EvImagePlane newim=new EvImagePlane();
+					curReturnStack.putPlane(az, newim);
 					
-					curReturnStack.getMetaFrom(curInputStack); 
+					curReturnStack.copyMetaFrom(curInputStack); 
 					//TODO This design makes it impossible to generate resolution lazily
 					//TODO in particular, crop will not work nicely
 					
 					final int finalAz=az;	
 					
-					newim.io=new EvIOImage()
+					newim.io=new EvImageReader()
 						{
 						public EvPixels eval(ProgressHandle progh)
 							{
@@ -150,7 +150,7 @@ public abstract class EvOpStack extends EvOpGeneral
 								EvStack stack=chans[finalCurReturnChanIndex];
 								if(stack==null)
 									throw new RuntimeException("EvOp programming error: got null stack");
-								EvImage evim=stack.getInt(finalAz);
+								EvImagePlane evim=stack.getPlane(finalAz);
 								if(evim==null)
 									throw new RuntimeException("There is no image for this z: "+finalAz);
 								return evim.getPixels(progh);

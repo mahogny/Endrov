@@ -3,8 +3,8 @@ package endrov.flowThreshold;
 import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.math.EvOpImageGreaterThanScalar;
 import endrov.flowBasic.math.EvOpImageSubScalar;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
 
 /**

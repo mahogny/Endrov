@@ -9,8 +9,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import endrov.util.EvDecimal;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
+import endrov.util.math.EvDecimal;
 
 /**
  * Synchronized Frame(/Z)-controls

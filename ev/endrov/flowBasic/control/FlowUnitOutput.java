@@ -22,7 +22,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flowWindow.FlowView;
+import endrov.windowFlow.FlowView;
 
 /**
  * Flow unit: output variable

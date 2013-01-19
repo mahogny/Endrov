@@ -9,8 +9,8 @@ import endrov.core.*;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExitLast;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.BasicWindowExtensionExitLast;
 import endrov.gui.window.EvSplashScreen;
 import endrov.windowViewer3D.Viewer3DWindow;
 
@@ -72,10 +72,10 @@ public class CEviewer
 		try
 			{
 			EndrovCore.loadPlugins();
-			BasicWindowExitLast.integrate();
+			BasicWindowExtensionExitLast.integrate();
 			EndrovCore.loadPersonalConfig();		
 			EndrovCore.setHasStartedUp();
-			if(BasicWindow.getWindowList().size()==0)
+			if(EvBasicWindow.getWindowList().size()==0)
 				{
 				new endrov.windowLineage.LineageWindow();
 				new Viewer3DWindow();

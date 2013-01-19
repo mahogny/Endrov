@@ -10,8 +10,8 @@ import javax.vecmath.Vector2d;
 import endrov.flowBasic.math.EvOpImageMulImage;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.flowMultiscale.Multiscale;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 
 /**
  * Find pixels or classify areas using the Mean-shift algorithm 

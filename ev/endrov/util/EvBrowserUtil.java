@@ -6,8 +6,6 @@
 package endrov.util;
 
 import java.io.*;
-//import java.awt.*;
-//import java.net.*;
 
 /*
  * Note - you must include the url type -- either "http://" or
@@ -76,13 +74,15 @@ public class EvBrowserUtil
 			System.err.println("Caught: " + x);
 			}
 		}
+	
+	
 	/**
 	 * Try to determine whether this application is running under Windows
 	 * or some other platform by examing the "os.name" property.
 	 *
 	 * @return true if this application is running under a Windows OS
 	 */
-	public static boolean isWindowsPlatform()
+	private static boolean isWindowsPlatform()
 		{
 		String os = System.getProperty("os.name");
 		if ( os != null && os.startsWith(WIN_ID))
@@ -97,7 +97,7 @@ public class EvBrowserUtil
 	 *
 	 * @return true if this application is running under a Windows OS
 	 */
-	public static boolean isMacPlatform()
+	private static boolean isMacPlatform()
 		{
 		return (System.getProperty("os.name").toLowerCase().startsWith("mac os x"));
 		}

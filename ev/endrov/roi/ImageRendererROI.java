@@ -14,7 +14,7 @@ import endrov.data.*;
 import endrov.gui.WorldScreenTransformer;
 import endrov.roi.primitive.BoxROI;
 import endrov.roi.primitive.EllipseROI;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.*;
 
 /**

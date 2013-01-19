@@ -7,10 +7,10 @@ package endrov.flowProjection;
 
 import endrov.flow.EvOpStack1;
 import endrov.flowImageStats.EvOpVarianceRect;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -40,7 +40,7 @@ public class EvOpExtendedFocusVariance extends EvOpStack1
 	public EvStack project(ProgressHandle progh, EvStack in)
 		{
 		EvStack out=new EvStack();
-		out.getMetaFrom(in);
+		out.copyMetaFrom(in);
 		int w=in.getWidth();
 		int h=in.getHeight();
 		
@@ -151,12 +151,12 @@ public class EvOpExtendedFocusVariance extends EvOpStack1
 			}
 			*/
 		
-		EvImage imout=new EvImage();
+		EvImagePlane imout=new EvImagePlane();
 		imout.setPixelsReference(outPixels);
 		
 		int numZ=in.getDepth();
 		for(int cz=0;cz<numZ;cz++)
-			out.putInt(cz,imout.makeShadowCopy());
+			out.putPlane(cz,imout.makeShadowCopy());
 		
 		return out;
 		}

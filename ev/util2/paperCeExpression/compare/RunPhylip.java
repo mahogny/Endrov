@@ -19,8 +19,8 @@ import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.util.EvFileUtil;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
+import endrov.util.io.EvFileUtil;
 
 public class RunPhylip
 	{

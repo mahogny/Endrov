@@ -37,7 +37,7 @@ package endrov.imglib;
  */
 
 
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvStack;
 import ij.ImagePlus;
 import net.imglib2.exception.ImgLibException;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;

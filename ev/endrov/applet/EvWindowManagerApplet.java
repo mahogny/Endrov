@@ -17,22 +17,22 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.gui.window.EvWindowManager;
 
 /**
  * Ev Window Manager: Everything in an applet
  * @author Johan Henriksson
  */
-public class EvWindowManagerApplet implements BasicWindow.EvWindowManagerMaker
+public class EvWindowManagerApplet implements EvBasicWindow.EvWindowManagerMaker
 	{
 	
 	private class Window extends JPanel implements EvWindowManager
 		{
 		static final long serialVersionUID=0; 
-		BasicWindow bw;
+		EvBasicWindow bw;
 		
-		public Window(BasicWindow bw)
+		public Window(EvBasicWindow bw)
 			{
 			this.bw=bw;
 			setLayout(new BorderLayout());
@@ -78,9 +78,9 @@ public class EvWindowManagerApplet implements BasicWindow.EvWindowManagerMaker
 		
 		}
 		
-	public List<BasicWindow> getAllWindows()
+	public List<EvBasicWindow> getAllWindows()
 		{
-		LinkedList<BasicWindow> list=new LinkedList<BasicWindow>();
+		LinkedList<EvBasicWindow> list=new LinkedList<EvBasicWindow>();
 		for(Component c:totalPane.getComponents())
 			list.add(((Window)c).bw);
 		return list;
@@ -101,13 +101,13 @@ public class EvWindowManagerApplet implements BasicWindow.EvWindowManagerMaker
 			}
 		}
 	
-	public EvWindowManager createWindow(BasicWindow bw)
+	public EvWindowManager createWindow(EvBasicWindow bw)
 		{
 		EvWindowManager w=new Window(bw);
 		return w;
 		}
 
-	public BasicWindow getFocusWindow()
+	public EvBasicWindow getFocusWindow()
 		{
 		return null;
 		}

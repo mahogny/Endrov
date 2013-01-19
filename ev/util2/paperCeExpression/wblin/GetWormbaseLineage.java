@@ -20,13 +20,13 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
-import endrov.annotationLineage.Lineage;
 import endrov.core.EndrovCore;
 import endrov.core.EndrovUtil;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.util.EvFileUtil;
+import endrov.typeLineage.Lineage;
+import endrov.util.io.EvFileUtil;
 
 public class GetWormbaseLineage
 	{

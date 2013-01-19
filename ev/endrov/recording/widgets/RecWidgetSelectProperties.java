@@ -20,10 +20,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import endrov.gui.EvSwingUtil;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvDevicePropPath;
 import endrov.hardware.EvHardware;
-import endrov.util.EvSwingUtil;
 
 
 /**

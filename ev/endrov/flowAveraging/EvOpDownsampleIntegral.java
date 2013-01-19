@@ -6,9 +6,9 @@
 package endrov.flowAveraging;
 
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -39,7 +39,7 @@ public class EvOpDownsampleIntegral extends EvOpStack1
 		{
 		
 		EvStack out=new EvStack();
-		out.getMetaFrom(in);
+		out.copyMetaFrom(in);
 		out.setRes(
 				in.getRes().x*scaleX,
 				in.getRes().y*scaleY,

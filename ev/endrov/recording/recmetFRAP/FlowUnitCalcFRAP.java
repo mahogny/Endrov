@@ -18,9 +18,9 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.EvChannel;
 import endrov.recording.flow.CategoryInfo;
 import endrov.roi.ROI;
+import endrov.typeImageset.EvChannel;
 
 /**
  * Flow unit: Calculate FRAP values

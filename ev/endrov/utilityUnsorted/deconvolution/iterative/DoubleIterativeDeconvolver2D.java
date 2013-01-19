@@ -18,7 +18,7 @@ package endrov.utilityUnsorted.deconvolution.iterative;
 
 import cern.colt.matrix.tdouble.algo.DoubleAlgebra;
 import endrov.core.log.EvLog;
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 import endrov.utilityUnsorted.deconvolution.Deconvolver2D;
 import endrov.utilityUnsorted.deconvolution.iterative.IterativeEnums.BoundaryType;
 import endrov.utilityUnsorted.deconvolution.iterative.IterativeEnums.PreconditionerType;

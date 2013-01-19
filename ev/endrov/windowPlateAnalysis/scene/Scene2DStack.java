@@ -16,10 +16,10 @@ import javax.vecmath.Vector2d;
 
 import endrov.core.log.EvLog;
 import endrov.gui.EvColor;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -107,7 +107,7 @@ public class Scene2DStack implements Scene2DElement
 				//Load image if this has not already been done
 				if(bufi==null)
 					{
-					EvImage image=stack.getInt(z);
+					EvImagePlane image=stack.getPlane(z);
 		
 					//TODO handle progress. Put this in a thread if it takes too long. or, put it there right away, postpone update of image
 					if(image!=null)

@@ -14,9 +14,9 @@ import java.awt.event.MouseEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.undo.UndoOpNone;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.Viewer2DWindow;
 import endrov.windowViewer2D.Viewer2DTool;
 
@@ -44,9 +44,9 @@ public class ImageWindowToolEditImage implements Viewer2DTool, ActionListener
 	public JMenuItem getMenuItem()
 		{
 		//Create menus
-		BasicWindow.addMenuItemSorted(miRemove, miRemove);
+		EvBasicWindow.addMenuItemSorted(miRemove, miRemove);
 //		BasicWindow.addMenuItemSorted(miRemove, miRemoveChannel);
-		BasicWindow.addMenuItemSorted(miRemove, miRemoveFrame);
+		EvBasicWindow.addMenuItemSorted(miRemove, miRemoveFrame);
 
 		//Add listeners
 	//	miRemoveChannel.addActionListener(this);
@@ -62,14 +62,14 @@ public class ImageWindowToolEditImage implements Viewer2DTool, ActionListener
 			final String ch=w.getCurrentChannelName();
 			final EvDecimal frame=w.getFrame();
 			
-			if(BasicWindow.showConfirmYesNoDialog("Do you really want to remove (channel "+ch+", frame "+frame+")? This can not be undone"))
+			if(EvBasicWindow.showConfirmYesNoDialog("Do you really want to remove (channel "+ch+", frame "+frame+")? This can not be undone"))
 				{
 				new UndoOpNone("Remove frame")
 					{
 					public void redo()
 						{
 						w.getCurrentChannel().removeStack(frame);
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 						}
 					}.execute();
 				}

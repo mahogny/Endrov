@@ -7,13 +7,14 @@ package endrov.flow;
 
 import java.io.File;
 import java.util.HashMap;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvIOImage;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
-import endrov.util.MemoizeX;
+
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvImageReader;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
+import endrov.util.collection.MemoizeX;
 
 
 /**
@@ -73,10 +74,10 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 				EvStack[] retStack=new EvStack[op.getNumberChannels()];
 				EvStack referenceStack=p[0];
 				
-				EvImage[][] inputStackImages=new EvImage[p.length][];
+				EvImagePlane[][] inputStackImages=new EvImagePlane[p.length][];
 				for(int ac=0;ac<p.length;ac++)
 					{
-					inputStackImages[ac]=p[ac].getImages();
+					inputStackImages[ac]=p[ac].getImagePlanes();
 					//Consistency checks
 					if(inputStackImages[ac]==null)
 						throw new RuntimeException("Input plane "+ac+" is null");
@@ -88,7 +89,7 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 				for(int az=0;az<referenceStack.getDepth();az++)
 					{
 					//Collect slice from each channel
-					EvImage[] imlist=new EvImage[p.length];
+					EvImagePlane[] imlist=new EvImagePlane[p.length];
 					for(int currentInputChannel=0;currentInputChannel<p.length;currentInputChannel++)
 						{
 						imlist[currentInputChannel]=inputStackImages[currentInputChannel][az];
@@ -108,7 +109,7 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 					{
 					//Create one output channel. First argument decides shape of output stack
 					EvStack newstack=new EvStack();
-					newstack.getMetaFrom(referenceStack);
+					newstack.copyMetaFrom(referenceStack);
 					
 					//Set up each slice
 					for(int az=0;az<referenceStack.getDepth();az++)
@@ -116,11 +117,11 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 						//Get the calculation for this Z
 						final MemoizeX<EvPixels[]> m=lazySliceOps.get(az);
 						
-						EvImage newim=new EvImage();
-						newstack.putInt(az, newim);
+						EvImagePlane newim=new EvImagePlane();
+						newstack.putPlane(az, newim);
 
 						final int thisAc=currentReturnChannel;
-						newim.io=new EvIOImage(){public EvPixels eval(ProgressHandle progh)
+						newim.io=new EvImageReader(){public EvPixels eval(ProgressHandle progh)
 							{
 							System.out.println("------- eval of multiplexer ---------");
 							
@@ -155,15 +156,15 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 	
 	private static class MemoizeExecSlice extends MemoizeX<EvPixels[]>
 		{
-		private EvImage[] imlist;
+		private EvImagePlane[] imlist;
 		private EvOpGeneral op;
 		
-		public MemoizeExecSlice(EvImage[] imlist, EvOpGeneral op)
+		public MemoizeExecSlice(EvImagePlane[] imlist, EvOpGeneral op)
 			{
 			this.imlist = imlist;
 			this.op = op;
 			
-			for(EvImage p:imlist)
+			for(EvImagePlane p:imlist)
 				p.registerMemoizeXdepends(this);
 			}
 

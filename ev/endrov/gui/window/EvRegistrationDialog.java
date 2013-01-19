@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.concurrent.Semaphore;
 
@@ -20,8 +21,8 @@ import org.jdom.Element;
 import endrov.core.EndrovCore;
 import endrov.core.EvBuild;
 import endrov.core.PersonalConfig;
-import endrov.util.EvSwingUtil;
-import endrov.util.JMultilineLabel;
+import endrov.gui.EvSwingUtil;
+import endrov.gui.component.JMultilineLabel;
 
 /**
  * Form to fill in information about the user 
@@ -169,6 +170,10 @@ public class EvRegistrationDialog extends JDialog implements ActionListener
 						}
 					System.out.println("Sent user registration");
 					}
+				catch(UnknownHostException e)
+					{
+					System.out.println("Could not look up registration server");
+					}
 				catch( Exception e ) 
 					{
 					e.printStackTrace();
@@ -183,7 +188,7 @@ public class EvRegistrationDialog extends JDialog implements ActionListener
 	public static void initPlugin(){}
 	static
 	{
-	EndrovCore.personalConfigLoaders.put("evregistration", new PersonalConfig()
+	EndrovCore.addPersonalConfigLoader("evregistration", new PersonalConfig()
 		{
 		public void loadPersonalConfig(Element e)
 			{

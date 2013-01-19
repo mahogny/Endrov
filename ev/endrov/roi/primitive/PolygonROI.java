@@ -11,14 +11,14 @@ import org.jdom.Element;
 
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvStack;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
 import endrov.roi.util.FlipCodeTessellate;
 import endrov.roi.util.TriangulationException;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 
 /**
  * A ROI defined by a polygon
@@ -162,7 +162,7 @@ public class PolygonROI extends ROI2D
 
 	@Override
 	public LineIterator getLineIterator(ProgressHandle progh, EvStack stack,
-			EvImage im, String channel, EvDecimal frame, double z)
+			EvImagePlane im, String channel, EvDecimal frame, double z)
 		{
 		
 		//////////

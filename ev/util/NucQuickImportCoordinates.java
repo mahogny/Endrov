@@ -11,11 +11,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
-import endrov.annotationLineage.Lineage;
-import endrov.annotationLineage.Lineage.ParticlePos;
 import endrov.core.log.EvLog;
 import endrov.data.EvData;
-import endrov.util.EvDecimal;
+import endrov.typeLineage.Lineage;
+import endrov.typeLineage.Lineage.ParticlePos;
+import endrov.util.math.EvDecimal;
 
 /**
  * This is an example of how coordinates can be imported from simpler CSV files into Lineages.

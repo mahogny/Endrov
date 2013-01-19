@@ -24,13 +24,14 @@ import javax.vecmath.Vector3d;
 import org.jdom.Element;
 
 import endrov.data.*;
+import endrov.gui.EvSwingUtil;
 import endrov.gui.component.EvComboColor;
+import endrov.gui.component.JSnapBackSlider;
 import endrov.gui.icon.BasicIcon;
-import endrov.imageset.*;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
+import endrov.typeImageset.*;
+import endrov.typeImageset.gui.EvComboChannel;
 import endrov.util.ProgressHandle;
-import endrov.util.SnapBackSlider;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.*;
 import endrov.windowViewer3D.Viewer3DWindow.ProgressMeter;
 import endrov.windowViewer3Dimset.voxel.StackRendererInterface.ChanProp;
@@ -375,7 +376,7 @@ public class VoxelExtension implements Viewer3DWindowExtension
 				currentStackRenderer.outOfDate=true;
 			}
 
-		private class ToolIsolayer extends JPanel implements ActionListener, SnapBackSlider.SnapChangeListener
+		private class ToolIsolayer extends JPanel implements ActionListener, JSnapBackSlider.SnapChangeListener
 			{
 			public ChanProp prop=new ChanProp();
 			
@@ -386,8 +387,8 @@ public class VoxelExtension implements Viewer3DWindowExtension
 			
 			public WeakReference<EvChannel> lastChannelImages=new WeakReference<EvChannel>(null);
 
-			private SnapBackSlider sliderContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -1000, 1000);
-			private SnapBackSlider sliderBrightness=new SnapBackSlider(SnapBackSlider.HORIZONTAL, -1000, 1000);
+			private JSnapBackSlider sliderContrast=new JSnapBackSlider(JSnapBackSlider.HORIZONTAL, -1000, 1000);
+			private JSnapBackSlider sliderBrightness=new JSnapBackSlider(JSnapBackSlider.HORIZONTAL, -1000, 1000);
 			
 			public ToolIsolayer()
 				{				
@@ -488,7 +489,7 @@ public class VoxelExtension implements Viewer3DWindowExtension
 				}
 
 
-			public void slideChange(SnapBackSlider source, int change)
+			public void slideChange(JSnapBackSlider source, int change)
 				{
 				if(source==sliderBrightness)
 					{

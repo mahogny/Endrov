@@ -5,7 +5,7 @@
  */
 package endrov.utilityUnsorted.deconvolution.spectral.tik;
 
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 import endrov.utilityUnsorted.deconvolution.Deconvolver2D;
 import endrov.utilityUnsorted.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
 import endrov.utilityUnsorted.deconvolution.spectral.SpectralEnums.SpectralResizingType;

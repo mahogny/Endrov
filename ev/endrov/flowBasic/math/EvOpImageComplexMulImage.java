@@ -6,12 +6,12 @@
 package endrov.flowBasic.math;
 
 import endrov.flow.EvOpSlice;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 /**
  * complex A * B
@@ -101,10 +101,10 @@ public class EvOpImageComplexMulImage extends EvOpSlice
 		{
 		int d=aReal.getDepth();
 		
-		EvImage[] aRealIm=aReal.getImages();
-		EvImage[] aImagIm=aImag.getImages();
-		EvImage[] bRealIm=bReal.getImages();
-		EvImage[] bImagIm=bImag.getImages();
+		EvImagePlane[] aRealIm=aReal.getImagePlanes();
+		EvImagePlane[] aImagIm=aImag.getImagePlanes();
+		EvImagePlane[] bRealIm=bReal.getImagePlanes();
+		EvImagePlane[] bImagIm=bImag.getImagePlanes();
 		
 		for(int az=0;az<d;az++)
 			timesInPlaceDouble(aRealIm[az].getPixels(progh), aImagIm[az].getPixels(progh), bRealIm[az].getPixels(progh), bImagIm[az].getPixels(progh));

@@ -12,7 +12,7 @@ import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.AnyEvImage;
+import endrov.typeImageset.AnyEvImage;
 
 /**
  * Flow unit: Maximum

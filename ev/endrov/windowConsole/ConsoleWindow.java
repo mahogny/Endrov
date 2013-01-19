@@ -17,13 +17,12 @@ import javax.swing.event.ChangeListener;
 
 import java.io.*;
 
-import endrov.core.*;
 import endrov.core.log.EvLog;
 import endrov.data.EvData;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.EvSwingUtil;
+import endrov.gui.window.EvBasicWindow;
 import endrov.keybinding.KeyBinding;
 import endrov.script.*;
-import endrov.util.EvSwingUtil;
 
 import org.jdom.*;
 
@@ -37,7 +36,7 @@ import org.jdom.*;
  * 
  * @author Johan Henriksson
  */
-public class ConsoleWindow extends BasicWindow implements ActionListener, KeyListener, ChangeListener
+public class ConsoleWindow extends EvBasicWindow implements ActionListener, KeyListener, ChangeListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -54,7 +53,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	
 	/** Last component with focus remembered so this one can be refocused */
 	private WeakReference<Component> lastFocusComponent=new WeakReference<Component>(null);
-	private WeakReference<BasicWindow> lastFocusFrame=new WeakReference<BasicWindow>(null);
+	private WeakReference<EvBasicWindow> lastFocusFrame=new WeakReference<EvBasicWindow>(null);
 	
 	//GUI components
 	private JTextArea history=new JTextArea();
@@ -153,30 +152,11 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	
 	
 	
-	/**
-	 * Store down settings for window into personal config file
-	 */
 	public void windowSavePersonalSettings(Element root)
 		{
-		Element e=new Element("consolewindow");
-		setXMLbounds(e);
-		root.addContent(e);
 		}
-
 	public void windowLoadPersonalSettings(Element e)
 		{
-		try
-			{
-			int x=e.getAttribute("x").getIntValue();
-			int y=e.getAttribute("y").getIntValue();
-			int w=e.getAttribute("w").getIntValue();
-			int h=e.getAttribute("h").getIntValue();
-			new ConsoleWindow(x,y,w,h);
-			}
-		catch (DataConversionException e1)
-			{
-			e1.printStackTrace();
-			}
 		}
 	
 	/**
@@ -249,7 +229,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		history.append(EvLog.memoryLog.get());
 		
 		//Window overall things
-		setTitleEvWindow("Console Window");
+		setTitleEvWindow("Console");
 		packEvWindow();
 		setBoundsEvWindow(x,y,w,h);
 		setVisibleEvWindow(true);
@@ -335,7 +315,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	public void returnFocus()
 		{
 		Component c=lastFocusComponent.get();
-		BasicWindow f=lastFocusFrame.get();
+		EvBasicWindow f=lastFocusFrame.get();
 		if(c!=null)
 			{
 			c.requestFocus();
@@ -379,7 +359,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 * 
 	 * @param me Component with current focus
 	 */
-	public static void focusConsole(final BasicWindow frame, final Component me)
+	public static void focusConsole(final EvBasicWindow frame, final Component me)
 		{
 		EvSwingUtil.invokeAndWaitIfNeeded(new Runnable()
 			{
@@ -388,7 +368,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 				ConsoleWindow c=openConsole();
 				c.getEvw().toFront();
 				c.lastFocusComponent=new WeakReference<Component>(me);
-				c.lastFocusFrame=new WeakReference<BasicWindow>(frame);
+				c.lastFocusFrame=new WeakReference<EvBasicWindow>(frame);
 				c.commandLine.requestFocus();
 				}
 			});
@@ -421,7 +401,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 */
 	public static ConsoleWindow getConsole()
 		{
-		for(BasicWindow w:BasicWindow.getWindowList())
+		for(EvBasicWindow w:EvBasicWindow.getWindowList())
 			if(w instanceof ConsoleWindow)
 				return (ConsoleWindow)w;
 		return null;
@@ -437,8 +417,8 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		System.out.println("removing console window");
 		}
 	
-	public void eventUserLoadedFile(EvData data){}
-	public void freeResources(){}
+	public void windowEventUserLoadedFile(EvData data){}
+	public void windowFreeResources(){}
 
 	
 	/******************************************************************************************************
@@ -447,7 +427,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new ConsoleBasic());
+		EvBasicWindow.addBasicWindowExtension(new ConsoleBasic());
 		}
 
 	

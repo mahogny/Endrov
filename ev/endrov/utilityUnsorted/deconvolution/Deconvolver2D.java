@@ -18,7 +18,7 @@ package endrov.utilityUnsorted.deconvolution;
 
 import endrov.core.log.EvLog;
 import endrov.flow.EvOpSlice1;
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 import endrov.util.ProgressHandle;
 
 /**

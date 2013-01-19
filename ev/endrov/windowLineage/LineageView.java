@@ -14,14 +14,14 @@ import javax.swing.*;
 import javax.vecmath.Vector2d;
 
 
-import endrov.annotationLineage.*;
 import endrov.data.EvSelection;
 import endrov.gui.*;
 import endrov.gui.component.EvFrameControl;
-import endrov.gui.window.BasicWindow;
-import endrov.util.EvDecimal;
-import endrov.util.EvMathUtil;
-import endrov.util.Tuple;
+import endrov.gui.window.EvBasicWindow;
+import endrov.typeLineage.*;
+import endrov.util.collection.Tuple;
+import endrov.util.math.EvDecimal;
+import endrov.util.math.EvMathUtil;
 import endrov.windowLineage.HierarchicalPainter.Camera;
 
 
@@ -400,7 +400,7 @@ public class LineageView extends JPanel
 				}
 			}
 		else
-			BasicWindow.showErrorDialog("No particles selected");
+			EvBasicWindow.showErrorDialog("No particles selected");
 		}
 	
 	/**
@@ -1037,7 +1037,7 @@ public class LineageView extends JPanel
 		else if(SwingUtilities.isLeftMouseButton(e))
 			{
 			EvSelection.unselectAll();
-			BasicWindow.updateWindows();
+			EvBasicWindow.updateWindows();
 			}
 		}
 

@@ -15,15 +15,15 @@ import javax.swing.table.DefaultTableModel;
 import org.jdom.*;
 
 import endrov.data.EvData;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 
 /**
  * Hardware Configuration window
  * @author Johan Henriksson 
  */
-public class EvHardwareConfigWindow extends BasicWindow
+public class EvHardwareConfigWindow extends EvBasicWindow
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -103,12 +103,10 @@ public class EvHardwareConfigWindow extends BasicWindow
 		updateHardwareList();
 		}
 
-	public void eventUserLoadedFile(EvData data){}
-
-	public void windowSavePersonalSettings(Element e)
-		{
-		} 
-	public void freeResources(){}
+	public void windowEventUserLoadedFile(EvData data){}
+	public void windowSavePersonalSettings(Element e){}
+	public void windowLoadPersonalSettings(Element e){}
+	public void windowFreeResources(){}
 
 	
 
@@ -118,15 +116,15 @@ public class EvHardwareConfigWindow extends BasicWindow
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
 			{
-			public void newBasicWindow(BasicWindow w)
+			public void newBasicWindow(EvBasicWindow w)
 				{
 				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 				}
-			class Hook implements BasicWindowHook, ActionListener
+			class Hook implements EvBasicWindowHook, ActionListener
 			{
-			public void createMenus(BasicWindow w)
+			public void createMenus(EvBasicWindow w)
 				{
 				JMenuItem mi=new JMenuItem("Hardware manager",new ImageIcon(getClass().getResource("gnomeHardwareCard.png")));
 				mi.addActionListener(this);
@@ -138,7 +136,7 @@ public class EvHardwareConfigWindow extends BasicWindow
 				new EvHardwareConfigWindow();
 				}
 
-			public void buildMenu(BasicWindow w){}
+			public void buildMenu(EvBasicWindow w){}
 			}
 			});
 		

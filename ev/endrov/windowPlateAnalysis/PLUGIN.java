@@ -10,7 +10,7 @@ public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{
-		return "Plate Window";
+		return "Plate analysis";
 		}
 
 	public String getAuthor()

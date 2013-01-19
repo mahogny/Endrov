@@ -8,25 +8,25 @@ package endrov.windowConsole;
 import java.awt.event.*;
 import javax.swing.*;
 
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 
 
 /**
  * Extension to BasicWindow
  * @author Johan Henriksson
  */
-public class ConsoleBasic implements BasicWindowExtension
+public class ConsoleBasic implements EvBasicWindowExtension
 	{
 //	private static ImageIcon iconWindow=new ImageIcon(class.getResource("iconWindow.png"));
-	public void newBasicWindow(BasicWindow w)
+	public void newBasicWindow(EvBasicWindow w)
 		{
 		w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 		}
-	private class Hook implements BasicWindowHook, ActionListener
+	private class Hook implements EvBasicWindowHook, ActionListener
 		{
-		public void createMenus(BasicWindow w)
+		public void createMenus(EvBasicWindow w)
 			{
 			JMenuItem mi=new JMenuItem("Console",new ImageIcon(getClass().getResource("tangoConsole.png")));
 			mi.addActionListener(this);
@@ -38,6 +38,6 @@ public class ConsoleBasic implements BasicWindowExtension
 			new ConsoleWindow();
 			}
 		
-		public void buildMenu(BasicWindow w){}
+		public void buildMenu(EvBasicWindow w){}
 		}
 	}

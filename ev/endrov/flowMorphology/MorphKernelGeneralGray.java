@@ -11,10 +11,10 @@ import java.util.List;
 
 import endrov.flowBasic.EvImageUtil;
 import endrov.flowBasic.math.EvOpImageSubImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector2i;
+import endrov.util.math.Vector2i;
 
 /**
  * Gray morphology. Unstructured kernel, normally O(numKernelPixels) for each pixel.

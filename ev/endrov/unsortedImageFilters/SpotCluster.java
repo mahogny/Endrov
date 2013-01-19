@@ -9,10 +9,10 @@ import java.util.*;
 
 import javax.vecmath.Vector3d;
 
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.util.Partitioning;
-import endrov.util.Vector3i;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.util.collection.Partitioning;
+import endrov.util.math.Vector3i;
 
 /**
  * Find clusters in groups

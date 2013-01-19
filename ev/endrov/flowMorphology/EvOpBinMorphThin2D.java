@@ -7,7 +7,7 @@ package endrov.flowMorphology;
 
 import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.math.EvOpImageSubImage;
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 import endrov.util.ProgressHandle;
 
 /**

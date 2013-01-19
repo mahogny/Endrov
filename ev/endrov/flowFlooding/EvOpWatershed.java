@@ -8,10 +8,10 @@ package endrov.flowFlooding;
 import java.util.*;
 
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector3i;
+import endrov.util.math.Vector3i;
 
 /**
  * Segment image through watershedding. Output image will have pixels with value corresponding to the group they belong to.
@@ -175,7 +175,7 @@ public class EvOpWatershed extends EvOpStack1
 		int h=seedStack.getHeight();
 		for(int az=0;az<seedStack.getDepth();az++)
 			{
-			int[] arr=seedStack.getInt(az).getPixels(progh).convertToInt(true).getArrayInt();
+			int[] arr=seedStack.getPlane(az).getPixels(progh).convertToInt(true).getArrayInt();
 			for(int ay=0;ay<h;ay++)
 				for(int ax=0;ax<w;ax++)
 					{
@@ -202,11 +202,11 @@ public class EvOpWatershed extends EvOpStack1
 		int d=stack.getDepth();
 		
 		EvStack stackOut=new EvStack();
-		stackOut.getMetaFrom(stack);
+		stackOut.copyMetaFrom(stack);
 		stackOut.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		int[][] inarr=stack.getReadOnlyArraysInt(progh);
-		int[][] outarr=stackOut.getOrigArraysInt(progh);
+		int[][] inarr=stack.getArraysIntReadOnly(progh);
+		int[][] outarr=stackOut.getArraysIntOrig(progh);
 		
 		long startTime=System.currentTimeMillis();
 

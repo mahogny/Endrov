@@ -18,8 +18,8 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.AnyEvImage;
-import endrov.util.Vector3i;
+import endrov.typeImageset.AnyEvImage;
+import endrov.util.math.Vector3i;
 
 /**
  * Flow unit: Flood select colors in range

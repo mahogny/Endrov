@@ -32,9 +32,9 @@ import org.jdom.Element;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.gui.window.BasicWindow;
-import endrov.gui.window.BasicWindowExtension;
-import endrov.gui.window.BasicWindowHook;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.windowDataBrowser.DataBrowserTree.Node;
 
 /**
@@ -42,7 +42,7 @@ import endrov.windowDataBrowser.DataBrowserTree.Node;
  * @author Johan Henriksson
  *
  */
-public class DataBrowserWindow extends BasicWindow implements MouseListener, TreeSelectionListener
+public class DataBrowserWindow extends EvBasicWindow implements MouseListener, TreeSelectionListener
 	{
 	private static final long serialVersionUID = 1L;
 
@@ -96,18 +96,21 @@ public class DataBrowserWindow extends BasicWindow implements MouseListener, Tre
 		}
 
 	@Override
-	public void freeResources()
+	public void windowFreeResources()
 		{
 		}
 
 	@Override
-	public void eventUserLoadedFile(EvData data)
+	public void windowEventUserLoadedFile(EvData data)
 		{
 		dataChangedEvent();
 		}
 
 	@Override
-	public void windowSavePersonalSettings(Element e)
+	public void windowSavePersonalSettings(Element root)
+		{
+		}
+	public void windowLoadPersonalSettings(Element e)
 		{
 		}
 	
@@ -119,43 +122,24 @@ public class DataBrowserWindow extends BasicWindow implements MouseListener, Tre
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new DataBrowserBasic());
-		/*
-		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					new ConsoleWindow(x,y,w,h);
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});*/
+		EvBasicWindow.addBasicWindowExtension(new DataBrowserBasic());
 		}
 	
 	
 	/**
 	 * Extension to BasicWindow
+	 * 
 	 * @author Johan Henriksson
 	 */
-	private static class DataBrowserBasic implements BasicWindowExtension
+	private static class DataBrowserBasic implements EvBasicWindowExtension
 		{
-		public void newBasicWindow(BasicWindow w)
+		public void newBasicWindow(EvBasicWindow w)
 			{
 			w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 			}
-		private class Hook implements BasicWindowHook, ActionListener
+		private class Hook implements EvBasicWindowHook, ActionListener
 			{
-			public void createMenus(BasicWindow w)
+			public void createMenus(EvBasicWindow w)
 				{
 				JMenuItem mi=new JMenuItem("Data Browser",new ImageIcon(getClass().getResource("iconBrowser.png")));
 				mi.addActionListener(this);
@@ -165,10 +149,9 @@ public class DataBrowserWindow extends BasicWindow implements MouseListener, Tre
 			public void actionPerformed(ActionEvent e) 
 				{
 				new DataBrowserWindow();
-				System.out.println("here");
 				}
 			
-			public void buildMenu(BasicWindow w){}
+			public void buildMenu(EvBasicWindow w){}
 			}
 		}
 
@@ -203,7 +186,7 @@ public class DataBrowserWindow extends BasicWindow implements MouseListener, Tre
 										{
 										n.parent.con.metaObject.remove(n.name);
 										n.parent.con.metaObject.put(input, (EvObject)n.con);
-										BasicWindow.updateWindows();
+										EvBasicWindow.updateWindows();
 										}
 									}
 								}
@@ -241,7 +224,7 @@ public class DataBrowserWindow extends BasicWindow implements MouseListener, Tre
 									else
 										n.parent.con.metaObject.remove(n.name);
 									}
-								BasicWindow.updateWindows();
+								EvBasicWindow.updateWindows();
 								}
 							}
 						});

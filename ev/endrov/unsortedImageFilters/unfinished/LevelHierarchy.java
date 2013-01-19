@@ -7,11 +7,11 @@ package endrov.unsortedImageFilters.unfinished;
 
 import java.util.*;
 
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.Vector3i;
+import endrov.util.math.Vector3i;
 
 /**
  * Alternative representation of an image. The image is a tree. Every pixel belongs to one node.

@@ -5,10 +5,10 @@
  */
 package endrov.flow;
 
-import endrov.imageset.AnyEvImage;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.AnyEvImage;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**

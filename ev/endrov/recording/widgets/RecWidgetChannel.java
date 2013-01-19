@@ -19,12 +19,12 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import endrov.gui.EvSwingUtil;
+import endrov.gui.component.JImageButton;
 import endrov.gui.component.JSpinnerSimpleEvDecimal;
 import endrov.gui.component.JSpinnerSimpleInteger;
 import endrov.gui.icon.BasicIcon;
-import endrov.util.EvDecimal;
-import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
+import endrov.util.math.EvDecimal;
 
 /**
  * Widget for recording settings: Channel settings

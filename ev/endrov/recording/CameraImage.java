@@ -7,8 +7,8 @@ package endrov.recording;
 
 import java.awt.image.BufferedImage;
 
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvPixelsType;
 
 /**
  * Image from camera

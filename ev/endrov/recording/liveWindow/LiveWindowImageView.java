@@ -24,10 +24,10 @@ import javax.swing.SwingUtilities;
 
 import endrov.gui.GeneralTool;
 import endrov.hardware.EvDevicePath;
-import endrov.imageset.EvPixels;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
-import endrov.util.Vector2i;
+import endrov.typeImageset.EvPixels;
+import endrov.util.math.Vector2i;
 import endrov.windowViewer2D.Viewer2DRenderer;
 
 /**

@@ -6,10 +6,10 @@ import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
+import endrov.util.math.EvDecimal;
 
 public class ProveDynamicRange
 	{
@@ -35,7 +35,7 @@ public class ProveDynamicRange
 			EvStack stack=ch.getStack(f);
 			for(int az=0;az<stack.getDepth();az++)
 				{
-				EvPixels p=stack.getInt(az).getPixels(null).convertToDouble(true);
+				EvPixels p=stack.getPlane(az).getPixels(null).convertToDouble(true);
 				for(double val:p.getArrayDouble())
 					if(val>max)
 						max=val;

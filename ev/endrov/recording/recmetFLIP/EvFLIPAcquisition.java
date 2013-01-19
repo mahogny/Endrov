@@ -11,13 +11,9 @@ import endrov.data.EvObject;
 import endrov.flow.Flow;
 import endrov.flow.FlowConn;
 import endrov.flowBasic.objects.FlowUnitObjectReference;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
 import endrov.recording.RecordingResource;
@@ -25,7 +21,11 @@ import endrov.recording.ResolutionManager;
 import endrov.recording.device.HWImageScanner;
 import endrov.recording.recmetFRAP.FlowUnitShowGraph;
 import endrov.roi.ROI;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvStack;
+import endrov.typeImageset.Imageset;
+import endrov.util.math.EvDecimal;
 
 /**
  * 
@@ -150,14 +150,14 @@ public class EvFLIPAcquisition extends EvAcquisition
 							}
 
 						//TODO signal update on the object
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 
 						EvDecimal curFrame=new EvDecimal(0);
 						try
 							{
 							//Acquire image before bleaching
 							snapOneImage(imset, campath, cam, curFrame);
-							BasicWindow.updateWindows();
+							EvBasicWindow.updateWindows();
 							
 							//Acquire images as the intensity recovers
 							for(int i=0;i<settings.numRepeats;i++)
@@ -185,7 +185,7 @@ public class EvFLIPAcquisition extends EvAcquisition
 
 								//Acquire an image for quantification
 								snapOneImage(imset, campath, cam, curFrame);
-								BasicWindow.updateWindows();
+								EvBasicWindow.updateWindows();
 								yield(settings.rate.doubleValue()/10);
 								
 								waitInTotal(startTime, settings.rate.doubleValue());
@@ -202,7 +202,7 @@ public class EvFLIPAcquisition extends EvAcquisition
 						
 						//RecordingResource.unblockLiveCamera(lockCamera);
 						
-						BasicWindow.updateWindows();
+						EvBasicWindow.updateWindows();
 						}
 						
 					}
@@ -236,7 +236,7 @@ public class EvFLIPAcquisition extends EvAcquisition
 		private void snapOneImage(Imageset imset, EvDevicePath campath, HWImageScanner cam, EvDecimal curFrame)
 			{
 			CameraImage camIm=cam.snap();
-			EvImage evim=new EvImage(camIm.getPixels()[0]);
+			EvImagePlane evim=new EvImagePlane(camIm.getPixels()[0]);
 			
 			EvChannel ch=imset.getCreateChannel("ch");
 			EvStack stack=new EvStack();
@@ -252,7 +252,7 @@ public class EvFLIPAcquisition extends EvAcquisition
 					0
 					));
 			
-			stack.putInt(0, evim);
+			stack.putPlane(0, evim);
 			}
 		
 		

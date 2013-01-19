@@ -5,10 +5,10 @@
  */
 package endrov.flow;
 
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvPixels;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
@@ -27,12 +27,12 @@ public abstract class EvOpStack1 extends EvOpGeneral
 		{
 		//TODO only one pixel supported
 		//TODO where is lazyness? where is events?
-		EvImage im=new EvImage();
+		EvImagePlane im=new EvImagePlane();
 		im.setPixelsReference(p[0]);
 		EvStack stack=new EvStack();
-		stack.putInt(0, im);
+		stack.putPlane(0, im);
 		stack=exec1(ph,stack);
-		return stack.getInt(0).getPixels(ph);
+		return stack.getPlane(0).getPixels(ph);
 		}
 	
 	public EvPixels[] exec(ProgressHandle ph, EvPixels... p)

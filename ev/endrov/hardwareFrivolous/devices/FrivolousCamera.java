@@ -7,10 +7,10 @@ import java.util.TreeMap;
 import endrov.hardware.DevicePropertyType;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardwareFrivolous.FrivolousDiffusion;
-import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.device.HWImageScanner;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvPixels;
+import endrov.util.math.EvDecimal;
 
 
 /**

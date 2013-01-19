@@ -13,9 +13,9 @@ import javax.media.opengl.GL2;
 import javax.vecmath.Vector3d;
 
 import endrov.gl.EvGLCamera;
-import endrov.imageset.EvChannel;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.BoundingBox3D;
 import endrov.windowViewer3D.Viewer3DView;
 import endrov.windowViewer3D.Viewer3DWindow;

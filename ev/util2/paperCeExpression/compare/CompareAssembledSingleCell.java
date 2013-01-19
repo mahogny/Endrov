@@ -13,18 +13,18 @@ import java.util.Set;
 
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
-import endrov.annotationLineage.Lineage;
-import endrov.annotationLineage.LineageExp;
 import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.util.EvDecimal;
-import endrov.util.EvListUtil;
-import endrov.util.EvParallel;
+import endrov.typeLineage.Lineage;
+import endrov.typeLineage.LineageExp;
 import endrov.util.FuncAB;
-import endrov.util.Tuple;
+import endrov.util.collection.EvListUtil;
+import endrov.util.collection.EvParallel;
+import endrov.util.collection.Tuple;
+import endrov.util.math.EvDecimal;
 
 /**
  * Pairwise comparison of expressions in summary lineage. Currently tied to the caching system; could disconnect and make more general, then available in GUI

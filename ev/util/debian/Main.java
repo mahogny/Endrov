@@ -10,7 +10,7 @@ import java.util.*;
 
 import util.debian.DebPackage.PkgType;
 
-import endrov.util.EvFileUtil;
+import endrov.util.io.EvFileUtil;
 
 /**
  * Take all-platform release and turn into .deb

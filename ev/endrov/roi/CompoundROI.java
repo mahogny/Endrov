@@ -8,7 +8,7 @@ package endrov.roi;
 import java.util.*;
 
 import endrov.data.*;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 
 /**
  * Compound ROI (Region of interest). This is a ROI that depend on other ROI's ie has children
@@ -45,7 +45,7 @@ public abstract class CompoundROI extends ROI
 				} while(croi.metaObject.containsKey(name));
 			croi.metaObject.put(name, roi);
 			}
-		BasicWindow.updateWindows();
+		EvBasicWindow.updateWindows();
 		}
 	
 

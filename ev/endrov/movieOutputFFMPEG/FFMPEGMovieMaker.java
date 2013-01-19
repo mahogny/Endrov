@@ -11,9 +11,9 @@ import java.io.*;
 import javax.imageio.ImageIO;
 
 import endrov.core.log.EvLog;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 import endrov.opMakeMovie.EvMovieMaker;
-import endrov.util.EvFileUtil;
+import endrov.util.io.EvFileUtil;
 
 /**
  * Interface to FFMPEG
@@ -89,7 +89,7 @@ public class FFMPEGMovieMaker implements EvMovieMaker
 		
 		if(!output.exists() || output.length()==0)
 			{
-			BasicWindow.showErrorDialog(
+			EvBasicWindow.showErrorDialog(
 					"File was not created due to FFMPEG error. Likely missing codec support.\n" +
 					"Intermediate files in "+tempFile);
 			}

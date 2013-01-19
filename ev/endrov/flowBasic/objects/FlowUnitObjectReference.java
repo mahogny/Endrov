@@ -25,10 +25,10 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flowWindow.FlowView;
-import endrov.gui.window.BasicWindow;
-import endrov.util.EvSwingUtil;
-import endrov.util.Maybe;
+import endrov.gui.EvSwingUtil;
+import endrov.gui.window.EvBasicWindow;
+import endrov.util.collection.Maybe;
+import endrov.windowFlow.FlowView;
 
 /**
  * Get object, absolute path
@@ -221,7 +221,7 @@ public class FlowUnitObjectReference extends FlowUnit
 				parentContainer.metaObject.put(nameOfObject, (EvObject)obvalue);  //TODO bad cast?
 	
 				//Update windows about new object
-				BasicWindow.updateWindows();
+				EvBasicWindow.updateWindows();
 				}
 			}
 		else

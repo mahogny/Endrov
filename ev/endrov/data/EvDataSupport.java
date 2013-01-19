@@ -8,7 +8,7 @@ package endrov.data;
 import java.io.IOException;
 import java.util.List;
 
-import endrov.util.Tuple;
+import endrov.util.collection.Tuple;
 
 /**
  * Declaration of support for file formats

@@ -6,8 +6,8 @@
 package endrov.hardwareMicromanager;
 
 
-import endrov.imageset.EvPixels;
 import endrov.recording.device.HWSpatialLightModulator;
+import endrov.typeImageset.EvPixels;
 
 
 /**

@@ -11,7 +11,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.*;
 
-import endrov.flowWindow.FlowView;
+import endrov.windowFlow.FlowView;
 
 /**
  * Flow unit of type container

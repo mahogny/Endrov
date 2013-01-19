@@ -7,13 +7,13 @@ package endrov.recording.recmetFLIP;
 
 import java.util.TreeMap;
 
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvStack;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
-import endrov.util.EvDecimal;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvImagePlane;
+import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
+import endrov.util.math.EvDecimal;
 
 /**
  * Calculate values from e.g. a FLIP experiment
@@ -45,7 +45,7 @@ public class EvOpSumIntensityROI
 		for(int z=0;z<in.getDepth();z++)
 			{
 			double zpos=in.transformImageWorldZ(z);//in.resZ*z;
-			EvImage evim=in.getInt(z);
+			EvImagePlane evim=in.getPlane(z);
 			LineIterator it=roi.getLineIterator(progh, in, evim, channel, frame, zpos);
 			while(it.next())
 				{

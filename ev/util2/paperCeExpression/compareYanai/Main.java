@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import endrov.annotationLineage.Lineage;
 import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.util.EvDecimal;
-import endrov.util.EvFileUtil;
+import endrov.typeLineage.Lineage;
+import endrov.util.io.EvFileUtil;
+import endrov.util.math.EvDecimal;
 
 
 public class Main

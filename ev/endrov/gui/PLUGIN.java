@@ -5,13 +5,14 @@
  */
 package endrov.gui;
 import endrov.core.EvPluginDefinition;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvRegistrationDialog;
 
 public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{
-		return "Basic Window";
+		return "Endrov GUI";
 		}
 
 	public String getAuthor()
@@ -36,7 +37,10 @@ public class PLUGIN extends EvPluginDefinition
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{BasicWindow.class};
+		return new Class[]{
+				EvBasicWindow.class,
+				EvRegistrationDialog.class
+				};
 		}
 
 	public boolean isDefaultEnabled(){return true;};

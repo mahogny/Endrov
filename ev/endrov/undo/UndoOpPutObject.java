@@ -2,7 +2,7 @@ package endrov.undo;
 
 import endrov.data.EvContainer;
 import endrov.data.EvObject;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 
 /**
  * Adding, replacing or deleting an object in a container
@@ -35,7 +35,7 @@ public class UndoOpPutObject extends UndoOpBasic
 			container.metaObject.remove(id);
 		else
 			container.metaObject.put(id, newOb);
-		BasicWindow.updateWindows();
+		EvBasicWindow.updateWindows();
 		}
 
 	public void undo()

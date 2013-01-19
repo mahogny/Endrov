@@ -5,7 +5,7 @@
  */
 package endrov.utilityUnsorted.generics;
 
-import endrov.imageset.EvPixels;
+import endrov.typeImageset.EvPixels;
 
 public abstract class EvGenerics
 	{

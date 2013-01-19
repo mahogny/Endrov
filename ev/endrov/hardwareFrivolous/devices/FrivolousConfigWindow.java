@@ -12,10 +12,10 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
-import endrov.gui.window.BasicWindow;
+import endrov.gui.EvSwingUtil;
+import endrov.gui.window.EvBasicWindow;
 import endrov.hardware.EvHardware;
 import endrov.hardwareFrivolous.FrivolousModel;
-import endrov.util.EvSwingUtil;
 
 /**
  * Configuration window
@@ -71,7 +71,7 @@ class FrivolousConfigWindow extends JFrame implements ActionListener
 				frivolous.hw.put("autofocus", new FrivolousAutofocus(stageZ));
 
 				EvHardware.updateAvailableDevices();
-				BasicWindow.updateWindows();
+				EvBasicWindow.updateWindows();
 				
 				bStartStop.setText("Stop");
 				}

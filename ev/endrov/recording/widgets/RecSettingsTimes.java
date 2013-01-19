@@ -1,7 +1,7 @@
 package endrov.recording.widgets;
 
 import endrov.hardware.EvDevicePath;
-import endrov.util.EvDecimal;
+import endrov.util.math.EvDecimal;
 
 public class RecSettingsTimes
 	{
