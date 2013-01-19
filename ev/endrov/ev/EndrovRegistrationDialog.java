@@ -38,10 +38,10 @@ public class EndrovRegistrationDialog extends JDialog implements ActionListener
 	private JButton bLater=new JButton("Enter later");
 	
 	private JMultilineLabel label=new JMultilineLabel(
-			"To support further development we collect statistics on who\n" +
-			"is using the software. It is used e.g. for grant applications\n" +
+			"To enable further development, we collect statistics on who\n" +
+			"are using the software. It is used e.g. for grant applications\n" +
 			"but also to see which platforms we should prioritize. The\n" +
-	"list of users will not be given to third parties."); 
+			"list of users will not be given to third parties."); 
 	
 	private JTextField tfName=new JTextField(name);
 	private JTextField tfInstitute=new JTextField(institution);

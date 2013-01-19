@@ -13,8 +13,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-
 import endrov.basicWindow.BasicWindow;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowTool;
@@ -63,7 +61,7 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 			final String ch=w.getCurrentChannelName();
 			final EvDecimal frame=w.getFrame();
 			
-			if(JOptionPane.showConfirmDialog(null, "Do you really want to remove (channel "+ch+", frame "+frame+")? This can not be undone","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+			if(BasicWindow.showConfirmYesNoDialog("Do you really want to remove (channel "+ch+", frame "+frame+")? This can not be undone"))
 				{
 				new UndoOpNone("Remove frame")
 					{

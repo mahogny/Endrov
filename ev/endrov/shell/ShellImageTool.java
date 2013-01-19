@@ -133,8 +133,7 @@ public class ShellImageTool implements ImageWindowTool
 			{
 			if(shell==null)
 				{
-				int option = JOptionPane.showConfirmDialog(null, "Want to create new shell?", "EV Shell", JOptionPane.YES_NO_OPTION);
-				if (option == JOptionPane.YES_OPTION)
+				if(BasicWindow.showConfirmYesNoDialog("Want to create new shell?"))
 					{				
 					//Create new shell
 					shell=new Shell();

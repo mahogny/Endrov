@@ -556,11 +556,7 @@ public abstract class BasicWindow extends JPanel
 					}
 				else if (e.getSource()==miResetPC)
 					{
-					if (JOptionPane
-							.showConfirmDialog(
-									null,
-									"Endrov will quit. Settings will be reset next time you start the program. Continue?",
-									"EV", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+					if(showConfirmYesNoDialog("Endrov will quit. Settings will be reset next time you start the program. Do you wish to proceed?"))
 						{
 						EV.resetPersonalConfig();
 						System.exit(0);
@@ -614,7 +610,7 @@ public abstract class BasicWindow extends JPanel
 	private JMenuItem miQuit = new JMenuItem("Exit", BasicIcon.iconMenuQuit);
 
 	private JMenuItem miAbout = new JMenuItem("About");
-	private JMenuItem miWebHome = new JMenuItem(EV.programName+" Home");
+	private JMenuItem miWebHome = new JMenuItem(EV.programName+" website");
 	private JMenuItem miWebUser = new JMenuItem("User's guide");
 	private JMenuItem miWebPlugins = new JMenuItem("Plugins");
 	private JMenuItem miSysInfo = new JMenuItem("System information");
@@ -687,6 +683,7 @@ public abstract class BasicWindow extends JPanel
 		menuMaintenance.add(miOpenConfig);
 		menuMaintenance.add(miSaveConfig);
 		menuMaintenance.add(miRegInfo);
+		menuMaintenance.add(miSetSwap);
 		 
 		BasicWindow.addMenuItemSorted(menuFile, miQuit, "zquit");
 
@@ -701,7 +698,6 @@ public abstract class BasicWindow extends JPanel
 		mHelp.add(miWebPlugins);
 		mHelp.add(miReportBug);
 		mHelp.add(miSysInfo);
-		mHelp.add(miSetSwap);
 		
 		menubar.add(Box.createHorizontalGlue());
 		menubar.add(mHelp);
@@ -730,15 +726,14 @@ public abstract class BasicWindow extends JPanel
 	 */
 	public static void dialogAbout()
 		{
-		String text = EV.programName
-				+" "
-				+EvBuild.version
+		String text = 
+				EV.programName + " " + EvBuild.version + "\n"
+				+ "Git hash: "+EvBuild.githash + "\n"
+				+"http://www.endrov.net\n"
 				+"\n"
-				+"Developed by Johan Henriksson at KI, department of Biosciences and Nutrition\n"
-				+"http://www.biosci.ki.se/groups/tbu/\n"
-				+"This program is under BSD3 license\n"
-				+"Individual plugins may be under different licenses";
-		JOptionPane.showMessageDialog(null, text);
+				+"The core software is under the newer BSD license\n"
+				+"Individual plugins and libraries may be under different licenses";
+		showInformativeDialog(text);
 		}
 	
 	private void dialogSetSwap()
@@ -780,7 +775,7 @@ public abstract class BasicWindow extends JPanel
 				+"Image planes in memory: "+EvPixels.getNumLiveImages()+"\n"
 				+"Image planes swapped to disk: "+SwapImages.getNumSwappedImage()+"\n"
 				+jaiformats;
-		JOptionPane.showMessageDialog(null, text);
+		showInformativeDialog(text);
 		}
 
 	/** Handle "preferences" from the Mac menu */
@@ -791,9 +786,7 @@ public abstract class BasicWindow extends JPanel
 	/** Show the quit dialog */
 	public static void dialogQuit()
 		{
-		int option = JOptionPane.showConfirmDialog(null,
-				"Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
-		if (option==JOptionPane.YES_OPTION)
+		if(showConfirmYesNoDialog("Are you sure you want to quit?"))
 			EV.quit();
 		}
 
@@ -850,11 +843,33 @@ public abstract class BasicWindow extends JPanel
 
 	/**
 	 * Show dialog asking Yes/No to a question
-	 * */
-	public static boolean showConfirmDialog(String question)
+	 */
+	public static boolean showConfirmYesNoDialog(String question)
 		{
 		int option = JOptionPane.showConfirmDialog(null, question, EV.programName, JOptionPane.YES_NO_OPTION);
 		return option==JOptionPane.YES_OPTION;
+		}
+
+	
+	public enum DialogReturnStatus
+	{
+	YES, NO, CANCEL
+	}
+	
+	/**
+	 * Show dialog asking Yes/No/Cancel to a question
+	 */
+	public static DialogReturnStatus showConfirmYesNoCancelDialog(String question)
+		{
+		int option = JOptionPane.showConfirmDialog(null, question, EV.programName, JOptionPane.YES_NO_CANCEL_OPTION);
+		if(option==JOptionPane.YES_OPTION)
+			return DialogReturnStatus.YES;
+		else if(option==JOptionPane.NO_OPTION)
+			return DialogReturnStatus.NO;
+		else if(option==JOptionPane.CANCEL_OPTION)
+			return DialogReturnStatus.CANCEL;
+		else
+			throw new RuntimeException("Unexpected joptionpane error");
 		}
 
 	

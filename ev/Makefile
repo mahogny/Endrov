@@ -91,3 +91,6 @@ memprof:
 	java -Xrunhprof:heap=dump  -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV -cp .:libs/mac/postgresql-8.2-505.jdbc3.jar:libs/mac/gluegen-rt.jar:libs/mac/jogl.jar:libs/mac/sqlitejdbc-v033-native.jar:libs/jcommon-1.0.9.jar:libs/jfreechart-1.0.5.jar:libs/servlet.jar:libs/gnujaxp.jar:libs/itext-2.0.1.jar:libs/vecmath.jar:libs/junit.jar:libs/gnujaxp.jar:libs/jdom.jar:libs/jaxen-core.jar:libs/jaxen-jdom.jar:libs/saxpath.jar:libs/xalan.jar:libs/xerces.jar:libs/xml-apis.jar:libs/bio-formats.jar -Xmx700M -Djava.library.path=libs/mac/ evgui.GUI
 #	java -Xrunhprof:heap=dump  -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV -cp .:libs/mac/postgresql-8.2-505.jdbc3.jar:libs/mac/gluegen-rt.jar:libs/mac/jogl.jar:libs/mac/sqlitejdbc-v033-native.jar:libs/jcommon-1.0.9.jar:libs/jfreechart-1.0.5.jar:libs/servlet.jar:libs/gnujaxp.jar:libs/itext-2.0.1.jar:libs/vecmath.jar:libs/junit.jar:libs/gnujaxp.jar:libs/jdom.jar:libs/jaxen-core.jar:libs/jaxen-jdom.jar:libs/saxpath.jar:libs/xalan.jar:libs/xerces.jar:libs/xml-apis.jar:libs/bio-formats.jar -Xmx700M -Djava.library.path=libs/mac/ util.BenchmarkOST
 
+githash:
+	echo `git rev-parse HEAD` > endrov/ev/githash.txt
+

@@ -14,8 +14,10 @@ import java.util.*;
 import javax.swing.*;
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.BasicWindow.DialogReturnStatus;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.EV;
+import endrov.ev.EvLog;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -146,8 +148,7 @@ public class EvDataMenu implements BasicWindowExtension
 							{
 							public void actionPerformed(ActionEvent e)
 								{
-								int answer=JOptionPane.showConfirmDialog(null, "Do you really want to store this object permanently?", EV.programName, JOptionPane.YES_NO_OPTION);
-								if(answer==JOptionPane.YES_OPTION)
+								if(BasicWindow.showConfirmYesNoDialog("Do you really want to store this object permanently?"))
 									{
 									ob.isGeneratedData=false;
 									BasicWindow.updateWindows();
@@ -173,9 +174,7 @@ public class EvDataMenu implements BasicWindowExtension
 						{
 						public void actionPerformed(ActionEvent e)
 							{
-							int option = JOptionPane.showConfirmDialog(null, 
-									"Are you sure you want to delete "+ob.getMetaTypeDesc()+" "+obId+"?", "Delete?", JOptionPane.YES_NO_OPTION);
-							if (option == JOptionPane.YES_OPTION)
+							if(BasicWindow.showConfirmYesNoDialog("Are you sure you want to delete "+ob.getMetaTypeDesc()+" "+obId+"?"))
 								{
 								thisMeta.metaObject.remove(obId);
 								BasicWindow.updateWindows();
@@ -304,31 +303,35 @@ public class EvDataMenu implements BasicWindowExtension
 							if(thisMeta.isMetadataModified())
 								anyMod=true;
 						
-						
-						int option=!anyMod ? JOptionPane.NO_OPTION : JOptionPane.showConfirmDialog(null, 
-								"Metadata has been modified. Save before closing all?", "Save?", JOptionPane.YES_NO_CANCEL_OPTION);
-						if (option == JOptionPane.CANCEL_OPTION)
-							return;
-						else
+						//Give the user the option of saving if any file has been modified
+						if(anyMod)
 							{
-							if (option==JOptionPane.YES_OPTION)
+							BasicWindow.DialogReturnStatus status=BasicWindow.showConfirmYesNoCancelDialog("Metadata has been modified. Save before closing all?");
+							if(status==DialogReturnStatus.CANCEL)
+								return;
+							else if(status==DialogReturnStatus.YES)
+								{
 								for(EvData thisMeta:EvData.openedData)
-									{
-									try
+									if(thisMeta.isMetadataModified())
 										{
-										thisMeta.saveData();
+										try
+											{
+											thisMeta.saveData();
+											thisMeta.setMetadataNotModified();
+											}
+										catch (IOException e1)
+											{
+											EvLog.printError("Save error", e1);
+											return;
+											}
 										}
-									catch (IOException e1)
-										{
-										// TODO handle properly
-										e1.printStackTrace();
-										}
-									thisMeta.setMetadataNotModified(); //this might be wrong if save not supported
-									}
-							EvData.openedData.clear();
-							BasicWindow.updateWindows();
-							System.gc();
+								}
 							}
+
+						//Close all files
+						EvData.openedData.clear();
+						BasicWindow.updateWindows();
+						System.gc();
 						}
 					};
 				miUnloadAllData.addActionListener(metaListenerUnload);
@@ -419,21 +422,21 @@ public class EvDataMenu implements BasicWindowExtension
 						{
 						if(thisMeta.isMetadataModified())
 							{
-							int option=JOptionPane.showConfirmDialog(null, 
-									"Metadata has been modified. Save before close?", "Save?", JOptionPane.YES_NO_CANCEL_OPTION);
-							if (option==JOptionPane.YES_OPTION)
+							BasicWindow.DialogReturnStatus ret=BasicWindow.showConfirmYesNoCancelDialog("Metadata has been modified. Save before close?");
+							if(ret==DialogReturnStatus.YES)
 								{
 								try
 									{
 									thisMeta.saveData();
+									thisMeta.setMetadataNotModified();
 									}
 								catch (IOException e1)
 									{
-									e1.printStackTrace();
+									EvLog.printError("Save error", e1);
+									return;
 									}
-								//thisMeta.setMetadataNotModified();//this might be wrong if save not supported
 								}
-							else if (option == JOptionPane.CANCEL_OPTION)
+							else if (ret==DialogReturnStatus.CANCEL)
 								return;
 							}
 						EvData.openedData.remove(thisMeta);

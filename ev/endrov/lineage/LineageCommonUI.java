@@ -804,8 +804,7 @@ public class LineageCommonUI implements ActionListener
 			String nucNames="";
 			for(LineageSelParticle nucName:nucs)
 				nucNames=nucNames+nucName.snd()+" ";
-			int option = JOptionPane.showConfirmDialog(null, "Really want to delete: "+nucNames, "Remove?", JOptionPane.YES_NO_OPTION);
-			if (option == JOptionPane.YES_OPTION)
+			if(BasicWindow.showConfirmYesNoDialog("Really want to delete: "+nucNames))
 				{
 				new UndoOpLineageReplaceSomeParticle("Delete "+nucNames)
 					{

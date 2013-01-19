@@ -32,7 +32,7 @@ public class EV
 	{
 	public static final String website="http://www.endrov.net/index.php?title=";
 	public static final boolean debugMode=false;
-	public static final String programName="EV";
+	public static final String programName="Endrov";
 	public static boolean confirmQuit=true;
 
 	public static Map<String,PersonalConfig> personalConfigLoaders=Collections.synchronizedMap(new HashMap<String,PersonalConfig>());

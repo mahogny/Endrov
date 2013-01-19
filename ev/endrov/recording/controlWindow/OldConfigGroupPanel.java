@@ -78,7 +78,7 @@ public class OldConfigGroupPanel extends JPanel implements ActionListener
 			{
 			if(e.getSource()==bRemoveGroup)
 				{
-				if(BasicWindow.showConfirmDialog("Do you really want to remove the group "+groupName+"?"))
+				if(BasicWindow.showConfirmYesNoDialog("Do you really want to remove the group "+groupName+"?"))
 					{
 					//EvHardwareConfigGroup.groups.remove(groupName);  //TODO this class to be deleted
 					BasicWindow.updateWindows();
@@ -96,7 +96,7 @@ public class OldConfigGroupPanel extends JPanel implements ActionListener
 				}
 			else if(e.getSource()==bRemoveState)
 				{
-				if(BasicWindow.showConfirmDialog("Do you really want to remove the state "+cState.getSelectedItem()+"?"))
+				if(BasicWindow.showConfirmYesNoDialog("Do you really want to remove the state "+cState.getSelectedItem()+"?"))
 					{
 					EvHardwareConfigGroup.getConfigGroup(groupName).removeState((String)cState.getSelectedItem());
 					BasicWindow.updateWindows();

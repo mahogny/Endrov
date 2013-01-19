@@ -36,7 +36,6 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.dataBrowser.DataBrowserTree.Node;
-import endrov.ev.EV;
 
 /**
  * Data browsing - work on objects
@@ -231,8 +230,8 @@ public class DataBrowserWindow extends BasicWindow implements MouseListener, Tre
 					miDelete.addActionListener(new ActionListener()	{
 						public void actionPerformed(ActionEvent e)
 							{
-							int ret=JOptionPane.showConfirmDialog(DataBrowserWindow.this, "Do you really want to delete these "+names.size()+" object(s)?", EV.programName, JOptionPane.YES_NO_OPTION);
-							if(ret==JOptionPane.YES_NO_OPTION)
+							if(showConfirmYesNoDialog(
+									"Do you really want to delete these "+names.size()+" object(s)?"))
 								{
 								for(Node n:toDelete)
 									{

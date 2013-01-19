@@ -7,7 +7,7 @@ timestamp=`date +%s`
 version=`cat ../endrov/ev/version.txt`
 
 #decide on a name
-name="endrov-$version.$timestamp."`git rev-parse HEAD`
+name="endrov-$version.$timestamp"
 echo $name
 
 #Create a copy

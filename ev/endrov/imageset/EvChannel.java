@@ -280,7 +280,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 				public void actionPerformed(ActionEvent e)
 					{
 					if (BasicWindow
-							.showConfirmDialog("Do you really want to replace TZ?"))
+							.showConfirmYesNoDialog("Do you really want to replace TZ?"))
 						{
 						StackHacks.swapTZ(EvChannel.this);
 						BasicWindow.updateWindows();

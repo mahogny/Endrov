@@ -149,9 +149,8 @@ public class EvUndo
 											{
 											if(op.canUndo())
 												{
-												int state=JOptionPane.showConfirmDialog(null, 
-														"This is not the last operation. Undoing it is can be incredibly unsafe unless you know what you are doing. Sure?", "Undo?", JOptionPane.YES_NO_OPTION);
-												if(state==JOptionPane.YES_OPTION)
+												if(BasicWindow.showConfirmYesNoDialog(
+														"This is not the last operation. Undoing it is can be incredibly unsafe unless you know what you are doing. Sure?"))
 													{
 													op.undo();
 													for(int i=0;i<fcount+1;i++)
