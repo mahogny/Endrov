@@ -422,6 +422,7 @@ libjboss-webservices-java
 		}
 	
 	
+	@SuppressWarnings("resource")
 	public static void copyFile(File in, File out) throws IOException 
 		{
 		//limitation http://forums.sun.com/thread.jspa?threadID=439695&messageID=2917510

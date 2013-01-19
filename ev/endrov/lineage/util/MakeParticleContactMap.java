@@ -148,11 +148,11 @@ public class MakeParticleContactMap
 		Set<Tuple<String, String>> lastNeigh=new HashSet<Tuple<String, String>>();
 		
 		//Go through all frames
-		int numframes=0;
+//		int numframes=0;
 		LineageVoronoi nvor=null;
 		for(EvDecimal curframe=startFrame;curframe.lessEqual(endFrame);curframe=curframe.add(frameInc))
 			{
-			numframes++;
+	//		numframes++;
 			
 			//interpolate
 			Map<LineageSelParticle, Lineage.InterpolatedParticle> inter=lin.interpolateParticles(curframe);

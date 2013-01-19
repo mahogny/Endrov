@@ -217,7 +217,7 @@ public class OldStart
 		
 		boolean oldway=false;
 		
-		int numNonflagArg=0;
+//		int numNonflagArg=0;
 		List<String> args=new LinkedList<String>();
 		for(int argi=0;argi<argsa.length;argi++)
 			{
@@ -279,8 +279,8 @@ public class OldStart
 				}
 			else
 				{
-				if(!curarg.startsWith("--"))
-					numNonflagArg++;
+	//			if(!curarg.startsWith("--"))
+		//			numNonflagArg++;
 				args.add(curarg);
 				}
 			}

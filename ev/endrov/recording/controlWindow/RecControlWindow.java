@@ -237,7 +237,6 @@ public class RecControlWindow extends BasicWindow
 		// Since we have cubes, several filters in one. use / to separate
 		// Color filters. Somewhere one need a filter database with the entire
 		// range for calculations.
-		private static final long serialVersionUID = 0;
 		private JSmartToggleCombo state;
 		private HWState hw;
 

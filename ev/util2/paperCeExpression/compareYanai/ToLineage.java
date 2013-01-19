@@ -263,6 +263,7 @@ public class ToLineage
 		double e2scaleValue=0.2/max2;
 		
 		////// LLSQ between e1 & e2
+		/*
 		double sum1=0;
 		int sum1n=0;
 		double sum2=0;
@@ -281,7 +282,7 @@ public class ToLineage
 			}
 		sum1/=sum1n;
 		sum2/=sum2n;
-		
+		*/
 		
 		
 		//x & y scale

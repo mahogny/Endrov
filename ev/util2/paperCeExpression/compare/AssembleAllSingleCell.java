@@ -178,8 +178,8 @@ public class AssembleAllSingleCell
 					//Do if not done: do single-cell
 					if(inLinSingleCell!=null)
 						LineageMergeUtil.mapExpression(inLinSingleCell, totLinSingleCell, CompareAll.expName, toExpName);
-					else
-						System.out.println("Not done!!!!!!           "+in);
+//					else
+	//					System.out.println("Not done!!!!!!           "+in);
 					
 					//Do the rest
 					Lineage inLinAPT=getInLinAPT(dataFile);

@@ -49,8 +49,8 @@ public abstract class IntegratorSlice implements Integrator
 	public TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure;
 	private boolean updateBG; // variable if to calculate bg
 	
-	private double curBgInt = 0;
-	private int curBgVol = 0;
+//	private double curBgInt = 0;
+//	private int curBgVol = 0;
 	
 	//List<Integer> curBg=new ArrayList<Integer>();
 	private IntArrayList curBgOutside=new IntArrayList(); 
@@ -94,8 +94,8 @@ public abstract class IntegratorSlice implements Integrator
 		curBgInside.clear();
 		curBgOutside.clear();
 		
-		curBgInt = 0;
-		curBgVol = 0;
+//		curBgInt = 0;
+//		curBgVol = 0;
 		// Zero out arrays
 		sliceExp = new double[numSubDiv];
 		sliceVol = new int[numSubDiv];
@@ -188,8 +188,8 @@ public abstract class IntegratorSlice implements Integrator
 					{
 					// Measure background. It's all the pixels outside the embryo
 					curBgOutside.add(thisPixelValue);
-					curBgInt += thisPixelValue;
-					curBgVol++;
+//					curBgInt += thisPixelValue;
+//					curBgVol++;
 					}
 				}
 			}

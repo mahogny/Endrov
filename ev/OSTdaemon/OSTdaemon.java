@@ -1015,6 +1015,7 @@ public class OSTdaemon extends Thread
 	/**
 	 * Copy a file
 	 */
+	@SuppressWarnings("resource")
 	public static void copyFile(File in, File out) throws Exception
 		{
 		FileChannel sourceChannel = new	FileInputStream(in).getChannel();

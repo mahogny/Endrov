@@ -1,6 +1,5 @@
 package endrov.recording.recmetBurst;
 
-import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.JMenu;

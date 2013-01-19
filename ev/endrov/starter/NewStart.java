@@ -225,7 +225,7 @@ public class NewStart
 		File basedir=new File(".");
 		String mainClass="";
 		
-		int numNonflagArg=0;
+//		int numNonflagArg=0;
 		List<String> args=new LinkedList<String>();
 		for(int argi=0;argi<argsa.length;argi++)
 			{
@@ -285,8 +285,8 @@ public class NewStart
 				}
 			else
 				{
-				if(!curarg.startsWith("--"))
-					numNonflagArg++;
+	//			if(!curarg.startsWith("--"))
+		//			numNonflagArg++;
 				args.add(curarg);
 				}
 			}

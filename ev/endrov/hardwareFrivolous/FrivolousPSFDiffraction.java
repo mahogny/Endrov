@@ -99,7 +99,7 @@ public class FrivolousPSFDiffraction extends FrivolousPSF
 			}
 
 		float[] pixels = new float[w*h];
-		float area = 0;
+//		float area = 0;
 		for (int j = 0; j<h/2; j++)
 		//for (int j = 0; j<h; j++)
 			{
@@ -111,7 +111,7 @@ public class FrivolousPSFDiffraction extends FrivolousPSF
 				double di=i-w/2;
 				double d = Math.sqrt(di*di+dj2);
 				pixels[i+w*j] = interp(line, (float) d);
-				area += pixels[i+w*j];
+		//		area += pixels[i+w*j];
 				}
 			}
 		
@@ -122,7 +122,7 @@ public class FrivolousPSFDiffraction extends FrivolousPSF
 		for(int j = h/2;j<h;j++)
 			for(int i = 0;i<w;i++)
 				pixels[i+w*j]=pixels[i+w*(h-1-j)];
-		area*=4;
+	//	area*=4;
 		
 		//System.out.println(area);
 		for (int ind = 0; ind<pixels.length; ind++)

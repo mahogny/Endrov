@@ -76,7 +76,7 @@ public class ExpUtil
 		TreeMap<EvDecimal, Tuple<Double,Double>> historyKM=new TreeMap<EvDecimal, Tuple<Double,Double>>();
 		//Nuc corrNuc=lin.getCreateNuc("correctExp");
 		
-		int framecount=0;
+//		int framecount=0;
 
 		//Check if exposure time exists for any frames. Then jumps can be assumed to only occur during exposure time changes
 		boolean detectByJumps=true;
@@ -96,7 +96,7 @@ public class ExpUtil
 		for(EvDecimal frame:frames)
 			if(bg.containsKey(frame))
 				{
-				framecount++;
+//				framecount++;
 				double expTime=1;
 				String sExpTime=ch.getMetaFrame(frame).get("exposuretime");/*
 				if(sExpTime==null)
