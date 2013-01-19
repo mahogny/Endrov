@@ -12,7 +12,7 @@ import java.util.List;
 import org.jdom.Document;
 
 import endrov.data.EvData;
-import endrov.data.EvDataSupport;
+import endrov.data.EvIODataReaderWriterDeclaration;
 import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.util.collection.Tuple;
@@ -179,7 +179,7 @@ public class EvIODataXML implements EvIOData
 	static
 		{		
 		//OST XML-support
-		EvData.supportedFileFormats.add(new EvDataSupport(){
+		EvData.supportedFileFormats.add(new EvIODataReaderWriterDeclaration(){
 			public Integer loadSupports(String fileS)
 				{
 				File file=new File(fileS);

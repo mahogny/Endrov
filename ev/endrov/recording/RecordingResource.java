@@ -26,9 +26,9 @@ import javax.vecmath.Vector3d;
 
 import endrov.core.observer.GeneralObserver;
 import endrov.data.EvData;
+import endrov.gui.keybinding.JInputManager;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
-import endrov.keybinding.JInputManager;
 import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWImageScanner;
 import endrov.recording.device.HWStage;

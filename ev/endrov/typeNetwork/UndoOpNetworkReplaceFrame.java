@@ -1,8 +1,8 @@
 package endrov.typeNetwork;
 
+import endrov.gui.undo.UndoOpBasic;
 import endrov.gui.window.EvBasicWindow;
 import endrov.typeNetwork.Network.NetworkFrame;
-import endrov.undo.UndoOpBasic;
 import endrov.util.math.EvDecimal;
 
 /**

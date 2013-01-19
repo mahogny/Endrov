@@ -6,6 +6,8 @@
 package endrov.ioOMERO;
 
 import endrov.data.*;
+import endrov.data.gui.DataMenuExtension;
+import endrov.data.gui.EvDataMenu;
 import endrov.gui.EvSwingUtil;
 import endrov.gui.window.EvBasicWindow;
 

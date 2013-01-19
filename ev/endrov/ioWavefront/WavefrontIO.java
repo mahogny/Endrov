@@ -14,7 +14,7 @@ import javax.vecmath.Vector3d;
 
 import endrov.core.log.EvLog;
 import endrov.data.EvData;
-import endrov.data.EvDataSupport;
+import endrov.data.EvIODataReaderWriterDeclaration;
 import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.data.EvData.FileIOStatusCallback;
@@ -400,7 +400,7 @@ public class WavefrontIO implements EvIOData
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedFileFormats.add(new EvDataSupport(){
+		EvData.supportedFileFormats.add(new EvIODataReaderWriterDeclaration(){
 			public Integer loadSupports(String fileS)
 				{
 				File file=new File(fileS);

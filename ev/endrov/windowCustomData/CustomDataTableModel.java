@@ -8,8 +8,8 @@ package endrov.windowCustomData;
 import java.util.*;
 import org.jdom.*;
 
-import endrov.data.CustomObject;
 import endrov.data.EvObject;
+import endrov.data.basicTypes.EvCustomObject;
 
 import javax.swing.table.*;
 
@@ -32,7 +32,7 @@ public class CustomDataTableModel extends AbstractTableModel
 		setRoot(null);
 		}
 	
-	public void setRoot(CustomObject ob)
+	public void setRoot(EvCustomObject ob)
 		{
 		this.ob=ob;
 		if(ob==null)

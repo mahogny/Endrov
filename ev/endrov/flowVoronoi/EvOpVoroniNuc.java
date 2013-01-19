@@ -17,8 +17,8 @@ import endrov.typeImageset.EvStack;
 import endrov.typeLineage.Lineage;
 import endrov.typeLineage.LineageSelParticle;
 import endrov.util.ProgressHandle;
-import endrov.util.collection.MemoizeX;
 import endrov.util.collection.Tuple;
+import endrov.util.lazy.MemoizeX;
 import endrov.util.math.EvDecimal;
 
 /**

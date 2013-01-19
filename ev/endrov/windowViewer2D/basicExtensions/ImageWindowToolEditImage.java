@@ -14,8 +14,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import endrov.gui.undo.UndoOpNone;
 import endrov.gui.window.EvBasicWindow;
-import endrov.undo.UndoOpNone;
 import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.Viewer2DWindow;
 import endrov.windowViewer2D.Viewer2DTool;

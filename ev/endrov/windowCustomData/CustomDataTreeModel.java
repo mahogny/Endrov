@@ -10,7 +10,7 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 import org.jdom.*;
 
-import endrov.data.*;
+import endrov.data.basicTypes.EvCustomObject;
 
 /**
  * Tree model showing the XML of a custom meta object
@@ -19,7 +19,7 @@ import endrov.data.*;
 public class CustomDataTreeModel implements TreeModel
 	{
 	HashSet<TreeModelListener> listener=new HashSet<TreeModelListener>();
-	private CustomObject meta=null;
+	private EvCustomObject meta=null;
 
 	/**
 	 * To keep paths stable, old tree elements corresponding to xml elements should be used. To avoid
@@ -38,7 +38,7 @@ public class CustomDataTreeModel implements TreeModel
 		return el;
 		}
 	
-	public void setMetaObject(CustomObject o)
+	public void setMetaObject(EvCustomObject o)
 		{
 		meta=o;
 		emitAllChanged();

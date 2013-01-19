@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import com.apple.eawt.*;
 import endrov.core.EndrovCore;
 import endrov.data.EvData;
-import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvBasicWindow;
 
 
 public class OSXAdapter extends ApplicationAdapter implements MRJOpenDocumentHandler
@@ -56,7 +56,7 @@ public class OSXAdapter extends ApplicationAdapter implements MRJOpenDocumentHan
 	public void handleAbout(ApplicationEvent ae) 
 		{
 		ae.setHandled(true);
-		BasicWindow.dialogAbout();
+		EvBasicWindow.dialogAbout();
 		}
 	
 	/**
@@ -73,7 +73,7 @@ public class OSXAdapter extends ApplicationAdapter implements MRJOpenDocumentHan
 	public void handleQuit(ApplicationEvent ae) 
 		{
 		ae.setHandled(false);
-		BasicWindow.dialogQuit();
+		EvBasicWindow.dialogQuit();
 		}
 
 	//Note that DnD will not work if starter for next app is used.
@@ -97,7 +97,7 @@ public class OSXAdapter extends ApplicationAdapter implements MRJOpenDocumentHan
 				else
 					{
 					EvData.registerOpenedData(d);
-					BasicWindow.updateLoadedFile(d);
+					EvBasicWindow.updateLoadedFile(d);
 					}
 				}}.run(); 
 		}

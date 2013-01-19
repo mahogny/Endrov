@@ -5,9 +5,9 @@
  */
 package endrov.gui.window;
 
-import endrov.keybinding.JInputManager;
-import endrov.keybinding.JInputMode;
-import endrov.keybinding.JinputListener;
+import endrov.gui.keybinding.JInputManager;
+import endrov.gui.keybinding.JInputMode;
+import endrov.gui.keybinding.JinputListener;
 
 /**
  * Send input to the currently active BasicWindow

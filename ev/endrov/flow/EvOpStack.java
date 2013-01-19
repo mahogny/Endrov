@@ -14,7 +14,7 @@ import endrov.typeImageset.EvImageReader;
 import endrov.typeImageset.EvPixels;
 import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.collection.MemoizeX;
+import endrov.util.lazy.MemoizeX;
 import endrov.util.math.EvDecimal;
 
 /**

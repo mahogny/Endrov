@@ -8,11 +8,11 @@ package endrov.recording;
 import java.util.HashMap;
 import java.util.Map;
 
+import endrov.gui.keybinding.JInputManager;
+import endrov.gui.keybinding.JInputMode;
 import endrov.gui.window.EvBasicWindow;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
-import endrov.keybinding.JInputManager;
-import endrov.keybinding.JInputMode;
 import endrov.recording.device.HWStage;
 import endrov.util.collection.Tuple;
 

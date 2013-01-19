@@ -17,10 +17,10 @@ import javax.swing.*;
 import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
+import endrov.gui.undo.UndoOpBasic;
+import endrov.gui.undo.UndoOpPutObject;
 import endrov.gui.window.EvBasicWindow;
 import endrov.typeLine.EvLine.Pos3dt;
-import endrov.undo.UndoOpBasic;
-import endrov.undo.UndoOpPutObject;
 import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.*;
 

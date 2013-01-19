@@ -14,10 +14,10 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
-import endrov.bookmark.Bookmark;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.gui.icon.BasicIcon;
+import endrov.typeBookmark.Bookmark;
 
 /**
  * Tree representation of Endrov container hierarchy

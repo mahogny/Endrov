@@ -20,8 +20,8 @@ import java.io.*;
 import endrov.core.log.EvLog;
 import endrov.data.EvData;
 import endrov.gui.EvSwingUtil;
+import endrov.gui.keybinding.KeyBinding;
 import endrov.gui.window.EvBasicWindow;
-import endrov.keybinding.KeyBinding;
 import endrov.script.*;
 
 import org.jdom.*;

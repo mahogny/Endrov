@@ -17,9 +17,8 @@ public class IniFile
 
 	public static class Section
 		{
-		Map<String,String> prop=new HashMap<String, String>(); 
+		public Map<String,String> prop=new HashMap<String, String>(); 
 		}
-	
 	
 	public Map<String,Section> section=new HashMap<String, Section>(); 
 	
@@ -48,9 +47,5 @@ public class IniFile
 			}
 		r.close();
 		}
-	
-	
-	
-	
 	
 	}

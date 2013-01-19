@@ -2,8 +2,8 @@ package endrov.typeLineage;
 
 import java.util.HashMap;
 
+import endrov.gui.undo.UndoOpBasic;
 import endrov.gui.window.EvBasicWindow;
-import endrov.undo.UndoOpBasic;
 import endrov.util.collection.Tuple;
 import endrov.util.math.EvDecimal;
 

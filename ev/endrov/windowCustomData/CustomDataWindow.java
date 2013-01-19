@@ -16,6 +16,7 @@ import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
 
 import endrov.data.*;
+import endrov.data.basicTypes.EvCustomObject;
 import endrov.gui.component.EvComboObjectOne;
 import endrov.gui.window.EvBasicWindow;
 import endrov.gui.window.EvBasicWindowExtension;
@@ -39,7 +40,7 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 
 	
 	//GUI components
-	private EvComboObjectOne<CustomObject> objectCombo=new EvComboObjectOne<CustomObject>(new CustomObject(),false,true);
+	private EvComboObjectOne<EvCustomObject> objectCombo=new EvComboObjectOne<EvCustomObject>(new EvCustomObject(),false,true);
 	private CustomDataTreeModel treeModel=new CustomDataTreeModel();
 	private JTree tree=new JTree(treeModel);
 	private JPanel treeFields=new JPanel();
@@ -308,7 +309,7 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 		{
 		if(e.getSource()==objectCombo)
 			{
-			CustomObject cust=objectCombo.getSelectedObject();
+			EvCustomObject cust=objectCombo.getSelectedObject();
 			treeModel.setMetaObject(cust);
 			//tableModel.setRoot(cust, treeModel.getRoot())
 			tableModel.setRoot(cust);
@@ -365,7 +366,7 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 					if(filename.getName().endsWith(".xml"))
 						{
 						Document doc=EvXmlUtil.readXML(filename);
-						CustomObject ob=objectCombo.getSelectedObject();
+						EvCustomObject ob=objectCombo.getSelectedObject();
 						if(ob!=null)
 							ob.xml=doc.getRootElement();
 						}
@@ -383,7 +384,7 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 
 						//imp.show();
 						//A preview might be nice?
-						CustomObject ob=objectCombo.getSelectedObject();
+						EvCustomObject ob=objectCombo.getSelectedObject();
 						if(ob!=null)
 							imp.intoXML(ob.xml, elementName);
 						}
@@ -436,7 +437,7 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 	public void dataChangedEvent()
 		{
 		objectCombo.updateList();
-		CustomObject ob=objectCombo.getSelectedObject();
+		EvCustomObject ob=objectCombo.getSelectedObject();
 		treeModel.setMetaObject(ob);
 		tableModel.setRoot(ob);
 		fillTreeAttributesPane();

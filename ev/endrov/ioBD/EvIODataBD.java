@@ -10,6 +10,7 @@ import java.util.*;
 
 import endrov.core.EndrovUtil;
 import endrov.data.*;
+import endrov.data.basicTypes.EvGroupObject;
 import endrov.ioOST.EvIODataOST;
 import endrov.typeImageset.*;
 import endrov.util.ProgressHandle;
@@ -188,7 +189,7 @@ public class EvIODataBD implements EvIOData
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedFileFormats.add(new EvDataSupport(){
+		EvData.supportedFileFormats.add(new EvIODataReaderWriterDeclaration(){
 			public Integer loadSupports(String fileS)
 				{
 				File file=new File(fileS);

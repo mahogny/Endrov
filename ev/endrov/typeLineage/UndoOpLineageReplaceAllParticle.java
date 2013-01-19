@@ -1,7 +1,7 @@
 package endrov.typeLineage;
 
+import endrov.gui.undo.UndoOpBasic;
 import endrov.gui.window.EvBasicWindow;
-import endrov.undo.UndoOpBasic;
 import endrov.util.math.EvDecimal;
 
 /**

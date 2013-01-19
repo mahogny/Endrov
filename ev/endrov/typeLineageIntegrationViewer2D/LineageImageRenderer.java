@@ -12,10 +12,10 @@ import javax.vecmath.*;
 
 import endrov.data.EvSelection;
 import endrov.data.EvSelection.EvSelectable;
+import endrov.gui.undo.UndoOpBasic;
 import endrov.gui.window.EvBasicWindow;
 import endrov.typeLineage.Lineage;
 import endrov.typeLineage.LineageSelParticle;
-import endrov.undo.UndoOpBasic;
 import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.*;
 

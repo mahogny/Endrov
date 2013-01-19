@@ -13,7 +13,7 @@ import endrov.makeMovie.EvMovieMaker;
 /**
  * Interface to quicktime. Encapsulates all shitty commands.
  */
-public class QTMovieMaker implements StdQTConstants, EvMovieMaker
+public class QTMovieMaker implements StdQTConstants, EvMovieEncoder
 	{	
 	/** Available codecs */
 	public static final String[] codecs = {"Cinepak", "Animation", "H.263", "Sorenson", "Sorenson 3", "h.264 (MPEG-4)"};

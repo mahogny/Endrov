@@ -16,8 +16,8 @@ import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.flowProjection.EvOpProjectMaxZ;
-import endrov.opMakeMovie.EvMovieMakerFactory;
-import endrov.opMakeMovie.MakeMovieThread;
+import endrov.movieEncoder.EvMovieEncoderFactory;
+import endrov.movieEncoder.EncodeMovieThread;
 import endrov.typeImageset.EvChannel;
 import endrov.typeImageset.EvPixels;
 import endrov.typeImageset.EvStack;
@@ -56,11 +56,11 @@ public class BatchMovie
 			//EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("QT: h.264 (MPEG-4)");
 			//EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("Mencoder");
 //			EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("Mencoder");
-			EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("FFMPEG");
+			EvMovieEncoderFactory factory=EvMovieEncoderFactory.getFactory("FFMPEG");
 			if(factory==null)
 				{
 				System.out.println("Cannot get movie maker");
-				for(EvMovieMakerFactory f:EvMovieMakerFactory.makers)
+				for(EvMovieEncoderFactory f:EvMovieEncoderFactory.makers)
 					System.out.println(">"+f.getName());
 				return;
 				}
@@ -70,7 +70,7 @@ public class BatchMovie
 	
 			ProgressHandle ph=new ProgressHandle(); 
 	
-			List<MakeMovieThread.MovieChannel> channelList=new LinkedList<MakeMovieThread.MovieChannel>();
+			List<EncodeMovieThread.MovieChannel> channelList=new LinkedList<EncodeMovieThread.MovieChannel>();
 	
 			//Get the imageset
 			if(ost.getIdObjectsRecursive(Imageset.class).isEmpty())
@@ -95,7 +95,7 @@ public class BatchMovie
 					String desc="<channel/>";
 					if(name.equals("DIC"))
 						desc="<channel/> (<frame/>)";
-					channelList.add(new MakeMovieThread.MovieChannel(name,(EvChannel)imset.metaObject.get(name), desc,z));
+					channelList.add(new EncodeMovieThread.MovieChannel(name,(EvChannel)imset.metaObject.get(name), desc,z));
 	
 					System.out.println(name);
 					//Get original image size
@@ -107,7 +107,7 @@ public class BatchMovie
 	
 			System.out.println("Now making movie");
 	
-			BatchThread c=new MakeMovieThread(EvDecimal.ZERO, new EvDecimal("1000000"), 
+			BatchThread c=new EncodeMovieThread(EvDecimal.ZERO, new EvDecimal("1000000"), 
 					channelList, width, factory, quality, outfile);
 	
 			new CompleteBatch(c); 

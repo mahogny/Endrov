@@ -15,7 +15,7 @@ import java.util.WeakHashMap;
 import javax.imageio.ImageIO;
 
 import endrov.util.ProgressHandle;
-import endrov.util.collection.MemoizeX;
+import endrov.util.lazy.MemoizeX;
 
 
 

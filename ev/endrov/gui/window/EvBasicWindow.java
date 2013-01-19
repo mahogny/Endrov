@@ -23,11 +23,11 @@ import javax.swing.*;
 
 import endrov.core.*;
 import endrov.data.EvData;
-import endrov.data.GuiEvDataIO;
+import endrov.data.gui.GuiEvDataIO;
 import endrov.gui.icon.BasicIcon;
-import endrov.keybinding.JInputManager;
-import endrov.keybinding.JinputListener;
-import endrov.keybinding.KeyBinding;
+import endrov.gui.keybinding.JInputManager;
+import endrov.gui.keybinding.JinputListener;
+import endrov.gui.keybinding.KeyBinding;
 import endrov.starter.EvSystemUtil;
 import endrov.typeImageset.EvImageSwap;
 import endrov.typeImageset.EvPixels;
@@ -953,17 +953,51 @@ public abstract class EvBasicWindow extends JPanel
 	public static void initPlugin(){}
 	static
 		{
-		EndrovCore.addPersonalConfigLoader("basicwindow", new PersonalConfig()
+		EndrovCore.addPersonalConfigLoader("storedwindow", new PersonalConfig()
 			{
-				public void loadPersonalConfig(Element e)
+				public void loadPersonalConfig(Element eWindow)
 					{
+					String windowClassName=eWindow.getAttributeValue("class");
+					try
+						{
+						EvBasicWindow window=(EvBasicWindow)Class.forName(windowClassName).newInstance();
+
+						int x=Integer.parseInt(eWindow.getAttributeValue("boundsX"));
+						int y=Integer.parseInt(eWindow.getAttributeValue("boundsY"));
+						int w=Integer.parseInt(eWindow.getAttributeValue("boundsW"));
+						int h=Integer.parseInt(eWindow.getAttributeValue("boundsH"));
+						
+						window.setBoundsEvWindow(x,y,w,h);
+						window.windowLoadPersonalSettings(eWindow);
+						}
+					catch (Exception e1)
+						{
+						System.out.println("Could not create class "+windowClassName);
+						e1.printStackTrace();
+						}
+					
 					}
 
 				public void savePersonalConfig(Element e)
 					{
 					// Settings for individual windows
 					for (EvBasicWindow w : windowManager.getAllWindows())
-						w.windowSavePersonalSettings(e);
+						{
+						
+						Element eWindow=new Element("storedwindow");
+						eWindow.setAttribute("class", w.getClass().getCanonicalName());
+
+						Rectangle bounds=w.getBoundsEvWindow();
+						eWindow.setAttribute("boundsX", ""+bounds.x);
+						eWindow.setAttribute("boundsY", ""+bounds.y);
+						eWindow.setAttribute("boundsW", ""+bounds.width);
+						eWindow.setAttribute("boundsH", ""+bounds.height);
+						
+						w.windowSavePersonalSettings(eWindow);
+						
+						e.addContent(eWindow);
+						
+						}
 					}
 			});
 		

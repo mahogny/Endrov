@@ -1035,7 +1035,7 @@ public class EvIODataBioformats implements EvIOData
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedFileFormats.add(new EvDataSupport(){
+		EvData.supportedFileFormats.add(new EvIODataReaderWriterDeclaration(){
 			public Integer loadSupports(String fileS)
 				{
 				//ImageReader r=new ImageReader();

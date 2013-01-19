@@ -26,8 +26,8 @@ import endrov.data.EvObject;
 import endrov.gui.window.EvBasicWindow;
 import endrov.util.ProgressHandle;
 import endrov.util.collection.EvListUtil;
-import endrov.util.collection.MemoizeX;
-import endrov.util.collection.MemoizeXImmediate;
+import endrov.util.lazy.MemoizeX;
+import endrov.util.lazy.MemoizeXImmediate;
 import endrov.util.math.EvDecimal;
 
 /**

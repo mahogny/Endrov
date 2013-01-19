@@ -12,7 +12,7 @@ import java.util.*;
 import endrov.core.EndrovUtil;
 import endrov.core.log.EvLog;
 import endrov.data.*;
-import endrov.ioBasic.BasicSliceIO;
+import endrov.ioImageCollections.EvSingleImageFileReader;
 import endrov.typeImageset.*;
 import endrov.typeLineage.Lineage;
 import endrov.util.ProgressHandle;
@@ -179,7 +179,7 @@ public class EvIODataStarrynite implements EvIOData
 					s.setRes(xy_res, xy_res, z_res);
 					
 					EvImagePlane evim=new EvImagePlane();
-					evim.io=new BasicSliceIO(f);
+					evim.io=new EvSingleImageFileReader(f);
 					s.putPlane(Integer.parseInt(sPlane), evim);
 					}
 				}
@@ -314,7 +314,7 @@ public class EvIODataStarrynite implements EvIOData
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedFileFormats.add(new EvDataSupport(){
+		EvData.supportedFileFormats.add(new EvIODataReaderWriterDeclaration(){
 			public Integer loadSupports(String fileS)
 				{
 				File file=new File(fileS);

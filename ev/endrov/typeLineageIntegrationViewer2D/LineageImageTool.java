@@ -18,8 +18,8 @@ import javax.swing.*;
 
 import endrov.data.EvContainer;
 import endrov.data.EvSelection;
+import endrov.gui.keybinding.KeyBinding;
 import endrov.gui.window.EvBasicWindow;
-import endrov.keybinding.KeyBinding;
 import endrov.typeLineage.Lineage;
 import endrov.typeLineage.LineageCommonUI;
 import endrov.typeLineage.LineageSelParticle;

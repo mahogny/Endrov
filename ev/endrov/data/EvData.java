@@ -20,6 +20,7 @@ import org.jdom.input.SAXBuilder;
 
 import endrov.core.EndrovCore;
 import endrov.core.PersonalConfig;
+import endrov.data.gui.EvDataMenu;
 import endrov.gui.window.EvBasicWindow;
 import endrov.starter.EvSystemUtil;
 
@@ -36,7 +37,7 @@ public class EvData extends EvContainer
 	/**
 	 * Supported file formats and associated routines to load it
 	 */
-	public static Vector<EvDataSupport> supportedFileFormats=new Vector<EvDataSupport>();
+	public static Vector<EvIODataReaderWriterDeclaration> supportedFileFormats=new Vector<EvIODataReaderWriterDeclaration>();
 	
 	/**
 	 * Registered types of metadata
@@ -168,9 +169,9 @@ public class EvData extends EvContainer
 	 */
 	public static EvData loadFile(String file, FileIOStatusCallback cb)
 		{
-		EvDataSupport thes=null;
+		EvIODataReaderWriterDeclaration thes=null;
 		int lowest=0;
-		for(EvDataSupport s:EvData.supportedFileFormats)
+		for(EvIODataReaderWriterDeclaration s:EvData.supportedFileFormats)
 			{
 			Integer sup=s.loadSupports(file);
 			if(sup!=null && (thes==null || lowest>sup))
@@ -219,9 +220,9 @@ public class EvData extends EvContainer
 	 */
 	public void setSaver(String file) throws IOException
 		{
-		EvDataSupport thes=null;
+		EvIODataReaderWriterDeclaration thes=null;
 		int lowest=0;
-		for(EvDataSupport s:EvData.supportedFileFormats)
+		for(EvIODataReaderWriterDeclaration s:EvData.supportedFileFormats)
 			{
 			Integer sup=s.saveSupports(file);
 			if(sup!=null && (thes==null || lowest>sup))

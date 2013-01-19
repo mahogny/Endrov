@@ -13,8 +13,8 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import endrov.data.*;
+import endrov.gui.keybinding.KeyBinding;
 import endrov.gui.window.EvBasicWindow;
-import endrov.keybinding.KeyBinding;
 import endrov.windowViewer2D.*;
 
 

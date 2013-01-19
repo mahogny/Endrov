@@ -5,6 +5,7 @@
  */
 package endrov.data;
 import endrov.core.EvPluginDefinition;
+import endrov.data.basicTypes.EvGroupObject;
 
 public class PLUGIN extends EvPluginDefinition
 	{

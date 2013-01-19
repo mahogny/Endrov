@@ -14,6 +14,7 @@ import org.jdom.Element;
 import endrov.core.EndrovCore;
 import endrov.core.EndrovUtil;
 import endrov.core.log.EvLog;
+import endrov.data.basicTypes.EvCustomObject;
 import endrov.gui.icon.BasicIcon;
 import endrov.util.math.EvDecimal;
 
@@ -299,7 +300,7 @@ public class EvContainer
 			EvObject o=null;
 			if(ext==null)
 				{
-				o=new CustomObject();
+				o=new EvCustomObject();
 				EvLog.printLog("Warning: "+childName+" was not detected to be of a known type");
 				}
 			else

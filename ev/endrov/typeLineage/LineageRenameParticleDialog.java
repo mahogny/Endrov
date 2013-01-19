@@ -16,7 +16,7 @@ import javax.swing.*;
 import javax.swing.text.JTextComponent;
 
 import endrov.data.EvData;
-import endrov.data.GuiEvDataIO;
+import endrov.data.gui.GuiEvDataIO;
 import endrov.gui.window.EvBasicWindow;
 
 

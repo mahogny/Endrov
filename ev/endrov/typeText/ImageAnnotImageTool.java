@@ -13,7 +13,7 @@ import javax.vecmath.*;
 import javax.swing.*;
 
 import endrov.data.*;
-import endrov.undo.UndoOpPutObject;
+import endrov.gui.undo.UndoOpPutObject;
 import endrov.util.collection.Tuple;
 import endrov.windowViewer2D.*;
 

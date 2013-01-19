@@ -9,8 +9,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import endrov.makeMovie.EvMovieMaker;
-import endrov.makeMovie.EvMovieMakerFactory;
+import endrov.movieEncoder.EvMovieEncoder;
+import endrov.movieEncoder.EvMovieEncoderFactory;
 
 /**
  * Encode movies using Quicktime
@@ -26,9 +26,9 @@ public class EncodeQT
 		{
 		for(final String codec:QTMovieMaker.codecs)
 			{
-			EvMovieMakerFactory.makers.add(new EvMovieMakerFactory()
+			EvMovieEncoderFactory.makers.add(new EvMovieEncoderFactory()
 			{
-				public EvMovieMaker getInstance(File path, int w, int h, String quality) throws Exception
+				public EvMovieEncoder getInstance(File path, int w, int h, String quality) throws Exception
 					{
 					return new QTMovieMaker(path,w,h,codec,quality);
 					}

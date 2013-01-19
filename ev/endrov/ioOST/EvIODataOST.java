@@ -1301,7 +1301,7 @@ public class EvIODataOST implements EvIOData
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedFileFormats.add(new EvDataSupport(){
+		EvData.supportedFileFormats.add(new EvIODataReaderWriterDeclaration(){
 			public Integer loadSupports(String fileS)
 				{
 				File file=new File(fileS);

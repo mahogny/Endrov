@@ -12,7 +12,7 @@ import org.jdom.DataConversionException;
 import org.jdom.Element;
 
 import endrov.data.*;
-import endrov.keybinding.KeyBinding;
+import endrov.gui.keybinding.KeyBinding;
 import endrov.util.math.ImVector2d;
 import endrov.util.math.ImVector3d;
 import endrov.windowViewer2D.*;

@@ -7,7 +7,7 @@ package endrov.typeImageset;
 
 import java.io.File;
 
-import endrov.util.collection.MemoizeX;
+import endrov.util.lazy.MemoizeX;
 
 
 /**
