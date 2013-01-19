@@ -219,7 +219,7 @@ public class FrivolousCamera implements HWImageScanner
 	////////////// TODO
 	
 	
-	public double getSequenceCapacityUsed()
+	public double getSequenceBufferUsed()
 		{
 		return 1;
 		}

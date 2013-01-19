@@ -46,6 +46,8 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 	private JComboBox cRateUnit=new JComboBox(new Object[]{"Hz","ms"});
 	private JButton bStartStop=new JButton("Start");
 	private JCheckBox cSwapEarly=new JCheckBox("Early swap to disk"); 
+
+	private JProgressBar pbBuffer=new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
 	
 	private JCheckBox cbTriggerOn=new JCheckBox("Trigger on: ");
 	private JCheckBox cbTriggerOff=new JCheckBox("Trigger off: ");
@@ -110,7 +112,7 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 		
 		////////////////////////////////////////////////////////////////////////
 		setLayout(new BorderLayout());
-		add(EvSwingUtil.layoutEvenVertical(
+		add(EvSwingUtil.layoutCompactVertical(
 				
 			EvSwingUtil.layoutLCR(
 				cDuration,
@@ -124,19 +126,26 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 				cRateUnit
 				),
 					
-			EvSwingUtil.layoutLCR(
-				cbTriggerOn,
-				comboTriggerDeviceOn,
-				null
-				),	
-				
-			EvSwingUtil.layoutLCR(
-				cbTriggerOff,
-				comboTriggerDeviceOff,
-				null
-				),		
+			EvSwingUtil.withTitledBorder("Triggering", 
+					EvSwingUtil.layoutEvenVertical(
+							EvSwingUtil.layoutLCR(
+									cbTriggerOn,
+									comboTriggerDeviceOn,
+									null
+									),	
+									
+								EvSwingUtil.layoutLCR(
+									cbTriggerOff,
+									comboTriggerDeviceOff,
+									null
+									)		
+							)
+					
+					),
 					
 			cSwapEarly,
+			
+			EvSwingUtil.withTitledBorder("Buffer status", pbBuffer),
 			
 			EvSwingUtil.layoutLCR(
 				objectCombo,
@@ -237,13 +246,22 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 	
 	public void acquisitionEventStopped()
 		{
-		bStartStop.setText("Start");
-		thread=null;
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run()
+				{
+				bStartStop.setText("Start");
+				thread=null;
+				}
+		});
 		}
-	public void acquisitionEventBuffer(double capacityUsed)
+	public void acquisitionEventBuffer(final double capacityUsed)
 		{
-		// TODO Auto-generated method stub
-		
+		SwingUtilities.invokeLater(new Runnable(){
+		public void run()
+			{
+			pbBuffer.setValue((int)(100*capacityUsed));
+			}
+	});
 		}
 
 

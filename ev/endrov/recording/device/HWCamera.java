@@ -24,7 +24,7 @@ public interface HWCamera extends EvDevice
 	public CameraImage snapSequence() throws Exception;
 	public EvDecimal getActualSequenceInterval();
 	
-	public double getSequenceCapacityUsed();
+	public double getSequenceBufferUsed();
 	
 	public int getCamHeight();
 	public int getCamWidth();

@@ -120,7 +120,7 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 		
 		//TODO all below
 		
-		public double getSequenceCapacityUsed()
+		public double getSequenceBufferUsed()
 			{
 			return 1;
 			}

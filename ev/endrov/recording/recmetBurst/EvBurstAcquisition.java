@@ -344,8 +344,10 @@ public class EvBurstAcquisition extends EvAcquisition
 										totalFrameCount++;
 										totalSecCount=totalSecCount.add(actualInt);
 										curFrame=curFrame.add(actualInt);
+										
+										//Update buffer status
+										settings.emitAcquisitionEventStatus(cam.getSequenceBufferUsed());
 										}
-									
 									}
 								System.out.println("Stopping sequence");
 								

@@ -346,7 +346,7 @@ public class MMCamera implements HWCamera
 	 * public int numSequenceLeft() { return mm.core.getRemainingImageCount(); }
 	 */
 
-	public double getSequenceCapacityUsed()
+	public double getSequenceBufferUsed()
 		{
 		long free=mm.core.getBufferFreeCapacity();
 		long total=mm.core.getBufferTotalCapacity();
