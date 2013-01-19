@@ -18,16 +18,16 @@ public interface HWCamera extends EvDevice
 	public CameraImage snap();
 	
 
-	public void startSequenceAcq(/*Integer numImages, */double interval) throws Exception;
+	public void startSequenceAcq(double interval) throws Exception;
 	public void stopSequenceAcq();
 	public boolean isDoingSequenceAcq();
 	public CameraImage snapSequence() throws Exception;
-	//public int numSequenceLeft();
-	public double getSequenceCapacityFree();
-
+	public EvDecimal getActualSequenceInterval();
+	
+	public double getSequenceCapacityUsed();
+	
 	public int getCamHeight();
 	public int getCamWidth();
 	
-	public EvDecimal getActualInterval();
 	
 	}

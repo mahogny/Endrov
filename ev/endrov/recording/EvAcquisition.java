@@ -19,6 +19,7 @@ public abstract class EvAcquisition extends EvObject
 		{
 		public void acquisitionEventStopped();
 		public void acquisitionEventStatus(String s);
+		public void acquisitionEventBuffer(double capacityUsed);
 		}
 
 	public interface AcquisitionThread
@@ -36,7 +37,8 @@ public abstract class EvAcquisition extends EvObject
 	
 	
 
-	protected List<EvAcquisition.AcquisitionListener> listeners=new LinkedList<EvAcquisition.AcquisitionListener>();
+	private List<EvAcquisition.AcquisitionListener> listeners=new LinkedList<EvAcquisition.AcquisitionListener>();
+	
 	public void addListener(EvAcquisition.AcquisitionListener l)
 		{
 		listeners.add(l);
@@ -46,4 +48,23 @@ public abstract class EvAcquisition extends EvObject
 		listeners.remove(l);
 		}
 
+	public void emitAcquisitionEventStopped()
+		{
+		for(EvAcquisition.AcquisitionListener l:listeners)
+			l.acquisitionEventStopped();
+		}
+	
+	public void emitAcquisitionEventStatus(String s)
+		{
+		for(EvAcquisition.AcquisitionListener l:listeners)
+			l.acquisitionEventStatus(s);
+		}
+
+	public void emitAcquisitionEventStatus(double bufferUsed)
+		{
+		for(EvAcquisition.AcquisitionListener l:listeners)
+			l.acquisitionEventBuffer(bufferUsed);
+		}
+
 	}
+

@@ -1,5 +1,6 @@
 package endrov.recording.recmetBurst;
 
+import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.JMenu;
@@ -271,7 +272,7 @@ public class EvBurstAcquisition extends EvAcquisition
 								cam.startSequenceAcq(intervalMS);
 
 								//Pull out real interval time from camera
-								EvDecimal tmp=cam.getActualInterval();
+								EvDecimal tmp=cam.getActualSequenceInterval();
 								if(tmp!=null)
 									actualInt=tmp;
 								
@@ -369,11 +370,11 @@ public class EvBurstAcquisition extends EvAcquisition
 			
 			//System.out.println("---------stop-----------");
 			toStop=false;
-			for(EvAcquisition.AcquisitionListener l:settings.listeners)
-				l.acquisitionEventStopped();
+			settings.emitAcquisitionEventStopped();
 			}
 		
 		
+
 		public void stopAcquisition()
 			{
 			toStop=true;
@@ -389,9 +390,8 @@ public class EvBurstAcquisition extends EvAcquisition
 				}
 			}
 		
+		
 		}
-	
-	
 	
 	
 	

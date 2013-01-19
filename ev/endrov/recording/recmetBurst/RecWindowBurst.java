@@ -240,6 +240,12 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 		bStartStop.setText("Start");
 		thread=null;
 		}
+	public void acquisitionEventBuffer(double capacityUsed)
+		{
+		// TODO Auto-generated method stub
+		
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration

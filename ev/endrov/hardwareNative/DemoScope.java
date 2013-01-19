@@ -113,14 +113,14 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 		
 		
 		
-		public EvDecimal getActualInterval()
+		public EvDecimal getActualSequenceInterval()
 			{
 			return null;
 			}
 		
 		//TODO all below
 		
-		public double getSequenceCapacityFree()
+		public double getSequenceCapacityUsed()
 			{
 			return 1;
 			}

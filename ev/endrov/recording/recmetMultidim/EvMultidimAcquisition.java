@@ -195,9 +195,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 					
 					//Update the GUI
 					BasicWindow.updateWindows(); //TODO use hooks
-					for(AcquisitionListener listener:listeners)
-						listener.acquisitionEventStatus(""+currentChannel.name+"/"+currentFrameCount+"/"+dz.multiply(currentZCount));
-					
+					emitAcquisitionEventStatus(""+currentChannel.name+"/"+currentFrameCount+"/"+dz.multiply(currentZCount));
 					}
 				
 				}
@@ -536,8 +534,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 			
 			System.out.println("---------stop-----------");
 			toStop=false;
-			for(EvAcquisition.AcquisitionListener l:listeners)
-				l.acquisitionEventStopped();
+			emitAcquisitionEventStopped();
 			}
 		
 		

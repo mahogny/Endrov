@@ -219,7 +219,7 @@ public class FrivolousCamera implements HWImageScanner
 	////////////// TODO
 	
 	
-	public double getSequenceCapacityFree()
+	public double getSequenceCapacityUsed()
 		{
 		return 1;
 		}
@@ -240,7 +240,7 @@ public class FrivolousCamera implements HWImageScanner
 			}
 		}
 	
-	public EvDecimal getActualInterval()
+	public EvDecimal getActualSequenceInterval()
 		{
 		return null;
 		}

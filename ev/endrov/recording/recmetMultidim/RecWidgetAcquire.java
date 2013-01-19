@@ -132,6 +132,11 @@ public abstract class RecWidgetAcquire extends JPanel implements ActionListener,
 		});
 		}
 	
+	public void acquisitionEventBuffer(double capacityUsed)
+		{
+		}
+
+	
 	/**
 	 * Get acquisition object. Must be the same every time
 	 */

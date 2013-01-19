@@ -346,13 +346,16 @@ public class MMCamera implements HWCamera
 	 * public int numSequenceLeft() { return mm.core.getRemainingImageCount(); }
 	 */
 
-	public double getSequenceCapacityFree()
+	public double getSequenceCapacityUsed()
 		{
-		return mm.core.getBufferFreeCapacity()/(double) mm.core.getBufferTotalCapacity();
+		long free=mm.core.getBufferFreeCapacity();
+		long total=mm.core.getBufferTotalCapacity();
+		//This assumes the current camera is selected
+		return (total-free)/(double) total;
 		}
 
 
-	public EvDecimal getActualInterval()
+	public EvDecimal getActualSequenceInterval()
 		{
 		String propname="ActualInterval-ms";
 		try
