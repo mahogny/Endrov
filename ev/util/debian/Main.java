@@ -260,8 +260,8 @@ libjboss-webservices-java
 			runUntilQuit(new String[]{"/usr/bin/jar","cmf",manifestFile.getAbsolutePath(),new File(dEndrovLibs,"debian.jar").getAbsolutePath()});
 
 			System.out.println("Writing control file");
-			Scanner scannerVersion = new Scanner(EvFileUtil.readFile(new File(dEndrov,"endrov/ev/version.txt")));
-			Scanner scannerTimestamp = new Scanner(EvFileUtil.readFile(new File(dEndrov,"endrov/ev/timestamp.txt")));
+			Scanner scannerVersion = new Scanner(EvFileUtil.readFile(new File(dEndrov,"endrov/endrov/version.txt")));
+			Scanner scannerTimestamp = new Scanner(EvFileUtil.readFile(new File(dEndrov,"endrov/endrov/timestamp.txt")));
 			String version=scannerVersion.nextLine()+"."+scannerTimestamp.nextLine();
 			int totalSize=(int)Math.ceil((recursiveSize(dUsr)+100000)/1000000.0);
 			

@@ -4,7 +4,7 @@ if [ `test -e makerelease.sh` ]; then exit -1; fi
 
 #version info
 timestamp=`date +%s`
-version=`cat ../endrov/ev/version.txt`
+version=`cat ../endrov/core/version.txt`
 
 #decide on a name
 name="endrov-$version.$timestamp"
@@ -12,6 +12,7 @@ echo $name
 
 #Create a copy
 cd ..
+make githash
 cd ..
 cp -r ev $name
 cd $name
@@ -30,7 +31,7 @@ rm *.log
 rm -Rf libs/unused
 
 #add timestamp file
-echo $timestamp > endrov/ev/timestamp.txt
+echo $timestamp > endrov/core/timestamp.txt
 
 #compress
 cd ..
@@ -50,8 +51,8 @@ echo "Num images"
 ls -1 $name/*/*.png $name/*/*/*.png $name/*/*/*/*.png | wc -l
 
 echo "claimed version"
-cat $name/endrov/ev/version.txt
-cat $name/endrov/ev/timestamp.txt
+cat $name/endrov/endrov/version.txt
+cat $name/endrov/endrov/timestamp.txt
 echo ""
 
 #delete
