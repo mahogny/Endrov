@@ -5,14 +5,20 @@
  */
 package endrov.starter;
 
-import endrov.basicWindow.*;
+import endrov.core.*;
+import endrov.core.dbus.EndrovDBUS;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogFile;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.dbus.EndrovDBUS;
-import endrov.ev.*;
 import endrov.flow.FlowExec;
-import endrov.imageWindow.*;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExitLast;
+import endrov.gui.window.EvRegistrationDialog;
+import endrov.gui.window.EvSplashScreen;
 import endrov.util.RepeatingKeyEventsFixer;
+import endrov.windowViewer2D.*;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -119,15 +125,15 @@ public class MW
 			else
 				System.out.println("Could not start DBUS server, skipping");
 			
-			EV.loadPlugins();
+			EndrovCore.loadPlugins();
 			BasicWindowExitLast.integrate();
-			EV.loadPersonalConfig();		
-			EV.setHasStartedUp();
+			EndrovCore.loadPersonalConfig();		
+			EndrovCore.setHasStartedUp();
 			if(BasicWindow.getWindowList().size()==0)
 				{
 				//Make sure at least one window is open
 				EvLog.printLog("Opening up first window");
-				new ImageWindow();
+				new Viewer2DWindow();
 				}
 			
 			//Close the splash screen
@@ -138,20 +144,20 @@ public class MW
 				}
 			
 			//Bring up registration dialog if needed
-			if(!EndrovRegistrationDialog.hasRegistered())
+			if(!EvRegistrationDialog.hasRegistered())
 				{
-				EndrovRegistrationDialog.runDialog();
-				EndrovRegistrationDialog.connectAndRegister(true);
+				EvRegistrationDialog.runDialog();
+				EvRegistrationDialog.connectAndRegister(true);
 				}
 			else
-				EndrovRegistrationDialog.connectAndRegister(false);
+				EvRegistrationDialog.connectAndRegister(false);
 			
 			//Load files specified on command line
 			new Thread(new Runnable()
 				{ 
 				public void run()
 					{ 
-					EV.waitUntilStartedUp();
+					EndrovCore.waitUntilStartedUp();
 
 					for(String s:args)
 						{

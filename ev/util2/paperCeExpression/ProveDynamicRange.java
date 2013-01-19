@@ -2,10 +2,10 @@ package util2.paperCeExpression;
 
 import java.io.File;
 
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
@@ -20,7 +20,7 @@ public class ProveDynamicRange
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 	
 		File finfile=new File("/Volumes/TBU_main06/ost4dgood/BC15177_070605.ost");
 	

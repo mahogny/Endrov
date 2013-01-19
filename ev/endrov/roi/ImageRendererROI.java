@@ -9,24 +9,24 @@ import java.awt.*;
 import java.util.*;
 import javax.vecmath.*;
 
-import endrov.basicWindow.WSTransformer;
+import endrov.core.observer.SimpleObserver;
 import endrov.data.*;
-import endrov.ev.SimpleObserver;
-import endrov.imageWindow.*;
+import endrov.gui.WorldScreenTransformer;
 import endrov.roi.primitive.BoxROI;
 import endrov.roi.primitive.EllipseROI;
 import endrov.util.EvDecimal;
+import endrov.windowViewer2D.*;
 
 /**
  * Render ROI in Image Window
  * 
  * @author Johan Henriksson
  */
-public class ImageRendererROI implements ImageWindowRenderer
+public class ImageRendererROI implements Viewer2DRenderer
 	{
 	public static final int HANDLESIZE=3;
 
-	private final ImageWindowInterface w;
+	private final Viewer2DInterface w;
 	public Map<ROI, Map<String,ROI.Handle>> handleList=new HashMap<ROI, Map<String,ROI.Handle>>();
 	
 	SimpleObserver.Listener listenSelelection=new SimpleObserver.Listener()
@@ -37,7 +37,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 	
 	public ROI alsoDrawROI=null;
 		
-	public ImageRendererROI(final ImageWindowInterface w)
+	public ImageRendererROI(final Viewer2DInterface w)
 		{
 		this.w=w;
 		
@@ -86,7 +86,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 
 	
 	
-	private void drawROI(WSTransformer w, Graphics g, ROI roiUncast, String roiName, EvDecimal frame, double z, String channel)
+	private void drawROI(WorldScreenTransformer w, Graphics g, ROI roiUncast, String roiName, EvDecimal frame, double z, String channel)
 		{
 		if(roiUncast.imageInRange(channel, frame, z))
 			{

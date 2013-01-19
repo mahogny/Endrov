@@ -15,9 +15,9 @@ import java.util.TreeSet;
 
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
 import endrov.util.EvFileUtil;
 import endrov.util.Tuple;
@@ -155,7 +155,7 @@ public class RunPhylip
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 		
 		doFor(CompareAll.cachedValuesFileT,"t");

@@ -1,8 +1,8 @@
 package endrov.undo;
 
-import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvObject;
+import endrov.gui.window.BasicWindow;
 
 /**
  * Adding, replacing or deleting an object in a container

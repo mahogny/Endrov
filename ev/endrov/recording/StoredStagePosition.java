@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import endrov.basicWindow.EvColor;
+import endrov.gui.EvColor;
 
 /**
  * Stores a stage configuration

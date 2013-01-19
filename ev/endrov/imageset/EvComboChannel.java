@@ -1,8 +1,8 @@
 package endrov.imageset;
 
-import endrov.basicWindow.EvComboObjectOne;
 import endrov.data.EvContainer;
 import endrov.data.EvPath;
+import endrov.gui.component.EvComboObjectOne;
 
 public class EvComboChannel extends EvComboObjectOne<EvChannel>
 	{

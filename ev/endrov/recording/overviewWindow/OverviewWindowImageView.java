@@ -25,15 +25,15 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector2d;
 
+import endrov.gui.GeneralTool;
 import endrov.hardware.EvDevicePath;
-import endrov.imageWindow.GeneralTool;
-import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageset.EvPixels;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
 import endrov.recording.StoredStagePosition;
 import endrov.recording.StoredStagePositionAxis;
 import endrov.util.Vector2i;
+import endrov.windowViewer2D.Viewer2DRenderer;
 
 /**
  * @author Kim Nordlöf, Erik Vernersson
@@ -45,7 +45,7 @@ public abstract class OverviewWindowImageView extends JPanel implements
 
 	private Vector2i lastMousePosition = new Vector2i();
 	public GeneralTool currentTool = null;
-	public final Vector<ImageWindowRenderer> imageWindowRenderers = new Vector<ImageWindowRenderer>();
+	public final Vector<Viewer2DRenderer> imageWindowRenderers = new Vector<Viewer2DRenderer>();
 
 	private Vector2d cameraPos = new Vector2d();
 
@@ -261,7 +261,7 @@ public abstract class OverviewWindowImageView extends JPanel implements
 				}
 			}
 
-		for (ImageWindowRenderer r : imageWindowRenderers)
+		for (Viewer2DRenderer r : imageWindowRenderers)
 			r.draw(g);
 		}
 

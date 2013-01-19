@@ -2,7 +2,8 @@ package endrov.recording.bleachWindow;
 
 import java.util.LinkedList;
 import java.util.List;
-import endrov.basicWindow.BasicWindow;
+
+import endrov.gui.window.BasicWindow;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.recording.RecordingResource;

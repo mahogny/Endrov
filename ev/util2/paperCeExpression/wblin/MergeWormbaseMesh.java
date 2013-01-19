@@ -15,12 +15,12 @@ import java.util.Set;
 import java.util.TreeSet;
 
 
+import endrov.annotationLineage.Lineage;
+import endrov.annotationMesh3d.Mesh3D;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
-import endrov.lineage.Lineage;
-import endrov.mesh3d.Mesh3D;
 import endrov.util.EvDecimal;
 
 public class MergeWormbaseMesh
@@ -30,7 +30,7 @@ public class MergeWormbaseMesh
 	public static void main(String[] arg)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 		EvData dataLin=EvData.loadFile(new File("/Volumes/TBU_main06/wblineage/lin.ost"));
 		

@@ -16,7 +16,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import endrov.basicWindow.icon.BasicIcon;
+import endrov.gui.icon.BasicIcon;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 

@@ -10,10 +10,10 @@ import java.io.*;
 
 import javax.imageio.ImageIO;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.makeMovie.EvMovieMaker;
+import endrov.core.EndrovUtil;
+import endrov.core.log.EvLog;
+import endrov.gui.window.BasicWindow;
+import endrov.opMakeMovie.EvMovieMaker;
 import endrov.util.EvFileUtil;
 
 /**
@@ -47,7 +47,7 @@ public class MencoderMovieMaker implements EvMovieMaker
 	
 	public void addFrame(BufferedImage im) throws Exception
 		{
-		File thisFile=new File(tempFile,EV.pad(curframe,8)+".png");
+		File thisFile=new File(tempFile,EndrovUtil.pad(curframe,8)+".png");
 		curframe++;
 
 		ImageIO.write(im, "png", thisFile);

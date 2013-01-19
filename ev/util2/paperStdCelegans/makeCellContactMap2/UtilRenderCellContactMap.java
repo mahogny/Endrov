@@ -8,10 +8,12 @@ package util2.paperStdCelegans.makeCellContactMap2;
 import java.io.*;
 import java.util.*;
 
+import endrov.annotationParticleContactMap.neighmap.NeighMap;
+import endrov.annotationParticleContactMap.neighmap.RenderNeighmap;
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.*;
-import endrov.particleContactMap.neighmap.NeighMap;
-import endrov.particleContactMap.neighmap.RenderNeighmap;
 
 
 /**
@@ -26,7 +28,7 @@ public class UtilRenderCellContactMap
 		try
 			{
 			EvLog.addListener(new EvLogStdout());
-			EV.loadPlugins();
+			EndrovCore.loadPlugins();
 
 			EvData dneighmaps=EvData.loadFile(new File("/Volumes/TBU_main03/userdata/newcellcontactsmap.ost"));
 

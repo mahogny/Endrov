@@ -6,8 +6,10 @@
 package util;
 import java.io.*;
 
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.*;
 
 
 /**
@@ -31,7 +33,7 @@ public class BatchOST
 	public static void main(String[] arg)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 		
 //		if(arg.length==0)

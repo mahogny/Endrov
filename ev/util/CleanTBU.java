@@ -10,10 +10,12 @@ import java.util.Map;
 import org.jdom.Document;
 import org.jdom.Element;
 
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.ev.*;
 import endrov.imageset.EvChannel;
 import endrov.imageset.Imageset;
 import endrov.util.EvXmlUtil;
@@ -153,7 +155,7 @@ public class CleanTBU
 	public static void main(String[] arg)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 		
 //		if(arg.length==0)

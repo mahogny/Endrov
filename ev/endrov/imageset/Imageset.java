@@ -11,8 +11,8 @@ import javax.swing.JMenu;
 
 import org.jdom.*;
 
+import endrov.core.log.EvLog;
 import endrov.data.*;
-import endrov.ev.EvLog;
 import endrov.util.EvDecimal;
 
 /**

@@ -19,7 +19,7 @@ import javax.swing.JProgressBar;
 
 import org.jdesktop.swingworker.SwingWorker;
 
-import endrov.ev.EvLog;
+import endrov.core.log.EvLog;
 
 
 /**

@@ -7,12 +7,12 @@ import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.FrameControl;
+import endrov.core.EndrovUtil;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.ev.EV;
+import endrov.gui.component.EvFrameControl;
+import endrov.gui.window.BasicWindow;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvChannel;
@@ -234,7 +234,7 @@ public class EvBurstAcquisition extends EvAcquisition
 								{
 								String suggestName;
 								if(settings.deviceTriggerOn!=null && settings.deviceTriggerOff!=null)
-									suggestName="im"+EV.pad(i, 8);
+									suggestName="im"+EndrovUtil.pad(i, 8);
 								else
 									suggestName="im"+i;
 								
@@ -302,7 +302,7 @@ public class EvBurstAcquisition extends EvAcquisition
 									if(camIm!=null)
 										{
 										
-										System.out.println("burst snap, time: "+curFrame+"   "+FrameControl.formatTime(curFrame));
+										System.out.println("burst snap, time: "+curFrame+"   "+EvFrameControl.formatTime(curFrame));
 										
 										
 										System.out.println("Got image");

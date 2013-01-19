@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 
 
 public class MainToR
@@ -46,7 +46,7 @@ public class MainToR
 	public static void main(String[] args)
 			{
 			EvLog.addListener(new EvLogStdout());
-			EV.loadPlugins();
+			EndrovCore.loadPlugins();
 
 			Map<String,String> whichStage=new HashMap<String, String>();
 			whichStage.put("GSM380366","95");

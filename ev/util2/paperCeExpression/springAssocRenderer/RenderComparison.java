@@ -17,13 +17,13 @@ import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 import util2.paperCeExpression.compare.CompareAll;
 
 
+import endrov.annotationLineage.expression.ExpUtil;
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.lineage.expression.ExpUtil;
-import endrov.springGraph.Graph;
-import endrov.springGraph.GraphPanel;
-import endrov.springGraph.SimpleGraphRenderer;
-import endrov.springGraph.SpringGraphLayout;
 import endrov.util.Tuple;
+import endrov.utilityUnsorted.springGraph.Graph;
+import endrov.utilityUnsorted.springGraph.GraphPanel;
+import endrov.utilityUnsorted.springGraph.SimpleGraphRenderer;
+import endrov.utilityUnsorted.springGraph.SpringGraphLayout;
 
 public class RenderComparison
 	{

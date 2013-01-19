@@ -8,7 +8,7 @@ package util2.paperStdCelegans.makeStdWorm;
 import java.util.*;
 import javax.vecmath.*;
 
-import endrov.lineage.Lineage;
+import endrov.annotationLineage.Lineage;
 import static java.lang.Math.*;
 
 

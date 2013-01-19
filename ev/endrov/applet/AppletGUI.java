@@ -8,10 +8,12 @@ package endrov.applet;
 import java.io.File;
 import java.io.IOException;
 
-import endrov.basicWindow.*;
-import endrov.ev.*;
-import endrov.modelWindow.ModelWindow;
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
+import endrov.gui.window.BasicWindow;
 import endrov.starter.Start;
+import endrov.windowViewer3D.Viewer3DWindow;
 
 import javax.swing.JApplet;
 
@@ -57,8 +59,8 @@ public class AppletGUI extends JApplet
 		{
 		try
 			{
-			PluginInfo.readFromList=true;
-			EV.loadPlugins();
+			EvPluginManager.readFromList=true;
+			EndrovCore.loadPlugins();
 			
 //			JTextField fi=new JTextField();
 	//		getContentPane().add(fi);
@@ -68,8 +70,8 @@ public class AppletGUI extends JApplet
 			
 			EvWindowManagerApplet manager=new EvWindowManagerApplet(2,applet==null);
 			BasicWindow.windowManager=manager;
-			new endrov.lineageWindow.LineageWindow();
-			new ModelWindow();
+			new endrov.windowLineage.LineageWindow();
+			new Viewer3DWindow();
 			
 			//Set display settings
 			

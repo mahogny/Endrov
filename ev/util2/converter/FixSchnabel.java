@@ -9,9 +9,11 @@ import java.io.*;
 import java.util.*;
 
 
+import endrov.annotationLineage.Lineage;
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.*;
-import endrov.ev.*;
-import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 
 
@@ -54,7 +56,7 @@ public class FixSchnabel
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 		try
 			{

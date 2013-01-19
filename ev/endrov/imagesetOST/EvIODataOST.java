@@ -14,9 +14,10 @@ import org.jdom.*;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import endrov.core.EndrovCore;
+import endrov.core.EndrovUtil;
+import endrov.core.log.EvLog;
 import endrov.data.*;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
 import endrov.imageset.*;
 import endrov.util.*;
 
@@ -142,7 +143,7 @@ public class EvIODataOST implements EvIOData
 						}while(taken);
 					}
 				currentDir=dir;
-				if(EV.debugMode)
+				if(EndrovCore.debugMode)
 					System.out.println("allocating blob "+currentDir);
 				new File(basedir,currentDir).mkdirs();
 				}
@@ -250,7 +251,7 @@ public class EvIODataOST implements EvIOData
 		int d=z;
 		//int d=(int)Math.round(z.subtract(dispZ).divide(resZ).doubleValue());
 		//TODO don't like the (int), can it all be done with evdecimal?
-		String zs="b"+EV.pad(d, 8);
+		String zs="b"+EndrovUtil.pad(d, 8);
 		
 		if(ch.compression==100)
 			return buildImagePath33(ch, frame,zs,".png");
@@ -268,7 +269,7 @@ public class EvIODataOST implements EvIOData
 	/** Internal: piece together a path to a frame */
 	private static File buildFramePath(File channelPath, EvDecimal frame)
 		{
-		return new File(channelPath, EV.pad(frame,8));
+		return new File(channelPath, EndrovUtil.pad(frame,8));
 		}
 	
 	/** internal: name of metadata file */
@@ -422,7 +423,7 @@ public class EvIODataOST implements EvIOData
 						else
 							{
 							//Delete everything
-							if(EV.debugMode)
+							if(EndrovCore.debugMode)
 								System.out.println("Deleting entire imageset");
 							//for(Map.Entry<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> ce:ime.getValue().diskImageLoader.entrySet())
 								for(Map.Entry<EvDecimal, HashMap<Integer,File>> fe:ime.getValue().diskImageLoader33.entrySet())
@@ -494,7 +495,7 @@ public class EvIODataOST implements EvIOData
 									//File currentFile=getCurrentFileFor(ce.getKey(), fe.getKey(), ie.getKey());
 									if(currentFile!=null)
 										{
-										if(EV.debugMode)
+										if(EndrovCore.debugMode)
 											System.out.println("adding to read"+currentFile);
 										HashSet<EvImage> ims=toRead.get(currentFile);
 										if(ims==null)
@@ -514,7 +515,7 @@ public class EvIODataOST implements EvIOData
 								evim.io=newio;
 								
 								toWrite.add(evim);
-								if(EV.debugMode)
+								if(EndrovCore.debugMode)
 									System.out.println(evim.io);
 								imCompression.put(evim,ch.compression);
 								}
@@ -524,7 +525,7 @@ public class EvIODataOST implements EvIOData
 				}
 					
 			
-			if(EV.debugMode)
+			if(EndrovCore.debugMode)
 				{
 				System.out.println("to read");
 				for(Map.Entry<File, HashSet<EvImage>> entry:toRead.entrySet())
@@ -624,7 +625,7 @@ public class EvIODataOST implements EvIOData
 					for(EvDecimal frame:removeFrame)
 						{
 						File f=buildFramePath(chanPath, frame);
-						if(EV.debugMode)
+						if(EndrovCore.debugMode)
 							System.out.println("Totally deleting frame "+frame);
 						if(f.exists())
 							EvFileUtil.deleteRecursive(f);
@@ -640,7 +641,7 @@ public class EvIODataOST implements EvIOData
 							framee.getValue().remove(az);
 						for(File f:framee.getValue().values())
 							{
-							if(EV.debugMode)
+							if(EndrovCore.debugMode)
 								System.out.println("deleting slice "+f);
 							f.delete();
 							}
@@ -934,7 +935,7 @@ public class EvIODataOST implements EvIOData
 					//Generate name of frame directory, optimized. windows support?
 					StringBuffer framedirName=new StringBuffer(channeldirName);
 					framedirName.append('/');
-					EV.pad(frame, 8, framedirName);  
+					EndrovUtil.pad(frame, 8, framedirName);  
 					framedirName.append('/');
 
 
@@ -997,7 +998,7 @@ public class EvIODataOST implements EvIOData
 		try
 			{
 			File cacheFile=getDatabaseCacheFile(blob);
-			if(EV.debugMode)
+			if(EndrovCore.debugMode)
 				System.out.println("Attempting to load image cache "+cacheFile);
 			return loadDatabaseCacheMap33(ch, blob.diskImageLoader33, new FileInputStream(cacheFile), mapBlobs.get(ch).getDirectory());
 			}
@@ -1069,7 +1070,7 @@ public class EvIODataOST implements EvIOData
 					}
 
 				w.close();
-				if(EV.debugMode)
+				if(EndrovCore.debugMode)
 					EvLog.printLog("Wrote cache file "+cFile);
 				}
 		}
@@ -1192,7 +1193,7 @@ public class EvIODataOST implements EvIOData
 	
 	public static void main(String[] args)
 		{
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		/*
 		File root=new File("/Volumes/TBU_extra03/test/");
 		File f2=new File(root,"TB2111_P700_100130_stack3.ost");

@@ -18,12 +18,12 @@ import javax.swing.JOptionPane;
 
 
 
+import endrov.annotationLineage.Lineage;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.imageset.Imageset;
-import endrov.lineage.Lineage;
 import endrov.util.EvFileUtil;
 
 
@@ -343,7 +343,7 @@ public class PaperCeExpressionUtil
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		
 		Set<String> argsSet=new HashSet<String>();
 		for(String s:args)

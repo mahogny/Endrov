@@ -14,8 +14,10 @@ import javax.swing.*;
 
 import org.jdom.*;
 
-import endrov.basicWindow.*;
 import endrov.data.EvData;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 import endrov.recording.EvAcquisition;
 import endrov.recording.widgets.RecWidgetChannel;
 import endrov.recording.widgets.RecWidgetOrder;

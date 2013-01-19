@@ -5,8 +5,8 @@
  */
 package endrov.data;
 
-import endrov.basicWindow.EvColor;
 import endrov.data.EvSelection.EvSelectable;
+import endrov.gui.EvColor;
 
 /**
  * Selection of an object - common baseline class

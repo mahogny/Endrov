@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
-import endrov.basicWindow.BasicWindow;
+import endrov.gui.window.BasicWindow;
 import endrov.hardware.EvHardware;
 import endrov.hardwareFrivolous.FrivolousModel;
 import endrov.util.EvSwingUtil;

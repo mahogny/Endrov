@@ -9,24 +9,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
-import endrov.imageWindow.ImageWindow;
-import endrov.imageWindow.ImageWindowTool;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
+import endrov.windowViewer2D.Viewer2DWindow;
+import endrov.windowViewer2D.Viewer2DTool;
 
 /**
  * Image window tool: initial placement of a ROI
  * @author Johan Henriksson
  */
-public class ToolDragCreateROI extends GeneralToolDragCreateROI implements ImageWindowTool 
+public class ToolDragCreateROI extends GeneralToolDragCreateROI implements Viewer2DTool 
 	{
-	private final ImageWindow w;
+	private final Viewer2DWindow w;
 	//private final ROI roi;
 	//private boolean active=false;
 	//private ImageRendererROI renderer;
 	
 	
-	public ToolDragCreateROI(ImageWindow w, ROI roi, ImageRendererROI renderer)
+	public ToolDragCreateROI(Viewer2DWindow w, ROI roi, ImageRendererROI renderer)
 		{
 		super(w,roi,renderer);
 		this.w=w;

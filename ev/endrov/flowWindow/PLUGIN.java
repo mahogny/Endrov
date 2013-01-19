@@ -4,10 +4,10 @@
  * for the full text and how to cite.
  */
 package endrov.flowWindow;
-import endrov.ev.PluginDef;
+import endrov.core.EvPluginDefinition;
 import endrov.flowWindow.FlowWindow;
 
-public class PLUGIN extends PluginDef
+public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{

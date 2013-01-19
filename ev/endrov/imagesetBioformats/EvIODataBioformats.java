@@ -29,10 +29,10 @@ import loci.formats.meta.*;
 import loci.formats.out.OMETiffWriter;
 import loci.formats.out.TiffWriter;
 import loci.formats.services.OMEXMLService;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.*;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.imageset.*;
 import endrov.imagesetOST.EvIODataOST;
 import endrov.util.EvDecimal;
@@ -1137,7 +1137,7 @@ public class EvIODataBioformats implements EvIOData
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 	
 		/*
 		

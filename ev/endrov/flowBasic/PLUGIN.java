@@ -5,7 +5,7 @@
  */
 package endrov.flowBasic;
 
-import endrov.ev.PluginDef;
+import endrov.core.EvPluginDefinition;
 import endrov.flowBasic.collection.FlowUnitConcat;
 import endrov.flowBasic.collection.FlowUnitHeadTail;
 import endrov.flowBasic.collection.FlowUnitSize;
@@ -37,7 +37,7 @@ import endrov.flowBasic.objects.FlowUnitObjectReference;
 import endrov.flowBasic.objects.FlowUnitThisData;
 import endrov.flowBasic.objects.FlowUnitThisFlow;
 
-public class PLUGIN extends PluginDef
+public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{

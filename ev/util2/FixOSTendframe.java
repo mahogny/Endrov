@@ -9,12 +9,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import endrov.annotationLineage.Lineage;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
-import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 
 /**
@@ -84,7 +84,7 @@ public class FixOSTendframe
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 		for(File f:new File("/Volumes3/TBU_main01/ost4dgood/").listFiles())
 			if(f.getName().endsWith(".ost"))

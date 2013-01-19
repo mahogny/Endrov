@@ -15,10 +15,14 @@ import javax.swing.*;
 
 import org.jdom.*;
 
-import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.gui.component.EvComboObject;
+import endrov.gui.component.JSpinnerSimpleEvDecimal;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
 import endrov.recording.EvAcquisition;
@@ -40,8 +44,8 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvAcq
 
 	
 	private JCheckBox cDuration=new JCheckBox("Duration: ");
-	private SpinnerSimpleEvDecimal spDuration=new SpinnerSimpleEvDecimal();
-	private SpinnerSimpleEvDecimal spRate=new SpinnerSimpleEvDecimal();
+	private JSpinnerSimpleEvDecimal spDuration=new JSpinnerSimpleEvDecimal();
+	private JSpinnerSimpleEvDecimal spRate=new JSpinnerSimpleEvDecimal();
 	private JComboBox cDurationUnit=new JComboBox(new Object[]{"Frames","Seconds"});
 	private JComboBox cRateUnit=new JComboBox(new Object[]{"Hz","ms"});
 	private JButton bStartStop=new JButton("Start");

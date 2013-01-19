@@ -11,7 +11,7 @@ import javax.swing.JMenu;
 
 import org.jdom.*;
 
-import endrov.basicWindow.icon.BasicIcon;
+import endrov.gui.icon.BasicIcon;
 
 /**
  * An endrov object. Very little is required, the class exists to great

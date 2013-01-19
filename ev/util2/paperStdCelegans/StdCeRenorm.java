@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import endrov.annotationFrameTime.FrameTime;
+import endrov.annotationLineage.Lineage;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
-import endrov.frameTime.FrameTime;
-import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvMathUtil;
 import endrov.util.Tuple;
@@ -41,7 +41,7 @@ public class StdCeRenorm
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost"));
 		//EvData data=EvData.loadFile(new File("/Volumes3/TBU_main03/ost4dgood/AnglerUnixCoords.ost"));

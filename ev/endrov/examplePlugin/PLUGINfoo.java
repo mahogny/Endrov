@@ -4,14 +4,14 @@
  * for the full text and how to cite.
  */
 package endrov.examplePlugin;
-import endrov.ev.PluginDef;
+import endrov.core.EvPluginDefinition;
 
 /**
  * Should be named PLUGIN to work
  * @author Johan Henriksson
  *
  */
-public class PLUGINfoo extends PluginDef
+public class PLUGINfoo extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{

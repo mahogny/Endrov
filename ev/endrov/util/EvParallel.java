@@ -19,15 +19,6 @@ public class EvParallel
 	/** Number of threads to use */
 	public static int numThread=Runtime.getRuntime().availableProcessors();
 	
-	/**
-	 * Function A -> B
-	 */
-	public static interface FuncAB<A,B>
-		{
-		public B func(A in);
-		}
-	
-
 	public static <A,B,C,D> Map<C,D> map(Map<A,B> in, final FuncAB<Tuple<A,B>,Tuple<C, D>> func)
 		{
 		return EvListUtil.tuples2map(map(numThread,EvListUtil.map2tuples(in), func));
@@ -213,9 +204,9 @@ public class EvParallel
 	/**
 	 * Map :: SortedMap A,B -> (B->C) -> SortedMap A,C
 	 */
-	public static <A,B,C> SortedMap<A, C> mapValues(SortedMap<A, B> map, final EvParallel.FuncAB<B,C> func)
+	public static <A,B,C> SortedMap<A, C> mapValues(SortedMap<A, B> map, final FuncAB<B,C> func)
 		{
-		return EvListUtil.tuples2map(EvParallel.map(EvListUtil.map2tuples(map), new EvParallel.FuncAB<Tuple<A,B>,Tuple<A,C>>(){
+		return EvListUtil.tuples2map(EvParallel.map(EvListUtil.map2tuples(map), new FuncAB<Tuple<A,B>,Tuple<A,C>>(){
 			public Tuple<A,C> func(Tuple<A,B> in)	{return new Tuple<A, C>(in.fst(),func.func(in.snd()));}
 		}));
 		}

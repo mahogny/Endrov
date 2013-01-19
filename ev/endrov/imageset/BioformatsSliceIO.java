@@ -268,7 +268,7 @@ public class BioformatsSliceIO extends EvIOImage
 			}
 		catch(Exception e)
 			{
-			endrov.ev.EvLog.printError("Failed to read image, sourcename="+sourceName+"  id="+id,e);
+			endrov.core.log.EvLog.printError("Failed to read image, sourcename="+sourceName+"  id="+id,e);
 			return null;
 			}
 		}

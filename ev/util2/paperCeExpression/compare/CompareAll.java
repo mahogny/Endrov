@@ -32,26 +32,27 @@ import util2.paperCeExpression.IntegrateAllExp;
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 import util2.paperCeExpression.profileRenderer.RenderHTML;
 
+import endrov.annotationFrameTime.FrameTime;
+import endrov.annotationLineage.Lineage;
+import endrov.annotationLineage.LineageExp;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.frameTime.FrameTime;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
-import endrov.lineage.Lineage;
-import endrov.lineage.LineageExp;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 import endrov.util.EvListUtil;
 import endrov.util.EvParallel;
 import endrov.util.EvXmlUtil;
+import endrov.util.FuncAB;
 import endrov.util.ProgressHandle;
 import endrov.util.Tuple;
 
@@ -757,7 +758,7 @@ public class CompareAll
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 		
 		
@@ -838,7 +839,7 @@ public class CompareAll
 		System.out.println("for integration, Will use #threads  "+numThread);
 
 		///////////////// Integrate signal in each recording //////////////
-		EvParallel.map(numThread,new LinkedList<File>(datas), new EvParallel.FuncAB<File,Object>(){
+		EvParallel.map(numThread,new LinkedList<File>(datas), new FuncAB<File,Object>(){
 			public Object func(File in)
 				{
 				//System.out.println("starting      "+in);
@@ -874,7 +875,7 @@ public class CompareAll
 			System.out.println("for comparison, Will use #threads  "+numThread);
 
 			System.out.println("Calculate pair-wise statistics");
-			EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
+			EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new FuncAB<Tuple<File,File>,Object>(){
 			public Object func(Tuple<File,File> key)
 				{
 				File fa=key.fst();

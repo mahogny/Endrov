@@ -10,9 +10,9 @@ import java.io.*;
 
 import javax.imageio.ImageIO;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.ev.EvLog;
-import endrov.makeMovie.EvMovieMaker;
+import endrov.core.log.EvLog;
+import endrov.gui.window.BasicWindow;
+import endrov.opMakeMovie.EvMovieMaker;
 import endrov.util.EvFileUtil;
 
 /**

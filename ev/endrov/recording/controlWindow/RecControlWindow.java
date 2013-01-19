@@ -21,16 +21,16 @@ import javax.swing.event.DocumentListener;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.BasicWindowExtension;
-import endrov.basicWindow.BasicWindowHook;
-import endrov.basicWindow.EvComboData;
-import endrov.basicWindow.EvComboObject;
-import endrov.basicWindow.icon.BasicIcon;
+import endrov.core.EndrovCore;
+import endrov.core.PersonalConfig;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.JNumericField;
-import endrov.ev.PersonalConfig;
+import endrov.gui.component.EvComboData;
+import endrov.gui.component.EvComboObject;
+import endrov.gui.component.JNumericField;
+import endrov.gui.icon.BasicIcon;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 import endrov.hardware.DevicePropertyType;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
@@ -529,7 +529,7 @@ public class RecControlWindow extends BasicWindow
 			});
 		
 		
-		EV.personalConfigLoaders.put("reccontrolwindow",new PersonalConfig()
+		EndrovCore.personalConfigLoaders.put("reccontrolwindow",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
 				{

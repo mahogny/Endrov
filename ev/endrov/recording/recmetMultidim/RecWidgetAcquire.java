@@ -17,12 +17,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.EvComboObject;
-import endrov.basicWindow.icon.BasicIcon;
+import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.data.EvObject;
-import endrov.ev.EvLog;
+import endrov.gui.component.EvComboObject;
+import endrov.gui.icon.BasicIcon;
+import endrov.gui.window.BasicWindow;
 import endrov.recording.EvAcquisition;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;

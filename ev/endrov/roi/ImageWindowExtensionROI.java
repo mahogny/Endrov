@@ -9,14 +9,14 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.IOException;
 
-import endrov.IJ.roi.ImageJroiImport;
-import endrov.basicWindow.*;
+import endrov.bindingIJ.roi.ImageJroiImport;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
-import endrov.imageWindow.*;
+import endrov.gui.window.BasicWindow;
 import endrov.imageset.EvChannel;
 import endrov.roi.window.*;
 import endrov.util.EvDecimal;
+import endrov.windowViewer2D.*;
 
 /*
 	cut
@@ -31,10 +31,10 @@ import endrov.util.EvDecimal;
 /**
  * Image Window: ROI menu
  */
-public class ImageWindowExtensionROI implements ImageWindowExtension
+public class ImageWindowExtensionROI implements Viewer2DExtension
 	{
 		
-	public void newImageWindow(final ImageWindow w)
+	public void newImageWindow(final Viewer2DWindow w)
 		{
 		JMenu miROI=new JMenu("ROI");
 		w.addMenubar(miROI);

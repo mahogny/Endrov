@@ -14,9 +14,13 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import org.jdom.*;
 
-import endrov.basicWindow.*;
+import endrov.core.*;
+import endrov.core.log.EvLog;
 import endrov.data.*;
-import endrov.ev.*;
+import endrov.gui.component.EvComboObjectOne;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 
 
 /**
@@ -461,7 +465,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 		/******************************************************************************************************
 		 *                               Personal Config                                                      *
 		 *****************************************************************************************************/
-		EV.personalConfigLoaders.put("lastImagesetPath",new PersonalConfig()
+		EndrovCore.personalConfigLoaders.put("lastImagesetPath",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
 				{
@@ -482,7 +486,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 				}
 			});
 
-		EV.personalConfigLoaders.put("imagesetmetawindow",new PersonalConfig()
+		EndrovCore.personalConfigLoaders.put("imagesetmetawindow",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
 				{

@@ -16,15 +16,14 @@ import javax.vecmath.Vector2d;
 
 import org.jdom.*;
 
-import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.gui.GeneralTool;
+import endrov.gui.component.EvHidableSidePaneBelow;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 import endrov.hardware.*;
-import endrov.imageWindow.GeneralTool;
-import endrov.imageWindow.ImageWindow;
-import endrov.imageWindow.ImageWindowInterface;
-import endrov.imageWindow.ImageWindowRenderer;
-import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.recording.CameraImage;
@@ -45,6 +44,10 @@ import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
+import endrov.windowViewer2D.Viewer2DWindow;
+import endrov.windowViewer2D.Viewer2DInterface;
+import endrov.windowViewer2D.Viewer2DRenderer;
+import endrov.windowViewer2D.Viewer2DRendererExtension;
 
 /**
  * Presents an overview image
@@ -52,7 +55,7 @@ import endrov.util.JImageToggleButton;
  * @author Kim Nordlöf, Erik Vernersson
  */
 public class OverviewWindow extends BasicWindow implements ActionListener,
-		ImageWindowInterface, PositionListListener
+		Viewer2DInterface, PositionListListener
 	{
 	/******************************************************************************************************
 	 * Static *
@@ -243,7 +246,7 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 
 		drawArea.setToolButtons(toolButtons.toArray(new JToggleButton[0]));
 
-		for (ImageWindowRendererExtension e : ImageWindow.imageWindowRendererExtensions)
+		for (Viewer2DRendererExtension e : Viewer2DWindow.imageWindowRendererExtensions)
 			e.newImageWindow(this);
 
 		cameraCombo = new JComboBox(new Vector<EvDevicePath>(EvHardware
@@ -608,7 +611,7 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 		resetView();
 		}
 
-	public void addImageWindowRenderer(ImageWindowRenderer renderer)
+	public void addImageWindowRenderer(Viewer2DRenderer renderer)
 		{
 		drawArea.imageWindowRenderers.add(renderer);
 		}
@@ -626,7 +629,7 @@ public class OverviewWindow extends BasicWindow implements ActionListener,
 	@SuppressWarnings("unchecked")
 	public <E> E getRendererClass(Class<E> cl)
 		{
-		for (ImageWindowRenderer r : drawArea.imageWindowRenderers)
+		for (Viewer2DRenderer r : drawArea.imageWindowRenderers)
 			if (cl.isInstance(r))
 				return (E) r;
 		throw new RuntimeException("No such renderer exists - "+cl);

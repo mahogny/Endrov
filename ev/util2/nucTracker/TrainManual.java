@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.util.*;
 import javax.imageio.ImageIO;
 
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 
 
 /**
@@ -42,7 +42,7 @@ public class TrainManual
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		
 		File trueDir =new File("/Volumes/TBU_main03/userdata/henriksson/traintrack/dic/images/true/");
 		File falseDir=new File("/Volumes/TBU_main03/userdata/henriksson/traintrack/dic/images/false/");

@@ -10,13 +10,13 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
-import endrov.basicWindow.BasicWindow;
 import endrov.data.*;
-import endrov.imageWindow.ImageWindow;
-import endrov.modelWindow.ModelWindow;
-import endrov.modelWindow.ModelWindowExtension;
-import endrov.modelWindow.gl.EvGLCamera;
+import endrov.gl.EvGLCamera;
+import endrov.gui.window.BasicWindow;
 import endrov.util.*;
+import endrov.windowViewer2D.Viewer2DWindow;
+import endrov.windowViewer3D.Viewer3DWindow;
+import endrov.windowViewer3D.Viewer3DWindowExtension;
 
 import org.jdom.*;
 
@@ -154,12 +154,12 @@ public class Bookmark extends EvObject
 	static
 		{
 		EvData.supportedMetadataFormats.put(metaType,Bookmark.class);
-		ModelWindow.modelWindowExtensions.add(new ModelWindowExtension(){
-			public void newModelWindow(ModelWindow w)
+		Viewer3DWindow.modelWindowExtensions.add(new Viewer3DWindowExtension(){
+			public void newModelWindow(Viewer3DWindow w)
 				{
 				w.modelWindowHooks.add(new BookmarkModelWindowHook(w));
 				}
 		});
-		ImageWindow.addImageWindowExtension(new BookmarkImageWindowHook());
+		Viewer2DWindow.addImageWindowExtension(new BookmarkImageWindowHook());
 		}
 	}

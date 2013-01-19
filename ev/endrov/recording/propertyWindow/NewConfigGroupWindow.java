@@ -6,7 +6,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-import endrov.basicWindow.BasicWindow;
+
+import endrov.gui.window.BasicWindow;
 import endrov.hardware.EvHardwareConfigGroup;
 import endrov.recording.widgets.RecWidgetSelectProperties;
 import endrov.util.EvSwingUtil;

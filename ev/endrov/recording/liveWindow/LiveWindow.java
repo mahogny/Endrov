@@ -21,17 +21,17 @@ import javax.vecmath.Vector2d;
 
 import org.jdom.*;
 
-import endrov.basicWindow.*;
+import endrov.core.EndrovUtil;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.ev.EV;
+import endrov.gui.GeneralTool;
+import endrov.gui.component.EvComboObject;
+import endrov.gui.component.EvHidableSidePaneBelow;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 import endrov.hardware.*;
-import endrov.imageWindow.GeneralTool;
-import endrov.imageWindow.ImageWindow;
-import endrov.imageWindow.ImageWindowInterface;
-import endrov.imageWindow.ImageWindowRenderer;
-import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
@@ -50,13 +50,17 @@ import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
 import endrov.util.Vector2i;
+import endrov.windowViewer2D.Viewer2DWindow;
+import endrov.windowViewer2D.Viewer2DInterface;
+import endrov.windowViewer2D.Viewer2DRenderer;
+import endrov.windowViewer2D.Viewer2DRendererExtension;
 
 /**
  * Camera live-feed window
  * 
  * @author Johan Henriksson 
  */
-public class LiveWindow extends BasicWindow implements ActionListener, ImageWindowInterface
+public class LiveWindow extends BasicWindow implements ActionListener, Viewer2DInterface
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -394,7 +398,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 		
 		
 		
-		for(ImageWindowRendererExtension e:ImageWindow.imageWindowRendererExtensions)
+		for(Viewer2DRendererExtension e:Viewer2DWindow.imageWindowRendererExtensions)
 			e.newImageWindow(this);
 		
 		cameraCombo=new JComboBox(new Vector<EvDevicePath>(EvHardware.getDeviceMap(HWCamera.class).keySet()));
@@ -564,7 +568,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 		int i=0;
 		do
 			{
-			attempt=name+EV.pad(i, 8);
+			attempt=name+EndrovUtil.pad(i, 8);
 			i++;
 			} while(con.metaObject.containsKey(attempt));
 		Imageset im=new Imageset();
@@ -653,7 +657,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 	
 	
 	
-	public void addImageWindowRenderer(ImageWindowRenderer renderer)
+	public void addImageWindowRenderer(Viewer2DRenderer renderer)
 		{
 		drawArea.imageWindowRenderers.add(renderer);
 		}
@@ -672,7 +676,7 @@ public class LiveWindow extends BasicWindow implements ActionListener, ImageWind
 	@SuppressWarnings("unchecked")
 	public <E> E getRendererClass(Class<E> cl)
 		{
-		for(ImageWindowRenderer r:drawArea.imageWindowRenderers)
+		for(Viewer2DRenderer r:drawArea.imageWindowRenderers)
 			if(cl.isInstance(r))
 				return (E)r;
 		throw new RuntimeException("No such renderer exists - " + cl);

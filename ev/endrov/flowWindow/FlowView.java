@@ -26,12 +26,12 @@ import javax.vecmath.Vector2d;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
+import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.ev.EvLog;
 import endrov.flow.*;
+import endrov.gui.window.BasicWindow;
 import endrov.util.EvSwingUtil;
 import endrov.util.EvXmlUtil;
 import endrov.util.Tuple;

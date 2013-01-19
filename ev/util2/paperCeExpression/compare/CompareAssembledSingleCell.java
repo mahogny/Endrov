@@ -13,16 +13,17 @@ import java.util.Set;
 
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
+import endrov.annotationLineage.Lineage;
+import endrov.annotationLineage.LineageExp;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.lineage.Lineage;
-import endrov.lineage.LineageExp;
 import endrov.util.EvDecimal;
 import endrov.util.EvListUtil;
 import endrov.util.EvParallel;
+import endrov.util.FuncAB;
 import endrov.util.Tuple;
 
 /**
@@ -37,7 +38,7 @@ public class CompareAssembledSingleCell
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 	
 		Set<String> argsSet=new HashSet<String>();
@@ -63,7 +64,7 @@ public class CompareAssembledSingleCell
 		
 		
 		int numThread=8;
-		EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
+		EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new FuncAB<Tuple<File,File>,Object>(){
 		public Object func(Tuple<File,File> key)
 			{
 			File ina=key.fst();

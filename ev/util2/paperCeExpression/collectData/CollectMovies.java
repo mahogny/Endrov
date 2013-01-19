@@ -11,10 +11,10 @@ import javax.imageio.ImageIO;
 
 import util.BatchMovie;
 
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.flowMisc.EvOpAutoContrastBrightness2D;
 import endrov.flowProjection.EvOpProjectMaxZ;
 import endrov.imageset.EvChannel;
@@ -120,7 +120,7 @@ public class CollectMovies
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 		
 		//Find recordings to compare

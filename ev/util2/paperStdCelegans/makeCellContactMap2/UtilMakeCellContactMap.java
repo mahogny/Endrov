@@ -10,11 +10,13 @@ import java.io.*;
 import java.text.NumberFormat;
 import java.util.*;
 
+import endrov.annotationLineage.Lineage;
+import endrov.annotationLineage.util.MakeParticleContactMap;
+import endrov.annotationParticleContactMap.neighmap.NeighMap;
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.*;
-import endrov.lineage.Lineage;
-import endrov.lineage.util.MakeParticleContactMap;
-import endrov.particleContactMap.neighmap.NeighMap;
 import endrov.util.*;
 
 //stdcelegans vs celegans2008.2?
@@ -38,7 +40,7 @@ public class UtilMakeCellContactMap
 		try
 			{
 			EvLog.addListener(new EvLogStdout());
-			EV.loadPlugins();
+			EndrovCore.loadPlugins();
 
 			NumberFormat percentFormat=NumberFormat.getInstance();
 			percentFormat.setMinimumFractionDigits(1);
@@ -72,7 +74,7 @@ public class UtilMakeCellContactMap
 			final TreeSet<String> nucNames=new TreeSet<String>(reflin.particle.keySet());
 
 			//Calc neigh
-			Map<Lineage,NeighMap> nmaps=EvParallel.map(lins, new EvParallel.FuncAB<Tuple<String,Lineage>, Tuple<Lineage,NeighMap>>(){
+			Map<Lineage,NeighMap> nmaps=EvParallel.map(lins, new FuncAB<Tuple<String,Lineage>, Tuple<Lineage,NeighMap>>(){
 			public Tuple<Lineage,NeighMap> func(Tuple<String,Lineage> in)
 				{
 				NeighMap nm=MakeParticleContactMap.calculateCellMap(in.snd(), nucNames, null, null, new EvDecimal(60));

@@ -11,8 +11,8 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.icon.BasicIcon;
+import endrov.gui.icon.BasicIcon;
+import endrov.gui.window.BasicWindow;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePropPath;
 import endrov.hardware.EvHardwareConfigGroup;

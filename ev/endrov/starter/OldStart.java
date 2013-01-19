@@ -10,7 +10,7 @@ import java.util.*;
 
 import javax.swing.*;
 
-import endrov.ev.EvBuild;
+import endrov.core.EvBuild;
 import endrov.util.EvFileUtil;
 
 

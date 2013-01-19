@@ -11,10 +11,10 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.ev.EvLog;
 import endrov.util.Maybe;
 
 

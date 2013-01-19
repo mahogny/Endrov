@@ -13,7 +13,6 @@ import java.util.WeakHashMap;
 
 import IceInternal.Timer;
 
-import endrov.util.EvParallel.FuncAB;
 import endrov.util.ProgressHandle.Stoppable;
 
 

@@ -8,9 +8,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 
 public class CollectGeneList
 	{
@@ -45,7 +45,7 @@ public class CollectGeneList
 		
 
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 
 

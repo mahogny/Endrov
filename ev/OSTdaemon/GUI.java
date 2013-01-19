@@ -7,8 +7,8 @@ package OSTdaemon;
 
 import javax.swing.*;
 
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 
 import java.awt.*;
 import java.awt.event.*;

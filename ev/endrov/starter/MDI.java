@@ -6,9 +6,13 @@
 package endrov.starter;
 
 
-import endrov.basicWindow.*;
-import endrov.ev.*;
-import endrov.imageWindow.*;
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvSplashScreen;
+import endrov.gui.window.EvWindowManagerMDI;
+import endrov.windowViewer2D.*;
 
 import java.io.*;
 
@@ -43,14 +47,14 @@ public class MDI
 		
 		try
 			{
-			EV.loadPlugins();
+			EndrovCore.loadPlugins();
 			BasicWindow.windowManager=new EvWindowManagerMDI.Manager();
 //			BasicWindowExitLast.integrate();
-			EV.loadPersonalConfig();		
+			EndrovCore.loadPersonalConfig();		
 			if(BasicWindow.getWindowList().size()==0)
 				{
 				//Make sure at least one window is open
-				new ImageWindow();
+				new Viewer2DWindow();
 				}
 			if(ss!=null)
 				ss.dispose();

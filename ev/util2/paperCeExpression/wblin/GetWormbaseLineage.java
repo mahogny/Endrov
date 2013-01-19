@@ -20,11 +20,12 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
+import endrov.annotationLineage.Lineage;
+import endrov.core.EndrovCore;
+import endrov.core.EndrovUtil;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
-import endrov.lineage.Lineage;
 import endrov.util.EvFileUtil;
 
 public class GetWormbaseLineage
@@ -41,7 +42,7 @@ public class GetWormbaseLineage
 	public static void main(String[] arg)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 		Map<String,WBCell> cells=new HashMap<String, WBCell>();
 		Map<String,String> maleorigin=new HashMap<String, String>(); //Cell -> parent cell
@@ -57,12 +58,12 @@ public class GetWormbaseLineage
   		SAXBuilder saxBuilder = new SAXBuilder();
   		document = saxBuilder.build(fileInputStream);
   		Element element = document.getRootElement();
-  		for(Element child:EV.castIterableElement(element.getChildren()))
+  		for(Element child:EndrovUtil.castIterableElement(element.getChildren()))
   			{
   			String cellname=child.getAttributeValue("value");
   			WBCell cell=new WBCell();
   			cells.put(cellname,cell);
-    		for(Element child2:EV.castIterableElement(child.getChildren()))
+    		for(Element child2:EndrovUtil.castIterableElement(child.getChildren()))
     			{
     			if(child2.getName().equals("Embryo_division_time"))
     				{
@@ -71,7 +72,7 @@ public class GetWormbaseLineage
     				}
     			else if(child2.getName().equals("Lineage"))
     				{
-    				for(Element child3:EV.castIterableElement(child2.getChildren()))
+    				for(Element child3:EndrovUtil.castIterableElement(child2.getChildren()))
         			{
         			if(child3.getName().equals("Daughter"))
         				cell.child.add(child3.getAttributeValue("value"));

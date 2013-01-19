@@ -4,9 +4,9 @@
  * for the full text and how to cite.
  */
 package endrov.movieOutputFFMPEG;
-import endrov.ev.*;
+import endrov.core.*;
 
-public class PLUGIN extends PluginDef
+public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{

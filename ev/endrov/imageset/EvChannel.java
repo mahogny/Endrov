@@ -19,11 +19,11 @@ import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
+import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.ev.EvLog;
+import endrov.gui.window.BasicWindow;
 import endrov.util.EvDecimal;
 import endrov.util.EvListUtil;
 import endrov.util.MemoizeX;

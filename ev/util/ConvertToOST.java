@@ -8,8 +8,10 @@ package util;
 import java.io.File;
 import java.io.IOException;
 
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.*;
 
 /**
  * Convert from any other format to OST
@@ -30,7 +32,7 @@ public class ConvertToOST
 
 			//Init
 			EvLog.addListener(new EvLogStdout());
-			EV.loadPlugins();
+			EndrovCore.loadPlugins();
 			
 			//For every input file
 			for(String fileName:args)

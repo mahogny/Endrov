@@ -22,27 +22,27 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
-import endrov.modelWindow.BoundingBox;
-import endrov.modelWindow.ModelWindow;
-import endrov.modelWindow.ModelWindowHook;
-import endrov.modelWindow.TransparentRender;
-import endrov.modelWindow.gl.EvGLCamera;
+import endrov.gl.EvGLCamera;
 import endrov.undo.UndoOpPutObject;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
+import endrov.windowViewer3D.BoundingBox3D;
+import endrov.windowViewer3D.Viewer3DWindow;
+import endrov.windowViewer3D.Viewer3DHook;
+import endrov.windowViewer3D.TransparentRenderer3D;
 
 /**
  * Bookmark integration with model window
  * @author Johan Henriksson
  *
  */
-public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
+public class BookmarkModelWindowHook implements Viewer3DHook, ActionListener
 	{
-	private final ModelWindow w;
+	private final Viewer3DWindow w;
 	private JMenuItem miAddBookmark=new JMenuItem("Add bookmark");
 	private JMenu miBookmark=new JMenu("Bookmarks");
 	
-	public BookmarkModelWindowHook(ModelWindow w)
+	public BookmarkModelWindowHook(Viewer3DWindow w)
 		{
 		this.w=w;
 		
@@ -52,7 +52,7 @@ public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 		}
 	
 	
-	public Collection<BoundingBox> adjustScale()
+	public Collection<BoundingBox3D> adjustScale()
 		{
 		return Collections.emptySet();
 		}
@@ -105,7 +105,7 @@ public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 	public void initOpenGL(GL gl)
 		{
 		}
-	public void displayFinal(GL gl, List<TransparentRender> transparentRenderers)
+	public void displayFinal(GL gl, List<TransparentRenderer3D> transparentRenderers)
 		{
 		}
 	public void displayInit(GL gl)

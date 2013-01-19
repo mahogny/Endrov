@@ -14,15 +14,15 @@ import java.util.Set;
 import util2.paperCeExpression.IntegrateAllExp;
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
+import endrov.annotationFrameTime.FrameTime;
+import endrov.annotationLineage.Lineage;
+import endrov.annotationLineage.LineageExp;
+import endrov.annotationLineage.util.LineageMergeUtil;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
-import endrov.frameTime.FrameTime;
-import endrov.lineage.Lineage;
-import endrov.lineage.LineageExp;
-import endrov.lineage.util.LineageMergeUtil;
 import endrov.util.EvDecimal;
 
 /**
@@ -129,7 +129,7 @@ public class AssembleAllSingleCell
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 	
 		Set<String> argsSet=new HashSet<String>();

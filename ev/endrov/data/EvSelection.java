@@ -9,8 +9,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import endrov.basicWindow.EvColor;
-import endrov.ev.GeneralObserver;
+import endrov.core.observer.GeneralObserver;
+import endrov.gui.EvColor;
 
 /**
  * Common selection system. Does not attempt to update windows, this is the

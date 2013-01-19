@@ -18,9 +18,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jdom.*;
 
-import endrov.basicWindow.*;
-import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
+import endrov.gui.icon.BasicIcon;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 import endrov.recording.RecordingResource;
 import endrov.recording.StoredStagePosition;
 import endrov.recording.RecordingResource.PositionListListener;

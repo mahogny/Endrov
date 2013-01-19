@@ -10,8 +10,8 @@ import java.io.*;
 
 import javax.imageio.ImageIO;
 
-import endrov.ev.EV;
-import endrov.makeMovie.EvMovieMaker;
+import endrov.core.EndrovUtil;
+import endrov.opMakeMovie.EvMovieMaker;
 
 /**
  * Interface to quicktime. Encapsulates all shitty commands.
@@ -35,7 +35,7 @@ public class ImageSeriesMovieMaker implements EvMovieMaker
 
 		
 		
-		File thisFile=new File(path,EV.pad(curframe, 8)+".png");
+		File thisFile=new File(path,EndrovUtil.pad(curframe, 8)+".png");
 		curframe++;
 
 		ImageIO.write(im, "png", thisFile);

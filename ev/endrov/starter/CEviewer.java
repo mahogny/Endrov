@@ -5,10 +5,14 @@
  */
 package endrov.starter;
 
-import endrov.basicWindow.*;
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.*;
-import endrov.modelWindow.ModelWindow;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExitLast;
+import endrov.gui.window.EvSplashScreen;
+import endrov.windowViewer3D.Viewer3DWindow;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -67,14 +71,14 @@ public class CEviewer
 		
 		try
 			{
-			EV.loadPlugins();
+			EndrovCore.loadPlugins();
 			BasicWindowExitLast.integrate();
-			EV.loadPersonalConfig();		
-			EV.setHasStartedUp();
+			EndrovCore.loadPersonalConfig();		
+			EndrovCore.setHasStartedUp();
 			if(BasicWindow.getWindowList().size()==0)
 				{
-				new endrov.lineageWindow.LineageWindow();
-				new ModelWindow();
+				new endrov.windowLineage.LineageWindow();
+				new Viewer3DWindow();
 				}
 			EvData.registerOpenedData(EvData.loadFile(new File("angler.ost")));
 			EvData.registerOpenedData(EvData.loadFile(new File("ce2008.ost")));

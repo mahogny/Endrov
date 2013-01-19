@@ -23,13 +23,13 @@ import javax.swing.JPanel;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.icon.BasicIcon;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flowWindow.FlowView;
+import endrov.gui.icon.BasicIcon;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.Vector2i;

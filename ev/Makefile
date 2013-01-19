@@ -40,9 +40,9 @@ uploaddoc:
 	scp -r ../javadoc mahogny@celegans.sh.se:~/Sites/
 
 starters:
-	jar cfvm startOSTdaemon.jar OSTdaemon/MANIFEST.STARTOST OSTdaemon/*.class endrov/ev/EvBuild.class
-	jar cfvm startEndrov.jar endrov/starter/MANIFEST.STARTGUI endrov/starter/*.class endrov/ev/EvBuild.class
-	jar cfvm startViewer.jar endrov/starter/MANIFEST.STARTCEV endrov/starter/*.class endrov/ev/EvBuild.class
+	jar cfvm startOSTdaemon.jar OSTdaemon/MANIFEST.STARTOST OSTdaemon/*.class endrov/core/EvBuild.class
+	jar cfvm startEndrov.jar endrov/starter/MANIFEST.STARTGUI endrov/starter/*.class endrov/core/EvBuild.class
+	jar cfvm startViewer.jar endrov/starter/MANIFEST.STARTCEV endrov/starter/*.class endrov/core/EvBuild.class
 	du -hc start*.jar
 
 #macstarters:

@@ -16,12 +16,12 @@ import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import endrov.annotationLineage.Lineage;
+import endrov.annotationLineage.LineageExp;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
-import endrov.lineage.Lineage;
-import endrov.lineage.LineageExp;
 import endrov.util.EvDecimal;
 import gnu.jpdf.PDFJob;
 
@@ -54,7 +54,7 @@ public class ToLineage
 	public static void main(String[] args)
 			{
 			EvLog.addListener(new EvLogStdout());
-			EV.loadPlugins();
+			EndrovCore.loadPlugins();
 
 			Map<String,String> whichStage=new HashMap<String, String>();
 			whichStage.put("GSM380366","95");

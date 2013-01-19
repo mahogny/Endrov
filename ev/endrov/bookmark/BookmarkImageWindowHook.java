@@ -19,22 +19,22 @@ import javax.swing.JMenuItem;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.imageWindow.ImageWindow;
-import endrov.imageWindow.ImageWindowExtension;
-import endrov.imageWindow.ImageWindowTool;
 import endrov.undo.UndoOpPutObject;
 import endrov.util.EvSwingUtil;
+import endrov.windowViewer2D.Viewer2DWindow;
+import endrov.windowViewer2D.Viewer2DExtension;
+import endrov.windowViewer2D.Viewer2DTool;
 
 /**
  * Bookmark integration with image window
  * @author Johan Henriksson
  *
  */
-public class BookmarkImageWindowHook implements ImageWindowExtension
+public class BookmarkImageWindowHook implements Viewer2DExtension
 	{
-	public void newImageWindow(final ImageWindow w)
+	public void newImageWindow(final Viewer2DWindow w)
 		{
-		w.addImageWindowTool(new ImageWindowTool(){
+		w.addImageWindowTool(new Viewer2DTool(){
 			JMenu miBookmark=new JMenu("Bookmarks");
 			JMenuItem miAddBookmark=new JMenuItem("Add bookmark");
 			

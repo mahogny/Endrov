@@ -8,14 +8,14 @@ import java.util.Map;
 
 import javax.vecmath.Vector3d;
 
+import endrov.annotationLineage.Lineage;
+import endrov.annotationLineage.LineageSelParticle;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvIOImage;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
-import endrov.lineage.Lineage;
-import endrov.lineage.LineageSelParticle;
 import endrov.util.EvDecimal;
 import endrov.util.MemoizeX;
 import endrov.util.ProgressHandle;

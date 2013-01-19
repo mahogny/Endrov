@@ -10,10 +10,12 @@ import java.util.*;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Vector3d;
 
+import endrov.annotationLineage.Lineage;
+import endrov.annotationLineage.LineageSelParticle;
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.*;
-import endrov.ev.*;
-import endrov.lineage.Lineage;
-import endrov.lineage.LineageSelParticle;
 import endrov.util.EvDecimal;
 
 //with OST3+, frametime concept gone, solved
@@ -552,7 +554,7 @@ public class MakeStdWorm5
 		try
 			{
 			EvLog.addListener(new EvLogStdout());
-			EV.loadPlugins();
+			EndrovCore.loadPlugins();
 			
 			String outputName="/Volumes/TBU_main02/ost4dgood/celegans2008.new.ost";
 			

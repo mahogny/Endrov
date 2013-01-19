@@ -8,19 +8,20 @@ package util;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+
+import endrov.core.EndrovCore;
+import endrov.core.batch.BatchThread;
+import endrov.core.batch.CompleteBatch;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.BatchThread;
-import endrov.ev.CompleteBatch;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.flowProjection.EvOpProjectMaxZ;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
-import endrov.makeMovie.EvMovieMakerFactory;
-import endrov.makeMovie.MakeMovieThread;
+import endrov.opMakeMovie.EvMovieMakerFactory;
+import endrov.opMakeMovie.MakeMovieThread;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 
@@ -117,7 +118,7 @@ public class BatchMovie
 	public static void main(String[] arg)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 	
 	
 		if(arg.length==0)

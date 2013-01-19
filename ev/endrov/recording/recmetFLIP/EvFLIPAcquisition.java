@@ -5,13 +5,13 @@ import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.flow.Flow;
 import endrov.flow.FlowConn;
 import endrov.flowBasic.objects.FlowUnitObjectReference;
+import endrov.gui.window.BasicWindow;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvChannel;

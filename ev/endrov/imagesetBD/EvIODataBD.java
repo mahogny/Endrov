@@ -8,8 +8,8 @@ package endrov.imagesetBD;
 import java.io.*;
 import java.util.*;
 
+import endrov.core.EndrovUtil;
 import endrov.data.*;
-import endrov.ev.EV;
 import endrov.imageset.*;
 import endrov.imagesetOST.EvIODataOST;
 import endrov.util.EvDecimal;
@@ -141,7 +141,7 @@ public class EvIODataBD implements EvIOData
 					ch.putStack(new EvDecimal(0), stack);
 					EvImage evim=new EvImage();
 					
-					final File fname=new File(f,dyeName+" - n"+EV.pad(0, 6)+".tif");
+					final File fname=new File(f,dyeName+" - n"+EndrovUtil.pad(0, 6)+".tif");
 					evim.io=new EvIOImage()
 						{
 						public EvPixels eval(ProgressHandle progh)

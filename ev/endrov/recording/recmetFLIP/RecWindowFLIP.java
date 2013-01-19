@@ -15,10 +15,14 @@ import javax.swing.*;
 
 import org.jdom.*;
 
-import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.gui.component.EvComboObject;
+import endrov.gui.component.JSpinnerSimpleEvDecimal;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 import endrov.recording.EvAcquisition;
 import endrov.recording.RecordingResource;
 import endrov.recording.recmetMultidim.RecWidgetAcquire;
@@ -37,9 +41,9 @@ public class RecWindowFLIP extends BasicWindow
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 
-	private SpinnerSimpleEvDecimal spNumRepeats=new SpinnerSimpleEvDecimal();
-	private SpinnerSimpleEvDecimal spBleachTime=new SpinnerSimpleEvDecimal();
-	private SpinnerSimpleEvDecimal spRate=new SpinnerSimpleEvDecimal();
+	private JSpinnerSimpleEvDecimal spNumRepeats=new JSpinnerSimpleEvDecimal();
+	private JSpinnerSimpleEvDecimal spBleachTime=new JSpinnerSimpleEvDecimal();
+	private JSpinnerSimpleEvDecimal spRate=new JSpinnerSimpleEvDecimal();
 
 	private EvFLIPAcquisition acq=new EvFLIPAcquisition();
 	

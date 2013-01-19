@@ -11,9 +11,10 @@ import javax.swing.Icon;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.icon.BasicIcon;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
+import endrov.core.EndrovCore;
+import endrov.core.EndrovUtil;
+import endrov.core.log.EvLog;
+import endrov.gui.icon.BasicIcon;
 import endrov.util.EvDecimal;
 
 
@@ -291,7 +292,7 @@ public class EvContainer
 	void recursiveLoadMetadata(Element element)
 		{
 		//Extract objects
-		for(Element child:EV.castIterableElement(element.getChildren()))
+		for(Element child:EndrovUtil.castIterableElement(element.getChildren()))
 			{			
 			String childName=child.getName();
 			Class<? extends EvObject> ext=EvData.supportedMetadataFormats.get(childName);
@@ -341,7 +342,7 @@ public class EvContainer
 			o.loadMetadata(child.getChild("data"));
 
 			metaObject.put(id, o);
-			if(EV.debugMode)
+			if(EndrovCore.debugMode)
 				EvLog.printLog("Found meta object of type "+child.getName());
 			}
 		}

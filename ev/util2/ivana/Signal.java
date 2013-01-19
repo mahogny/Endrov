@@ -8,10 +8,11 @@ package util2.ivana;
 import java.io.File;
 import java.io.IOException;
 
+import endrov.core.EndrovCore;
+import endrov.core.EndrovUtil;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.flowThreshold.EvOpThresholdFukunaga2D;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
@@ -44,8 +45,8 @@ public class Signal
 			for(int cf=2;/*cf<49*/;cf+=2)
 				{
 				
-				File dicf=new File(basedir + basename+EV.pad(cf, 4)+"-.tif");
-				File sigf=new File(basedir + basename+EV.pad(cf+1, 4)+"-.tif");
+				File dicf=new File(basedir + basename+EndrovUtil.pad(cf, 4)+"-.tif");
+				File sigf=new File(basedir + basename+EndrovUtil.pad(cf+1, 4)+"-.tif");
 				
 				//Stop if no more files
 				if(!dicf.exists())
@@ -88,7 +89,7 @@ public class Signal
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		
 		doDirectory("/home/ivana/lab_data/lab_journal/2009/data2009_06/Nile_Red_20C/01062009_Nilered/AT2633/AT2633_NR/",
 				"010609_AT2633_D1_NR-");

@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import endrov.basicWindow.BasicWindow;
+import endrov.gui.window.BasicWindow;
 import endrov.util.EvSwingUtil;
 
 import Glacier2.CannotCreateSessionException;

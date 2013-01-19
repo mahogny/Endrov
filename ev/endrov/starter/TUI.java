@@ -8,7 +8,9 @@ package endrov.starter;
 import java.util.*;
 import bsh.*;
 
-import endrov.ev.*;
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.script.*;
 
 /**
@@ -26,7 +28,7 @@ public class TUI
 		{
 		EvLog.addListener(new EvLogStdout());
 
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		Scanner in=new Scanner(System.in);
 
 		Script script=new Script();
@@ -34,7 +36,7 @@ public class TUI
 		for(;;)
 			{
 
-			EV.confirmQuit=false;
+			EndrovCore.userShouldConfirmQuit=false;
 			
 			System.out.print("EV> ");
 			String line=in.nextLine();

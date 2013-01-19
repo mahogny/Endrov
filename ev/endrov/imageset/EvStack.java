@@ -11,7 +11,7 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
-import endrov.coordinateSystem.CoordinateSystem;
+import endrov.annotationCoordinateSystem.CoordinateSystem;
 import endrov.util.EvMathUtil;
 import endrov.util.ProgressHandle;
 

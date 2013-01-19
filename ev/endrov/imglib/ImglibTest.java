@@ -13,10 +13,10 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.real.FloatType;
 
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.flowBasic.images.EvOpImageConvertPixel;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixelsType;
@@ -28,7 +28,7 @@ public class ImglibTest
 		{
 		
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 		
 		EvData data=EvData.loadFile(new File("/home/mahogny/Desktop/4.png"));

@@ -15,10 +15,14 @@ import javax.swing.*;
 
 import org.jdom.*;
 
-import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.gui.component.EvComboObject;
+import endrov.gui.component.JSpinnerSimpleEvDecimal;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 import endrov.recording.RecordingResource;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
@@ -37,7 +41,7 @@ public class RecWindowQuickBleach extends BasicWindow implements ActionListener,
 
 	
 	private JButton bStartStop=new JButton("Start");
-	private SpinnerSimpleEvDecimal spBleachTime=new SpinnerSimpleEvDecimal();
+	private JSpinnerSimpleEvDecimal spBleachTime=new JSpinnerSimpleEvDecimal();
 
 	private QuickBleach acq=new QuickBleach();
 	private QuickBleach.AcqThread thread;

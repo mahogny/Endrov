@@ -13,8 +13,8 @@ import omero.ServerError;
 
 import pojos.DatasetData;
 
-import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
+import endrov.gui.window.BasicWindow;
 import endrov.util.EvSwingUtil;
 
 

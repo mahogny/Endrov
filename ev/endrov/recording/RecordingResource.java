@@ -24,15 +24,15 @@ import java.util.Set;
 
 import javax.vecmath.Vector3d;
 
+import endrov.core.observer.GeneralObserver;
 import endrov.data.EvData;
-import endrov.ev.GeneralObserver;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
-import endrov.keyBinding.JInputManager;
+import endrov.keybinding.JInputManager;
 import endrov.recording.device.HWAutoFocus;
 import endrov.recording.device.HWImageScanner;
 import endrov.recording.device.HWStage;

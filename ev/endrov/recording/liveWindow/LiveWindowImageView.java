@@ -22,13 +22,13 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
+import endrov.gui.GeneralTool;
 import endrov.hardware.EvDevicePath;
-import endrov.imageWindow.GeneralTool;
-import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageset.EvPixels;
 import endrov.recording.RecordingResource;
 import endrov.recording.ResolutionManager;
 import endrov.util.Vector2i;
+import endrov.windowViewer2D.Viewer2DRenderer;
 
 /**
  * Image area. Adjusts visible range to screen. Shows under and over exposed regions.
@@ -42,7 +42,7 @@ public abstract class LiveWindowImageView extends JPanel implements MouseListene
 	
 	private Vector2i lastMousePosition=new Vector2i();
 	public GeneralTool currentTool=null;
-	public final Vector<ImageWindowRenderer> imageWindowRenderers=new Vector<ImageWindowRenderer>();
+	public final Vector<Viewer2DRenderer> imageWindowRenderers=new Vector<Viewer2DRenderer>();
 
 	
 	public abstract EvPixels[] getImage();
@@ -192,7 +192,7 @@ public abstract class LiveWindowImageView extends JPanel implements MouseListene
 		g.translate(-offset.x, -offset.y);
 		
 		
-		for(ImageWindowRenderer r:imageWindowRenderers)
+		for(Viewer2DRenderer r:imageWindowRenderers)
 			r.draw(g);
 		}
 	

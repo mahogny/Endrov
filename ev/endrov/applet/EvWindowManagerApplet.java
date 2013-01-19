@@ -17,7 +17,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
-import endrov.basicWindow.*;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.EvWindowManager;
 
 /**
  * Ev Window Manager: Everything in an applet

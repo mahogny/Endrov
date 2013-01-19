@@ -18,9 +18,9 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.ev.EV;
-import endrov.ev.PersonalConfig;
+import endrov.core.EndrovCore;
+import endrov.core.PersonalConfig;
+import endrov.gui.window.BasicWindow;
 import endrov.starter.EvSystemUtil;
 
 /**
@@ -423,7 +423,7 @@ public class EvData extends EvContainer
 		{		
 	
 		//Store recent entries in personal config
-		EV.personalConfigLoaders.put("recentlyLoaded",new PersonalConfig()
+		EndrovCore.personalConfigLoaders.put("recentlyLoaded",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
 				{

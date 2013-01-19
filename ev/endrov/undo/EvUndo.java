@@ -15,9 +15,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.BasicWindowExtension;
-import endrov.basicWindow.BasicWindowHook;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 
 
 

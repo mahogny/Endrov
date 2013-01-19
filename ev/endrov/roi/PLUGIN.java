@@ -4,7 +4,7 @@
  * for the full text and how to cite.
  */
 package endrov.roi;
-import endrov.ev.PluginDef;
+import endrov.core.EvPluginDefinition;
 import endrov.roi.primitive.BoxROI;
 import endrov.roi.primitive.DiffROI;
 import endrov.roi.primitive.EllipseROI;
@@ -13,7 +13,7 @@ import endrov.roi.primitive.SubtractROI;
 import endrov.roi.primitive.UnionROI;
 import endrov.roi.window.WindowROI;
 
-public class PLUGIN extends PluginDef
+public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{

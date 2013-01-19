@@ -3,10 +3,10 @@ package util2.paperCeExpression.compare;
 import java.io.File;
 import java.util.Set;
 
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.imageset.EvChannel;
 import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
@@ -20,7 +20,7 @@ public class FindRecsWithoutExpTimes
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		Set<File> datas=PaperCeExpressionUtil.getAnnotated();
 		System.out.println(datas);
 		

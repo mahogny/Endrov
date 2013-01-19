@@ -14,10 +14,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import org.jdom.*;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.BasicWindowExtension;
-import endrov.basicWindow.BasicWindowHook;
 import endrov.data.EvData;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 
 /**
  * Hardware Configuration window

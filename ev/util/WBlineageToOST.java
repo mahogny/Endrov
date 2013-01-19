@@ -12,11 +12,11 @@ import java.util.Map;
 import org.jdom.Document;
 import org.jdom.Element;
 
+import endrov.annotationLineage.Lineage;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
-import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvXmlUtil;
 
@@ -33,7 +33,7 @@ public class WBlineageToOST
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		
 		Lineage lin=new Lineage();
 		

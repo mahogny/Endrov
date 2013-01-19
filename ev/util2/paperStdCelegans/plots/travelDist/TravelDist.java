@@ -14,12 +14,12 @@ import java.util.Map;
 
 import javax.vecmath.Vector3d;
 
+import endrov.annotationLineage.Lineage;
+import endrov.annotationLineage.LineageExp;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
-import endrov.lineage.Lineage;
-import endrov.lineage.LineageExp;
 import endrov.util.EvDecimal;
 
 /**
@@ -91,7 +91,7 @@ public class TravelDist
 	public static void one(String linname)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 		
 		System.out.println(linname);
@@ -227,7 +227,7 @@ public class TravelDist
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 	
 		one("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost");
 /*

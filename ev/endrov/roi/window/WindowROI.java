@@ -14,10 +14,13 @@ import javax.swing.tree.*;
 import java.util.*;
 import org.jdom.*;
 
-import endrov.basicWindow.*;
-import endrov.basicWindow.icon.BasicIcon;
+import endrov.core.observer.SimpleObserver;
 import endrov.data.*;
-import endrov.ev.*;
+import endrov.gui.component.EvComboObjectOne;
+import endrov.gui.icon.BasicIcon;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 import endrov.imageset.Imageset;
 import endrov.roi.*;
 

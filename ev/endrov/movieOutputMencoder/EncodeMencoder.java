@@ -9,8 +9,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
-import endrov.makeMovie.EvMovieMaker;
-import endrov.makeMovie.EvMovieMakerFactory;
+import endrov.opMakeMovie.EvMovieMaker;
+import endrov.opMakeMovie.EvMovieMakerFactory;
 
 /**
  * Encode movies using Mencoder

@@ -12,8 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-import endrov.basicWindow.SpinnerSimpleEvFrame;
-import endrov.basicWindow.SpinnerSimpleInteger;
+import endrov.gui.component.JSpinnerSimpleEvFrame;
+import endrov.gui.component.JSpinnerSimpleInteger;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
 import endrov.recording.device.HWTrigger;
@@ -29,7 +29,7 @@ public class RecWidgetTimes extends JPanel
 	{
 	private static final long serialVersionUID = 1L;
 	
-	private SpinnerSimpleEvFrame spFreqDt=new SpinnerSimpleEvFrame();
+	private JSpinnerSimpleEvFrame spFreqDt=new JSpinnerSimpleEvFrame();
 	
 	private JRadioButton rbFreqDt=new JRadioButton("∆t", true);
 	private JRadioButton rbMaxSpeed=new JRadioButton("Maximum rate");
@@ -40,8 +40,8 @@ public class RecWidgetTimes extends JPanel
 	private JRadioButton rbOneT=new JRadioButton("Once",true);
 	private ButtonGroup bgTotalTimeGroup=new ButtonGroup();
 	private ButtonGroup bgRateGroup=new ButtonGroup();
-	private SpinnerSimpleInteger spNumFrames=new SpinnerSimpleInteger(1,1,10000000,1);
-	private SpinnerSimpleEvFrame spSumTime=new SpinnerSimpleEvFrame();
+	private JSpinnerSimpleInteger spNumFrames=new JSpinnerSimpleInteger(1,1,10000000,1);
+	private JSpinnerSimpleEvFrame spSumTime=new JSpinnerSimpleEvFrame();
 		
 	private RecWidgetComboDevice comboTriggerDevice=new RecWidgetComboDevice()
 		{

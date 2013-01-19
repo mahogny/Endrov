@@ -11,22 +11,22 @@ import java.util.TreeMap;
 
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
+import endrov.annotationLineage.Lineage;
+import endrov.annotationLineage.expression.IntegrateExp;
+import endrov.annotationLineage.expression.IntegratorCellClosest;
+import endrov.annotationLineage.expression.IntegratorSliceAP;
+import endrov.annotationLineage.expression.IntegratorSliceDV;
+import endrov.annotationLineage.expression.IntegratorSliceLR;
+import endrov.annotationLineage.expression.IntegratorXYZ;
+import endrov.annotationLineage.expression.IntegrateExp.Integrator;
+import endrov.annotationLineage.util.LineageMergeUtil;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.imageset.EvChannel;
 import endrov.imageset.Imageset;
-import endrov.lineage.Lineage;
-import endrov.lineage.expression.IntegrateExp;
-import endrov.lineage.expression.IntegratorCellClosest;
-import endrov.lineage.expression.IntegratorSliceAP;
-import endrov.lineage.expression.IntegratorSliceDV;
-import endrov.lineage.expression.IntegratorSliceLR;
-import endrov.lineage.expression.IntegratorXYZ;
-import endrov.lineage.expression.IntegrateExp.Integrator;
-import endrov.lineage.util.LineageMergeUtil;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 import endrov.util.Tuple;
@@ -347,7 +347,7 @@ public class IntegrateAllExp
 	public static void main(String arg[])
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		
 		if (arg.length>0)
 			{

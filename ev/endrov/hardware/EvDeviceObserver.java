@@ -5,7 +5,7 @@
  */
 package endrov.hardware;
 
-import endrov.ev.GeneralObserver;
+import endrov.core.observer.GeneralObserver;
 
 /**
  * Observe state changes in device

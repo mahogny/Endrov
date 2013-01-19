@@ -8,15 +8,15 @@ package endrov.imageset;
 import java.io.File;
 import java.io.IOException;
 
+import endrov.core.EndrovCore;
 import endrov.data.EvData;
-import endrov.ev.EV;
 import endrov.util.EvDecimal;
 
 public class TestImageset
 	{
 	public static void main(String[] arg)
 		{
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		
 		try
 			{

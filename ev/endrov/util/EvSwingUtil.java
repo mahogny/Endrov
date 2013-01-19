@@ -24,7 +24,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import endrov.ev.EvLog;
+import endrov.core.log.EvLog;
 
 /**
  * Utility functions for Swing
@@ -295,6 +295,11 @@ public class EvSwingUtil
 		});
 		}
 
+	
+	/**
+	 * Run operation in the swing thread. If the code is already executing in the swing thread, then it will not try
+	 * to switch. This would otherwise cause an exception
+	 */
 	public static void invokeAndWaitIfNeeded(Runnable runnable)
 		{
 		if(SwingUtilities.isEventDispatchThread())
@@ -310,6 +315,44 @@ public class EvSwingUtil
 				EvLog.printError(e.getMessage(), e);
 				throw new RuntimeException("Error in invoke and wait");
 				}
+			}
+		}
+
+	/**
+	 * Run the given code in the swing thread
+	 */
+	public static <A,B> B runInSwingThread(final FuncAB<A, B> funcAB, final A arg)
+		{
+		if(SwingUtilities.isEventDispatchThread())
+			return funcAB.func(arg);
+		else
+			{
+			final EvMutableValue<B> mutable=new EvMutableValue<B>();
+			final EvMutableValue<Exception> hadException=new EvMutableValue<Exception>();
+			try
+				{
+				SwingUtilities.invokeAndWait(new Runnable()
+					{
+					public void run()
+						{
+						try
+							{
+							mutable.setValue(funcAB.func(arg));
+							}
+						catch (Exception e)
+							{
+							hadException.setValue(e);
+							}
+						}
+					});
+				}
+			catch (Exception e)
+				{
+				throw new RuntimeException("Unexpected swing thread error");
+				}
+			if(hadException.getValue()!=null)
+				throw new RuntimeException(hadException.getValue().getMessage());
+			return mutable.getValue();
 			}
 		}
 	}

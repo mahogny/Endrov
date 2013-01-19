@@ -25,19 +25,19 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.BasicWindowExtension;
-import endrov.basicWindow.BasicWindowHook;
-import endrov.basicWindow.EvComboObjectOne;
-import endrov.basicWindow.icon.BasicIcon;
+import endrov.core.EndrovCore;
+import endrov.core.PersonalConfig;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.data.tree.DataTree;
 import endrov.data.tree.DataTreeElement;
-import endrov.ev.EV;
-import endrov.ev.PersonalConfig;
 import endrov.flow.*;
 import endrov.flowBasic.objects.FlowUnitObjectReference;
+import endrov.gui.component.EvComboObjectOne;
+import endrov.gui.icon.BasicIcon;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
@@ -387,7 +387,7 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 			}
 			});
 
-		EV.personalConfigLoaders.put(pcWindowName,new PersonalConfig()
+		EndrovCore.personalConfigLoaders.put(pcWindowName,new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
 				{

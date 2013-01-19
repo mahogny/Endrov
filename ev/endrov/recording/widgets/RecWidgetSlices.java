@@ -17,8 +17,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-import endrov.basicWindow.SpinnerSimpleEvDecimal;
-import endrov.basicWindow.SpinnerSimpleInteger;
+import endrov.gui.component.JSpinnerSimpleEvDecimal;
+import endrov.gui.component.JSpinnerSimpleInteger;
 import endrov.recording.RecordingResource;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
@@ -36,16 +36,16 @@ public class RecWidgetSlices extends JPanel implements ActionListener
 	public static final ImageIcon iconSetFromStage=new ImageIcon(RecWidgetSlices.class.getResource("jhSetFromZ.png"));
 
 	
-	private SpinnerSimpleEvDecimal spStartZ=new SpinnerSimpleEvDecimal();
-	private SpinnerSimpleEvDecimal spEndZ=new SpinnerSimpleEvDecimal();
+	private JSpinnerSimpleEvDecimal spStartZ=new JSpinnerSimpleEvDecimal();
+	private JSpinnerSimpleEvDecimal spEndZ=new JSpinnerSimpleEvDecimal();
 	private JRadioButton rbNumSlices=new JRadioButton("#Z");
 	private JRadioButton rbDZ=new JRadioButton("∆Z");
 	private JRadioButton rbOneZ=new JRadioButton("Single slice",true);
 	private ButtonGroup bgDZgroup=new ButtonGroup();
 	private JButton bSetStartZ=new JImageButton(iconSetFromStage,"Set position using current stage position");
 	private JButton bSetEndZ=new JImageButton(iconSetFromStage,"Set position using current stage position");
-	private SpinnerSimpleInteger spNumZ=new SpinnerSimpleInteger(1,1,1000,1);
-	private SpinnerSimpleEvDecimal spDZ=new SpinnerSimpleEvDecimal();
+	private JSpinnerSimpleInteger spNumZ=new JSpinnerSimpleInteger(1,1,1000,1);
+	private JSpinnerSimpleEvDecimal spDZ=new JSpinnerSimpleEvDecimal();
 	
 	public RecWidgetSlices()
 		{

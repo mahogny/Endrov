@@ -17,7 +17,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
@@ -27,6 +26,7 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flowWindow.FlowView;
+import endrov.gui.window.BasicWindow;
 import endrov.util.EvSwingUtil;
 import endrov.util.Maybe;
 

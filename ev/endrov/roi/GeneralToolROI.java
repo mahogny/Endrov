@@ -12,10 +12,11 @@ import java.util.*;
 import javax.swing.*;
 import javax.vecmath.*;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.imageWindow.*;
+import endrov.gui.GeneralTool;
+import endrov.gui.window.BasicWindow;
 import endrov.util.EvDecimal;
 import endrov.util.Tuple;
+import endrov.windowViewer2D.*;
 
 /**
  * Make and edit ROI
@@ -28,10 +29,10 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 	private ROI currentROI=null;
 	private String currentHandle=null;
 
-	private final ImageWindowInterface w;
+	private final Viewer2DInterface w;
 
 	
-	public GeneralToolROI(ImageWindowInterface w)
+	public GeneralToolROI(Viewer2DInterface w)
 		{
 		this.w=w;
 		}

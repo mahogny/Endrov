@@ -24,9 +24,11 @@ import javax.swing.event.DocumentListener;
 import org.jdom.*;
 
 
-import endrov.basicWindow.*;
 import endrov.data.EvData;
-import endrov.ev.JNumericField;
+import endrov.gui.component.JNumericField;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
 import endrov.hardware.DevicePropertyType;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;

@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import javax.vecmath.Vector3d;
 
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.flow.EvOpGeneral;
 import endrov.flowBasic.math.EvOpImageMulImage;
 import endrov.flowGenerateImage.GenerateSpecialImage;
@@ -252,7 +252,7 @@ public class MeanShift3D
 		{
 		//Init
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		
 		ProgressHandle progh=new ProgressHandle();
 		

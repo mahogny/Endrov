@@ -13,13 +13,13 @@ import java.awt.event.MouseEvent;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector2d;
 
-import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
-import endrov.imageWindow.GeneralTool;
-import endrov.imageWindow.ImageWindowInterface;
+import endrov.gui.GeneralTool;
+import endrov.gui.window.BasicWindow;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
+import endrov.windowViewer2D.Viewer2DInterface;
 
 /**
  * Image window tool: initial placement of a ROI
@@ -27,13 +27,13 @@ import endrov.util.EvDecimal;
  */
 public class GeneralToolDragCreateROI implements GeneralTool
 	{
-	private final ImageWindowInterface w;
+	private final Viewer2DInterface w;
 	private final ROI roi;
 	private boolean active=false;
 	private ImageRendererROI renderer;
 	
 	
-	public GeneralToolDragCreateROI(ImageWindowInterface w, ROI roi, ImageRendererROI renderer)
+	public GeneralToolDragCreateROI(Viewer2DInterface w, ROI roi, ImageRendererROI renderer)
 		{
 		this.w=w;
 		this.roi=roi;

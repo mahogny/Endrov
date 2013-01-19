@@ -13,11 +13,14 @@ import java.io.IOException;
 import java.util.*;
 import javax.swing.*;
 
-import endrov.basicWindow.*;
-import endrov.basicWindow.BasicWindow.DialogReturnStatus;
-import endrov.basicWindow.icon.BasicIcon;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
+import endrov.core.EndrovCore;
+import endrov.core.EndrovUtil;
+import endrov.core.log.EvLog;
+import endrov.gui.icon.BasicIcon;
+import endrov.gui.window.BasicWindow;
+import endrov.gui.window.BasicWindowExtension;
+import endrov.gui.window.BasicWindowHook;
+import endrov.gui.window.BasicWindow.DialogReturnStatus;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -189,7 +192,7 @@ public class EvDataMenu implements BasicWindowExtension
 						{
 						public void actionPerformed(ActionEvent e)
 							{
-							String newId=(String)JOptionPane.showInputDialog(null, "Name:", EV.programName+" Rename object", 
+							String newId=(String)JOptionPane.showInputDialog(null, "Name:", EndrovCore.programName+" Rename object", 
 									JOptionPane.QUESTION_MESSAGE, null, null, obId);
 							//Maybe use weak reference?
 							if(newId!=null)
@@ -208,7 +211,7 @@ public class EvDataMenu implements BasicWindowExtension
 						{
 						public void actionPerformed(ActionEvent e)
 							{
-							String newId=(String)JOptionPane.showInputDialog(null, "Name:", EV.programName+" Set Author", 
+							String newId=(String)JOptionPane.showInputDialog(null, "Name:", EndrovCore.programName+" Set Author", 
 									JOptionPane.QUESTION_MESSAGE, null, null, thisMeta.author);
 							//Maybe use weak reference?
 							if(newId!=null)
@@ -405,7 +408,7 @@ public class EvDataMenu implements BasicWindowExtension
 						{
 						public void actionPerformed(ActionEvent e)
 							{
-							EV.openExternal(thisMeta.io.datadir());
+							EndrovUtil.openExternalProgram(thisMeta.io.datadir());
 							}
 						};
 					miOpenDatadir.addActionListener(listener);

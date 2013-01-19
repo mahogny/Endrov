@@ -19,9 +19,9 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import endrov.basicWindow.SpinnerSimpleEvDecimal;
-import endrov.basicWindow.SpinnerSimpleInteger;
-import endrov.basicWindow.icon.BasicIcon;
+import endrov.gui.component.JSpinnerSimpleEvDecimal;
+import endrov.gui.component.JSpinnerSimpleInteger;
+import endrov.gui.icon.BasicIcon;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
@@ -55,17 +55,17 @@ public class RecWidgetChannel extends JPanel implements ActionListener
 	private class OneChannelWidget implements ActionListener
 		{
 		RecWidgetComboConfigGroupStates comboChannel=new RecWidgetComboConfigGroupStates();
-		SpinnerSimpleEvDecimal spExposure=new SpinnerSimpleEvDecimal(new EvDecimal(100));
+		JSpinnerSimpleEvDecimal spExposure=new JSpinnerSimpleEvDecimal(new EvDecimal(100));
 		JCheckBox chLightCompensate=new JCheckBox();
 		JButton bUp=new JImageButton(BasicIcon.iconButtonUp,"Move toward first in order");
 		JButton bDown=new JImageButton(BasicIcon.iconButtonDown,"Move toward end in order");
 		
 		JButton bRemove=new JImageButton(BasicIcon.iconRemove,"Remove channel from list");
 		
-		SpinnerSimpleInteger spZinc=new SpinnerSimpleInteger(1,1,100,1);
-		SpinnerSimpleInteger spZ0=new SpinnerSimpleInteger(0,0,1000,1);
-		SpinnerSimpleInteger spTinc=new SpinnerSimpleInteger(1,1,100,1);
-		SpinnerSimpleInteger spAveraging=new SpinnerSimpleInteger(1,1,10,1);
+		JSpinnerSimpleInteger spZinc=new JSpinnerSimpleInteger(1,1,100,1);
+		JSpinnerSimpleInteger spZ0=new JSpinnerSimpleInteger(0,0,1000,1);
+		JSpinnerSimpleInteger spTinc=new JSpinnerSimpleInteger(1,1,100,1);
+		JSpinnerSimpleInteger spAveraging=new JSpinnerSimpleInteger(1,1,10,1);
 		
 		public OneChannelWidget()
 			{

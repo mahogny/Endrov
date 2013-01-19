@@ -10,11 +10,11 @@ import java.util.TreeSet;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.GeneralObserver;
-import endrov.ev.PersonalConfig;
+import endrov.core.EndrovCore;
+import endrov.core.PersonalConfig;
+import endrov.core.log.EvLog;
+import endrov.core.observer.GeneralObserver;
+import endrov.gui.window.BasicWindow;
 
 
 /**
@@ -220,7 +220,7 @@ public class EvHardwareConfigGroup
 		{
 		
 		
-		EV.personalConfigLoaders.put("configgroups",new PersonalConfig()
+		EndrovCore.personalConfigLoaders.put("configgroups",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
 				{

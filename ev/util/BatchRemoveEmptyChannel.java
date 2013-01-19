@@ -7,10 +7,12 @@ package util;
 import java.io.*;
 import java.util.Map;
 
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.ev.*;
 import endrov.imageset.EvChannel;
 
 
@@ -65,7 +67,7 @@ public class BatchRemoveEmptyChannel
 	public static void main(String[] arg)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 		
 //		if(arg.length==0)

@@ -5,8 +5,10 @@
  */
 package util;
 
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.*;
-import endrov.ev.*;
 
 import java.io.*;
 
@@ -30,7 +32,7 @@ public class LoadAll
 	public static void main(String[] arg)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 		/**
 		 * <rep dir="/Volumes/TBU_main01/ost3dgood" />

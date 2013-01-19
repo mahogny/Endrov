@@ -7,7 +7,7 @@ package endrov.data;
 
 import javax.swing.*;
 
-import endrov.basicWindow.BasicWindow;
+import endrov.gui.window.BasicWindow;
 
 /**
  * This class is extended to add additional items to the Data-menu

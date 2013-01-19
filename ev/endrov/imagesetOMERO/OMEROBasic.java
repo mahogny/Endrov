@@ -5,8 +5,8 @@
  */
 package endrov.imagesetOMERO;
 
-import endrov.basicWindow.BasicWindow;
 import endrov.data.*;
+import endrov.gui.window.BasicWindow;
 import endrov.util.EvSwingUtil;
 
 import java.awt.event.*;

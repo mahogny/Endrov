@@ -29,9 +29,9 @@ import javax.swing.text.TextAction;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
+import endrov.gui.icon.BasicIcon;
+import endrov.gui.window.BasicWindow;
 
 
 /**

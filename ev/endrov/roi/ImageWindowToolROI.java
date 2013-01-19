@@ -8,18 +8,18 @@ package endrov.roi;
 import java.awt.event.*;
 import javax.swing.*;
 
-import endrov.imageWindow.*;
+import endrov.windowViewer2D.*;
 
 /**
  * Make and edit ROI
  *
  * @author Johan Henriksson
  */
-public class ImageWindowToolROI extends GeneralToolROI implements ImageWindowTool
+public class ImageWindowToolROI extends GeneralToolROI implements Viewer2DTool
 	{
-	private final ImageWindow w;
+	private final Viewer2DWindow w;
 		
-	public ImageWindowToolROI(ImageWindow w)
+	public ImageWindowToolROI(Viewer2DWindow w)
 		{
 		super(w);
 		this.w=w;
@@ -29,7 +29,7 @@ public class ImageWindowToolROI extends GeneralToolROI implements ImageWindowToo
 		{
 		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("ROI/Edit");
 		mi.setSelected(w.getTool()==this);
-		final ImageWindowTool This=this;
+		final Viewer2DTool This=this;
 		mi.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){w.setTool(This);}
 		});

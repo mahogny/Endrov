@@ -20,7 +20,7 @@ import loci.formats.IFormatReader;
 import loci.formats.ImageReader;
 import loci.formats.ImageWriter;
 import loci.formats.in.TiffReader;
-import endrov.ev.EvLog;
+import endrov.core.log.EvLog;
 import endrov.util.EvFileUtil;
 import endrov.util.ProgressHandle;
 

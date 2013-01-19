@@ -12,15 +12,16 @@ import java.awt.*;
 import java.io.*;
 import java.util.*;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.icon.BasicIcon;
+import endrov.core.*;
 import endrov.data.DataMenuExtension;
 import endrov.data.EvData;
 import endrov.data.EvDataMenu;
 import endrov.data.EvIOData;
 import endrov.data.RecentReference;
-import endrov.ev.*;
+import endrov.gui.icon.BasicIcon;
+import endrov.gui.window.BasicWindow;
 import endrov.imageset.*;
+import endrov.util.EvBrowserUtil;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
@@ -116,7 +117,7 @@ public class SequenceImageset implements EvIOData
 		
 		public FileConvention(EvData data)
 			{
-			setTitle(EV.programName+" Sequence Import File Conventions: "+basedir.getName());
+			setTitle(EndrovCore.programName+" Sequence Import File Conventions: "+basedir.getName());
 			this.data=data;
 			
 			//GridBox might be better
@@ -165,7 +166,7 @@ public class SequenceImageset implements EvIOData
 		public void actionPerformed(ActionEvent e)
 			{
 			if(e.getSource()==bSyntax)
-				BrowserControl.displayURL(EV.website+"Plugin_ImagesetBasic");
+				EvBrowserUtil.displayURL(EndrovCore.websiteWikiPrefix+"Plugin_ImagesetBasic");
 			else if(e.getSource()==bRebuild)
 				{
 				fileConvention=eSequence.getText();

@@ -13,15 +13,16 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
-import endrov.basicWindow.*;
-import endrov.basicWindow.icon.BasicIcon;
+import endrov.core.*;
 import endrov.data.DataMenuExtension;
 import endrov.data.EvData;
 import endrov.data.EvDataMenu;
 import endrov.data.EvIOData;
 import endrov.data.RecentReference;
-import endrov.ev.*;
+import endrov.gui.icon.BasicIcon;
+import endrov.gui.window.BasicWindow;
 import endrov.imageset.*;
+import endrov.util.EvBrowserUtil;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
@@ -120,7 +121,7 @@ public class NamebasedImageset implements EvIOData
 		
 		public FileConvention()
 			{
-			setTitle(EV.programName+" Name based Import File Conventions");
+			setTitle(EndrovCore.programName+" Name based Import File Conventions");
 			
 			JPanel input=new JPanel(new GridLayout(7,1));
 			input.add(new JLabel(basedir.toString()));
@@ -165,7 +166,7 @@ public class NamebasedImageset implements EvIOData
 		public void actionPerformed(ActionEvent e)
 			{
 			if(e.getSource()==bSyntax)
-				BrowserControl.displayURL(EV.website+"Plugin_ImagesetBasic");
+				EvBrowserUtil.displayURL(EndrovCore.websiteWikiPrefix+"Plugin_ImagesetBasic");
 			else if(e.getSource()==bRebuild)
 				{
 				fileConvention=eSequence.getText();

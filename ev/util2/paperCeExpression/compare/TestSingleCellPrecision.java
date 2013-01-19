@@ -9,17 +9,17 @@ import javax.vecmath.Vector3d;
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
 
+import endrov.annotationLineage.Lineage;
+import endrov.annotationLineage.LineageSelParticle;
+import endrov.annotationLineage.Lineage.InterpolatedParticle;
+import endrov.annotationLineage.util.LineageMergeUtil;
+import endrov.annotationLineage.util.LineageVoronoi;
+import endrov.annotationLineage.util.MakeParticleContactMap;
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
-import endrov.lineage.Lineage;
-import endrov.lineage.LineageSelParticle;
-import endrov.lineage.Lineage.InterpolatedParticle;
-import endrov.lineage.util.LineageMergeUtil;
-import endrov.lineage.util.LineageVoronoi;
-import endrov.lineage.util.MakeParticleContactMap;
 import endrov.util.EvDecimal;
 
 /**
@@ -51,7 +51,7 @@ public class TestSingleCellPrecision
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 	
 		
 		//EvData data=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/AH142_070827.ost"));

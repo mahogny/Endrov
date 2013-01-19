@@ -3,12 +3,12 @@ package util2.hui;
 import java.io.File;
 import java.util.Map;
 
+import endrov.core.EndrovCore;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
-import endrov.ev.EV;
-import endrov.ev.EvLog;
-import endrov.ev.EvLogStdout;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowExecListener;
@@ -118,7 +118,7 @@ public class Hui
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		
 		
 		try

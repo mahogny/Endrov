@@ -14,12 +14,14 @@ import javax.imageio.ImageIO;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
+import endrov.annotationLineage.Lineage;
+import endrov.core.*;
+import endrov.core.log.EvLog;
+import endrov.core.log.EvLogStdout;
 import endrov.data.*;
-import endrov.ev.*;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
-import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 
@@ -45,7 +47,7 @@ public class CollectImages
 	public static void main(String[] args)
 		{
 		EvLog.addListener(new EvLogStdout());
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 		
 //		String channelName="DIC";
 		String channelName="RFP";

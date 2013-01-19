@@ -7,8 +7,8 @@ package endrov.roi;
 
 import java.util.*;
 
-import endrov.basicWindow.BasicWindow;
 import endrov.data.*;
+import endrov.gui.window.BasicWindow;
 
 /**
  * Compound ROI (Region of interest). This is a ROI that depend on other ROI's ie has children

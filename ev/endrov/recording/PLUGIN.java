@@ -4,7 +4,7 @@
  * for the full text and how to cite.
  */
 package endrov.recording;
-import endrov.ev.PluginDef;
+import endrov.core.EvPluginDefinition;
 import endrov.recording.bleachWindow.RecWindowQuickBleach;
 import endrov.recording.liveWindow.LiveWindow;
 import endrov.recording.overviewWindow.OverviewWindow;
@@ -22,7 +22,7 @@ import endrov.recording.recmetFRAP.RecWindowFRAP;
 import endrov.recording.recmetMultidim.RecWindowMultiDim;
 import endrov.recording.resolutionConfigWindow.ResolutionConfigWindow;
 
-public class PLUGIN extends PluginDef
+public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{

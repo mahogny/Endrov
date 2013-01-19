@@ -16,14 +16,14 @@ import javax.swing.event.DocumentListener;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
+import endrov.core.observer.SimpleObserver;
 import endrov.data.*;
-import endrov.ev.SimpleObserver;
-import endrov.imageWindow.*;
+import endrov.gui.window.BasicWindow;
 import endrov.imageset.*;
 import endrov.roi.window.WindowROI;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
+import endrov.windowViewer2D.*;
 
 /**
  * ROI (Region Of Interest), selects a region on channel X frames X x,y,z (5D)
@@ -516,11 +516,11 @@ public abstract class ROI extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		ImageWindow.addImageWindowExtension(new ImageWindowExtensionROI());
+		Viewer2DWindow.addImageWindowExtension(new ImageWindowExtensionROI());
 		
-		ImageWindow.addImageWindowRendererExtension(new ImageWindowRendererExtension()
+		Viewer2DWindow.addImageWindowRendererExtension(new Viewer2DRendererExtension()
 			{
-			public void newImageWindow(ImageWindowInterface w)
+			public void newImageWindow(Viewer2DInterface w)
 				{
 				w.addImageWindowRenderer(new ImageRendererROI(w));
 				}

@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import endrov.annotationLineage.Lineage;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
-import endrov.lineage.Lineage;
 import endrov.util.EvDecimal;
 import endrov.util.ProgressHandle;
 import endrov.util.Vector3i;

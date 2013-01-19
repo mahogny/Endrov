@@ -6,8 +6,8 @@
 package util;
 import java.io.File;
 
+import endrov.core.EndrovCore;
 import endrov.data.EvData;
-import endrov.ev.EV;
 
 /**
  * Run through all imagesets in a folder and generate imagecache.txt in them. Will ignore
@@ -31,7 +31,7 @@ public class IndexImagesets
 	 */
 	public static void main(String[] arg)
 		{
-		EV.loadPlugins();
+		EndrovCore.loadPlugins();
 
 //		if(arg.length==0)
 //			arg=new String[]{"/Volumes/TBU_xeon01_500GB01/needmax/"};
