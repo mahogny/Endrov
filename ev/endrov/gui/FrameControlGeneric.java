@@ -19,8 +19,6 @@ import endrov.gui.component.EvFrameEditor;
 import endrov.gui.component.JSpinnerFrameModel;
 import endrov.gui.icon.BasicIcon;
 import endrov.util.math.EvDecimal;
-import endrov.windowViewer3D.Viewer3DWindow;
-import endrov.windowViewer3D.Viewer3DHook;
 
 
 
@@ -30,7 +28,7 @@ import endrov.windowViewer3D.Viewer3DHook;
  * 
  * @author Johan Henriksson
  */
-public class FrameControl3D extends JPanel implements ActionListener, ChangeListener, EvFrameControl.Synch
+public class FrameControlGeneric extends JPanel implements ActionListener, ChangeListener, EvFrameControl.Synch
 	{
 	static final long serialVersionUID=0;
 
@@ -40,7 +38,9 @@ public class FrameControl3D extends JPanel implements ActionListener, ChangeList
 	/** Set to True if playing forward, False if playing backwards */
 	private boolean playingForward=true;
 	
-	private Viewer3DWindow w; 
+	
+	private FrameControlConnection fcConn;
+//	private Viewer3DWindow w; 
 	
 	
 	private JButton buttonStepBack=new JButton(BasicIcon.iconFramePrev);
@@ -156,10 +156,12 @@ public class FrameControl3D extends JPanel implements ActionListener, ChangeList
 	/**
 	 * Create a frame control linked to model window
 	 */
-	public FrameControl3D(Viewer3DWindow w)
+	public FrameControlGeneric(FrameControlConnection w)//Viewer3DWindow w)
 		{	
-		this.w=w;
+		this.fcConn=w;
+//		this.w=w;
 
+		
 		buttonStepBack.setToolTipText("Step back");
 		buttonStepForward.setToolTipText("Step forward");
 		buttonPlayBack.setToolTipText("Play backwards");
@@ -257,35 +259,11 @@ public class FrameControl3D extends JPanel implements ActionListener, ChangeList
 		{
 		if(e.getSource()==buttonBeginning)
 			{
-			//TODO need to be recursive
-			EvDecimal first=null;
-			for(Viewer3DHook h:w.modelWindowHooks)
-				{
-				EvDecimal f=h.getFirstFrame();
-				if(f!=null && (first==null || f.less(first)))
-					first=f;
-				}
-			System.out.println(first);
-			if(first==null)
-				setFrame(new EvDecimal(0));
-			else
-				setFrame(first);
+			setFrame(fcConn.firstFrame());
 			}
 		else if(e.getSource()==buttonEnd)
 			{
-			//TODO need to be recursive
-			EvDecimal last=null;
-			for(Viewer3DHook h:w.modelWindowHooks)
-				{
-				EvDecimal f=h.getLastFrame();
-				if(f!=null && (last==null || f.greater(last)))
-					last=f;
-				}
-			System.out.println(last);
-			if(last==null)
-				setFrame(new EvDecimal(0));
-			else
-				setFrame(last);
+			setFrame(fcConn.lastFrame());
 			}
 		else if(e.getSource()==buttonStepForward)
 			stepForward(currentSpeed());
@@ -374,7 +352,7 @@ public class FrameControl3D extends JPanel implements ActionListener, ChangeList
 		{
 		removeChangeListener();
 		spinnerFrame.setValue(frame.doubleValue());
-		w.stateChanged(new ChangeEvent(this));
+		fcConn.frameControlUpdated();
 		addChangeListener();
 		}
 	
@@ -402,7 +380,7 @@ public class FrameControl3D extends JPanel implements ActionListener, ChangeList
 	public void setFrame(EvDecimal frame)
 		{
 		spinnerFrame.setValue(frame);
-		w.stateChanged(new ChangeEvent(this));
+		fcConn.frameControlUpdated();
 		EvFrameControl.replicateSettings(this);
 		}
 	

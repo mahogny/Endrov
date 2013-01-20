@@ -70,7 +70,7 @@ public class Viewer3DWindow extends EvBasicWindow
 	
 	private JProgressBar progress=new JProgressBar(0,1000);	
 	public final Viewer3DView view;
-	private final FrameControl3D frameControl;
+	private final FrameControlGeneric frameControl;
 	private JSnapBackSlider barZoom=new JSnapBackSlider(JScrollBar.VERTICAL,0,1000);
 	private JSnapBackSlider barRotate=new JSnapBackSlider(JScrollBar.VERTICAL,0,1000);	
 	private ObjectDisplayList objectDisplayList=new ObjectDisplayList();
@@ -135,7 +135,46 @@ public class Viewer3DWindow extends EvBasicWindow
 	public Viewer3DWindow(Rectangle bounds)
 		{
 		view=new Viewer3DView(this);
-		frameControl=new FrameControl3D(this);
+		frameControl=new FrameControlGeneric(new FrameControlConnection()
+			{
+			public EvDecimal lastFrame()
+				{
+				//TODO need to be recursive
+				EvDecimal last=null;
+				for(Viewer3DHook h:modelWindowHooks)
+					{
+					EvDecimal f=h.getLastFrame();
+					if(f!=null && (last==null || f.greater(last)))
+						last=f;
+					}
+				System.out.println(last);
+				if(last==null)
+					return new EvDecimal(0);
+				else
+					return last;
+				}
+			
+			public void frameControlUpdated()
+				{
+				stateChanged(new ChangeEvent(this));
+				}
+			
+			public EvDecimal firstFrame()
+				{
+				//TODO need to be recursive
+				EvDecimal first=null;
+				for(Viewer3DHook h:modelWindowHooks)
+					{
+					EvDecimal f=h.getFirstFrame();
+					if(f!=null && (first==null || f.less(first)))
+						first=f;
+					}
+				if(first==null)
+					return new EvDecimal(0);
+				else
+					return first;
+				}
+			});
 
 		//Add hooks
 		for(Viewer3DWindowExtension e:modelWindowExtensions)

@@ -29,6 +29,8 @@ import endrov.util.math.EvMathUtil;
 
 /**
  * Common control to change which frame is to be displayed
+ *
+ * TODO integrate with FrameControlGeneric
  * 
  * @author Johan Henriksson
  */
