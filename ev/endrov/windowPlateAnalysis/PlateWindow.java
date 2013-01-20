@@ -99,7 +99,13 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	private final JMenuItem miExportCSV=new JMenuItem("Export as CSV");
 	private final JMenuItem miEvaluate=new JMenuItem("Evaluate flow");
 	
-	
+
+	private final JMenu menuImageSize=new JMenu("Thumbnail size");
+	private final JMenuItem miSize100=new JMenuItem("100px");
+	private final JMenuItem miSize200=new JMenuItem("200px");
+	private final JMenuItem miSize300=new JMenuItem("300px");
+	private final JMenuItem miSize500=new JMenuItem("500px");
+	private final JMenuItem miSizeOrig=new JMenuItem("Orig size");
 	
 	/**
 	 * Make a new window at given location
@@ -186,6 +192,21 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		miExportCSV.addActionListener(this);
 		miEvaluate.addActionListener(this);
 
+		
+
+
+		miSize100.addActionListener(this);
+		miSize200.addActionListener(this);
+		miSize300.addActionListener(this);
+		miSize500.addActionListener(this);
+		miSizeOrig.addActionListener(this);
+
+		menuPlateWindow.add(menuImageSize);
+		menuImageSize.add(miSize100);
+		menuImageSize.add(miSize200);
+		menuImageSize.add(miSize300);
+		menuImageSize.add(miSize500);
+		menuImageSize.add(miSizeOrig);
 		}
 	
 
@@ -505,6 +526,20 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			}
 		else if(e.getSource()==miZoom)
 			imagePanel.zoomToFit();
+		else
+			{
+			
+			if(e.getSource()==miSize100)
+				imagePanel.setThumbnailSize(100);
+			else if(e.getSource()==miSize200)
+				imagePanel.setThumbnailSize(200);
+			else if(e.getSource()==miSize300)
+				imagePanel.setThumbnailSize(300);
+			else if(e.getSource()==miSize500)
+				imagePanel.setThumbnailSize(500);
+			else if(e.getSource()==miSizeOrig)
+				imagePanel.setThumbnailSize(null);
+			}
 		}
 
 	

@@ -51,8 +51,8 @@ echo "Num images"
 ls -1 $name/*/*.png $name/*/*/*.png $name/*/*/*/*.png | wc -l
 
 echo "claimed version"
-cat $name/endrov/endrov/version.txt
-cat $name/endrov/endrov/timestamp.txt
+cat $name/endrov/core/version.txt
+cat $name/endrov/core/timestamp.txt
 echo ""
 
 #delete

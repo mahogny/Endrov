@@ -252,6 +252,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 
 	private ValueRange imIntensityRange=new ValueRange();
 
+	
+	
 	/**
 	 * Date source: Particle measure
 	 */
@@ -276,7 +278,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	private TreeSet<String> lastWellPaths=new TreeSet<String>();
 
 	
-	
+	private Integer thumbnailSize=200;
 	private double contrast=1, brightness=0;
 	private int imageMargin=1000;
 	private int imageSize=10000;
@@ -773,32 +775,38 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	
 	
 	
-	
 
 	/**
 	 * Get the pixel data from the data source
 	 */
 	private void loadImageForWell(OneWell w)
 		{
-		if(w.pixels==null)
+		EvDecimal closestFrame=w.evChannel.closestFrame(currentFrame);
+		EvStack stack=w.evChannel.getStack(closestFrame);
+		if(stack!=null)
 			{
-			if(w!=null)
-				setCalculatingText(w);
-
-			EvDecimal closestFrame=w.evChannel.closestFrame(currentFrame);
-			
-			EvStack stack=w.evChannel.getStack(closestFrame);
-			if(stack!=null)
+			int shouldBeWidth=stack.getWidth();
+			if(thumbnailSize!=null)
+				shouldBeWidth=thumbnailSize;
+		
+			if(w.pixels==null || w.pixels.getWidth()!=shouldBeWidth)
 				{
-				int pixwidth=200;
-				double scaleFactor=pixwidth/(double)stack.getWidth();
+				if(w!=null)
+					setCalculatingText(w);
+
+			
+				
 				
 				int z=currentZ;
 				if(z>=stack.getDepth())
 					z=stack.getDepth()-1;
 					
 				//Fetch image from channel
-				stack=new EvOpScaleImage(scaleFactor, scaleFactor).exec1(null, stack);  //TODO no reason to scale all stack
+				if(thumbnailSize!=null)
+					{
+					double scaleFactor=thumbnailSize/(double)stack.getWidth();
+					stack=new EvOpScaleImage(scaleFactor, scaleFactor).exec1(null, stack);  //TODO no reason to scale all stack
+					}
 				EvImagePlane evim=stack.getPlane(z);
 				EvPixels pixels=evim.getPixels();
 				w.pixels=pixels;
@@ -812,7 +820,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				imp.resY=imageSize/(double)w.pixels.getHeight();
 				imp.prepareImage();
 				w.imp=imp; //This should be done last
-
+				
 				//Keep track of the intensity range
 				for(float f:pixels.convertToFloat(true).getArrayFloat())
 					imIntensityRange.add(f);
@@ -1009,6 +1017,13 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			wellMap.get(pathToWell).execFlow(pathToWell);
 			return; //TEMP TODO
 			}
+		}
+
+
+	public void setThumbnailSize(Integer size)
+		{
+		thumbnailSize=size;
+		imageThreadLock.notifyAll();
 		}
 	
 	
