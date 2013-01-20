@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.ref.WeakReference;
+import java.util.WeakHashMap;
 
 import endrov.core.EndrovCore;
 import endrov.util.ProgressHandle;
@@ -65,6 +66,9 @@ public class EvImageSwap
 			{
 			for(;;)
 				{
+				//Allow swapping to be paused
+				waitForLocks();
+				
 				//Get the next image
 				EvImagePlane evim;
 				EvPixels p;
@@ -251,6 +255,61 @@ public class EvImageSwap
 			System.out.println("hint to swap image");
 			lru.addFirst(new WeakReference<EvImagePlane>(evim));
 			lru.notifyAll();
+			}
+		}
+
+	
+	private static WeakHashMap<SwapLock, Object> lockList=new WeakHashMap<SwapLock, Object>();
+	
+	
+	private static void waitForLocks()
+		{
+		for(;;)
+			synchronized (lockList)
+				{
+				try
+					{
+					if(!lockList.isEmpty())
+						lockList.wait();
+					return;
+					}
+				catch (InterruptedException e){}
+				}
+		}
+	
+	
+	/**
+	 * A lock on the swap. As long as it is held, the swap is paused 
+	 */
+	public static class SwapLock
+		{
+		/**
+		 * Remove the lock on the swap. This function is automatically invoked by GC in case the lock gets lost (crash or similar),
+		 * but it should anyway be manually invoked to ensure that the swap is allowed to proceed as soon as possible
+		 */
+		public void unlock()
+			{
+			synchronized (lockList)
+				{
+				lockList.remove(this);
+				}
+			}
+		
+		@Override
+		protected void finalize() throws Throwable
+			{
+			unlock();
+			}
+		}
+		
+	
+	public static SwapLock lock()
+		{
+		SwapLock lock=new SwapLock();
+		synchronized (lockList)
+			{
+			lockList.put(lock, null);
+			return lock;
 			}
 		}
 	

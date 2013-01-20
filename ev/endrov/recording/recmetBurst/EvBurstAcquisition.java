@@ -55,6 +55,7 @@ public class EvBurstAcquisition extends EvAcquisition
 	public String rateUnit;
 	
 	public boolean earlySwap;
+	public boolean pauseSwap;
 	
 	public String channelName;
 	public EvContainer container;
@@ -155,6 +156,13 @@ public class EvBurstAcquisition extends EvAcquisition
 			};	
 			
 				
+		private HWCamera cam;	
+		private boolean isRGB;
+		private EvDecimal actualInt;
+		private EvDecimal curFrame;
+		private Imageset imset;
+		private ResolutionManager.Resolution res;
+			
 		@Override
 		public void run()
 			{
@@ -166,8 +174,9 @@ public class EvBurstAcquisition extends EvAcquisition
 				((HWTrigger)settings.deviceTriggerOff.getDevice()).addTriggerListener(listenerOff);
 
 			//Get current camera
-			HWCamera cam=EvHardware.getCoreDevice().getCurrentCamera();
+			cam=EvHardware.getCoreDevice().getCurrentCamera();
 			EvDevicePath campath=EvHardware.getCoreDevice().getCurrentDevicePathCamera();
+			res=ResolutionManager.getCurrentResolutionNotNull(campath);
 			
 			EvDecimal interval;
 			double intervalMS;
@@ -181,21 +190,8 @@ public class EvBurstAcquisition extends EvAcquisition
 				interval=new EvDecimal(1).divide(settings.rate);
 				intervalMS=1000.0/settings.rate.doubleValue();
 				}
-			EvDecimal actualInt=interval;
+			actualInt=interval;
 			
-			
-			/*
-			int durFrames;
-			if(settings.durationUnit.equals("Seconds"))
-				{
-				durFrames=settings.duration.divide(interval).intValue();
-				}
-			else
-				{
-				//Frames
-				durFrames=settings.duration.intValue();
-				}
-			*/
 			
 			//Check that there are enough parameters
 			if(cam!=null && settings.container!=null)
@@ -226,10 +222,10 @@ public class EvBurstAcquisition extends EvAcquisition
 							if(toStop)
 								break;
 
-							boolean isRGB=false;
+							isRGB=false;
 
 							//Set up the imageset
-							Imageset imset=new Imageset();
+							imset=new Imageset();
 							for(int i=0;;i++)
 								{
 								String suggestName;
@@ -261,8 +257,13 @@ public class EvBurstAcquisition extends EvAcquisition
 							//Start one sequence acquisition
 							while(shouldContinue() && semTriggered.availablePermits()>0)
 								{
+								//Pause swap if requested
+								EvImageSwap.SwapLock swaplock=null;
+								if(settings.pauseSwap)
+									swaplock=EvImageSwap.lock();
+								
 								//Decide starting time using wall-clock
-								EvDecimal curFrame=new EvDecimal(System.currentTimeMillis()).divide(new EvDecimal(1000));
+								curFrame=new EvDecimal(System.currentTimeMillis()).divide(new EvDecimal(1000));
 								if(firstFrame==null)
 									firstFrame=curFrame;
 								curFrame=curFrame.subtract(firstFrame);
@@ -281,77 +282,25 @@ public class EvBurstAcquisition extends EvAcquisition
 								//Run acquisition until triggered off
 								while(shouldContinue() && semTriggered.availablePermits()>0)
 									{
-									//Avoid busy loop
-									try
+									if(!handleIncomingImage())
 										{
-										Thread.sleep((long)intervalMS/3);
+										//Avoid busy loop in case the computer runs too fast
+										try{Thread.sleep((long)intervalMS/3);}
+										catch (Exception e){}
 										}
-									catch (Exception e)
-										{
-										e.printStackTrace();
-										}
-
-									//Optional (well, currently not): Use the wall clock time instead of the calculated time using intervals.
-									//This can be inaccurate, but the calculated time does not include the time for data transfer so the
-									//clock would actually run slower than the real clock.
-//									curFrame=new EvDecimal(System.currentTimeMillis()).divide(new EvDecimal(1000));
-//									curFrame=curFrame.subtract(firstFrame);
 									
-									//See if another image is incoming
-									CameraImage camIm=cam.snapSequence();
-									if(camIm!=null)
-										{
-										
-										System.out.println("burst snap, time: "+curFrame+"   "+EvFrameControl.formatTime(curFrame));
-										
-										
-										System.out.println("Got image");
-										
-										if(isRGB)
-											{
-											//TODO
-											
-											}
-										else
-											{
-											ResolutionManager.Resolution res=ResolutionManager.getCurrentResolutionNotNull(campath);
-											
-											EvChannel ch=(EvChannel)imset.getChild(settings.channelName);
-											EvStack stack=new EvStack();
-											
-											stack.setRes(res.x,res.y,1);
-
-											stack.setDisplacement(new Vector3d(
-													RecordingResource.getCurrentStageX(),
-													RecordingResource.getCurrentStageY(),
-													0
-													));
-											
-											EvImagePlane evim=new EvImagePlane(camIm.getPixels()[0]);
-											
-											System.out.println(camIm.getPixels());
-											System.out.println(camIm.getNumComponents());
-											
-											stack.putPlane(0, evim);
-											ch.putStack(curFrame, stack);
-											
-											if(settings.earlySwap)
-												EvImageSwap.hintSwapImage(evim);
-											}
-											
-										//Increase frame and time count
-										totalFrameCount++;
-										totalSecCount=totalSecCount.add(actualInt);
-										curFrame=curFrame.add(actualInt);
-										
-										//Update buffer status
-										settings.emitAcquisitionEventStatus(cam.getSequenceBufferUsed());
-										}
 									}
-								System.out.println("Stopping sequence");
 								
+								System.out.println("Stopping sequence");
 								cam.stopSequenceAcq();
 								
+								//Handle the remaining images
+								while(handleIncomingImage());
+								
+								
+								//Unpause swap if previously paused
+								if(swaplock!=null)
+									swaplock.unlock();
 								}
 							
 							}
@@ -369,9 +318,71 @@ public class EvBurstAcquisition extends EvAcquisition
 //				RecordingResource.unblockLiveCamera(lockCamera);
 				}
 			
-			//System.out.println("---------stop-----------");
 			toStop=false;
 			settings.emitAcquisitionEventStopped();
+			imset=null; //Paranoid insurance against a bad space leak
+			}
+		
+		
+		/**
+		 * Take care of one incoming image. Returns true if one image was handled
+		 */
+		private boolean handleIncomingImage() throws Exception
+			{
+
+			//See if another image is incoming
+			CameraImage camIm=cam.snapSequence();
+			if(camIm!=null)
+				{
+				
+				System.out.println("burst snap, time: "+curFrame+"   "+EvFrameControl.formatTime(curFrame));
+				
+				
+				System.out.println("Got image");
+				
+				if(isRGB)
+					{
+					//TODO
+					
+					}
+				else
+					{
+					
+					EvChannel ch=(EvChannel)imset.getChild(settings.channelName);
+					EvStack stack=new EvStack();
+					
+					stack.setRes(res.x,res.y,1);
+
+					stack.setDisplacement(new Vector3d(
+							RecordingResource.getCurrentStageX(),
+							RecordingResource.getCurrentStageY(),
+							0
+							));
+					
+					EvImagePlane evim=new EvImagePlane(camIm.getPixels()[0]);
+					
+					System.out.println(camIm.getPixels());
+					System.out.println(camIm.getNumComponents());
+					
+					stack.putPlane(0, evim);
+					ch.putStack(curFrame, stack);
+					
+					if(settings.earlySwap)
+						EvImageSwap.hintSwapImage(evim);
+					}
+					
+				//Increase frame and time count
+				totalFrameCount++;
+				totalSecCount=totalSecCount.add(actualInt);
+				curFrame=curFrame.add(actualInt);
+				
+				//Update buffer status
+				settings.emitAcquisitionEventStatus(cam.getSequenceBufferUsed());
+				
+				return true;
+				}
+			else
+				return false;
 			}
 		
 		

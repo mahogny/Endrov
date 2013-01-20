@@ -49,6 +49,7 @@ public class RecWindowBurst extends EvBasicWindow implements ActionListener, EvA
 	private JComboBox cRateUnit=new JComboBox(new Object[]{"Hz","ms"});
 	private JButton bStartStop=new JButton("Start");
 	private JCheckBox cSwapEarly=new JCheckBox("Early swap to disk"); 
+	private JCheckBox cPauseSwap=new JCheckBox("Pause swap during burst"); 
 
 	private JProgressBar pbBuffer=new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
 	
@@ -142,8 +143,13 @@ public class RecWindowBurst extends EvBasicWindow implements ActionListener, EvA
 					
 					),
 					
-			cSwapEarly,
-			
+					EvSwingUtil.withTitledBorder("Swapping", 
+							EvSwingUtil.layoutEvenVertical(
+									cSwapEarly,
+									cPauseSwap
+							)
+					),
+		
 			EvSwingUtil.withTitledBorder("Buffer status", pbBuffer),
 			
 			EvSwingUtil.layoutLCR(
@@ -188,7 +194,10 @@ public class RecWindowBurst extends EvBasicWindow implements ActionListener, EvA
 				acq.rateUnit=(String)cRateUnit.getSelectedItem();
 				
 				acq.earlySwap=cSwapEarly.isSelected();
+				acq.pauseSwap=cPauseSwap.isSelected();
+				
 				acq.container=objectCombo.getSelectedObject();
+				
 				
 				if(cbTriggerOn.isSelected())
 					acq.deviceTriggerOn=comboTriggerDeviceOn.getSelectedDevice();
