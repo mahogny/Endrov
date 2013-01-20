@@ -1,4 +1,4 @@
-package endrov.recording.propertyWindow;
+package endrov.recording.hardwareControlWindow;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -54,7 +54,7 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 				if(device!=null)
 					{
 					String property=devicePropPath.getProperty();
-					JComponent propcomp=PropertyWindow.createComponentForProperty(device, property);
+					JComponent propcomp=HardwareControlWindow.createComponentForProperty(device, property);
 					if(propcomp!=null)
 						add(propcomp, BorderLayout.CENTER);
 					else

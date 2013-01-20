@@ -5,6 +5,7 @@
  */
 package endrov.hardware;
 import endrov.core.EvPluginDefinition;
+import endrov.hardware.gui.EvHardwareConfigWindow;
 
 public class PLUGIN extends EvPluginDefinition
 	{

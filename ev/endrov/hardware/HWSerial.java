@@ -6,6 +6,12 @@
 package endrov.hardware;
 
 
+/**
+ * Hardware serial interfaces
+ * 
+ * @author Johan Henriksson
+ *
+ */
 public interface HWSerial extends EvDevice
 	{
 

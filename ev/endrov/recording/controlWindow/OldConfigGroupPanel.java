@@ -19,7 +19,7 @@ import endrov.gui.component.JImageButton;
 import endrov.gui.icon.BasicIcon;
 import endrov.gui.window.EvBasicWindow;
 import endrov.hardware.EvHardwareConfigGroup;
-import endrov.recording.propertyWindow.NewConfigGroupWindow;
+import endrov.recording.hardwareControlWindow.NewConfigGroupWindow;
 
 /**
  * Panel to choose state using config groups

@@ -111,7 +111,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	 * Make a new window at given location
 	 */
 	
-	public PlateWindow(Rectangle bounds)
+	public PlateWindow()
 		{
 		cw.updatePanelContrastBrightness();
 		
@@ -170,7 +170,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		attachDragAndDrop(imagePanel);
 		packEvWindow();
 		frameControl.setFrame(EvDecimal.ZERO);
-		setBoundsEvWindow(bounds);
+		setBoundsEvWindow(500,400);
 		setVisibleEvWindow(true);
 		dataChangedEvent();
 		}
@@ -603,7 +603,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	/*	
 		EV.loadPlugins();
 */
-		new PlateWindow(new Rectangle(600,600));
+		new PlateWindow();
 		
 //		EvData d=EvData.loadFile(new File("/media/753C-F3A6/20121001_plate1"));
 		EvData d=new EvData();
@@ -677,7 +677,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 					
 					public void actionPerformed(ActionEvent e) 
 						{
-						new PlateWindow(null);
+						new PlateWindow();
 						}
 					
 					public void buildMenu(EvBasicWindow w){}

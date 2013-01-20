@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.propertyWindow;
+package endrov.recording.hardwareControlWindow;
 
 
 import java.awt.BorderLayout;
@@ -41,7 +41,7 @@ import endrov.util.EvStringUtil;
  * Property window - shows every property available
  * @author Johan Henriksson 
  */
-public class PropertyWindow extends EvBasicWindow implements ActionListener, EvHardwareConfigGroup.GroupsChangedListener
+public class HardwareControlWindow extends EvBasicWindow implements ActionListener, EvHardwareConfigGroup.GroupsChangedListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -59,7 +59,7 @@ public class PropertyWindow extends EvBasicWindow implements ActionListener, EvH
 	private JButton bNewGroup=new JButton("New group");
 	
 	
-	public PropertyWindow()
+	public HardwareControlWindow()
 		{
 		updateAllPanel(allPropertyPanel);
 		updatePalettePanel(defaultPropertyPanel);
@@ -78,7 +78,7 @@ public class PropertyWindow extends EvBasicWindow implements ActionListener, EvH
 		EvHardwareConfigGroup.groupsChangedListeners.addWeakListener(this);
 		
 		//Window overall things
-		setTitleEvWindow("Property");
+		setTitleEvWindow("Hardware control");
 		packEvWindow();
 		Rectangle bounds=new Rectangle(600,300);
 		if(bounds.width<getWidth())
@@ -362,14 +362,14 @@ public class PropertyWindow extends EvBasicWindow implements ActionListener, EvH
 				{
 				public void createMenus(EvBasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("Property",new ImageIcon(getClass().getResource("iconWindow.png")));
+					JMenuItem mi=new JMenuItem("Hardware control",new ImageIcon(getClass().getResource("iconWindow.png")));
 					mi.addActionListener(this);
 					EvBasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}
 	
 				public void actionPerformed(ActionEvent e) 
 					{
-					new PropertyWindow();
+					new HardwareControlWindow();
 					}
 	
 				public void buildMenu(EvBasicWindow w){}

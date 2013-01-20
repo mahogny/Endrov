@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.hardware;
+package endrov.hardware.gui;
 
 
 import java.awt.BorderLayout;
@@ -18,6 +18,9 @@ import endrov.data.EvData;
 import endrov.gui.window.EvBasicWindow;
 import endrov.gui.window.EvBasicWindowExtension;
 import endrov.gui.window.EvBasicWindowHook;
+import endrov.hardware.EvDevice;
+import endrov.hardware.EvDevicePath;
+import endrov.hardware.EvHardware;
 
 /**
  * Hardware Configuration window

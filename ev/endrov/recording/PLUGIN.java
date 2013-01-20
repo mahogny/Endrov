@@ -6,10 +6,10 @@
 package endrov.recording;
 import endrov.core.EvPluginDefinition;
 import endrov.recording.bleachWindow.RecWindowQuickBleach;
+import endrov.recording.hardwareControlWindow.HardwareControlWindow;
 import endrov.recording.liveWindow.LiveWindow;
 import endrov.recording.overviewWindow.OverviewWindow;
 import endrov.recording.positionsWindow.PositionsWindow;
-import endrov.recording.propertyWindow.PropertyWindow;
 import endrov.recording.recmetBurst.EvBurstAcquisition;
 import endrov.recording.recmetBurst.RecWindowBurst;
 import endrov.recording.recmetFLIP.EvFLIPAcquisition;
@@ -59,7 +59,7 @@ public class PLUGIN extends EvPluginDefinition
 				OverviewWindow.class,
 				PositionsWindow.class,
 				
-				PropertyWindow.class,
+				HardwareControlWindow.class,
 				
 				RecWindowBurst.class,
 				RecWindowFRAP.class,

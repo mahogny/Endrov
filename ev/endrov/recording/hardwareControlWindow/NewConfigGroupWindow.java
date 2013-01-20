@@ -1,4 +1,4 @@
-package endrov.recording.propertyWindow;
+package endrov.recording.hardwareControlWindow;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;

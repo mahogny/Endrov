@@ -309,10 +309,7 @@ public class ParticleMeasure extends EvObject
 			}
 		}
 	
-	
-	/******************************************************************************************************
-	 *                               Instance                                                             *
-	 *****************************************************************************************************/
+
 
 	
 	
@@ -425,18 +422,143 @@ public class ParticleMeasure extends EvObject
 	 *            Class: XML Reader and writer of this type of meta object                                *
 	 *****************************************************************************************************/
 
-	//TODO this barely qualifies as an object since it contains no data. is this fine?
-	
 	@Override
 	public void loadMetadata(Element e)
 		{
-		//TODO
+		columns.clear();
+		wellMap.clear();
+		
+		LinkedList<String> columnsList=new LinkedList<String>();
+		for(Object o:e.getChildren())
+			if(o instanceof Element)
+				{
+				Element oe=(Element)o;
+				//Columns must come first
+				if(oe.getName().equals("column"))
+					columnsList.add(oe.getAttributeValue("name"));
+				else if(oe.getName().equals("well"))
+					{
+					//For each well
+					Well well=new Well();
+					String wellName=oe.getAttributeValue("name");
+					
+					//For each frame
+					for(Object o2:oe.getChildren())
+						if(o2 instanceof Element)
+							{
+							Element eFrame=(Element)o2;
+							EvDecimal frame=new EvDecimal(eFrame.getAttributeValue("frame"));
+							Frame f=new Frame();
+
+							//For each particle
+							for(Object o3:eFrame.getChildren())
+								if(o3 instanceof Element)
+									{
+									Element eParticle=(Element)o3;
+									int pid=Integer.parseInt(eParticle.getAttributeValue("id"));
+									Particle p=new Particle();
+									
+									//For each column
+									int colindex=0;
+									for(Object o4:eParticle.getChildren())
+										if(o4 instanceof Element)
+											{
+											Element eElem=(Element)o4;
+											
+											String val=eElem.getAttributeValue("v");
+											if(eElem.getName().equals("d"))
+												p.put(columnsList.get(colindex), Double.parseDouble(val));
+											else if(eElem.getName().equals("i"))
+												p.put(columnsList.get(colindex), Integer.parseInt(val));
+											else if(eElem.getName().equals("null"))
+												p.put(columnsList.get(colindex), null);
+											else if(eElem.getName().equals("s"))
+												p.put(columnsList.get(colindex), val);
+											else
+												throw new RuntimeException("Unknown type "+eElem.getName());
+											colindex++;
+											}
+									if(colindex!=columnsList.size())
+										throw new RuntimeException("Too few columns for one particle");
+									
+									f.putParticle(pid, p);
+									}
+							well.setFrame(frame, f);
+							}
+					setWell(wellName, well);
+					}
+				else
+					throw new RuntimeException("Not recognized "+oe.getName());
+				}
+		columns.addAll(columnsList);
 		}
 
 	@Override
 	public String saveMetadata(Element e)
 		{
-		//TODO
+		//Write out columns and their types
+		for(String col:getColumns())
+			{
+			Element eCol=new Element("column");
+			eCol.setAttribute("name", col);
+			e.addContent(eCol);
+			}
+		
+		//For each well
+		for(String wellName:getWellNames())
+			{
+			Well well=getWell(wellName);
+			Element eWell=new Element("well");
+			eWell.setAttribute("name", wellName);
+			e.addContent(eWell);
+			
+			//For each frame
+			for(EvDecimal frame:well.getFrames())
+				{
+				Frame f=well.getFrame(frame);
+
+				Element eFrame=new Element("frame");
+				eFrame.setAttribute("frame", frame.toString());
+				eWell.addContent(eFrame);
+				
+				//For each particle
+				for(int pid:f.getParticleIDs())
+					{
+					Element eParticle=new Element("p");
+					eParticle.setAttribute("id",Integer.toString(pid));
+					eFrame.addContent(eParticle);
+					Particle p=f.getParticle(pid);
+					
+					//For each column
+					for(String col:getColumns())
+						{
+						Element eElem;
+						Object o=p.getObject(col);
+						if(o==null)
+							{
+							eElem=new Element("null");
+							}
+						else if(o instanceof Double)
+							{
+							eElem=new Element("d");
+							eElem.setAttribute("v", o.toString());
+							}
+						else if(o instanceof Integer)
+							{
+							eElem=new Element("i");
+							eElem.setAttribute("v", o.toString());
+							}
+						else //if(o instanceof String)
+							{
+							//Convert anything else to a string
+							eElem=new Element("s");
+							eElem.setAttribute("v", o.toString());
+							}
+						eParticle.addContent(eElem);
+						}
+					}
+				}
+			}
 		return metaType;
 		}
 	

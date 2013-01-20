@@ -31,6 +31,7 @@ import endrov.typeImageset.EvPixels;
 import endrov.typeImageset.EvStack;
 import endrov.typeParticleMeasure.ParticleMeasure;
 import endrov.util.math.EvDecimal;
+import endrov.util.mutable.Mutable;
 import endrov.windowPlateAnalysis.CalcAggregation.AggregationMethod;
 import endrov.windowPlateAnalysis.scene.Scene2DHistogram;
 import endrov.windowPlateAnalysis.scene.Scene2DImage;
@@ -83,10 +84,13 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		private void execFlow(final EvPath pathToWell)
 			{
 			//TODO create wells from PM. not needed here
-
+			
+			
+			final Mutable<Boolean> gotData=new Mutable<Boolean>(false);
 			
 			EvData data=(EvData)pathToFlow.getRoot();
 			
+			System.out.println("start flow");
 			FlowExec fexec=new FlowExec(data, pathToFlow);
 			fexec.listener=new FlowExecListener()
 				{
@@ -99,6 +103,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 						ParticleMeasure.Well well=thispm.getWell("");
 						if(well==null)
 							throw new RuntimeException("NULL WELL");
+	
+						System.out.println("here pm");
 						
 						//Force the evaluation of this data
 						for(EvDecimal frame:well.getFrames())
@@ -109,13 +115,15 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 						
 						//TODO: check that this output exists!
 						
-//						for(EvDecimal frame:well.getFrames())
-	//						System.out.println("------ "+frame+"   ######### "+well.getFrame(frame).size());
+						for(EvDecimal frame:well.getFrames())
+							System.out.println("------ "+frame+"   ######### "+well.getFrame(frame).size());
 						
 						//Merge data into current pm
 						pm.setWell(pathToWell.toString(), well);
 						for(String s:thispm.getColumns())
 							pm.addColumn(s);
+						
+						gotData.setValue(true);
 						}
 					else
 						EvLog.printLog("Warning: unused output");
@@ -125,7 +133,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 					{
 					if(name.equals("well"))
 						{
-						//System.out.println("sending well "+pathToWell);
+						System.out.println("sending well "+pathToWell);
 						return pathToWell.getObject();
 						}
 					else
@@ -137,7 +145,11 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			
 			try
 				{
+				System.out.println("pre-eval");
 				fexec.evaluateAll();
+				System.out.println("eval!");
+				if(!gotData.get())
+					EvLog.printError("Flow did not output a ParticleMeasure",null);
 				}
 			catch (Exception e)
 				{
@@ -723,7 +735,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				if(aggrMethod.equals(aggrImage))
 					{
 					for(final OneWell w:wellMap.values())
-						if(w.imp==null || w.imp.pixels==null)
+						if(w.pixels==null || w.imp==null || w.imp.pixels==null)
 							return new Runnable(){public void run(){loadImageForWell(w);}};
 					}
 				else if(!aggrMethod.equals(aggrHide))
@@ -740,7 +752,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 									{
 									public void run()
 										{
-										OneWell well=wellMap.get(pathToWell.toString());
+										OneWell well=wellMap.get(pathToWell);
 										if(well!=null)
 											setCalculatingText(well);
 										wellMap.get(pathToWell).execFlow(pathToWell);
@@ -781,15 +793,11 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	 */
 	private void loadImageForWell(OneWell w)
 		{
-		EvDecimal closestFrame=w.evChannel.closestFrame(currentFrame);
-		EvStack stack=w.evChannel.getStack(closestFrame);
-		if(stack!=null)
+		if(w.pixels==null)
 			{
-			int shouldBeWidth=stack.getWidth();
-			if(thumbnailSize!=null)
-				shouldBeWidth=thumbnailSize;
-		
-			if(w.pixels==null || w.pixels.getWidth()!=shouldBeWidth)
+			EvDecimal closestFrame=w.evChannel.closestFrame(currentFrame);
+			EvStack stack=w.evChannel.getStack(closestFrame);
+			if(stack!=null)
 				{
 				if(w!=null)
 					setCalculatingText(w);
@@ -1023,7 +1031,12 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	public void setThumbnailSize(Integer size)
 		{
 		thumbnailSize=size;
-		imageThreadLock.notifyAll();
+		synchronized (imageThreadLock)
+			{
+			for(OneWell w:wellMap.values())
+				w.pixels=null;
+			imageThreadLock.notifyAll();
+			}
 		}
 	
 	
