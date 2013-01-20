@@ -7,7 +7,6 @@ package endrov.windowDataBrowser;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -69,7 +68,7 @@ public class DataBrowserWindow extends EvBasicWindow implements MouseListener, T
 		
 		setMinimumSize(new Dimension(50,50));
 		packEvWindow();
-		setBoundsEvWindow(new Rectangle(250,400));
+		setBoundsEvWindow(null, 400);
 		
 		
 		setVisibleEvWindow(true);

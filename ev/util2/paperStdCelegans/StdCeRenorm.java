@@ -14,8 +14,8 @@ import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
-import endrov.typeFrameTime.FrameTime;
 import endrov.typeLineage.Lineage;
+import endrov.typeTimeRemap.TimeRemap;
 import endrov.util.collection.Tuple;
 import endrov.util.math.EvDecimal;
 import endrov.util.math.EvMathUtil;
@@ -93,7 +93,7 @@ public class StdCeRenorm
 		//
 		
 		//Create frametime mapping
-		FrameTime ft=new FrameTime();
+		TimeRemap ft=new TimeRemap();
 //		ft.add(new EvDecimal(1000), new EvDecimal(1000*k+m));
 
 		
@@ -111,7 +111,7 @@ public class StdCeRenorm
 			System.out.println(
 					sec.get(i)+"\t"+
 					frame.get(i)+"\t"+
-					ft.mapFrame2Time(new EvDecimal(frame.get(i)))+"\t"+
+					ft.mapOrigTime2MappedTime(new EvDecimal(frame.get(i)))+"\t"+
 					cell.get(i));
 		System.out.println();
 		

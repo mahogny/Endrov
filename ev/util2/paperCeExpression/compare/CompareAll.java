@@ -39,7 +39,6 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.typeFrameTime.FrameTime;
 import endrov.typeImageset.EvChannel;
 import endrov.typeImageset.EvPixels;
 import endrov.typeImageset.EvPixelsType;
@@ -47,6 +46,7 @@ import endrov.typeImageset.EvStack;
 import endrov.typeImageset.Imageset;
 import endrov.typeLineage.Lineage;
 import endrov.typeLineage.LineageExp;
+import endrov.typeTimeRemap.TimeRemap;
 import endrov.util.FuncAB;
 import endrov.util.ProgressHandle;
 import endrov.util.collection.EvListUtil;
@@ -85,7 +85,7 @@ public class CompareAll
 	/**
 	 * Normalize time between recordings
 	 */
-	public static FrameTime buildFrametime(Lineage coordLin)
+	public static TimeRemap buildFrametime(Lineage coordLin)
 		{
 		if(coordLin==null)
 			throw new RuntimeException("coordinate lineage is null");
@@ -93,7 +93,7 @@ public class CompareAll
 		
 		//Fit model time using a few markers
 		//Times must be relative to a sane time, such that if e.g. venc is missing, linear interpolation still makes sense
-		FrameTime ft=new FrameTime();
+		TimeRemap ft=new TimeRemap();
 		//System.out.println("has nucs: "+coordLin.nuc.keySet());
 		
 		Lineage.Particle nucABa=coordLin.particle.get("ABa");
@@ -184,14 +184,14 @@ public class CompareAll
 		if(expressionPattern==null)
 			return image;
 		
-		FrameTime ft=buildFrametime(coordLin);
+		TimeRemap ft=buildFrametime(coordLin);
 		
 		//Fill in image
 		int lastTime=0;
 		for (EvDecimal frame : expressionPattern.level.keySet())
 			{
 			//Map to image
-			int time=(int)ft.mapFrame2Time(frame).doubleValue();
+			int time=(int)ft.mapOrigTime2MappedTime(frame).doubleValue();
 			if(time<0)
 				time=0;
 			else if(time>=imageMaxTime)
@@ -232,8 +232,8 @@ public class CompareAll
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 		Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
 		
-		FrameTime ftA=buildFrametime(coordLinA);
-		FrameTime ftB=buildFrametime(coordLinB);
+		TimeRemap ftA=buildFrametime(coordLinA);
+		TimeRemap ftB=buildFrametime(coordLinB);
 
 		if(ftA.getNumPoints()<2 || ftB.getNumPoints()<2)
 			{
@@ -266,8 +266,8 @@ public class CompareAll
 		for(double time=0;time<imageEndTime;time+=imageMaxTime/(double)numSteps)   
 			{
 			//Corresponding frames
-			EvDecimal frameA=ftA.mapTime2Frame(new EvDecimal(time));
-			EvDecimal frameB=ftB.mapTime2Frame(new EvDecimal(time));
+			EvDecimal frameA=ftA.mapMappedTime2OrigTime(new EvDecimal(time));
+			EvDecimal frameB=ftB.mapMappedTime2OrigTime(new EvDecimal(time));
 			
 			if(chanA.getFrames().isEmpty())
 				throw new RuntimeException("No images in channel from A");
@@ -350,7 +350,7 @@ public class CompareAll
 		{
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 		
-		FrameTime ftA=buildFrametime(coordLinA);
+		TimeRemap ftA=buildFrametime(coordLinA);
 		EvChannel chanA=(EvChannel)imsetA.getChild(chanNameA); 
 
 		//Bad data survival
@@ -379,7 +379,7 @@ public class CompareAll
 			{
 			//Corresponding frame
 			EvDecimal modelTime=new EvDecimal(time*imageMaxTime/(double)numSteps);
-			EvDecimal frameA=ftA.mapTime2Frame(modelTime);
+			EvDecimal frameA=ftA.mapMappedTime2OrigTime(modelTime);
 			System.out.println("Modeltime: "+modelTime+"   =====map===> "+frameA);
 			
 			//If outside range, stop calculating

@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.typeFrameTime;
+package endrov.gui.component;
 
 import java.util.Vector;
 
@@ -18,7 +18,7 @@ import endrov.util.math.EvDecimal;
  * @author Johan Henriksson
  *
  */
-public abstract class SpinnerFrameModel implements SpinnerModel
+public abstract class JSpinnerFrameModel implements SpinnerModel
 	{
 	private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
 	public void addChangeListener(ChangeListener e){listeners.add(e);}

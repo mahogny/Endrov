@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.typeFrameTime;
+package endrov.typeTimeRemap;
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -24,10 +24,10 @@ import endrov.windowViewer2D.*;
  * Image Window Tool: Associate time with current frame
  * @author Johan Henriksson
  */
-public class FrameTimeImageTool implements Viewer2DTool
+public class TimeRemapImageTool implements Viewer2DTool
 	{
 	private final Viewer2DInterface w;
-	public FrameTimeImageTool(Viewer2DInterface w)
+	public TimeRemapImageTool(Viewer2DInterface w)
 		{
 		this.w=w;
 		}
@@ -61,7 +61,7 @@ public class FrameTimeImageTool implements Viewer2DTool
 		if(frametimes!=null)
 			{
 			EvContainer rec=w.getRootObject();
-			for(FrameTime f:rec.getObjects(FrameTime.class))
+			for(TimeRemap f:rec.getObjects(TimeRemap.class))
 				{
 				EvDecimal frametime=new EvDecimal(frametimes);
 				f.add(w.getFrame(), frametime); 

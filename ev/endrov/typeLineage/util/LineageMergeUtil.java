@@ -10,9 +10,9 @@ import javax.vecmath.Vector4d;
 import util2.paperCeExpression.compare.CompareAll;
 
 import endrov.typeCoordinateSystem.CoordinateSystem;
-import endrov.typeFrameTime.FrameTime;
 import endrov.typeLineage.Lineage;
 import endrov.typeLineage.LineageExp;
+import endrov.typeTimeRemap.TimeRemap;
 import endrov.util.math.EvDecimal;
 
 /**
@@ -74,8 +74,8 @@ public class LineageMergeUtil
 		Lineage returnLin=new Lineage();
 		
 		//Time normalization
-		FrameTime ftRef=CompareAll.buildFrametime(reflin);
-		FrameTime ftStd=CompareAll.buildFrametime(intoLin);
+		TimeRemap ftRef=CompareAll.buildFrametime(reflin);
+		TimeRemap ftStd=CompareAll.buildFrametime(intoLin);
 		
 		//Coordinate transform
 		CoordinateSystem csStd=LineageMergeUtil.singlecellCSfromLin(intoLin);
@@ -101,7 +101,7 @@ public class LineageMergeUtil
 				
 				//Normalize time
 				EvDecimal oldframe=e.getKey();
-				EvDecimal newframe=ftRef.mapTime2Frame(ftStd.mapFrame2Time(oldframe));
+				EvDecimal newframe=ftRef.mapMappedTime2OrigTime(ftStd.mapOrigTime2MappedTime(oldframe));
 				newParticle.pos.put(newframe, newNucpos);
 				//newpos.put(newframe,nucpos);
 

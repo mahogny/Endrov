@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.typeFrameTime;
+package endrov.typeTimeRemap;
 import endrov.core.EvPluginDefinition;
 
 public class PLUGIN extends EvPluginDefinition
@@ -35,7 +35,7 @@ public class PLUGIN extends EvPluginDefinition
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{FrameTime.class, FrameTimeWindow.class};
+		return new Class[]{TimeRemap.class, TimeRemapWindow.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

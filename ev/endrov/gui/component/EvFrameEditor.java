@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.typeFrameTime;
+package endrov.gui.component;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -17,7 +17,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import endrov.gui.component.EvFrameControl;
+import endrov.typeTimeRemap.TimeRemap;
 import endrov.util.math.EvDecimal;
 
 
@@ -28,7 +28,7 @@ import endrov.util.math.EvDecimal;
 public class EvFrameEditor extends JTextField implements DocumentListener
 	{
 	static final long serialVersionUID=0;
-	private FrameTime currentFrameTime=null;
+	private TimeRemap currentFrameTime=null;
 	private final SpinnerModel sm;
 	private final Color normalColor;
 	
@@ -84,7 +84,7 @@ public class EvFrameEditor extends JTextField implements DocumentListener
 	private void setFrame(EvDecimal d)
 		{
 		if(currentFrameTime!=null)
-			d=currentFrameTime.mapFrame2Time(d);		
+			d=currentFrameTime.mapOrigTime2MappedTime(d);		
 		if(d!=null)
 			{
 			newSetText(d);
@@ -117,14 +117,14 @@ public class EvFrameEditor extends JTextField implements DocumentListener
 		{
 		EvDecimal d=EvFrameControl.parseTime(getText());
 		if(currentFrameTime!=null)
-			d=currentFrameTime.mapTime2Frame(d);
+			d=currentFrameTime.mapMappedTime2OrigTime(d);
 		return d;
 		}
 
 	/**
 	 * Set frame-time map
 	 */
-	public void setFrameTime(FrameTime ft)
+	public void setFrameTime(TimeRemap ft)
 		{
 		EvDecimal d=getFrame();
 		currentFrameTime=ft;

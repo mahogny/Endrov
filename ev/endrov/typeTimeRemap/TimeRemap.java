@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.typeFrameTime;
+package endrov.typeTimeRemap;
 
 import java.util.*;
 
@@ -16,14 +16,19 @@ import endrov.util.math.EvDecimal;
 
 import org.jdom.*;
 
-
-public class FrameTime extends EvObject
+/**
+ * Time remapping
+ * 
+ * @author Johan Henriksson
+ *
+ */
+public class TimeRemap extends EvObject
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	
-	public final static ImageIcon icon=new ImageIcon(FrameTime.class.getResource("iconWindow.png"));
+	public final static ImageIcon icon=new ImageIcon(TimeRemap.class.getResource("iconWindow.png"));
 	
 	private static final String metaType="frametime";
 	
@@ -43,7 +48,7 @@ public class FrameTime extends EvObject
 	
 	public String getMetaTypeDesc()
 		{
-		return metaType;
+		return "Time remapping";
 		}
 	
 	/**
@@ -165,7 +170,7 @@ public class FrameTime extends EvObject
 	/**
 	 * Figure out time from frame
 	 */
-	public EvDecimal mapFrame2Time(EvDecimal frame)
+	public EvDecimal mapOrigTime2MappedTime(EvDecimal frame)
 		{
 		return interpolate(mapFrame2time, frame);
 		}
@@ -173,7 +178,7 @@ public class FrameTime extends EvObject
 	/**
 	 * Figure out frame from time
 	 */
-	public EvDecimal mapTime2Frame(EvDecimal time)
+	public EvDecimal mapMappedTime2OrigTime(EvDecimal time)
 		{
 		return interpolate(mapTime2Frame, time);
 		}
@@ -206,7 +211,7 @@ public class FrameTime extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedMetadataFormats.put(metaType,FrameTime.class);
+		EvData.supportedMetadataFormats.put(metaType,TimeRemap.class);
 		}
 
 	}

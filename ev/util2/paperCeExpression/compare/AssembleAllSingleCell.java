@@ -19,10 +19,10 @@ import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.typeFrameTime.FrameTime;
 import endrov.typeLineage.Lineage;
 import endrov.typeLineage.LineageExp;
 import endrov.typeLineage.util.LineageMergeUtil;
+import endrov.typeTimeRemap.TimeRemap;
 import endrov.util.math.EvDecimal;
 
 /**
@@ -93,8 +93,8 @@ public class AssembleAllSingleCell
 			throw new RuntimeException("Recording has to single-cell lineage mapped");
 		
 		
-		FrameTime ftRef=CompareAll.buildFrametime(refLin);
-		FrameTime ftRec=CompareAll.buildFrametime(recSingleCell);
+		TimeRemap ftRef=CompareAll.buildFrametime(refLin);
+		TimeRemap ftRec=CompareAll.buildFrametime(recSingleCell);
 
 		String recExpName=CompareAll.expName;
 		
@@ -113,7 +113,7 @@ public class AssembleAllSingleCell
 				for(Map.Entry<EvDecimal, Double> e:recExp.level.entrySet())
 					{
 					//Remap time
-					EvDecimal totFrame=ftRef.mapTime2Frame(ftRec.mapFrame2Time(e.getKey()));  
+					EvDecimal totFrame=ftRef.mapMappedTime2OrigTime(ftRec.mapOrigTime2MappedTime(e.getKey()));  
 					totExp.level.put(totFrame, e.getValue());
 					
 					//Create time points

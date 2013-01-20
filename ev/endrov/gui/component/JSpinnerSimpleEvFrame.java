@@ -7,7 +7,6 @@ package endrov.gui.component;
 
 import javax.swing.JSpinner;
 
-import endrov.typeFrameTime.EvFrameEditor;
 import endrov.util.math.EvDecimal;
 
 /**

@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.typeFrameTime;
+package endrov.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,12 +17,14 @@ import javax.swing.JPopupMenu;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.gui.component.EvDropDownButton;
+import endrov.gui.component.EvFrameEditor;
+import endrov.typeTimeRemap.TimeRemap;
 
 /**
  * Drop-down menu to select frametime for use with frametime spinners
  * @author Johan Henriksson
  */
-public class FrameTimeDropDown extends EvDropDownButton
+public class JFrameTimeMenuButton extends EvDropDownButton
 	{
 	private static final long serialVersionUID = 1L;
 	
@@ -30,9 +32,9 @@ public class FrameTimeDropDown extends EvDropDownButton
 	
 	
 	
-	public FrameTimeDropDown()
+	public JFrameTimeMenuButton()
 		{
-		super(FrameTime.icon,"Set map frame<->time");
+		super(TimeRemap.icon,"Set map frame<->time");
 		}
 
 	public JPopupMenu createPopup()
@@ -45,10 +47,10 @@ public class FrameTimeDropDown extends EvDropDownButton
 		
 		for(EvData data:EvData.openedData)
 			{
-			for(Map.Entry<EvPath, FrameTime> e:data.getIdObjectsRecursive(FrameTime.class).entrySet())
+			for(Map.Entry<EvPath, TimeRemap> e:data.getIdObjectsRecursive(TimeRemap.class).entrySet())
 				{
 				JMenuItem mi=new JMenuItem(e.getKey().toString());
-				final FrameTime ft=e.getValue();
+				final TimeRemap ft=e.getValue();
 				mi.addActionListener(new ActionListener(){public void actionPerformed(ActionEvent ee){click(ft);}});
 				m.add(mi);
 				}
@@ -56,7 +58,7 @@ public class FrameTimeDropDown extends EvDropDownButton
 		return m;
 		}
 
-	private void click(FrameTime ft)
+	private void click(TimeRemap ft)
 		{
 		System.out.println("click "+ft);
 		for(EvFrameEditor l:listeners)

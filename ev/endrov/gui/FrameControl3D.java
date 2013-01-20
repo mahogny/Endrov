@@ -15,8 +15,9 @@ import org.jdom.Element;
 import java.util.*;
 
 import endrov.gui.component.EvFrameControl;
+import endrov.gui.component.EvFrameEditor;
+import endrov.gui.component.JSpinnerFrameModel;
 import endrov.gui.icon.BasicIcon;
-import endrov.typeFrameTime.*;
 import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.Viewer3DWindow;
 import endrov.windowViewer3D.Viewer3DHook;
@@ -49,7 +50,7 @@ public class FrameControl3D extends JPanel implements ActionListener, ChangeList
 	private JButton buttonBeginning=new JButton(BasicIcon.iconFrameFirst);
 	private JButton buttonEnd=new JButton(BasicIcon.iconFrameLast);
 			
-	private FrameTimeDropDown buttonFrameTime=new FrameTimeDropDown();
+	private JFrameTimeMenuButton buttonFrameTime=new JFrameTimeMenuButton();
 
 	//private SpinnerModel frameModel;
 	private SpinnerModel groupModel=new SpinnerNumberModel(0,0,9,1);
@@ -76,7 +77,7 @@ public class FrameControl3D extends JPanel implements ActionListener, ChangeList
 	
 	
 	/** Frame spinner behaviour */
-	private SpinnerModel frameModel=new SpinnerFrameModel()
+	private SpinnerModel frameModel=new JSpinnerFrameModel()
 		{
 		public EvDecimal lastFrame(EvDecimal currentFrame)
 			{

@@ -16,8 +16,9 @@ import org.jdom.Element;
 
 import endrov.gui.component.EvDecimalEditor;
 import endrov.gui.component.EvFrameControl;
+import endrov.gui.component.EvFrameEditor;
+import endrov.gui.component.JSpinnerFrameModel;
 import endrov.gui.icon.BasicIcon;
-import endrov.typeFrameTime.*;
 import endrov.typeImageset.EvChannel;
 import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
@@ -55,7 +56,7 @@ public class FrameControl2D extends JPanel implements ActionListener, ChangeList
 	private JButton buttonBeginning=new JButton(BasicIcon.iconFrameFirst);
 	private JButton buttonEnd=new JButton(BasicIcon.iconFrameLast);
 
-	private FrameTimeDropDown buttonFrameTime=new FrameTimeDropDown();
+	private JFrameTimeMenuButton buttonFrameTime=new JFrameTimeMenuButton();
 	
 	private SpinnerModel groupModel=new SpinnerNumberModel(0,0,9,1);
 	private JSpinner spinnerZ;
@@ -64,7 +65,7 @@ public class FrameControl2D extends JPanel implements ActionListener, ChangeList
 	private JCheckBox checkGroupSlice=new JCheckBox("");
 
 	/** Frame spinner behaviour */
-	private SpinnerModel frameModel=new SpinnerFrameModel()
+	private SpinnerModel frameModel=new JSpinnerFrameModel()
 		{
 		public EvDecimal lastFrame(EvDecimal currentFrame)
 			{
