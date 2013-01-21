@@ -456,14 +456,9 @@ public class EvIOSequenceImageset implements EvIOData
 					 */
 					public void dialogSequenceLoadImageset()
 						{
-						JFileChooser chooser = new JFileChooser();
-				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(EvBasicWindow.getLastDataPath());
-				    int returnVal = chooser.showOpenDialog(null);
-				    if(returnVal == JFileChooser.APPROVE_OPTION)
+						File filename=EvBasicWindow.openDialogChooseDir();
+						if(filename!=null)
 				    	{
-				    	File filename=chooser.getSelectedFile();
-				    	EvBasicWindow.setLastDataPath(chooser.getSelectedFile().getParentFile());
 				    	EvData data=new EvData();
 				    	EvIOSequenceImageset io=new EvIOSequenceImageset(data,filename);
 				    	data.io=io;

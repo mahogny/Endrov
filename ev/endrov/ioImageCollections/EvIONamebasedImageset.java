@@ -449,15 +449,9 @@ public class EvIONamebasedImageset implements EvIOData
 					{
 					public void actionPerformed(ActionEvent e)
 						{
-						JFileChooser chooser = new JFileChooser();
-				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(EvBasicWindow.getLastDataPath());
-				    int returnVal = chooser.showOpenDialog(null);
-				    if(returnVal == JFileChooser.APPROVE_OPTION)
+						File filename=EvBasicWindow.openDialogChooseDir();
+						if(filename!=null)
 				    	{
-				    	File filename=chooser.getSelectedFile();
-				    	EvBasicWindow.setLastDataPath(filename.getParentFile());
-				    	
 				    	EvData data=new EvData();
 				    	data.io=new EvIONamebasedImageset(data,filename);
 				    	EvDataGUI.registerOpenedData(data);

@@ -353,6 +353,8 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 			}
 		else if(e.getSource()==bImport)
 			{
+			
+			
 			JFileChooser fc=getFileChooser();
 			fc.setCurrentDirectory(EvBasicWindow.getLastDataPath());
 			int ret=fc.showOpenDialog(null);

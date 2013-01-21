@@ -189,36 +189,36 @@ public class EndrovUtil
 			}
 
 	public static String pad(EvDecimal d, int len)
-	{
-	StringBuffer sb=new StringBuffer();
-	pad(d,len,sb);
-	return sb.toString();
-	}
+		{
+		StringBuffer sb=new StringBuffer();
+		pad(d,len,sb);
+		return sb.toString();
+		}
 
 	public static void openExternalProgram(File f)
-	{
-	try
 		{
-		if(EvSystemUtil.isMac())
-			Runtime.getRuntime().exec(new String[]{"/usr/bin/open",f.getAbsolutePath()});
-		else if(EvSystemUtil.isLinux())
+		try
 			{
-			Runtime.getRuntime().exec(new String[]{"/usr/bin/xdg-open",f.getAbsolutePath()});
+			if(EvSystemUtil.isMac())
+				Runtime.getRuntime().exec(new String[]{"/usr/bin/open",f.getAbsolutePath()});
+			else if(EvSystemUtil.isLinux())
+				{
+				Runtime.getRuntime().exec(new String[]{"/usr/bin/xdg-open",f.getAbsolutePath()});
+				}
+			else
+				{
+				//TODO JAVA6
+				/*
+				if(Desktop.isDesktopSupported())
+					Desktop.getDesktop().open(f);
+				else*/
+					JOptionPane.showMessageDialog(null, "Feature not supported on this platform");
+				}
 			}
-		else
+		catch (IOException e)
 			{
-			//TODO JAVA6
-			/*
-			if(Desktop.isDesktopSupported())
-				Desktop.getDesktop().open(f);
-			else*/
-				JOptionPane.showMessageDialog(null, "Feature not supported on this platform");
+			e.printStackTrace();
 			}
 		}
-	catch (IOException e)
-		{
-		e.printStackTrace();
-		}
-	}
 
 	}

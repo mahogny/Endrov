@@ -232,14 +232,12 @@ public class NetworkImageTool implements Viewer2DTool, ActionListener
 				if(nf==null)
 					return;
 				
-				JFileChooser fc=new JFileChooser();
-				int ret=fc.showSaveDialog(w);
-				if(ret==JFileChooser.APPROVE_OPTION)
-					{
-					File f=fc.getSelectedFile();
+				File filename=EvBasicWindow.openDialogSaveFile(".swc");
+				if(filename!=null)
+		    	{
 					try
 						{
-						SWCFile.write(f, nf);
+						SWCFile.write(filename, nf);
 						}
 					catch (IOException e1)
 						{

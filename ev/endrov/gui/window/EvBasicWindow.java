@@ -974,21 +974,71 @@ public abstract class EvBasicWindow extends JPanel
 			EvBasicWindow.lastDataPath=s;
 		}
 
+	/**
+	 * Open dialog to choose a directory. The parent of this directory is remembered for later
+	 */
 	public static File openDialogChooseDir()
-	{
-	JFileChooser chooser = new JFileChooser();
-	chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-	chooser.setCurrentDirectory(EvBasicWindow.getLastDataPath());
-	int returnVal = chooser.showOpenDialog(null);
-	if(returnVal == JFileChooser.APPROVE_OPTION)
-	  {
-	  File filename=chooser.getSelectedFile();
-	  EvBasicWindow.setLastDataPath(filename.getParentFile());
-	  return filename;
-	  }
-	else
-		return null;
-	}
+		{
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		chooser.setCurrentDirectory(EvBasicWindow.getLastDataPath());
+		int returnVal = chooser.showOpenDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		  {
+		  File filename=chooser.getSelectedFile();
+		  EvBasicWindow.setLastDataPath(filename.getParentFile());
+		  return filename;
+		  }
+		else
+			return null;
+		}
+	
+	/**
+	 * Open dialog to open a file. The parent of this file is remembered for later
+	 */
+	public static File openDialogOpenFile()
+		{
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		chooser.setCurrentDirectory(EvBasicWindow.getLastDataPath());
+		int returnVal = chooser.showOpenDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		  {
+		  File filename=chooser.getSelectedFile();
+		  EvBasicWindow.setLastDataPath(filename.getParentFile());
+		  return filename;
+		  }
+		else
+			return null;
+		}
+	
+	/**
+	 * Open dialog to open a file. The parent of this file is remembered for later
+	 * 
+	 * @param ext  Can be null. Otherwise file extension, with the . included
+	 */
+	public static File openDialogSaveFile(String ext)
+		{
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		chooser.setCurrentDirectory(EvBasicWindow.getLastDataPath());
+		int returnVal = chooser.showSaveDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		  {
+		  File filename=chooser.getSelectedFile();
+		  if(ext!=null)
+		  	{
+		  	if(!filename.getName().endsWith(ext))
+		  		filename=new File(filename.getParent(),filename.getName()+ext);
+		  	}
+		  
+		  EvBasicWindow.setLastDataPath(filename.getParentFile());
+		  return filename;
+		  }
+		else
+			return null;
+		}
+	
 
 	/******************************************************************************************************
 	 * Plugin declaration

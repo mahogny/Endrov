@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -84,13 +83,10 @@ class FrivolousConfigWindow extends JFrame implements ActionListener
 			}
 		else if(e.getSource()==bBrowse)
 			{
-			JFileChooser fc=new JFileChooser();
-			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			int ret=fc.showOpenDialog(this);
-			if(ret==JFileChooser.APPROVE_OPTION)
-				{
-				File f=fc.getSelectedFile();
-				tfFileName.setText(f.getAbsolutePath());
+			File filename=EvBasicWindow.openDialogChooseDir();
+			if(filename!=null)
+	    	{
+				tfFileName.setText(filename.getAbsolutePath());
 				}
 			}
 		}

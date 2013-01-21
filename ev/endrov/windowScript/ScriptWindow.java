@@ -373,11 +373,9 @@ public class ScriptWindow extends EvBasicWindow implements ActionListener
 	
 	private void actionOpen()
 		{
-		JFileChooser fc=new JFileChooser();
-		int ret=fc.showOpenDialog(this);
-		if(ret==JFileChooser.APPROVE_OPTION)
-			{
-			File f=fc.getSelectedFile();
+		File f=EvBasicWindow.openDialogOpenFile();
+		if(f!=null)
+    	{
 			try
 				{
 				scriptArea.setText(EvFileUtil.readFile(f));
@@ -393,11 +391,9 @@ public class ScriptWindow extends EvBasicWindow implements ActionListener
 	
 	private void actionSaveAs()
 		{
-		JFileChooser fc=new JFileChooser();
-		int ret=fc.showSaveDialog(this);
-		if(ret==JFileChooser.APPROVE_OPTION)
-			{
-			File f=fc.getSelectedFile();
+		File f=EvBasicWindow.openDialogSaveFile(null);
+		if(f!=null)
+    	{
 			writeOutFile(f);
 			setCurrentFile(f);
 			}

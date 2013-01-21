@@ -12,6 +12,8 @@ import java.util.TreeSet;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -38,6 +40,7 @@ import endrov.gui.window.EvBasicWindowHook;
 import endrov.ioBD.EvIODataBD;
 import endrov.typeImageset.*;
 import endrov.typeParticleMeasure.ParticleMeasure;
+import endrov.typeParticleMeasure.ParticleMeasureIO;
 import endrov.typeParticleMeasure.ParticleMeasure.Well;
 import endrov.util.math.EvDecimal;
 
@@ -601,10 +604,21 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		ParticleMeasure pm=getParticleMeasure();
 		if(pm!=null)
 			{
-			
-			
-			
-			
+			File f=openDialogSaveFile(".pm.csv");
+			if(f!=null)
+				{
+				try
+					{
+					FileWriter fw=new FileWriter(f);
+					ParticleMeasureIO.saveCSV(pm, fw, true, "\t");
+					fw.close();
+					}
+				catch (IOException e)
+					{
+					showErrorDialog("Error saving file: "+e.getMessage());
+					EvLog.printError(e.getMessage(), e);
+					}
+				}
 			}
 			
 			

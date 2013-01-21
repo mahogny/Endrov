@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.vecmath.Vector3d;
@@ -174,12 +173,9 @@ public class Lineage extends EvObject implements Cloneable
 	 */
 	public void saveColorSchemeDialog(Component parent)
 		{
-		JFileChooser fc=new JFileChooser(EvBasicWindow.getLastDataPath());
-		if(fc.showSaveDialog(parent)==JFileChooser.APPROVE_OPTION)
-			{
-			File filename=fc.getSelectedFile();
-			if(!filename.getName().endsWith(".nuccol"))
-				filename=new File(filename.getParentFile(),filename.getName()+".nuccol");
+		File filename=EvBasicWindow.openDialogSaveFile(".nuccol");
+		if(filename!=null)
+    	{
 			try
 				{
 				saveColorScheme(filename);
@@ -196,10 +192,9 @@ public class Lineage extends EvObject implements Cloneable
 	 */
 	public void loadColorSchemeDialog(Component parent)
 		{
-		JFileChooser fc=new JFileChooser(EvBasicWindow.getLastDataPath());
-		if(fc.showOpenDialog(parent)==JFileChooser.APPROVE_OPTION)
-			{
-			File filename=fc.getSelectedFile();
+		File filename=EvBasicWindow.openDialogOpenFile();
+		if(filename!=null)
+    	{
 			try
 				{
 				loadColorScheme(filename);
