@@ -234,6 +234,7 @@ public class DataBrowserWindow extends EvBasicWindow implements MouseListener, T
 			
 
 			}
+		repaint();    //This is an ugly hack to fix the selection-does-not-get-updated-problem
 		}
 
 	public void mouseEntered(MouseEvent e)

@@ -16,6 +16,12 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 
+/**
+ * The object tree in the data browser
+ * 
+ * @author Johan Henriksson
+ *
+ */
 public class DataBrowserTree extends JTree implements TreeModel
 	{
 	private static final long serialVersionUID = 1L;
@@ -52,15 +58,17 @@ public class DataBrowserTree extends JTree implements TreeModel
 		
 		public Node()
 			{
+//			System.out.println("new node");
 			}
-		
+		/*
 		public Node(Node n)
 			{
+			System.out.println("copy node");
 			parent=n.parent;
 			con=n.con;
 			children.addAll(n.children); //TODO is this a good thing? recurse?
 			name=n.name;
-			}
+			}*/
 		
 		@Override
 		public String toString()
@@ -77,13 +85,14 @@ public class DataBrowserTree extends JTree implements TreeModel
 			{
 			//TODO reuse existing children!
 			children.clear();
-			
+
+//			System.out.println("----------------------- updateChildren "+name);
 			if(con==null)
 				{
 				//List opened data files
 				for(EvData d:EvData.openedData)
 					{
-					System.out.println("adding "+d);
+//					System.out.println("adding "+d);
 					
 					Node n=new Node();
 					n.parent=this;
@@ -127,7 +136,6 @@ public class DataBrowserTree extends JTree implements TreeModel
 		{
 		root.updateChildren();
 		setModel(this);
-		
 		setCellRenderer(new DefaultTreeCellRenderer(){
 			private static final long serialVersionUID = 1L;
 			public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -138,7 +146,6 @@ public class DataBrowserTree extends JTree implements TreeModel
             tree, value, selected,
             expanded, leaf, row,
             hasFocus);
-
 				Node n=(Node)value;
 				if(n.con!=null)
 					{
@@ -146,6 +153,7 @@ public class DataBrowserTree extends JTree implements TreeModel
 					if(n.con instanceof EvObject)
 						setToolTipText(((EvObject)n.con).getMetaTypeDesc());
 					}
+//				System.out.println("renderer "+selected);
 				return this;
 				}
 			});
@@ -160,12 +168,13 @@ public class DataBrowserTree extends JTree implements TreeModel
 	public Object getValueAt(Object node, int row)
 		{
 		Node n=(Node)node;
+//		System.out.println("get value at "+node);
 		return n.children.get(row);
 		}
 	
 	
 	
-	public boolean isCellEditable(Object arg0, int arg1)
+	public boolean isCellEditable(Object node, int arg1)
 		{
 		return false;
 		}
@@ -174,14 +183,15 @@ public class DataBrowserTree extends JTree implements TreeModel
 	
 	public void setValueAt(Object arg0, Object arg1, int arg2)
 		{
+		System.out.println("set value");
 		}
 	
 	
 	
 	
-	public void addTreeModelListener(TreeModelListener arg0)
+	public void addTreeModelListener(TreeModelListener listener)
 		{
-		listeners.add(arg0);
+		listeners.add(listener);
 		}
 	
 	
@@ -189,6 +199,7 @@ public class DataBrowserTree extends JTree implements TreeModel
 	public Object getChild(Object parent, int row)
 		{
 		Node parentn=(Node)parent;
+//		System.out.println("get child "+parentn.children.get(row));
 		return parentn.children.get(row);
 		}
 	
@@ -225,15 +236,16 @@ public class DataBrowserTree extends JTree implements TreeModel
 	
 	
 	
-	public void removeTreeModelListener(TreeModelListener arg0)
+	public void removeTreeModelListener(TreeModelListener listener)
 		{
-		listeners.remove(arg0);
+		listeners.remove(listener);
 		}
 	
 	
 	
 	public void valueForPathChanged(TreePath arg0, Object arg1)
 		{
+		//System.out.println("value changed");
 		//TODO this might be useful!
 		}
 	
