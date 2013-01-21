@@ -6,9 +6,9 @@
 package endrov.flow;
 
 import java.io.File;
-import java.sql.Connection;
 import java.util.*;
 
+import endrov.core.EvSQLConnection;
 import endrov.roi.ROI;
 import endrov.typeImageset.EvChannel;
 import endrov.typeImageset.EvPixels;
@@ -27,7 +27,7 @@ public class FlowType
 	//private boolean isUnknown;
 	public Set<Class<?>> type=new HashSet<Class<?>>();
 	//good enough? what about List<....>? java removes <>. how to restore? manually annotate?
-	public static FlowType TCONNECTION=new FlowType(Connection.class);
+	public static FlowType TCONNECTION=new FlowType(EvSQLConnection.class);
 	
 	public FlowType(Class<?>... c)
 		{

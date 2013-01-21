@@ -7,6 +7,7 @@ package endrov.gui;
 import endrov.core.EvPluginDefinition;
 import endrov.gui.keybinding.KeyBinding;
 import endrov.gui.keybinding.ScriptBinding;
+import endrov.gui.sql.EvSQLGUI;
 import endrov.gui.undo.EvUndo;
 import endrov.gui.window.EvBasicWindow;
 import endrov.gui.window.EvRegistrationDialog;
@@ -42,6 +43,7 @@ public class PLUGIN extends EvPluginDefinition
 		{
 		return new Class[]{
 				EvBasicWindow.class,
+				EvSQLGUI.class,
 				EvUndo.class,
 				KeyBinding.class, 
 				ScriptBinding.class,

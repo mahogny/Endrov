@@ -11,7 +11,6 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -21,6 +20,7 @@ import javax.swing.JPanel;
 
 import org.jdom.Element;
 
+import endrov.core.EvSQLConnection;
 import endrov.core.log.EvLog;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
@@ -80,7 +80,7 @@ public class FlowUnitMeasureToSQL extends FlowUnitBasic
 	/** Execute algorithm */
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
-		Connection conn=(Connection)flow.getInputValue(this, exec, "connection");
+		EvSQLConnection conn=(EvSQLConnection)flow.getInputValue(this, exec, "connection");
 		ParticleMeasure measure=(ParticleMeasure)flow.getInputValue(this, exec, "measure");
 		String dataid=(String)flow.getInputValue(this, exec, "dataid");
 		String tablename=(String)flow.getInputValue(this, exec, "tablename");
@@ -94,14 +94,14 @@ public class FlowUnitMeasureToSQL extends FlowUnitBasic
 		}
 
 	
-	private Connection lastConn;
+	private EvSQLConnection lastConn;
 	private ParticleMeasure lastPM;
 	private String lastDataid;
 	private String lastTablename;
 
 	
 
-	private Connection getLastConn()
+	private EvSQLConnection getLastConn()
 		{
 		return lastConn;
 		}

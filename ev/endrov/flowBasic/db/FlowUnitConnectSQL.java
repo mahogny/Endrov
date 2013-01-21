@@ -10,8 +10,6 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.*;
 
 import javax.swing.ImageIcon;
@@ -23,6 +21,7 @@ import javax.swing.event.ChangeListener;
 
 import org.jdom.Element;
 
+import endrov.core.EvSQLConnection;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
@@ -51,13 +50,10 @@ public class FlowUnitConnectSQL extends FlowUnitBasic
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Connect to SQL",metaType,FlowUnitConnectSQL.class, 
 				icon,"Connect to an SQL database");
 		Flow.addUnitType(decl);
-		FlowType.registerSuggestCreateUnitInput(Connection.class, decl);
+		FlowType.registerSuggestCreateUnitInput(EvSQLConnection.class, decl);
 		}
-	
-	//jdbc:postgresql://localhost/booktown
-	//jdbc:mysql://localhost/coffeebreak
-	
-	private String connDriver="org.postgresql.Driver";
+		
+	private String connDriver=EvSQLConnection.sqlDriverPostgres;
 	private String connURL="jdbc:postgresql://localhost/mydb";
 	private String connUser="";
 	private String connPass="";
@@ -108,9 +104,12 @@ public class FlowUnitConnectSQL extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
 
-    Class.forName(connDriver).newInstance();
-    Connection conn = DriverManager.getConnection(connURL, connUser, connPass);      
-//	      conn.close();
+		EvSQLConnection conn=new EvSQLConnection();
+		conn.connDriver=connDriver;
+		conn.connURL=connURL;
+		
+		conn.setUserPass(connUser, connPass);
+		conn.connect();
 		
 		lastOutput.put("connection", conn);
 		}
@@ -134,8 +133,8 @@ public class FlowUnitConnectSQL extends FlowUnitBasic
 			setLayout(new GridLayout(4,1));
 			
 			Vector<String> classes=new Vector<String>();
-			classes.add("org.postgresql.Driver");
-			classes.add("com.mysql.jdbc.Driver");
+			for(String s:EvSQLConnection.getCommonSQLdrivers())
+				classes.add(s);
 			
 			comboDriver=new JComboBox(classes);
 			comboDriver.setEditable(true);

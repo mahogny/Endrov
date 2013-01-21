@@ -5,6 +5,7 @@
  */
 package endrov.windowPlateAnalysis;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import org.jdom.*;
 
+import endrov.core.EvSQLConnection;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvContainer;
@@ -34,6 +36,7 @@ import endrov.gui.component.EvComboObjectOne;
 import endrov.gui.component.JImageButton;
 import endrov.gui.component.JSnapBackSlider;
 import endrov.gui.icon.BasicIcon;
+import endrov.gui.sql.EvDialogChooseSQL;
 import endrov.gui.window.EvBasicWindow;
 import endrov.gui.window.EvBasicWindowExtension;
 import endrov.gui.window.EvBasicWindowHook;
@@ -101,6 +104,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	private final JMenu menuPlateWindow=new JMenu("PlateWindow");
 	private final JMenuItem miZoom=new JMenuItem("Zoom to fit");
 	private final JMenuItem miExportCSV=new JMenuItem("Export as CSV");
+	private final JMenuItem miExportSQL=new JMenuItem("Export to SQL");
 	private final JMenuItem miEvaluate=new JMenuItem("Evaluate flow");
 	
 
@@ -190,10 +194,12 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			
 		menuPlateWindow.add(miZoom);
 		menuPlateWindow.add(miExportCSV);
+		menuPlateWindow.add(miExportSQL);
 		menuPlateWindow.add(miEvaluate);
 		
 		miZoom.addActionListener(this);
 		miExportCSV.addActionListener(this);
+		miExportSQL.addActionListener(this);
 		miEvaluate.addActionListener(this);
 
 		
@@ -530,20 +536,20 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			}
 		else if(e.getSource()==miZoom)
 			imagePanel.zoomToFit();
-		else
-			{
-			
-			if(e.getSource()==miSize100)
-				imagePanel.setThumbnailSize(100);
-			else if(e.getSource()==miSize200)
-				imagePanel.setThumbnailSize(200);
-			else if(e.getSource()==miSize300)
-				imagePanel.setThumbnailSize(300);
-			else if(e.getSource()==miSize500)
-				imagePanel.setThumbnailSize(500);
-			else if(e.getSource()==miSizeOrig)
-				imagePanel.setThumbnailSize(null);
-			}
+		else if(e.getSource()==miSize100)
+			imagePanel.setThumbnailSize(100);
+		else if(e.getSource()==miSize200)
+			imagePanel.setThumbnailSize(200);
+		else if(e.getSource()==miSize300)
+			imagePanel.setThumbnailSize(300);
+		else if(e.getSource()==miSize500)
+			imagePanel.setThumbnailSize(500);
+		else if(e.getSource()==miSizeOrig)
+			imagePanel.setThumbnailSize(null);
+		else if(e.getSource()==miExportCSV)
+			exportCSV();
+		else if(e.getSource()==miExportSQL)
+			exportSQL();
 		}
 
 	
@@ -598,8 +604,10 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	
 	
 	
-	
-	public void exportCSV()
+	/**
+	 * Export data to CSV
+	 */
+	private void exportCSV()
 		{
 		ParticleMeasure pm=getParticleMeasure();
 		if(pm!=null)
@@ -620,12 +628,48 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 					}
 				}
 			}
-			
-			
-		
-		
+		else
+			showErrorDialog("No particle data is selected");
 		}
+
 	
+	private void exportSQL()
+		{
+		ParticleMeasure pm=getParticleMeasure();
+		if(pm!=null)
+			{
+			
+			EvSQLConnection conn=EvDialogChooseSQL.openDialog();
+			if(conn!=null)
+				{
+				String tablename=JOptionPane.showInputDialog("Name of table?");
+				if(tablename!=null)
+					{
+					String dataid=JOptionPane.showInputDialog("Data id?");
+					if(dataid!=null)
+						{
+						try
+							{
+							ParticleMeasureIO.createSQLtable(pm, conn, dataid, tablename);
+							}
+						catch (SQLException e){}
+						try
+							{
+							ParticleMeasureIO.insertIntoSQLtable(pm, conn, dataid, tablename);
+							}
+						catch (SQLException e)
+							{
+							showErrorDialog("Could not insert into sql: "+e.getMessage());
+							EvLog.printError(e);
+							}
+						}
+					}
+				
+				}
+			}
+		else
+			showErrorDialog("No particle data is selected");
+		}
 	
 	
 	public static void main(String[] args)
