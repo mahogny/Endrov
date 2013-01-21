@@ -36,6 +36,7 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
+import endrov.data.gui.EvDataGUI;
 import endrov.gui.EvSwingUtil;
 import endrov.gui.icon.BasicIcon;
 import endrov.gui.window.EvBasicWindow;
@@ -202,7 +203,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		if(root==null)
 			{
 			//List EvData
-			for(EvData data:EvData.openedData)
+			for(EvData data:EvDataGUI.openedData)
 				{
 				if(includeObject(data))
 					combo.addItem(new ComboItem(new EvPath(data)));

@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import endrov.data.gui.EvDataGUI;
+
 
 /**
  * Path to an object.<br/>
@@ -260,7 +262,7 @@ public class EvPath implements Comparable<EvPath>
 				boolean found=false;
 				s=s.substring(1);
 				//Absolute path in another data
-				for(EvData d:EvData.openedData)
+				for(EvData d:EvDataGUI.openedData)
 					if(d.getMetadataName().equals(s))
 						{
 						newroot=d;

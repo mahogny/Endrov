@@ -12,6 +12,7 @@ import endrov.core.log.EvLogFile;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.data.EvPath;
+import endrov.data.gui.EvDataGUI;
 import endrov.flow.FlowExec;
 import endrov.gui.RepeatingKeyEventsFixer;
 import endrov.gui.window.EvBasicWindow;
@@ -169,7 +170,7 @@ public class MW
 							JOptionPane.showMessageDialog(null, "Failed to open "+f);
 						else
 							{
-							EvData.registerOpenedData(d);
+							EvDataGUI.registerOpenedData(d);
 							EvBasicWindow.updateLoadedFile(d);
 							}
 						}

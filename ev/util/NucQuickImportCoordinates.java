@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 
 import endrov.core.log.EvLog;
 import endrov.data.EvData;
+import endrov.data.gui.EvDataGUI;
 import endrov.typeLineage.Lineage;
 import endrov.typeLineage.Lineage.ParticlePos;
 import endrov.util.math.EvDecimal;
@@ -52,7 +53,7 @@ public class NucQuickImportCoordinates
 	public static void forall()
 		{
     EvLog.printLog("Importing all lineages");
-		for(EvData data:EvData.openedData)
+		for(EvData data:EvDataGUI.openedData)
 			{
 			try
 				{

@@ -9,6 +9,7 @@ import endrov.core.*;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
+import endrov.data.gui.EvDataGUI;
 import endrov.gui.window.EvBasicWindow;
 import endrov.gui.window.BasicWindowExtensionExitLast;
 import endrov.gui.window.EvSplashScreen;
@@ -80,8 +81,8 @@ public class CEviewer
 				new endrov.windowLineage.LineageWindow();
 				new Viewer3DWindow();
 				}
-			EvData.registerOpenedData(EvData.loadFile(new File("angler.ost")));
-			EvData.registerOpenedData(EvData.loadFile(new File("ce2008.ost")));
+			EvDataGUI.registerOpenedData(EvData.loadFile(new File("angler.ost")));
+			EvDataGUI.registerOpenedData(EvData.loadFile(new File("ce2008.ost")));
 			if(ss!=null)
 				{
 				ss.disableLog();

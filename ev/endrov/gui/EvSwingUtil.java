@@ -319,6 +319,21 @@ public class EvSwingUtil
 				}
 			}
 		}
+	
+	
+	/**
+	 * Run operation in the swing thread. If the code is already executing in the swing thread, then it will not try
+	 * to switch. This would otherwise cause an exception
+	 */
+	public static void invokeLaterIfNeeded(Runnable runnable)
+		{
+		if(SwingUtilities.isEventDispatchThread())
+			runnable.run();
+		else
+			{
+			SwingUtilities.invokeLater(runnable);
+			}
+		}
 
 	/**
 	 * Run the given code in the swing thread

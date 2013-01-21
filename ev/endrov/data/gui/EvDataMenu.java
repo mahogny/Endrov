@@ -80,13 +80,13 @@ public class EvDataMenu implements EvBasicWindowExtension
 			{
 			if(e.getSource()==miNew)
 				{
-				EvData.registerOpenedData(new EvData());
+				EvDataGUI.registerOpenedData(new EvData());
 				EvBasicWindow.updateWindows();
 				}
 			else if(e.getSource()==miOpenFile)
 				{
 				EvData data=GuiEvDataIO.loadFileDialog(null);
-				EvData.registerOpenedData(data);
+				EvDataGUI.registerOpenedData(data);
 				}
 			else if(e.getSource()==miOpenFilePath)
 				loadByPath();
@@ -113,7 +113,7 @@ public class EvDataMenu implements EvBasicWindowExtension
 				if(thefile.exists())
 					{
 					EvData data=GuiEvDataIO.loadFile(thefile.getAbsolutePath());
-					EvData.registerOpenedData(data);
+					EvDataGUI.registerOpenedData(data);
 					}
 				else
 					JOptionPane.showMessageDialog(null, "Path does not exist");
@@ -264,13 +264,13 @@ public class EvDataMenu implements EvBasicWindowExtension
 
 			
 			//List recent entries
-			for(final RecentReference rref:EvData.recentlyLoadedFiles)
+			for(final RecentReference rref:EvDataGUI.recentlyLoadedFiles)
 				{
 				JMenuItem mi=new JMenuItem(rref.descName+" ("+rref.url+")");
 				mRecent.add(mi);
 				mi.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e)
-						{EvData.registerOpenedData(EvData.loadFile(rref.url));}
+						{EvDataGUI.registerOpenedData(EvData.loadFile(rref.url));}
 					});
 				}
 			JMenuItem miClearRecent=new JMenuItem("Clear");
@@ -279,7 +279,7 @@ public class EvDataMenu implements EvBasicWindowExtension
 			miClearRecent.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e)
 						{
-						EvData.recentlyLoadedFiles.clear();
+						EvDataGUI.recentlyLoadedFiles.clear();
 						EvBasicWindow.updateWindows();
 						}
 					});
@@ -306,7 +306,7 @@ public class EvDataMenu implements EvBasicWindowExtension
 					public void actionPerformed(ActionEvent e)
 						{
 						boolean anyMod=false;
-						for(EvData thisMeta:EvData.openedData)
+						for(EvData thisMeta:EvDataGUI.openedData)
 							if(thisMeta.isMetadataModified())
 								anyMod=true;
 						
@@ -318,7 +318,7 @@ public class EvDataMenu implements EvBasicWindowExtension
 								return;
 							else if(status==DialogReturnStatus.YES)
 								{
-								for(EvData thisMeta:EvData.openedData)
+								for(EvData thisMeta:EvDataGUI.openedData)
 									if(thisMeta.isMetadataModified())
 										{
 										try
@@ -336,7 +336,7 @@ public class EvDataMenu implements EvBasicWindowExtension
 							}
 
 						//Close all files
-						EvData.openedData.clear();
+						EvDataGUI.openedData.clear();
 						EvBasicWindow.updateWindows();
 						System.gc();
 						}
@@ -349,7 +349,7 @@ public class EvDataMenu implements EvBasicWindowExtension
 					{
 					public void actionPerformed(ActionEvent e)
 						{
-						GuiEvDataIO.saveFile(EvData.openedData);
+						GuiEvDataIO.saveFile(EvDataGUI.openedData);
 						}
 					};
 				miSaveAllData.addActionListener(metaListenerSave);
@@ -359,7 +359,7 @@ public class EvDataMenu implements EvBasicWindowExtension
 			
 			
 			//List all global Metadata
-			for(final EvData thisMeta:EvData.openedData)
+			for(final EvData thisMeta:EvDataGUI.openedData)
 				{
 				JMenu menuMetadata=new JMenu(thisMeta.getMetadataName());
 				mData.add(menuMetadata);
@@ -446,7 +446,7 @@ public class EvDataMenu implements EvBasicWindowExtension
 							else if (ret==DialogReturnStatus.CANCEL)
 								return;
 							}
-						EvData.openedData.remove(thisMeta);
+						EvDataGUI.openedData.remove(thisMeta);
 						EvBasicWindow.updateWindows();
 						System.gc();
 						}

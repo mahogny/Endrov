@@ -13,6 +13,7 @@ import java.util.Map;
 
 import endrov.core.log.EvLog;
 import endrov.data.EvData;
+import endrov.data.gui.EvDataGUI;
 import endrov.typeLineage.Lineage;
 import endrov.util.math.EvDecimal;
 
@@ -51,7 +52,7 @@ public class NucQuickExtractCoordinates
 	public static void forall()
 		{
     EvLog.printLog("Exporting for all lineages");
-		for(EvData data:EvData.openedData)
+		for(EvData data:EvDataGUI.openedData)
 			{
 			try
 				{

@@ -6,6 +6,7 @@
 package endrov.data;
 import endrov.core.EvPluginDefinition;
 import endrov.data.basicTypes.EvGroupObject;
+import endrov.data.gui.EvDataGUI;
 
 public class PLUGIN extends EvPluginDefinition
 	{
@@ -36,7 +37,7 @@ public class PLUGIN extends EvPluginDefinition
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{EvData.class, EvGroupObject.class};
+		return new Class[]{EvDataGUI.class, EvGroupObject.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

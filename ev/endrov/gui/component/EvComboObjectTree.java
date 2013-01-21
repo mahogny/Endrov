@@ -16,6 +16,7 @@ import javax.swing.tree.TreePath;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.data.gui.EvDataGUI;
 
 /**
  * Tree of all objects
@@ -63,7 +64,7 @@ class EvComboObjectTree extends JTree
 		public MyTreeNode()
 			{
 			name="";
-			for(EvData data:EvData.openedData)
+			for(EvData data:EvDataGUI.openedData)
 				children.add(new MyTreeNode(this, data.getMetadataName(),data));
 			}
 		

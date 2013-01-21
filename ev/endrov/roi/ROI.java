@@ -18,6 +18,7 @@ import org.jdom.Element;
 
 import endrov.core.observer.SimpleObserver;
 import endrov.data.*;
+import endrov.data.gui.EvDataGUI;
 import endrov.gui.window.EvBasicWindow;
 import endrov.roi.window.WindowROI;
 import endrov.typeImageset.*;
@@ -76,7 +77,7 @@ public abstract class ROI extends EvObject
 	
 	public static void deleteSelected()
 		{
-		for(EvData data:EvData.openedData)
+		for(EvData data:EvDataGUI.openedData)
 			{
 			for(CompoundROI ob:data.getObjects(CompoundROI.class))
 				deleteSelected(ob);

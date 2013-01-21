@@ -14,6 +14,7 @@ import omero.ServerError;
 import pojos.DatasetData;
 
 import endrov.data.EvData;
+import endrov.data.gui.EvDataGUI;
 import endrov.gui.EvSwingUtil;
 import endrov.gui.window.EvBasicWindow;
 
@@ -166,7 +167,7 @@ public class DialogImportDataset extends JFrame implements ActionListener
 				EvData data=new EvData();
 				new EvIODataOMERO(OMEROBasic.omesession,data);
 				
-				EvData.registerOpenedData(data);
+				EvDataGUI.registerOpenedData(data);
 				EvBasicWindow.updateWindows();
 				
 

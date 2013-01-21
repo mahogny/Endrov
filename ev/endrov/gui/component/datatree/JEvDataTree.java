@@ -16,6 +16,7 @@ import javax.swing.tree.TreePath;
 
 import endrov.data.EvData;
 import endrov.data.EvPath;
+import endrov.data.gui.EvDataGUI;
 import endrov.gui.icon.BasicIcon;
 import endrov.typeBookmark.Bookmark;
 
@@ -85,8 +86,8 @@ public class JEvDataTree extends JTree
 		Bookmark b=new Bookmark();
 		d.metaObject.put("foo", b);
 
-		EvData.registerOpenedData(d);
-		EvData.registerOpenedData(new EvData());
+		EvDataGUI.registerOpenedData(d);
+		EvDataGUI.registerOpenedData(new EvData());
 
 	//	JTree tree=new JTree(new DataTreeModel());
 		JEvDataTree tree=new JEvDataTree(true);

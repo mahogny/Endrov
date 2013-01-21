@@ -10,19 +10,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-
-import javax.swing.SwingUtilities;
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Vector;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-
-import endrov.core.EndrovCore;
-import endrov.core.PersonalConfig;
-import endrov.data.gui.EvDataMenu;
-import endrov.gui.window.EvBasicWindow;
-import endrov.starter.EvSystemUtil;
 
 /**
  * Root of container tree, handler of types
@@ -44,94 +39,6 @@ public class EvData extends EvContainer
 	 */
 	public static Map<String,Class<? extends EvObject>> supportedMetadataFormats=Collections.synchronizedMap(new TreeMap<String,Class<? extends EvObject>>());
 	
-	/**
-	 * Data opened by the user and hence visible as a working data set
-	 */
-	public static Vector<EvData> openedData=new Vector<EvData>();
-	
-	
-	
-
-
-	/******************************************************************************************************
-	 *                               Static: Last path                                                    *
-	 *****************************************************************************************************/
-	
-	/**
-	 * Remember last path used to load an imageset 
-	 */
-	private static File lastDataPath=EvSystemUtil.getHomeDir();
-	
-	/**
-	 * Get last path used to open or save data
-	 */
-	public static File getLastDataPath()
-		{
-		if(lastDataPath==null)
-			return EvSystemUtil.getHomeDir();
-		else
-			return lastDataPath;
-		}
-	
-	/**
-	 * Set last path used to open or save data
-	 */
-	public static void setLastDataPath(File s)
-		{
-		if(s!=null)
-			lastDataPath=s;
-		}
-
-	/******************************************************************************************************
-	 *                               Static: Data registration                                            *
-	 *****************************************************************************************************/
-
-	
-	/**
-	 * List of recently loaded files
-	 */
-	public static Vector<RecentReference> recentlyLoadedFiles=new Vector<RecentReference>();
-
-	/**
-	 * Unregister loaded data from the GUI 
-	 */
-	public void unregisterOpenedData()
-		{
-		EvData.openedData.remove(this);
-		EvBasicWindow.updateWindows();
-		}
-	
-	
-	/** 
-	 * Register loaded data in GUI 
-	 */
-	public static void registerOpenedData(EvData data)
-		{
-		if(data!=null)
-			{
-			openedData.add(data);
-			//EvData.registerLoadedDataGUI(data);
-			RecentReference rref=data.getRecentEntry();
-			if(rref!=null)
-				{
-				boolean isAdded=false;
-				for(RecentReference rref2:recentlyLoadedFiles)
-					if(rref2.url.equals(rref.url))
-						isAdded=true;
-				if(!isAdded)
-					{
-					recentlyLoadedFiles.add(0,rref);
-					while(recentlyLoadedFiles.size()>10)
-						recentlyLoadedFiles.remove(recentlyLoadedFiles.size()-1);
-					}
-				}
-			SwingUtilities.invokeLater(new Runnable(){
-				public void run(){EvBasicWindow.updateWindows();}
-			});
-			}
-		}
-
-
 	/**
 	 * Callback for current status on I/O (saving, loading)
 	 * @author Johan Henriksson
@@ -328,48 +235,6 @@ public class EvData extends EvContainer
 		}
 
 	
-	/**
-	 * Get all child-objects from XML
-	 * TODO What about object id?
-	 * TODO can extractsubobject replace this function?
-	 * @deprecated
-	 */
-	/*
-	public static Vector<EvObject> getChildObXML(Element element)
-		{
-		Vector<EvObject> obs=new Vector<EvObject>();
-		for(Element child:EV.castIterableElement(element.getChildren()))
-			{
-			Class<? extends EvObject> ext=supportedMetadataFormats.get(child.getName());
-			EvObject o=null;
-			if(ext==null)
-				{
-				o=new CustomObject();
-				o.loadMetadata(child);
-				EvLog.printLog("Found unknown meta object of type "+child.getName());
-				}
-			else
-				{
-				try
-					{
-					o=ext.newInstance();
-					o.loadMetadata(child);
-					if(EV.debugMode)
-						EvLog.printLog("Found meta object of type "+child.getName());
-					}
-				catch (InstantiationException e)
-					{
-					e.printStackTrace();
-					}
-				catch (IllegalAccessException e)
-					{
-					e.printStackTrace();
-					}
-				}
-			obs.add(o);
-			}
-		return obs;
-		}*/
 	
 	/**
 	 * Put all meta objects into an XML document
@@ -415,46 +280,5 @@ public class EvData extends EvContainer
 			return io.getRecentEntry();
 		}
 
-
-	/******************************************************************************************************
-	 * Plugin declaration
-	 *****************************************************************************************************/
-	public static void initPlugin() {}
-	static
-		{		
-	
-		//Store recent entries in personal config
-		EndrovCore.addPersonalConfigLoader("recentlyLoaded",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				RecentReference rref=new RecentReference(e.getAttributeValue("desc"),e.getAttributeValue("url"));
-				recentlyLoadedFiles.add(rref);
-				EvBasicWindow.updateWindows(); //Semi-ugly. Done many times.
-				}
-			public void savePersonalConfig(Element root)
-				{
-				try
-					{
-					for(RecentReference rref:EvData.recentlyLoadedFiles)
-						{
-						Element e=new Element("recentlyLoaded");
-						e.setAttribute("desc",rref.descName);
-						e.setAttribute("url",rref.url);
-						root.addContent(e);
-						}
-					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					}
-				}
-			});
-		
-		EvBasicWindow.addBasicWindowExtension(new EvDataMenu());
-//		BasicWindow.updateWindows();
-		//maybe update on new extension?
-		//priorities on update? windows should really go last. then the updateWindows call here is solved.
-		}
 
 	}

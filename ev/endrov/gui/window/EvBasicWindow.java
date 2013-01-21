@@ -23,7 +23,9 @@ import javax.swing.*;
 
 import endrov.core.*;
 import endrov.data.EvData;
+import endrov.data.gui.EvDataGUI;
 import endrov.data.gui.GuiEvDataIO;
+import endrov.gui.EvSwingUtil;
 import endrov.gui.icon.BasicIcon;
 import endrov.gui.keybinding.JInputManager;
 import endrov.gui.keybinding.JinputListener;
@@ -92,7 +94,7 @@ public abstract class EvBasicWindow extends JPanel
 	 */
 	public static void updateWindows(final EvBasicWindow from)
 		{
-			SwingUtilities.invokeLater(new Runnable(){
+		EvSwingUtil.invokeLaterIfNeeded(new Runnable(){
 			public void run()
 				{
 				updateWindowsPrivate(from);
@@ -396,7 +398,7 @@ public abstract class EvBasicWindow extends JPanel
 							for (File f : files)
 								flist.add(f.getAbsolutePath());
 							for (EvData d : GuiEvDataIO.loadFile(flist))
-								EvData.registerOpenedData(d);
+								EvDataGUI.registerOpenedData(d);
 
 							/*
 							 * LoadProgressDialog loadDialog=new
@@ -892,6 +894,11 @@ public abstract class EvBasicWindow extends JPanel
 
 	
 	public WeakHashMap<JinputListener,Object> jinputListeners=new WeakHashMap<JinputListener,Object>();
+
+	/**
+	 * Remember last path used to load an imageset 
+	 */
+	public static File lastDataPath=EvSystemUtil.getHomeDir();
 	
 	public void attachJinputListener(JinputListener listener)
 		{
@@ -946,6 +953,42 @@ public abstract class EvBasicWindow extends JPanel
 	public abstract void windowFreeResources();
 
 	
+
+	/**
+	 * Get last path used to open or save data
+	 */
+	public static File getLastDataPath()
+		{
+		if(EvBasicWindow.lastDataPath==null)
+			return EvSystemUtil.getHomeDir();
+		else
+			return EvBasicWindow.lastDataPath;
+		}
+
+	/**
+	 * Set last path used to open or save data
+	 */
+	public static void setLastDataPath(File s)
+		{
+		if(s!=null)
+			EvBasicWindow.lastDataPath=s;
+		}
+
+	public static File openDialogChooseDir()
+	{
+	JFileChooser chooser = new JFileChooser();
+	chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	chooser.setCurrentDirectory(EvBasicWindow.getLastDataPath());
+	int returnVal = chooser.showOpenDialog(null);
+	if(returnVal == JFileChooser.APPROVE_OPTION)
+	  {
+	  File filename=chooser.getSelectedFile();
+	  EvBasicWindow.setLastDataPath(filename.getParentFile());
+	  return filename;
+	  }
+	else
+		return null;
+	}
 
 	/******************************************************************************************************
 	 * Plugin declaration

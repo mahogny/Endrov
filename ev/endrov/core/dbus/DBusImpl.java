@@ -6,6 +6,7 @@ import javax.swing.JOptionPane;
 
 import endrov.core.EndrovCore;
 import endrov.data.EvData;
+import endrov.data.gui.EvDataGUI;
 import endrov.gui.window.EvBasicWindow;
 
 /**
@@ -34,7 +35,7 @@ public class DBusImpl implements DBus
 				JOptionPane.showMessageDialog(null, "Failed to open "+f);
 			else
 				{
-				EvData.registerOpenedData(d);
+				EvDataGUI.registerOpenedData(d);
 				EvBasicWindow.updateLoadedFile(d);
 				}
 			}}).start(); 

@@ -15,6 +15,7 @@ import javax.swing.tree.TreePath;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.data.gui.EvDataGUI;
 
 /**
  * The object tree in the data browser
@@ -90,7 +91,7 @@ public class DataBrowserTree extends JTree implements TreeModel
 			if(con==null)
 				{
 				//List opened data files
-				for(EvData d:EvData.openedData)
+				for(EvData d:EvDataGUI.openedData)
 					{
 //					System.out.println("adding "+d);
 					

@@ -32,6 +32,7 @@ import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.data.EvSelection;
 import endrov.data.EvSelection.EvSelectable;
+import endrov.data.gui.EvDataGUI;
 import endrov.data.gui.GuiEvDataIO;
 import endrov.gui.EvColor;
 import endrov.gui.TimedDataWindowInterface;
@@ -258,7 +259,7 @@ public class LineageCommonUI implements ActionListener
 			HashSet<String> names=new HashSet<String>();
 			for(LineageSelParticle p:LineageCommonUI.getSelectedParticles())
 				names.add(p.snd());
-			for(EvData data:EvData.openedData)
+			for(EvData data:EvDataGUI.openedData)
 				for(Lineage lin:data.getObjects(Lineage.class))
 					for(String n:names)
 						if(lin.particle.containsKey(n))

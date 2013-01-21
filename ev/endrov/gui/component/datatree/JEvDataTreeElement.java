@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
+import endrov.data.gui.EvDataGUI;
 
 /**
  * Node in the DataTree widget
@@ -65,7 +66,7 @@ public class JEvDataTreeElement
 		{
 		if(isRoot)
 			{
-			EvData data=EvData.openedData.get(index);
+			EvData data=EvDataGUI.openedData.get(index);
 			return new JEvDataTreeElement(false, canCreate, data,new EvPath(data));
 			}
 		else

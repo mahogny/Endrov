@@ -354,11 +354,11 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 		else if(e.getSource()==bImport)
 			{
 			JFileChooser fc=getFileChooser();
-			fc.setCurrentDirectory(EvData.getLastDataPath());
+			fc.setCurrentDirectory(EvBasicWindow.getLastDataPath());
 			int ret=fc.showOpenDialog(null);
 			if(ret==JFileChooser.APPROVE_OPTION)
 				{
-				EvData.setLastDataPath(fc.getSelectedFile().getParentFile());
+				EvBasicWindow.setLastDataPath(fc.getSelectedFile().getParentFile());
 				File filename=fc.getSelectedFile();
 				
 				try

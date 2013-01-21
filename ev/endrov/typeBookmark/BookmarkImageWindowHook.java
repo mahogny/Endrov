@@ -19,6 +19,7 @@ import javax.swing.JMenuItem;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
+import endrov.data.gui.EvDataGUI;
 import endrov.gui.EvSwingUtil;
 import endrov.gui.undo.UndoOpPutObject;
 import endrov.windowViewer2D.Viewer2DWindow;
@@ -59,7 +60,7 @@ public class BookmarkImageWindowHook implements Viewer2DExtension
 					});
 				miBookmark.addSeparator();
 				
-				for(EvData data:EvData.openedData)
+				for(EvData data:EvDataGUI.openedData)
 					{
 					JMenu miData=new JMenu(data.getMetadataName());
 					for(Map.Entry<EvPath, Bookmark> e:data.getIdObjectsRecursive(Bookmark.class).entrySet())

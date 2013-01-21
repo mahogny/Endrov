@@ -13,8 +13,8 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import endrov.data.EvContainer;
-import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.data.gui.EvDataGUI;
 
 
 /**
@@ -52,7 +52,7 @@ public class JEvDataTreeModel implements TreeModel
 		{
 		JEvDataTreeElement eparent=(JEvDataTreeElement)parent;
 		if(eparent.isRoot)
-			return EvData.openedData.size();
+			return EvDataGUI.openedData.size();
 		else
 			{
 			return eparent.getChildCount();
@@ -66,7 +66,7 @@ public class JEvDataTreeModel implements TreeModel
 		
 		if(eparent.isRoot)
 			{
-			return EvData.openedData.indexOf(child);
+			return EvDataGUI.openedData.indexOf(child);
 			}
 		else
 			{

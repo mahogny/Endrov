@@ -21,6 +21,7 @@ import org.jdom.*;
 import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.data.gui.EvDataGUI;
 import endrov.gui.*;
 import endrov.gui.component.EvComboColor;
 import endrov.gui.component.JImageButton;
@@ -937,7 +938,7 @@ public class Viewer2DWindow extends EvBasicWindow
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_W && holdModifier1(e))
 			{
-			data.unregisterOpenedData();
+			EvDataGUI.unregisterOpenedData(data);
 			EvLog.printLog("Closing "+data.getMetadataName());
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_0)

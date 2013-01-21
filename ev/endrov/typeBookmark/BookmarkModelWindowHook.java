@@ -22,6 +22,7 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
+import endrov.data.gui.EvDataGUI;
 import endrov.gl.EvGLCamera;
 import endrov.gui.EvSwingUtil;
 import endrov.gui.undo.UndoOpPutObject;
@@ -75,7 +76,7 @@ public class BookmarkModelWindowHook implements Viewer3DHook, ActionListener
 		miAddBookmark.addActionListener(this);
 		miBookmark.addSeparator();
 		
-		for(EvData data:EvData.openedData)
+		for(EvData data:EvDataGUI.openedData)
 			{
 			JMenu miData=new JMenu(data.getMetadataName());
 			for(Map.Entry<EvPath, Bookmark> e:data.getIdObjectsRecursive(Bookmark.class).entrySet())

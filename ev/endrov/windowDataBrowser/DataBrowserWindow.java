@@ -30,6 +30,7 @@ import org.jdom.Element;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.data.gui.EvDataGUI;
 import endrov.gui.window.EvBasicWindow;
 import endrov.gui.window.EvBasicWindowExtension;
 import endrov.gui.window.EvBasicWindowHook;
@@ -217,7 +218,7 @@ public class DataBrowserWindow extends EvBasicWindow implements MouseListener, T
 									{
 									EvContainer parent=n.parent.con;
 									if(parent==null)
-										EvData.openedData.remove(n.con);
+										EvDataGUI.openedData.remove(n.con);
 									else
 										n.parent.con.metaObject.remove(n.name);
 									}

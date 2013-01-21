@@ -17,6 +17,7 @@ import endrov.data.EvData;
 import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.data.gui.DataMenuExtension;
+import endrov.data.gui.EvDataGUI;
 import endrov.data.gui.EvDataMenu;
 import endrov.gui.EvSwingUtil;
 import endrov.gui.icon.BasicIcon;
@@ -457,16 +458,16 @@ public class EvIOSequenceImageset implements EvIOData
 						{
 						JFileChooser chooser = new JFileChooser();
 				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(EvData.getLastDataPath());
+				    chooser.setCurrentDirectory(EvBasicWindow.getLastDataPath());
 				    int returnVal = chooser.showOpenDialog(null);
 				    if(returnVal == JFileChooser.APPROVE_OPTION)
 				    	{
 				    	File filename=chooser.getSelectedFile();
-				    	EvData.setLastDataPath(chooser.getSelectedFile().getParentFile());
+				    	EvBasicWindow.setLastDataPath(chooser.getSelectedFile().getParentFile());
 				    	EvData data=new EvData();
 				    	EvIOSequenceImageset io=new EvIOSequenceImageset(data,filename);
 				    	data.io=io;
-				    	EvData.registerOpenedData(data);
+				    	EvDataGUI.registerOpenedData(data);
 				    	}
 						}
 					

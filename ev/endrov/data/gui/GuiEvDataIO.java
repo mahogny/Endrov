@@ -22,6 +22,7 @@ import org.jdesktop.swingworker.SwingWorker;
 import endrov.core.log.EvLog;
 import endrov.data.EvData;
 import endrov.data.EvIODataReaderWriterDeclaration;
+import endrov.gui.window.EvBasicWindow;
 
 
 /**
@@ -166,11 +167,11 @@ public class GuiEvDataIO
 				return "Data Files and Imagesets";
 				}
 			});
-		fc.setCurrentDirectory(EvData.getLastDataPath());
+		fc.setCurrentDirectory(EvBasicWindow.getLastDataPath());
 		int ret=fc.showOpenDialog(null);
 		if(ret==JFileChooser.APPROVE_OPTION)
 			{
-			EvData.setLastDataPath(fc.getSelectedFile().getParentFile());
+			EvBasicWindow.setLastDataPath(fc.getSelectedFile().getParentFile());
 			File filename=fc.getSelectedFile();
 			return filename.getAbsolutePath();
 			}
@@ -298,11 +299,11 @@ public class GuiEvDataIO
 				return "Data Files and Imagesets";
 				}
 			});
-		fc.setCurrentDirectory(EvData.getLastDataPath());
+		fc.setCurrentDirectory(EvBasicWindow.getLastDataPath());
 		int ret=fc.showSaveDialog(null);
 		if(ret==JFileChooser.APPROVE_OPTION)
 			{
-			EvData.setLastDataPath(fc.getSelectedFile().getParentFile());
+			EvBasicWindow.setLastDataPath(fc.getSelectedFile().getParentFile());
 			File filename=fc.getSelectedFile();
 			if(filename.getName().indexOf(".")==-1)
 				filename=new File(filename.getParent(),filename.getName()+".ost");

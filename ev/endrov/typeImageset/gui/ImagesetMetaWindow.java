@@ -465,14 +465,14 @@ public class ImagesetMetaWindow extends EvBasicWindow implements ActionListener,
 			{
 			public void loadPersonalConfig(Element e)
 				{
-				EvData.setLastDataPath(new File(e.getAttributeValue("path")));
+				EvBasicWindow.setLastDataPath(new File(e.getAttributeValue("path")));
 				}
 			public void savePersonalConfig(Element root)
 				{
 				try
 					{
 					Element e=new Element("lastImagesetPath");
-					e.setAttribute("path",EvData.getLastDataPath().getPath());
+					e.setAttribute("path",EvBasicWindow.getLastDataPath().getPath());
 					root.addContent(e);
 					}
 				catch (Exception e)

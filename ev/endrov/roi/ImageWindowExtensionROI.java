@@ -11,7 +11,6 @@ import java.io.IOException;
 
 import endrov.bindingIJ.roi.ImageJroiImport;
 import endrov.data.EvContainer;
-import endrov.data.EvData;
 import endrov.gui.window.EvBasicWindow;
 import endrov.roi.window.*;
 import endrov.typeImageset.EvChannel;
@@ -111,7 +110,7 @@ public class ImageWindowExtensionROI implements Viewer2DExtension
 			public void actionPerformed(ActionEvent e)
 				{
 				JFileChooser fc=new JFileChooser();
-				fc.setCurrentDirectory(EvData.getLastDataPath());
+				fc.setCurrentDirectory(EvBasicWindow.getLastDataPath());
 				int ret=fc.showOpenDialog(w);
 				if(ret==JFileChooser.APPROVE_OPTION)
 					{

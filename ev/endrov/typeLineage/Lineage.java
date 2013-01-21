@@ -174,7 +174,7 @@ public class Lineage extends EvObject implements Cloneable
 	 */
 	public void saveColorSchemeDialog(Component parent)
 		{
-		JFileChooser fc=new JFileChooser(EvData.getLastDataPath());
+		JFileChooser fc=new JFileChooser(EvBasicWindow.getLastDataPath());
 		if(fc.showSaveDialog(parent)==JFileChooser.APPROVE_OPTION)
 			{
 			File filename=fc.getSelectedFile();
@@ -196,7 +196,7 @@ public class Lineage extends EvObject implements Cloneable
 	 */
 	public void loadColorSchemeDialog(Component parent)
 		{
-		JFileChooser fc=new JFileChooser(EvData.getLastDataPath());
+		JFileChooser fc=new JFileChooser(EvBasicWindow.getLastDataPath());
 		if(fc.showOpenDialog(parent)==JFileChooser.APPROVE_OPTION)
 			{
 			File filename=fc.getSelectedFile();

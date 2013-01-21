@@ -23,6 +23,7 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
+import endrov.data.gui.EvDataGUI;
 import endrov.flow.Flow;
 import endrov.gui.EvSwingUtil;
 import endrov.gui.FrameControl2D;
@@ -595,6 +596,23 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	
 	
 	
+	public void exportCSV()
+		{
+		ParticleMeasure pm=getParticleMeasure();
+		if(pm!=null)
+			{
+			
+			
+			
+			
+			}
+			
+			
+		
+		
+		}
+	
+	
 	
 	public static void main(String[] args)
 		{
@@ -646,7 +664,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 
 				}
 		
-		EvData.registerOpenedData(d);
+		EvDataGUI.registerOpenedData(d);
 		
 		
 		}

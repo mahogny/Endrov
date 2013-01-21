@@ -16,6 +16,7 @@ import javax.swing.JPopupMenu;
 
 import endrov.data.EvData;
 import endrov.data.EvPath;
+import endrov.data.gui.EvDataGUI;
 import endrov.gui.component.EvDropDownButton;
 import endrov.gui.component.EvFrameEditor;
 import endrov.typeTimeRemap.TimeRemap;
@@ -45,7 +46,7 @@ public class JFrameTimeMenuButton extends EvDropDownButton
 		miNull.addActionListener(new ActionListener(){public void actionPerformed(ActionEvent ee){click(null);}});
 		m.add(miNull);
 		
-		for(EvData data:EvData.openedData)
+		for(EvData data:EvDataGUI.openedData)
 			{
 			for(Map.Entry<EvPath, TimeRemap> e:data.getIdObjectsRecursive(TimeRemap.class).entrySet())
 				{
