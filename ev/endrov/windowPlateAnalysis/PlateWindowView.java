@@ -33,6 +33,7 @@ import endrov.typeParticleMeasure.ParticleMeasure;
 import endrov.util.math.EvDecimal;
 import endrov.util.mutable.Mutable;
 import endrov.windowPlateAnalysis.CalcAggregation.AggregationMethod;
+import endrov.windowPlateAnalysis.scene.Scene2DElement;
 import endrov.windowPlateAnalysis.scene.Scene2DHistogram;
 import endrov.windowPlateAnalysis.scene.Scene2DImage;
 import endrov.windowPlateAnalysis.scene.Scene2DRect;
@@ -277,7 +278,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	public Map<EvPath, OneWell> wellMap=new TreeMap<EvPath, OneWell>();
 	
 	/** Grids that has been laid out */
-	private LinkedList<GridLayout> grids=new LinkedList<GridLayout>();
+	private LinkedList<Scene2DElement> grids=new LinkedList<Scene2DElement>();
 
 	/** Image loading thread */
 	private WorkerThread imageLoaderThread=new WorkerThread();	
@@ -349,31 +350,13 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	/**
 	 * Take current settings of sliders and apply it to image
 	 */
-	public void layoutImagePanel()
+	public void redrawPanel()
 		{
 		//Update scene graph
 		clear();
 	
-		Font gridFont=new Font("Arial", Font.PLAIN, 60*scaleText);
-		for(GridLayout g:grids)
-			{
-			for(int i=1;i<=g.numLetter;i++)
-				{
-				char c='A';
-				Scene2DText st=new Scene2DText(g.x - 20*scaleText, g.y + (i-1)*(g.distance)+50*scaleText, ""+(char)(c+i-1));
-				st.font = gridFont;
-				st.alignment=Alignment.Right;
-				addElem(st);
-				}
-			for(int i=1;i<=g.numNumber;i++)
-				{
-				Scene2DText st=new Scene2DText(g.x + (i-1)*(g.distance)+50*scaleText, g.y - 40*scaleText, ""+i);
-				st.font=gridFont;
-				st.alignment=Alignment.Center;
-				addElem(st);
-				}
-			}
-		
+		for(Scene2DElement e:grids)
+			addElem(e);
 		
 		//Calculate aggregate value
 		ValueRange ragg=new ValueRange();
@@ -405,12 +388,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 						{
 						for(ParticleMeasure.Particle pi:mapp.getParticles())
 							{
-							//String src=pi.getString("source");
-							//if(src.equals(pathString))
-							//	{
-								listA.add(pi.getDouble(attr1));
-								listB.add(pi.getDouble(attr2));
-						//		}
+							listA.add(pi.getDouble(attr1));
+							listB.add(pi.getDouble(attr2));
 							}
 
 						if(aggrMethod instanceof CalcAggregation.AggregationMethod)
@@ -702,9 +681,9 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		GridLayout g=isMultiwellFormat(wellNames);
 		if(g!=null)
 			{
-			grids.add(g);
-		
 			//Multi-well layout
+			
+			//Set image positions
 			for(EvPath p:wellMap.keySet())
 				{
 				OneWell well=wellMap.get(p);
@@ -715,10 +694,45 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 					well.y=(pos.indexLetter-1)*(imageSize+imageMargin);
 					}
 				}
+
+			//Place text
+			Font gridFont=new Font("Arial", Font.PLAIN, 60*scaleText);
+			for(int i=1;i<=g.numLetter;i++)
+				{
+				char c='A';
+				Scene2DText st=new Scene2DText(g.x - 20*scaleText, g.y + (i-1)*(g.distance)+50*scaleText, ""+(char)(c+i-1));
+				st.font = gridFont;
+				st.alignment=Alignment.Right;
+				grids.add(st);
+				}
+			for(int i=1;i<=g.numNumber;i++)
+				{
+				Scene2DText st=new Scene2DText(g.x + (i-1)*(g.distance)+50*scaleText, g.y - 40*scaleText, ""+i);
+				st.font=gridFont;
+				st.alignment=Alignment.Center;
+				grids.add(st);
+				}
 			}
 		else
 			{
-			//TODO general layout
+			//General layout
+			
+			Font gridFont=new Font("Arial", Font.PLAIN, 20*scaleText);
+			int posIndex=0;
+			for(EvPath p:wellMap.keySet())
+				{
+				OneWell well=wellMap.get(p);
+				well.x=0;
+				well.y=posIndex*(imageSize+imageMargin);
+				
+				Scene2DText st=new Scene2DText(imageSize+imageMargin, posIndex*(imageSize+imageMargin) + imageSize/2, p.toString());
+				st.font=gridFont;
+				st.alignment=Alignment.Left;
+				grids.add(st);
+				
+				posIndex++;
+				}
+			
 			
 			}
 		
@@ -767,7 +781,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 											try
 												{
 												SwingUtilities.invokeAndWait(new Runnable(){public void run(){
-													layoutImagePanel();
+													redrawPanel();
 													setCalculatingText(null);
 													}}); 
 												 //This does way more work than needed(?)
@@ -846,7 +860,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 					{
 					SwingUtilities.invokeAndWait(new Runnable(){public void run(){
 						setCalculatingText(null);
-						layoutImagePanel();
+						redrawPanel();
 					}}); 
 					 //This does way more work than needed(?)
 					}

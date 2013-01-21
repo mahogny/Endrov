@@ -321,7 +321,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			if(e.getSource()==bFitRange)
 				fitRange();
 			else
-				imagePanel.layoutImagePanel();
+				imagePanel.redrawPanel();
 			}
 		
 		public void fitRange()
@@ -337,7 +337,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		
 		public void stateChanged(ChangeEvent e)
 			{
-			imagePanel.layoutImagePanel();
+			imagePanel.redrawPanel();
 			}	
 
 		public void resetSettings()
@@ -456,7 +456,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		
 		//Update panel
 		imagePanel.layoutWells();
-		imagePanel.layoutImagePanel(); //TODO not always needed
+		imagePanel.redrawPanel(); //TODO not always needed
 		}
 
 	
@@ -526,7 +526,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	 */
 	public void stateChanged(ChangeEvent e)
 		{
-		imagePanel.layoutImagePanel();
+		imagePanel.redrawPanel();
 		}	
 	
 	
@@ -538,13 +538,13 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	 */
 	public void actionPerformed(ActionEvent e)
 		{
-		if(e.getSource()==comboData || e.getSource()==comboChannel || e.getSource()==comboParticleMeasure)
+		if(e.getSource()==comboData || e.getSource()==comboChannel || e.getSource()==comboParticleMeasure || e.getSource()==comboDisplay)
 			dataChangedEvent();
 		else if(e.getSource()==comboFlow)        //In some of these cases, possible to do better?
 			dataChangedEvent();
-		else if(e.getSource()==comboAttribute1 || e.getSource()==comboAttribute2 || e.getSource()==comboDisplay)
+		else if(e.getSource()==comboAttribute1 || e.getSource()==comboAttribute2)
 			{
-			imagePanel.layoutImagePanel();
+			imagePanel.redrawPanel();
 			}
 /*		else if(e.getSource()==miEvaluate)
 			{
