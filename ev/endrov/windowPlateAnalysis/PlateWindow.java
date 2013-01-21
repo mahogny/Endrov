@@ -6,6 +6,7 @@
 package endrov.windowPlateAnalysis;
 
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			return true;
 			}
 		};
-	private final EvComboObjectOne<ParticleMeasure> comboFeature=new EvComboObjectOne<ParticleMeasure>(new ParticleMeasure(), true, true);
+	private final EvComboObjectOne<ParticleMeasure> comboParticleMeasure=new EvComboObjectOne<ParticleMeasure>(new ParticleMeasure(), true, true);
 	private final EvComboObjectOne<Flow> comboFlow=new EvComboObjectOne<Flow>(new Flow(), true, true);
 	private JComboBox comboAttribute1=new JComboBox();
 	private JComboBox comboAttribute2=new JComboBox();
@@ -105,7 +106,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	private final JMenuItem miZoom=new JMenuItem("Zoom to fit");
 	private final JMenuItem miExportCSV=new JMenuItem("Export as CSV");
 	private final JMenuItem miExportSQL=new JMenuItem("Export to SQL");
-	private final JMenuItem miEvaluate=new JMenuItem("Evaluate flow");
+//	private final JMenuItem miEvaluate=new JMenuItem("Evaluate flow");
 	
 
 	private final JMenu menuImageSize=new JMenu("Thumbnail size");
@@ -125,7 +126,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		
 		//Add listeners
 		comboData.addActionListener(this);
-		comboFeature.addActionListener(this);
+		comboParticleMeasure.addActionListener(this);
 		comboFlow.addActionListener(this);
 		comboDisplay.addActionListener(this);
 		comboAttribute1.addActionListener(this);
@@ -151,7 +152,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 												new JLabel("Flow for computation:"),
 												comboFlow,
 												new JLabel("Measure values:"),
-												comboFeature)),
+												comboParticleMeasure)),
 								EvSwingUtil.withTitledBorder("Display",
 										EvSwingUtil.layoutCompactVertical(
 												new JLabel("Channel:"),
@@ -195,12 +196,12 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		menuPlateWindow.add(miZoom);
 		menuPlateWindow.add(miExportCSV);
 		menuPlateWindow.add(miExportSQL);
-		menuPlateWindow.add(miEvaluate);
+//		menuPlateWindow.add(miEvaluate);
 		
 		miZoom.addActionListener(this);
 		miExportCSV.addActionListener(this);
 		miExportSQL.addActionListener(this);
-		miEvaluate.addActionListener(this);
+	//	miEvaluate.addActionListener(this);
 
 		
 
@@ -369,7 +370,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			buildMenu();
 
 			comboData.updateList();
-			comboFeature.updateList();
+			comboParticleMeasure.updateList();
 			comboFlow.updateList();
 
 			updateWells();
@@ -386,6 +387,8 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		}
 
 	
+	private EvData fakeData=new EvData();
+	
 	/**
 	 * Update which wells exist, and their content
 	 */
@@ -394,7 +397,8 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		imagePanel.clearWells();
 		EvContainer con=comboData.getSelectedObject();
 
-		imagePanel.setParticleMeasure(getParticleMeasure());
+		ParticleMeasure pm=getParticleMeasure();
+		imagePanel.setParticleMeasure(pm);
 		
 		EvPath pathToFlow=comboFlow.getSelectedPath();
 		imagePanel.setFlow(pathToFlow);
@@ -405,6 +409,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		
 		//TODO different channel, z, time etc?
 		
+		HashSet<EvPath> wellPaths=new HashSet<EvPath>();
 		if(con!=null)
 			{
 			Map<EvPath, EvChannel> m=con.getIdObjectsRecursive(EvChannel.class);
@@ -418,11 +423,10 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			listchans.addAll(chans);
 			updateCombo(comboChannel, listchans);
 
-			//Add wells to panel
+			//Add wells to panel, from images
 			String curChannel=(String)comboChannel.getSelectedItem();
 			if(curChannel==null)
 				curChannel="";
-			TreeSet<EvPath> wellPaths=new TreeSet<EvPath>();
 			for(EvPath p:m.keySet())
 				{
 				String ch=p.getLeafName();
@@ -433,9 +437,24 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 					imagePanel.addWell(path, m.get(p));
 					}
 				}
+			
+			}
+
+		//Add remaining wells to panel, from PM
+		if(pm!=null)
+			{
+			for(String s:pm.getWellNames())
+				{
+				EvPath path=EvPath.parse(fakeData, s);   //////////////// TODO THIS IS REALLY NASTY
+				if(!wellPaths.contains(path))
+					{
+					wellPaths.add(path);
+					imagePanel.addWell(path, null);
+					}
+				}
 			}
 		
-
+		//Update panel
 		imagePanel.layoutWells();
 		imagePanel.layoutImagePanel(); //TODO not always needed
 		}
@@ -497,7 +516,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	
 	public ParticleMeasure getParticleMeasure()
 		{
-		return comboFeature.getSelectedObject();
+		return comboParticleMeasure.getSelectedObject();
 		}
 	
 	
@@ -519,21 +538,19 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	 */
 	public void actionPerformed(ActionEvent e)
 		{
-		if(e.getSource()==comboData || e.getSource()==comboChannel)
-			dataChangedEvent();
-		else if(e.getSource()==comboFeature)
+		if(e.getSource()==comboData || e.getSource()==comboChannel || e.getSource()==comboParticleMeasure)
 			dataChangedEvent();
 		else if(e.getSource()==comboFlow)        //In some of these cases, possible to do better?
 			dataChangedEvent();
-		else if(e.getSource()==comboChannel)
-			dataChangedEvent();
 		else if(e.getSource()==comboAttribute1 || e.getSource()==comboAttribute2 || e.getSource()==comboDisplay)
-			dataChangedEvent();
-		else if(e.getSource()==miEvaluate)
 			{
-			imagePanel.execFlowAllWell();
-			dataChangedEvent();  //Overkill?
+			imagePanel.layoutImagePanel();
 			}
+/*		else if(e.getSource()==miEvaluate)
+			{
+//			imagePanel.execFlowAllWell();
+			dataChangedEvent();  //Overkill?
+			}*/
 		else if(e.getSource()==miZoom)
 			imagePanel.zoomToFit();
 		else if(e.getSource()==miSize100)

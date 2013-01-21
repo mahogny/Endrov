@@ -12,20 +12,21 @@ import endrov.typeParticleMeasure.ParticleMeasure.Particle;
 import endrov.typeParticleMeasure.ParticleMeasure.Well;
 import endrov.util.math.EvDecimal;
 
+/**
+ * Methods for importing/exporting measured data
+ * 
+ * @author Johan Henriksson
+ *
+ */
 public class ParticleMeasureIO
 	{
-
-	
-	
-	
-
 	
 	/**
 	 * Write data as a CSV-style table
 	 */
 	public static void saveCSV(ParticleMeasure pm, Writer io, boolean addHeader, String fieldDelim)
 		{
-		System.out.println("field delim:"+fieldDelim+":");
+//		System.out.println("field delim:"+fieldDelim+":");
 		
 		PrintWriter pw=new PrintWriter(io);
 		
@@ -34,6 +35,8 @@ public class ParticleMeasureIO
 		//Add header
 		if(addHeader)
 			{
+			pw.print("well");
+			pw.print(fieldDelim);
 			pw.print("frame");
 			pw.print(fieldDelim);
 			pw.print("particle");
@@ -45,12 +48,14 @@ public class ParticleMeasureIO
 			pw.println();
 			}
 
-		//Write the data
+		//For all wells
 		for(String wellName:pm.getWellNames())
 			{
 			Well well=pm.getWell(wellName);
+			//For all frames
 			for(EvDecimal frame:well.getFrames())
 				{
+				//For all particles
 				for(Map.Entry<Integer, Particle> e:well.getFrame(frame).entrySet())
 					{
 					pw.print(wellName);
@@ -59,7 +64,6 @@ public class ParticleMeasureIO
 					pw.print(fieldDelim);
 					pw.print(e.getKey());
 					Particle p=e.getValue();
-					//Map<String,Object> props=e.getValue().en;
 					for(String columnName:col)
 						{
 						pw.print(fieldDelim);

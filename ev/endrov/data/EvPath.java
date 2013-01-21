@@ -89,6 +89,10 @@ public class EvPath implements Comparable<EvPath>
 		
 		for(int i=0;i<path.length;i++)
 			{
+			//Canonicalize the path - or at least the data part
+			if(path[i].startsWith("#"))
+				sb=new StringBuffer();
+			
 			sb.append(path[i]);
 			if(i!=path.length-1)
 				sb.append("/");
@@ -169,11 +173,6 @@ public class EvPath implements Comparable<EvPath>
 	 * TODO Needs testing
 	 * @param currentData
 	 */
-	/*
-	public EvContainer getObject(EvData currentData)
-		{
-		return getContainer(currentData,new EvPath(currentData));
-		}*/
 	public EvContainer getObject()
 		{
 		return getContainerRecurse(root.get(), 0);
@@ -332,7 +331,7 @@ public class EvPath implements Comparable<EvPath>
 		
 		}
 	
-	
+
 	/**
 	 * Parse a path string, with a default root container if not an absolute path
 	 */
@@ -351,5 +350,22 @@ public class EvPath implements Comparable<EvPath>
 		{
 		return root.get();
 		}
+
+	@Override
+	public boolean equals(Object obj)
+		{
+		if(obj instanceof EvPath)
+			{
+			EvPath b=(EvPath)obj;
+			return b.toString().equals(toString());
+			}
+		else
+			return false;
+		}
 	
+	@Override
+	public int hashCode()
+		{
+		return toString().hashCode();
+		}
 	}

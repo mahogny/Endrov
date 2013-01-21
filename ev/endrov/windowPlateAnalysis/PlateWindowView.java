@@ -697,22 +697,29 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		for(EvPath p:wellMap.keySet())
 			wellNames.add(p.getLeafName());
 
-		
+		//Grid-structured layout
 		grids.clear();
 		GridLayout g=isMultiwellFormat(wellNames);
 		if(g!=null)
+			{
 			grids.add(g);
 		
-		//Multi-well layout
-		for(EvPath p:wellMap.keySet())
-			{
-			OneWell well=wellMap.get(p);
-			MultiWellPlateIndex pos=MultiWellPlateIndex.parse(p.getLeafName());
-			if(pos!=null)
+			//Multi-well layout
+			for(EvPath p:wellMap.keySet())
 				{
-				well.x=(pos.indexNumber-1)*(imageSize+imageMargin);
-				well.y=(pos.indexLetter-1)*(imageSize+imageMargin);
+				OneWell well=wellMap.get(p);
+				MultiWellPlateIndex pos=MultiWellPlateIndex.parse(p.getLeafName());
+				if(pos!=null)
+					{
+					well.x=(pos.indexNumber-1)*(imageSize+imageMargin);
+					well.y=(pos.indexLetter-1)*(imageSize+imageMargin);
+					}
 				}
+			}
+		else
+			{
+			//TODO general layout
+			
 			}
 		
 		}
@@ -753,20 +760,22 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 									public void run()
 										{
 										OneWell well=wellMap.get(pathToWell);
-										if(well!=null)
+										if(well!=null && well.evChannel!=null)
+											{
 											setCalculatingText(well);
-										wellMap.get(pathToWell).execFlow(pathToWell);
-										try
-											{
-											SwingUtilities.invokeAndWait(new Runnable(){public void run(){
-												layoutImagePanel();
-												setCalculatingText(null);
-												}}); 
-											 //This does way more work than needed(?)
-											}
-										catch (Exception e)
-											{
-											e.printStackTrace();
+											well.execFlow(pathToWell);
+											try
+												{
+												SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+													layoutImagePanel();
+													setCalculatingText(null);
+													}}); 
+												 //This does way more work than needed(?)
+												}
+											catch (Exception e)
+												{
+												e.printStackTrace();
+												}
 											}
 										}
 									};
@@ -793,7 +802,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	 */
 	private void loadImageForWell(OneWell w)
 		{
-		if(w.pixels==null)
+		if(w.pixels==null && w.evChannel!=null)
 			{
 			EvDecimal closestFrame=w.evChannel.closestFrame(currentFrame);
 			EvStack stack=w.evChannel.getStack(closestFrame);
@@ -856,6 +865,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	public void clearWells()
 		{
 		imIntensityRange.clear();
+		wellMap.clear();
 		}
 	
 	/**
