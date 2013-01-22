@@ -52,6 +52,12 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	{
 	private static final long serialVersionUID = 1L;
 
+	
+	public interface Listener
+		{
+		public void attributesMayHaveUpdated();
+		}
+	
 	/******************************************************************************************************
 	 *                               Internal classes                                                     *
 	 *****************************************************************************************************/
@@ -117,12 +123,20 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 						//TODO: check that this output exists!
 						
 						for(EvDecimal frame:well.getFrames())
-							System.out.println("------ "+frame+"   ######### "+well.getFrame(frame).size());
+							System.out.println("Got flow frame: "+frame+"   #particles: "+well.getFrame(frame).size());
 						
 						//Merge data into current pm
 						pm.setWell(pathToWell.toString(), well);
 						for(String s:thispm.getColumns())
 							pm.addColumn(s);
+						
+						EvSwingUtil.invokeLaterIfNeeded(new Runnable()
+							{
+							public void run()
+								{
+								listener.attributesMayHaveUpdated();
+								}
+							});
 						
 						gotData.setValue(true);
 						}
@@ -301,11 +315,15 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 
 	private Scene2DText sceneItemText=new Scene2DText(0,0,"");
 
+	private Listener listener;
+	
 	/**
 	 * Construct panel
 	 */
-	public PlateWindowView()
+	public PlateWindowView(Listener listener)
 		{
+		this.listener=listener;
+		
 		//Attach listeners
 		addKeyListener(this); 
 		addMouseListener(this);
@@ -681,7 +699,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		GridLayout g=isMultiwellFormat(wellNames);
 		if(g!=null)
 			{
-			//Multi-well layout
+			/////////Multi-well layout
 			
 			//Set image positions
 			for(EvPath p:wellMap.keySet())
@@ -715,7 +733,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			}
 		else
 			{
-			//General layout
+			/////////General layout
 			
 			Font gridFont=new Font("Arial", Font.PLAIN, 20*scaleText);
 			int posIndex=0;
@@ -732,10 +750,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				
 				posIndex++;
 				}
-			
-			
 			}
-		
 		}
 		
 

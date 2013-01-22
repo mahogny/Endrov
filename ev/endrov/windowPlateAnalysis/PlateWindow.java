@@ -53,7 +53,7 @@ import endrov.util.math.EvDecimal;
  *
  * @author Johan Henriksson
  */
-public class PlateWindow extends EvBasicWindow implements ChangeListener, ActionListener
+public class PlateWindow extends EvBasicWindow implements ChangeListener, ActionListener, PlateWindowView.Listener
 	{	
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -97,7 +97,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	private JComboBox comboChannel=new JComboBox();
 	private JComboBox comboDisplay=new JComboBox(PlateWindowView.getAggrModes());
 	private final FrameControl2D frameControl=new FrameControl2D(this, false, true);
-	private PlateWindowView imagePanel=new PlateWindowView();	
+	private PlateWindowView imagePanel=new PlateWindowView(this);	
 	private ChannelWidget cw=new ChannelWidget();
 
 	private boolean disableDataChanged=false;
@@ -357,7 +357,16 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		}
 	
 	
-	
+
+	private void updateAttrCombo()
+		{
+		List<String> alist=getAttributes();
+		updateCombo(comboAttribute1,alist);
+		updateCombo(comboAttribute2,alist);
+		imagePanel.setAggrMethod(comboDisplay.getSelectedItem(), 
+				(String)comboAttribute1.getSelectedItem(),
+				(String)comboAttribute2.getSelectedItem());
+		}
 	
 	/**
 	 * Called whenever data has been updated
@@ -372,13 +381,10 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			comboData.updateList();
 			comboParticleMeasure.updateList();
 			comboFlow.updateList();
+			updateChannelCombo();
+			updateAttrCombo();
 
 			updateWells();
-			
-
-			List<String> alist=getAttributes();
-			updateCombo(comboAttribute1,alist);
-			updateCombo(comboAttribute2,alist);
 
 			updateWindowTitle();
 			
@@ -403,25 +409,14 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		EvPath pathToFlow=comboFlow.getSelectedPath();
 		imagePanel.setFlow(pathToFlow);
 		
-		imagePanel.setAggrMethod(comboDisplay.getSelectedItem(), 
-				(String)comboAttribute1.getSelectedItem(),
-				(String)comboAttribute2.getSelectedItem());
 		
 		//TODO different channel, z, time etc?
+
 		
 		HashSet<EvPath> wellPaths=new HashSet<EvPath>();
 		if(con!=null)
 			{
 			Map<EvPath, EvChannel> m=con.getIdObjectsRecursive(EvChannel.class);
-			
-
-			//Update channel combo
-			TreeSet<String> chans=new TreeSet<String>();
-			for(EvPath p:m.keySet())
-				chans.add(p.getLeafName());
-			LinkedList<String> listchans=new LinkedList<String>();
-			listchans.addAll(chans);
-			updateCombo(comboChannel, listchans);
 
 			//Add wells to panel, from images
 			String curChannel=(String)comboChannel.getSelectedItem();
@@ -459,12 +454,28 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		imagePanel.redrawPanel(); //TODO not always needed
 		}
 
-	
+
+	private void updateChannelCombo()
+		{
+		EvContainer con=comboData.getSelectedObject();
+		if(con!=null)
+			{
+			Map<EvPath, EvChannel> m=con.getIdObjectsRecursive(EvChannel.class);
+			
+			//Update channel combo
+			TreeSet<String> chans=new TreeSet<String>();
+			for(EvPath p:m.keySet())
+				chans.add(p.getLeafName());
+			LinkedList<String> listchans=new LinkedList<String>();
+			listchans.addAll(chans);
+			updateCombo(comboChannel, listchans);
+			}
+		}
 
 	/**
 	 * Update the options of a combobox 
 	 */
-	private void updateCombo(JComboBox cb, List<String> alist)
+	private boolean updateCombo(JComboBox cb, List<String> alist)
 		{
 		//First check if anything has changed at all. If not, leave it be. This removes a lot of potential flicker
 		if(!comboNeedsUpdate(cb, alist))
@@ -479,7 +490,10 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 				if(index!=-1)
 					cb.setSelectedIndex(index);
 				}
+			return true;
 			}
+		else
+			return false;
 		}
 	
 	/**
@@ -777,6 +791,12 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 					}
 				});
 		
+		}
+	
+	
+	public void attributesMayHaveUpdated()
+		{
+		updateAttrCombo();
 		}
 	
 	
