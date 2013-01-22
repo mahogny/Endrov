@@ -235,7 +235,13 @@ public class RecWindowBurst extends EvBasicWindow implements ActionListener, EvA
 	public void windowFreeResources()
 		{
 		}
-	
+
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The burst acquisition window";
+		}
+
 
 	public void acquisitionEventStatus(String s)
 		{

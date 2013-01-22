@@ -106,7 +106,12 @@ public class PluginWindow extends EvBasicWindow
 	public void windowEventUserLoadedFile(EvData data){}
 	public void windowFreeResources(){}
 
-	
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}
+
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

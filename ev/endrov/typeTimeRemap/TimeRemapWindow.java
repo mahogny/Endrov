@@ -283,6 +283,11 @@ public class TimeRemapWindow extends EvBasicWindow implements ActionListener, Ch
 		{
 		}
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The time remapper";
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

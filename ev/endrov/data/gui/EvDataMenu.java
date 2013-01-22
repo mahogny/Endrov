@@ -34,7 +34,7 @@ import endrov.gui.window.EvBasicWindow.DialogReturnStatus;
  */
 public class EvDataMenu implements EvBasicWindowExtension
 	{
-	public static Vector<DataMenuExtension> extensions=new Vector<DataMenuExtension>();
+	private static Vector<DataMenuExtension> extensions=new Vector<DataMenuExtension>();
 
 
 	
@@ -457,5 +457,11 @@ public class EvDataMenu implements EvBasicWindowExtension
 				
 				}
 			}
+		}
+	public static void addExtensions(DataMenuExtension dataMenuExtension)
+		{
+		extensions.add(dataMenuExtension);
+		EvBasicWindow.updateWindows(); //TODO not enough - hooks have been added to windows already. possible to give personalconfig priorities? or allow post-addition?
+		//hmmm.... post-addition in this method not impossible! change the way hooks are applied to be able to do it at any moment
 		}
 	}

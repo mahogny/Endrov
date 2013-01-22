@@ -146,4 +146,9 @@ public class MakeMaxWindow extends EvBasicWindow implements ActionListener
 	public void windowEventUserLoadedFile(EvData data){}
 	public void windowFreeResources(){}
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}
 	}

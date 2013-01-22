@@ -322,6 +322,11 @@ public class WindowROI extends EvBasicWindow implements ActionListener, TreeSele
 	public void windowFreeResources(){}
 
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}	
 
 	/******************************************************************************************************
 	 * Plugin declaration

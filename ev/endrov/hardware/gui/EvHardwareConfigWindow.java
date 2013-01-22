@@ -111,7 +111,11 @@ public class EvHardwareConfigWindow extends EvBasicWindow
 	public void windowLoadPersonalSettings(Element e){}
 	public void windowFreeResources(){}
 
-	
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The hardware manager";
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

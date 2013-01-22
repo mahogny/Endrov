@@ -420,6 +420,11 @@ public class ConsoleWindow extends EvBasicWindow implements ActionListener, KeyL
 	public void windowEventUserLoadedFile(EvData data){}
 	public void windowFreeResources(){}
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The console window";
+		}
 	
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -429,6 +434,7 @@ public class ConsoleWindow extends EvBasicWindow implements ActionListener, KeyL
 		{
 		EvBasicWindow.addBasicWindowExtension(new ConsoleBasic());
 		}
+
 
 	
 	}

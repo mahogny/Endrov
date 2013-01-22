@@ -703,6 +703,12 @@ public class LineageWindow extends EvBasicWindow
 		return objectCombo.getSelectObjectParent();
 		}
 
+	
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The lineage viewer";
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

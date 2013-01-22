@@ -32,7 +32,7 @@ public class EndrovCore
 	{
 	public static final String programName="Endrov";
 	public static final String website="http://www.endrov.net";
-	public static final String websiteWikiPrefix="http://www.endrov.net/index.php?title=";
+	public static final String websiteWikiPrefix="http://www.endrov.net/wiki/index.php?title=";
 	
 	public static final boolean debugMode=false;
 	public static boolean userShouldConfirmQuit=true;

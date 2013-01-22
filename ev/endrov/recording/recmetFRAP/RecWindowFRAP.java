@@ -164,6 +164,12 @@ public class RecWindowFRAP extends EvBasicWindow
 		}
 
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The multi-dimensional acquisition window";
+		}
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

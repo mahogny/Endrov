@@ -800,7 +800,11 @@ public class LiveWindow extends EvBasicWindow implements ActionListener, Viewer2
 		}
 		
 
-
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The live camera window";
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

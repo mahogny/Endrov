@@ -38,19 +38,20 @@ public class EvSQLGUI
 	public static void initPlugin() {}
 	static
 		{
-		EvDataMenu.extensions.add(new DataMenuExtension()
+		EvDataMenu.addExtensions(new DataMenuExtension()
 			{
-			final JMenu miOMERO=new JMenu("SQL");
+			final JMenu miSQL=new JMenu("SQL");
 			
 			public void buildData(JMenu menu)
 				{
-				EvSwingUtil.tearDownMenu(miOMERO);
+				EvSwingUtil.tearDownMenu(miSQL);
 				//This is abuse...
 
+				
 				//Login
-				JMenuItem miLogin=new JMenuItem("Connect new...");
-				miOMERO.add(miLogin);
-				miLogin.addActionListener(new ActionListener()
+				JMenuItem miConnectNew=new JMenuItem("Connect new...");
+				miSQL.add(miConnectNew);
+				miConnectNew.addActionListener(new ActionListener()
 					{
 					public void actionPerformed(ActionEvent e)
 						{
@@ -83,7 +84,7 @@ public class EvSQLGUI
 
 					//Log out
 					JMenuItem miLogout=new JMenuItem("Disconnect "+conn);
-					miOMERO.add(miLogout);
+					miSQL.add(miLogout);
 					miLogout.addActionListener(new ActionListener()
 						{
 						public void actionPerformed(ActionEvent e)
@@ -112,7 +113,7 @@ public class EvSQLGUI
 			public void buildOpen(JMenu menu)
 				{
 //				miOMERO.setIcon(new ImageIcon(EvSQLGUI.class.getResource("iconOMERO.png")));
-				addMetamenu(menu,miOMERO);
+				addMetamenu(menu,miSQL);
 				}
 			
 			public void buildSave(JMenu menu, final EvData meta)

@@ -112,7 +112,11 @@ public class DataBrowserWindow extends EvBasicWindow implements MouseListener, T
 		{
 		}
 	
-	
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The data browser";
+		}
 	
 	/******************************************************************************************************
 	 * Plugin declaration

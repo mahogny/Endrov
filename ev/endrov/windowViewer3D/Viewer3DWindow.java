@@ -850,6 +850,12 @@ public class Viewer3DWindow extends EvBasicWindow
 		}
 	
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The 3D viewer";
+		}	
+
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

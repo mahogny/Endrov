@@ -759,7 +759,11 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		}
 	
 
-	
+	@Override
+	public String windowHelpTopic()
+		{
+		return "High-throughput screenings with multi-well plates";
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

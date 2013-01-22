@@ -118,5 +118,9 @@ public class LineageDialogMapExp extends EvBasicWindow implements ActionListener
 		
 		}
 
-	
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}
 	}

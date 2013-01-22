@@ -173,6 +173,12 @@ public class ScriptEditorWindow extends EvBasicWindow implements ActionListener
 	public void dataChangedEvent(){}
 	
 	
+
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}
 	
 	public static void main(String arg[])
 		{

@@ -238,5 +238,11 @@ public class WindowKeyBinding extends EvBasicWindow implements ActionListener
 	
 	public void windowFreeResources(){}
 
+
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}	
 	
 	}

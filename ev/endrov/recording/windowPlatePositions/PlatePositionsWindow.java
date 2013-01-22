@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.positionsWindow;
+package endrov.recording.windowPlatePositions;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -33,7 +33,7 @@ import endrov.util.io.EvFileUtil;
  * 
  * @author Kim Nordlöf, Erik Vernersson
  */
-public class PositionsWindow extends EvBasicWindow implements ActionListener, PositionListListener
+public class PlatePositionsWindow extends EvBasicWindow implements ActionListener, PositionListListener
 	{
 	/******************************************************************************************************
 	 * Static *
@@ -65,7 +65,7 @@ public class PositionsWindow extends EvBasicWindow implements ActionListener, Po
 	
 	
 
-	public PositionsWindow()
+	public PlatePositionsWindow()
 		{
 		bAdd.addActionListener(this);
 		bRemove.addActionListener(this);
@@ -113,7 +113,7 @@ public class PositionsWindow extends EvBasicWindow implements ActionListener, Po
 		RecordingResource.posListUpdated();
 	
 		// Window overall things
-		setTitleEvWindow("Positions");
+		setTitleEvWindow("Plate positions");
 		setBoundsEvWindow(500, 300);
 		setVisibleEvWindow(true);
 		}
@@ -279,6 +279,13 @@ public class PositionsWindow extends EvBasicWindow implements ActionListener, Po
 		repaint();
 		}
 	
+	
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The plate positions window";
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -300,7 +307,7 @@ public class PositionsWindow extends EvBasicWindow implements ActionListener, Po
 					{
 					public void createMenus(EvBasicWindow w)
 						{
-						JMenuItem mi = new JMenuItem("Positions", new ImageIcon(getClass()
+						JMenuItem mi = new JMenuItem("Plate positions", new ImageIcon(getClass()
 								.getResource("jhPositionsWindow.png")));
 						mi.addActionListener(this);
 						EvBasicWindow.addMenuItemSorted(
@@ -309,7 +316,7 @@ public class PositionsWindow extends EvBasicWindow implements ActionListener, Po
 
 					public void actionPerformed(ActionEvent e)
 						{
-						new PositionsWindow();
+						new PlatePositionsWindow();
 						}
 
 					public void buildMenu(EvBasicWindow w)

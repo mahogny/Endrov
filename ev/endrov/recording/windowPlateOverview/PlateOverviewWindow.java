@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.overviewWindow;
+package endrov.recording.windowPlateOverview;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
@@ -54,7 +54,7 @@ import endrov.windowViewer2D.Viewer2DRendererExtension;
  * 
  * @author Kim Nordlöf, Erik Vernersson
  */
-public class OverviewWindow extends EvBasicWindow implements ActionListener,
+public class PlateOverviewWindow extends EvBasicWindow implements ActionListener,
 		Viewer2DInterface, PositionListListener
 	{
 	/******************************************************************************************************
@@ -63,17 +63,17 @@ public class OverviewWindow extends EvBasicWindow implements ActionListener,
 	static final long serialVersionUID = 0;
 
 	public static final ImageIcon iconAutoFocus = new ImageIcon(
-			OverviewWindow.class.getResource("jhAutoFocus.png"));
+			PlateOverviewWindow.class.getResource("jhAutoFocus.png"));
 	public static final ImageIcon iconCameraToROI = new ImageIcon(
-			OverviewWindow.class.getResource("jhCameraToROI.png"));
+			PlateOverviewWindow.class.getResource("jhCameraToROI.png"));
 	public static final ImageIcon iconGoToROI = new ImageIcon(
-			OverviewWindow.class.getResource("jhGoToROI.png"));
+			PlateOverviewWindow.class.getResource("jhGoToROI.png"));
 	public static final ImageIcon iconRectROI = new ImageIcon(
-			OverviewWindow.class.getResource("jhRect.png"));
+			PlateOverviewWindow.class.getResource("jhRect.png"));
 	public static final ImageIcon iconSelectROI = new ImageIcon(
-			OverviewWindow.class.getResource("jhSelect.png"));
+			PlateOverviewWindow.class.getResource("jhSelect.png"));
 	public static final ImageIcon iconCreatePos = new ImageIcon(
-			OverviewWindow.class.getResource("jhCreatePOS.png"));
+			PlateOverviewWindow.class.getResource("jhCreatePOS.png"));
 
 	/******************************************************************************************************
 	 * Instance *
@@ -107,7 +107,7 @@ public class OverviewWindow extends EvBasicWindow implements ActionListener,
 	/**
 	 * Surface for the image
 	 */
-	private OverviewWindowImageView drawArea = new OverviewWindowImageView()
+	private PlateOverviewWindowImageView drawArea = new PlateOverviewWindowImageView()
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -181,7 +181,7 @@ public class OverviewWindow extends EvBasicWindow implements ActionListener,
 		}
 
 
-	public OverviewWindow()
+	public PlateOverviewWindow()
 		{
 		toolButtons.addAll(Arrays.asList(/*
 																			 * bEllipseROI,bFreehandROI,bLineROI,bPointROI
@@ -189,7 +189,7 @@ public class OverviewWindow extends EvBasicWindow implements ActionListener,
 																			 */bSelectROI));
 
 		bSelectROI.setSelected(true);
-		setTool(new GeneralToolROI(OverviewWindow.this));
+		setTool(new GeneralToolROI(PlateOverviewWindow.this));
 
 		bSelectROI.addActionListener(new ActionListener()
 			{
@@ -199,7 +199,7 @@ public class OverviewWindow extends EvBasicWindow implements ActionListener,
 						{
 						// ImageRendererROI
 						// renderer=getRendererClass(ImageRendererROI.class);
-						setTool(new GeneralToolROI(OverviewWindow.this));
+						setTool(new GeneralToolROI(PlateOverviewWindow.this));
 
 						// setTool(new
 						// GeneralToolDragCreateROI(CamWindow.this,rt.makeInstance(),renderer));
@@ -226,7 +226,7 @@ public class OverviewWindow extends EvBasicWindow implements ActionListener,
 							if (((JToggleButton) e.getSource()).isSelected())
 								{
 								ImageRendererROI renderer = getRendererClass(ImageRendererROI.class);
-								setTool(new GeneralToolDragCreateROI(OverviewWindow.this, rt
+								setTool(new GeneralToolDragCreateROI(PlateOverviewWindow.this, rt
 										.makeInstance(), renderer));
 								}
 							}
@@ -300,7 +300,7 @@ public class OverviewWindow extends EvBasicWindow implements ActionListener,
 			b.addActionListener(this);
 
 		// Window overall things
-		setTitleEvWindow("Overview");
+		setTitleEvWindow("Plate overview");
 		packEvWindow();
 		setBoundsEvWindow(new Rectangle(800, 600));
 		setVisibleEvWindow(true);
@@ -756,6 +756,11 @@ public class OverviewWindow extends EvBasicWindow implements ActionListener,
 
 		}
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The plate overview window";
+		}
 	
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -777,7 +782,7 @@ public class OverviewWindow extends EvBasicWindow implements ActionListener,
 				{
 				public void createMenus(EvBasicWindow w)
 					{
-					JMenuItem mi = new JMenuItem("Overview", new ImageIcon(getClass()
+					JMenuItem mi = new JMenuItem("Plate overview", new ImageIcon(getClass()
 							.getResource("fugueBinocular.png")));
 					mi.addActionListener(this);
 					EvBasicWindow.addMenuItemSorted(
@@ -786,7 +791,7 @@ public class OverviewWindow extends EvBasicWindow implements ActionListener,
 
 				public void actionPerformed(ActionEvent e)
 					{
-					new OverviewWindow();
+					new PlateOverviewWindow();
 					}
 
 				public void buildMenu(EvBasicWindow w)

@@ -432,7 +432,7 @@ public class EvIONamebasedImageset implements EvIOData
 	public static void initPlugin() {}
 	static
 		{
-		EvDataMenu.extensions.add(new DataMenuExtension()
+		EvDataMenu.addExtensions(new DataMenuExtension()
 			{
 			public void buildData(JMenu menu)
 				{

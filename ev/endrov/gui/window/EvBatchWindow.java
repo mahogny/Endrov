@@ -117,4 +117,10 @@ public class EvBatchWindow extends EvBasicWindow implements ActionListener, Batc
 	public void windowEventUserLoadedFile(EvData data){}
 	public void windowFreeResources(){}
 
+
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}	
 	}

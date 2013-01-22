@@ -1,4 +1,4 @@
-package endrov.recording.positionsWindow;
+package endrov.recording.windowPlatePositions;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;

@@ -179,6 +179,13 @@ public class RecWindowFLIP extends EvBasicWindow
 		}
 	
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}
+
+
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

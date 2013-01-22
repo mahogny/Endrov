@@ -117,6 +117,12 @@ public class RecWindowMultiDim extends EvBasicWindow
 
 	
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The multi-dimensional acquisition window";
+		}
+
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

@@ -294,6 +294,11 @@ public class WindowAutoLineaging extends EvBasicWindow implements LineagingAlgor
 			}
 		}
 
-	
+
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}		
 	
 	}

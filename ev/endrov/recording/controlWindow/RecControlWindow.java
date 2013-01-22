@@ -66,6 +66,12 @@ public class RecControlWindow extends EvBasicWindow
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}
+
 	
 	public WeakHashMap<EvComboObject,Object> listComboObject=new WeakHashMap<EvComboObject, Object>();
 	

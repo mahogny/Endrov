@@ -600,6 +600,12 @@ public abstract class EvBasicWindow extends JPanel
 					dialogAbout();
 				else if (e.getSource()==miSysInfo)
 					dialogSysInfo();
+				else if (e.getSource()==miWindowHelp)
+					{
+					String url=EndrovCore.websiteWikiPrefix+windowHelpTopic().replace(" ", "%20");
+					System.out.println(url);
+					EvBrowserUtil.displayURL(url);
+					}
 				else if (e.getSource()==miSaveConfig)
 					EndrovCore.savePersonalConfig();
 				else if (e.getSource()==miRegInfo)
@@ -634,6 +640,7 @@ public abstract class EvBasicWindow extends JPanel
 	private JMenuItem miWebUser = new JMenuItem("User's guide");
 	private JMenuItem miWebPlugins = new JMenuItem("Plugins");
 	private JMenuItem miSysInfo = new JMenuItem("System information");
+	private JMenuItem miWindowHelp = new JMenuItem("Help about this window");
 	private JMenuItem miSaveConfig = new JMenuItem("Save config now");
 	private JMenuItem miRegInfo = new JMenuItem("Change registration information");
 	private JMenuItem miSetSwap = new JMenuItem("Set swap directory");
@@ -718,6 +725,9 @@ public abstract class EvBasicWindow extends JPanel
 		mHelp.add(miWebPlugins);
 		mHelp.add(miReportBug);
 		mHelp.add(miSysInfo);
+		if(windowHelpTopic()!=null)
+			mHelp.add(miWindowHelp);
+		
 		
 		menubar.add(Box.createHorizontalGlue());
 		menubar.add(mHelp);
@@ -736,6 +746,7 @@ public abstract class EvBasicWindow extends JPanel
 		miWebPlugins.addActionListener(listener);
 		miReportBug.addActionListener(listener);
 		miSysInfo.addActionListener(listener);
+		miWindowHelp.addActionListener(listener);
 		miSaveConfig.addActionListener(listener);
 		miRegInfo.addActionListener(listener);
 		miSetSwap.addActionListener(listener);
@@ -952,6 +963,11 @@ public abstract class EvBasicWindow extends JPanel
 	 */
 	public abstract void windowFreeResources();
 
+	/**
+	 * Help on how to use this window. Can return null
+	 */
+	public abstract String windowHelpTopic();
+		
 	
 
 	/**

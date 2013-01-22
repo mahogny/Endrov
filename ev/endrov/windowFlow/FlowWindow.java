@@ -357,7 +357,11 @@ public class FlowWindow extends EvBasicWindow implements ActionListener, KeyList
 		{
 		}
 
-
+	@Override
+	public String windowHelpTopic()
+		{
+		return "Scripting with flows";
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

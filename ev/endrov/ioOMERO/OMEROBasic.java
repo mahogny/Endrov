@@ -37,7 +37,7 @@ public class OMEROBasic
 	public static void initPlugin() {}
 	static
 		{
-		EvDataMenu.extensions.add(new DataMenuExtension()
+		EvDataMenu.addExtensions(new DataMenuExtension()
 			{
 			final JMenu miOMERO=new JMenu("OMERO");
 			public void buildData(JMenu menu)

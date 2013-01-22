@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.overviewWindow;
+package endrov.recording.windowPlateOverview;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -38,7 +38,7 @@ import endrov.windowViewer2D.Viewer2DRenderer;
 /**
  * @author Kim Nordlöf, Erik Vernersson
  */
-public abstract class OverviewWindowImageView extends JPanel implements
+public abstract class PlateOverviewWindowImageView extends JPanel implements
 		MouseListener, MouseMotionListener, MouseWheelListener
 	{
 	static final long serialVersionUID = 0;
@@ -92,7 +92,7 @@ public abstract class OverviewWindowImageView extends JPanel implements
 	public JToggleButton[] toolButtons;
 
 	
-	public OverviewWindowImageView()
+	public PlateOverviewWindowImageView()
 		{
 		scale = 0.5;
 		addMouseListener(this);

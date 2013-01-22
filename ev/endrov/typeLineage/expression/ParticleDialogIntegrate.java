@@ -163,4 +163,10 @@ public class ParticleDialogIntegrate extends EvBasicWindow implements ActionList
 		
 		}
 	
+	
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}
 	}

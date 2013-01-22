@@ -345,10 +345,13 @@ public class MakeMovieWindowFromViewer2D extends EvBasicWindow implements Action
 	@Override
 	public void windowEventUserLoadedFile(EvData data)
 		{
-		// TODO Auto-generated method stub
-		
 		}
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return "Making movies";
+		}
 	
 	/******************************************************************************************************
 	 * Plugin declaration

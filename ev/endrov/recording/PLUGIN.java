@@ -8,8 +8,6 @@ import endrov.core.EvPluginDefinition;
 import endrov.recording.bleachWindow.RecWindowQuickBleach;
 import endrov.recording.hardwareControlWindow.HardwareControlWindow;
 import endrov.recording.liveWindow.LiveWindow;
-import endrov.recording.overviewWindow.OverviewWindow;
-import endrov.recording.positionsWindow.PositionsWindow;
 import endrov.recording.recmetBurst.EvBurstAcquisition;
 import endrov.recording.recmetBurst.RecWindowBurst;
 import endrov.recording.recmetFLIP.EvFLIPAcquisition;
@@ -21,6 +19,8 @@ import endrov.recording.recmetFRAP.FlowUnitShowGraph;
 import endrov.recording.recmetFRAP.RecWindowFRAP;
 import endrov.recording.recmetMultidim.RecWindowMultiDim;
 import endrov.recording.resolutionConfigWindow.ResolutionConfigWindow;
+import endrov.recording.windowPlateOverview.PlateOverviewWindow;
+import endrov.recording.windowPlatePositions.PlatePositionsWindow;
 
 public class PLUGIN extends EvPluginDefinition
 	{
@@ -56,8 +56,8 @@ public class PLUGIN extends EvPluginDefinition
 				RecordingResource.class,
 				RecWindowMultiDim.class,
 				ResolutionConfigWindow.class,
-				OverviewWindow.class,
-				PositionsWindow.class,
+				PlateOverviewWindow.class,
+				PlatePositionsWindow.class,
 				
 				HardwareControlWindow.class,
 				

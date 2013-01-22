@@ -459,6 +459,11 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 	public void windowEventUserLoadedFile(EvData data){}
 	public void windowFreeResources(){}
 
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}
 	
 	
 	/******************************************************************************************************

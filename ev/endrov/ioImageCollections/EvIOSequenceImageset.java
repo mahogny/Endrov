@@ -430,7 +430,7 @@ public class EvIOSequenceImageset implements EvIOData
 		{
 	//	BasicWindow.addBasicWindowExtension(new Basic());
 		
-		EvDataMenu.extensions.add(new DataMenuExtension()
+		EvDataMenu.addExtensions(new DataMenuExtension()
 			{
 			public void buildData(JMenu menu)
 				{

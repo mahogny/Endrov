@@ -1220,7 +1220,12 @@ public class Viewer2DWindow extends EvBasicWindow
 		}
 	
 
-	
+
+	@Override
+	public String windowHelpTopic()
+		{
+		return "The 2D viewer";
+		}	
 
 	/******************************************************************************************************
 	 * Plugin declaration

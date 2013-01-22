@@ -135,6 +135,14 @@ public class RecWindowQuickBleach extends EvBasicWindow implements ActionListene
 		{
 		}
 	
+
+
+	@Override
+	public String windowHelpTopic()
+		{
+		return null;
+		}
+	
 	public void acqStopped()
 		{
 		bStartStop.setText("Start");
