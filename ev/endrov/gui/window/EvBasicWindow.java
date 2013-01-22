@@ -56,9 +56,15 @@ public abstract class EvBasicWindow extends JPanel
 	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 	}
 
-	/** The set of all extensions */
-	public static Vector<EvBasicWindowExtension> basicWindowExtensions = new Vector<EvBasicWindowExtension>();
+	/** 
+	 * The set of all extensions 
+	 */
+	private static Vector<EvBasicWindowExtension> basicWindowExtensions = new Vector<EvBasicWindowExtension>();
 
+	
+	
+	
+	
 	/** Manager for creating windows */
 	public static EvWindowManagerMaker windowManager = new EvWindowManagerFree.Manager();
 
@@ -85,6 +91,10 @@ public abstract class EvBasicWindow extends JPanel
 	public static void addBasicWindowExtension(EvBasicWindowExtension e)
 		{
 		basicWindowExtensions.add(e);
+
+		//Add extensions to existing windows aposteriori
+		for (EvBasicWindow w : getWindowList())
+			e.newBasicWindow(w);
 		}
 
 	/**
@@ -518,12 +528,19 @@ public abstract class EvBasicWindow extends JPanel
 		getEvw().toFront();
 		}
 
-	// setfocusable
-	// addkeylistener
+	/** 
+	 * Hooks for all extensions 
+	 */
+	private HashMap<Class<?>, EvBasicWindowHook> basicWindowExtensionHook = new HashMap<Class<?>, EvBasicWindowHook>();
 
-	/** Hooks for all extensions */
-	public HashMap<Class<?>, EvBasicWindowHook> basicWindowExtensionHook = new HashMap<Class<?>, EvBasicWindowHook>();
-
+	
+	public void addHook(Class<?> cl, EvBasicWindowHook hook)
+		{
+		basicWindowExtensionHook.put(cl, hook);
+		}
+		
+	
+	
 	private static Object instanceCounterLock = new Object();
 //	private static int instanceCounter = 0;
 

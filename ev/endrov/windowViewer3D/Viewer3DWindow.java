@@ -867,7 +867,7 @@ public class Viewer3DWindow extends EvBasicWindow
 					{
 					public void newBasicWindow(EvBasicWindow w)
 						{
-						w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+						w.addHook(this.getClass(),new Hook());
 						}
 					
 					class Hook implements EvBasicWindowHook, ActionListener

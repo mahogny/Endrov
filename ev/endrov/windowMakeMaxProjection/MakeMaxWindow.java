@@ -39,7 +39,7 @@ public class MakeMaxWindow extends EvBasicWindow implements ActionListener
 			{
 			public void newBasicWindow(EvBasicWindow w)
 				{
-				w.basicWindowExtensionHook.put(this.getClass(), new EvBasicWindowHook()
+				w.addHook(this.getClass(), new EvBasicWindowHook()
 						{
 						public void createMenus(EvBasicWindow w)
 							{

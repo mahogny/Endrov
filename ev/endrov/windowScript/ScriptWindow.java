@@ -444,7 +444,7 @@ public class ScriptWindow extends EvBasicWindow implements ActionListener
 					{
 					public void newBasicWindow(EvBasicWindow w)
 						{
-						w.basicWindowExtensionHook.put(ScriptWindow.class,new Hook());
+						w.addHook(ScriptWindow.class,new Hook());
 						}
 					class Hook implements EvBasicWindowHook, ActionListener
 						{

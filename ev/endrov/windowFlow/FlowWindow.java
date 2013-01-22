@@ -373,7 +373,7 @@ public class FlowWindow extends EvBasicWindow implements ActionListener, KeyList
 			{
 			public void newBasicWindow(EvBasicWindow w)
 				{
-				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				w.addHook(this.getClass(),new Hook());
 				}
 			class Hook implements EvBasicWindowHook, ActionListener
 			{

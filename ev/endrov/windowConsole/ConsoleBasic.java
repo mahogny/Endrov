@@ -22,7 +22,7 @@ public class ConsoleBasic implements EvBasicWindowExtension
 //	private static ImageIcon iconWindow=new ImageIcon(class.getResource("iconWindow.png"));
 	public void newBasicWindow(EvBasicWindow w)
 		{
-		w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+		w.addHook(this.getClass(),new Hook());
 		}
 	private class Hook implements EvBasicWindowHook, ActionListener
 		{

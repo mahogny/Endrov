@@ -338,7 +338,7 @@ public class WindowROI extends EvBasicWindow implements ActionListener, TreeSele
 			{
 			public void newBasicWindow(EvBasicWindow w)
 				{
-				w.basicWindowExtensionHook.put(this.getClass(),new ThisBasicHook());
+				w.addHook(this.getClass(),new ThisBasicHook());
 				}
 			});
 		}

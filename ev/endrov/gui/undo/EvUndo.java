@@ -100,7 +100,7 @@ public class EvUndo
 			{
 			public void newBasicWindow(EvBasicWindow w)
 				{
-				w.basicWindowExtensionHook.put(this.getClass(), new EvBasicWindowHook()
+				w.addHook(this.getClass(), new EvBasicWindowHook()
 						{
 						public void createMenus(EvBasicWindow w)
 							{

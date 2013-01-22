@@ -20,7 +20,7 @@ public class BasicWindowExtensionExitLast implements EvBasicWindowExtension
 	
 	public void newBasicWindow(EvBasicWindow w)
 		{
-		w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+		w.addHook(this.getClass(),new Hook());
 		}
 	private class Hook implements EvBasicWindowHook, ActionListener
 		{

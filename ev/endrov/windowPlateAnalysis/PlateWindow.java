@@ -775,7 +775,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 				{
 				public void newBasicWindow(EvBasicWindow w)
 					{
-					w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+					w.addHook(this.getClass(),new Hook());
 					}
 				class Hook implements EvBasicWindowHook, ActionListener
 					{

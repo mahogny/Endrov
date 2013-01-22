@@ -40,7 +40,7 @@ public class EvDataMenu implements EvBasicWindowExtension
 	
 	public void newBasicWindow(EvBasicWindow w)
 		{
-		w.basicWindowExtensionHook.put(this.getClass(),new BasicHook());
+		w.addHook(this.getClass(),new BasicHook());
 		}
 	private class BasicHook implements EvBasicWindowHook, ActionListener
 		{
@@ -165,13 +165,6 @@ public class EvDataMenu implements EvBasicWindowExtension
 						
 						}
 					
-					/*
-					JMenu miMoveOb=buildMoveMenu(thisMeta, obId);
-					obmenu.add(miMoveOb);
-					
-					JMenu miCopyOb=buildCopyMenu(thisMeta, obId);
-					obmenu.add(miCopyOb);
-					*/
 					ob.buildMetamenu(obmenu, thisMeta);
 
 					attachSubObjectMenus(obmenu, ob);
