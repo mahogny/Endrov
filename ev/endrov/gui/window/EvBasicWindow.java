@@ -602,8 +602,7 @@ public abstract class EvBasicWindow extends JPanel
 					dialogSysInfo();
 				else if (e.getSource()==miWindowHelp)
 					{
-					String url=EndrovCore.websiteWikiPrefix+windowHelpTopic().replace(" ", "%20");
-					System.out.println(url);
+					String url=EndrovCore.websiteWikiPrefix+windowHelpTopic().replace(" ", "_");
 					EvBrowserUtil.displayURL(url);
 					}
 				else if (e.getSource()==miSaveConfig)
@@ -613,7 +612,10 @@ public abstract class EvBasicWindow extends JPanel
 				else if (e.getSource()==miOpenConfig)
 					EndrovUtil.openExternalProgram(EvSystemUtil.getGlobalConfigEndrovDir());
 				else if (e.getSource()==miReportBug)
-					EvBrowserUtil.displayURL("http://sourceforge.net/tracker/?group_id=199554&atid=969958");
+					{
+					String url=EndrovCore.websiteWikiPrefix+"Report_bugs";
+					EvBrowserUtil.displayURL(url);
+					}
 				else if(e.getSource()==miSetSwap)
 					dialogSetSwap();
 				}

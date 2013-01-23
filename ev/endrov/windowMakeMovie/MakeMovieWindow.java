@@ -7,13 +7,21 @@ package endrov.windowMakeMovie;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 //import java.awt.image.*;
 import javax.swing.*;
 
 import endrov.core.batch.BatchThread;
 import endrov.data.*;
+import endrov.flow.EvOpSlice1;
+import endrov.gui.EvColor;
 import endrov.gui.EvSwingUtil;
 import endrov.gui.component.JSpinnerSimpleEvFrame;
 import endrov.gui.window.EvBasicWindow;
@@ -21,10 +29,15 @@ import endrov.gui.window.EvBatchWindow;
 import endrov.movieEncoder.EvMovieEncoderFactory;
 import endrov.movieEncoder.EncodeMovieDescriptionFormat;
 import endrov.movieEncoder.EncodeMovieThread;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvPixels;
 import endrov.typeImageset.gui.EvComboChannel;
+import endrov.util.ProgressHandle;
 import endrov.util.math.EvDecimal;
+import endrov.windowViewer2D.Viewer2DWindow;
 
 import org.jdom.*;
+
 
 /**
  * Operation for window: generate movie file
@@ -35,13 +48,41 @@ public class MakeMovieWindow extends EvBasicWindow implements ActionListener
 	{
 	static final long serialVersionUID=0;
 	
-	private int numChannelCombo=4;
 
+	
+	private class ChannelChoice
+		{
+		EncodeMovieThread.MovieChannel channelFromView;
+		
+		EvComboChannel chCombo=new EvComboChannel(false, false);
+		
+		JTextField chanDesc=new JTextField();
+		
+		public JComponent getChanComponent()
+			{
+			if(channelFromView!=null)
+				return new JLabel(channelFromView.name+": ");
+			else
+				return chCombo;
+			}
+
+		public EncodeMovieThread.MovieChannel getChannel()
+			{
+			if(channelFromView!=null)
+				return channelFromView;
+			else
+				{
+				EvDecimal z=new EvDecimal((Integer)spinnerZ.getValue());
+				return new EncodeMovieThread.MovieChannel(chCombo.getChannelName(), chCombo.getSelectedObject(),chanDesc.getText(),z);
+				}
+			}
+		}
+	
+	
+	
 	//GUI components
 	private JButton bStart=new JButton("Start");
-	private Vector<EvComboChannel> channelCombo=new Vector<EvComboChannel>();
-	//private Vector<FilterSeq> filterSeq=new Vector<FilterSeq>();
-	private Vector<JTextField> chanDesc=new Vector<JTextField>();
+	private Vector<ChannelChoice> channelCombo=new Vector<ChannelChoice>();
 	
 	private JSpinnerSimpleEvFrame spinnerStart   =new JSpinnerSimpleEvFrame();
 	private JSpinnerSimpleEvFrame spinnerEnd     =new JSpinnerSimpleEvFrame();
@@ -52,10 +93,10 @@ public class MakeMovieWindow extends EvBasicWindow implements ActionListener
 	private SpinnerModel wModel =new SpinnerNumberModel(336,0,1000000,1);
 	private JSpinner spinnerW   =new JSpinner(wModel);
 
-	//private EvComboObjectOne<Imageset> metaCombo=new EvComboObjectOne<Imageset>(new Imageset(),false,false);
-
 	private JComboBox codecCombo = new JComboBox(EvMovieEncoderFactory.makers);
 	private JComboBox qualityCombo = new JComboBox();
+	
+	private JTextField tfFileName=new JTextField();
 	
 	private void updateQualityList()
 		{
@@ -72,34 +113,50 @@ public class MakeMovieWindow extends EvBasicWindow implements ActionListener
 			}
 		}
 	
-	/**
-	 * Make a new window at default location
-	 */
+
 	public MakeMovieWindow()
 		{
-		this(new Rectangle(20,20,700,300));
+		this(new LinkedList<EncodeMovieThread.MovieChannel>(), null);
 		}
-	
+
 	/**
 	 * Make a new window at some specific location
 	 */
-	public MakeMovieWindow(Rectangle bounds)
+	public MakeMovieWindow(List<EncodeMovieThread.MovieChannel> channelNames, File suggestFileName)
 		{
+		if(suggestFileName!=null)
+			tfFileName.setText(suggestFileName.getAbsolutePath());
+
+		
 		spinnerEnd.setFrame("1000h");
 		
 		updateQualityList();
-		for(int i=0;i<numChannelCombo;i++)
+		
+		if(channelNames.isEmpty())
 			{
-			EvComboChannel c=new EvComboChannel(true, false);
-			c.addActionListener(this);
-			channelCombo.add(c);
-			
-			//filterSeq.add(new FilterSeq());
-			if(i==0)
-				chanDesc.add(new JTextField("<channel/> (<frame/>)"));
-			else
-				chanDesc.add(new JTextField("<channel/>"));
+			//Create channel selection controls
+			for(int i=0;i<4;i++)
+				{
+				ChannelChoice c=new ChannelChoice();
+				channelCombo.add(c);
+				
+				if(i==0)
+					c.chanDesc.setText("<channel/> (<frame/>)");
+				else
+					c.chanDesc.setText("<channel/>");
+				}
 			}
+		else
+			{
+			//Fill in suggested channels
+			for(EncodeMovieThread.MovieChannel in:channelNames)
+				{
+				ChannelChoice c=new ChannelChoice();
+				c.channelFromView=in;
+				channelCombo.add(c);
+				}
+			}
+		
 		//metaCombo.addActionListener(this);
 		bStart.addActionListener(this);
 		codecCombo.addActionListener(this);
@@ -127,67 +184,47 @@ public class MakeMovieWindow extends EvBasicWindow implements ActionListener
 		
 		JPanel cpChan = new JPanel(new GridBagLayout());
 		JPanel someRight=new JPanel(new BorderLayout());
-		//someRight.add(metaCombo, BorderLayout.NORTH);
-		someRight.add(cpChan, BorderLayout.CENTER);
+		someRight.add(EvSwingUtil.withTitledBorder("Channels", cpChan), BorderLayout.CENTER);
 		
 		add(someRight,BorderLayout.CENTER);
 		
 		GridBagConstraints cChan = new GridBagConstraints();
+		cChan.fill = GridBagConstraints.HORIZONTAL;
 		cChan.gridy=0;
 		cChan.gridx=0;
-		cChan.fill = 0;
 		
-		cpChan.add(new JLabel(""),cChan);
+		cpChan.add(new JLabel("Source"));
 		cChan.gridx++;
-		cpChan.add(new JLabel("F"));
-		cChan.gridx++;
-		cpChan.add(new JLabel("From channel"));
-		cChan.gridx++;
-		cChan.fill = GridBagConstraints.HORIZONTAL;
+		
 		cpChan.add(new JLabel("Description"));
-			for(int i=0;i<channelCombo.size();i++)
-				{
-				
-				//Channel name
-				//cChan.gridy = 0;
-				cChan.gridy++;
-				cChan.gridx = 0;
-				cpChan.add(new JLabel("Ch "+i+": "),cChan);
-				
-				//Filter sequence
-				/*
-				JButton bFS=FilterSeq.createFilterSeqButton();
-				final int fi=i;
-				bFS.addActionListener(new ActionListener(){
-					public void actionPerformed(ActionEvent e)
-						{
-						new WindowFilterSeq(filterSeq.get(fi));
-						}
-				});
-				*/
-				cChan.gridx++;
-				//cpChan.add(bFS,cChan);
-				
-				//Channel selector
-				cChan.gridx++;
-				cpChan.add(channelCombo.get(i),cChan);
-	
-				//Channel description
-				cChan.gridx++;
-				cChan.weightx=1;
-				cChan.fill = GridBagConstraints.HORIZONTAL;
-				cpChan.add(chanDesc.get(i),cChan);
-				
-				}
-//		channelPanel.add(cpChan);
 		
-		add(bStart,BorderLayout.SOUTH);
 		
+		for(int i=0;i<channelCombo.size();i++)
+			{
+			ChannelChoice c=channelCombo.get(i);
+			cChan.gridy++;
+			
+			//Channel selector
+			cChan.gridx = 0;
+			cChan.weightx=0;
+			cpChan.add(c.getChanComponent(),cChan);
+
+			//Channel description
+			cChan.gridx++;
+			cChan.weightx=1;
+			cChan.fill = GridBagConstraints.HORIZONTAL;
+			cpChan.add(c.chanDesc,cChan);
+			}
+
+		JPanel pSouth=new JPanel(new GridLayout(2,1));
+		pSouth.add(EvSwingUtil.withLabel("Filename: ", tfFileName));
+		pSouth.add(bStart);
+		add(pSouth, BorderLayout.SOUTH);
 		
 		//Window overall things
 		setTitleEvWindow("Make Movie");
+		setMinimumSize(new Dimension(400,50));
 		packEvWindow();
-		setBoundsEvWindow(bounds);
 		setVisibleEvWindow(true);
 		}
 	
@@ -195,108 +232,44 @@ public class MakeMovieWindow extends EvBasicWindow implements ActionListener
 	public void windowLoadPersonalSettings(Element e){}
 
 	
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
 	public void actionPerformed(ActionEvent e)
 		{
-		/*
-		if(e.getSource()==metaCombo)
-			{
-			for(EvComboChannel c:channelCombo)
-				c.setRoot(getCurrentImageset());
-			packEvWindow();
-			}
-		else*/
 		if(e.getSource()==codecCombo)
 			{
 			updateQualityList();
 			}
 		else if(e.getSource()==bStart)
 			{
-			/*
-			if( metaCombo.getSelectedObject()==null)
+			LinkedList<EncodeMovieThread.MovieChannel> channelNames=new LinkedList<EncodeMovieThread.MovieChannel>();
+
+
+			for(ChannelChoice c:channelCombo)
 				{
-				JOptionPane.showMessageDialog(null, "No imageset selected");
-				}
-			else*/
-				//{
-				String textBad=null;
-				for(JTextField tf:chanDesc)
-					if(!new EncodeMovieDescriptionFormat(tf.getText()).isValidXML())
-						textBad="This is not valid: "+tf.getText();
-				
-				if(textBad!=null)
-					EvBasicWindow.showErrorDialog(textBad);
-				//else if(metaCombo.getSelectedObject()==null)
-				//	BasicWindow.showErrorDialog("No data selected");
-				else
+				if(!new EncodeMovieDescriptionFormat(c.chanDesc.getText()).isValidXML())
 					{
-					EvDecimal z=new EvDecimal((Integer)spinnerZ.getValue());
-					
-					Vector<EncodeMovieThread.MovieChannel> channelNames=new Vector<EncodeMovieThread.MovieChannel>();
-					for(int i=0;i<channelCombo.size();i++)
-						if(channelCombo.get(i).getSelectedObject()!=null)
-							{
-							channelNames.add(new EncodeMovieThread.MovieChannel(channelCombo.get(i).getChannelName(), channelCombo.get(i).getSelectedObject(),/*filterSeq.get(i),*/ chanDesc.get(i).getText(),z));
-							}
-					if(channelNames.isEmpty())
-						{
-						showErrorDialog("No channel selected");
-						return;
-						}
-					
-					EvData data=channelCombo.get(0).getData();//metaCombo.getData();
-					
-					//Decide name of movie file
-					File outdir;
-					if(data.io==null || data.io.datadir()==null)
-						outdir=null;
-					else
-						outdir=data.io.datadir();
-					
-					if(outdir==null)
-						EvBasicWindow.showErrorDialog("This fileformat plugin does not support datadir");
-					else
-						{
-						String lastpart=data.getMetadataName()+"-"+channelNames.get(0).name;
-						for(int i=1;i<channelNames.size();i++)
-							lastpart+="_"+channelNames.get(i).name;
-						File moviePath=new File(outdir,lastpart);
-						
-						BatchThread thread=new EncodeMovieThread( 
-								spinnerStart.getDecimalValue(), spinnerEnd.getDecimalValue(), channelNames, (Integer)spinnerW.getValue(),
-								(EvMovieEncoderFactory)codecCombo.getSelectedItem(),(String)qualityCombo.getSelectedItem(), moviePath);
-						new EvBatchWindow(thread);
-						}
+					showErrorDialog("This is not a valid description: "+c.chanDesc.getText());
+					return;
 					}
-				//}
+
+				EncodeMovieThread.MovieChannel channel=c.getChannel();
+				channel.desc=new EncodeMovieDescriptionFormat(c.chanDesc.getText());
+
+				channelNames.add(c.getChannel());
+				}
+
+			File moviePath=new File(tfFileName.getText());
+
+			BatchThread thread=new EncodeMovieThread( 
+					spinnerStart.getDecimalValue(), spinnerEnd.getDecimalValue(), channelNames, (Integer)spinnerW.getValue(),
+					(EvMovieEncoderFactory)codecCombo.getSelectedItem(),(String)qualityCombo.getSelectedItem(), moviePath);
+			new EvBatchWindow(thread);
 			}
 		}
 	
-	/*
-	public Imageset getCurrentImageset()
-		{
-		channelCombo.get(0).
-		return metaCombo.getSelectedObjectNotNull();
-		}*/
-	
-	/*
-	 * (non-Javadoc)
-	 * @see client.BasicWindow#dataChanged()
-	 */
 	public void dataChangedEvent()
 		{
-		/*
-		metaCombo.updateList();
-		Imageset im=getCurrentImageset();	
-		for(EvComboChannel c:channelCombo)
-			c.setRoot(im);*/
-		
-		for(EvComboChannel c:channelCombo)
-			c.updateList();
+		for(ChannelChoice c:channelCombo)
+			c.chCombo.updateList();
 		}
 	
 	
@@ -308,6 +281,143 @@ public class MakeMovieWindow extends EvBasicWindow implements ActionListener
 		{
 		return "Making movies";
 		}
+	
+	
+	
+	
+	
+
+	private static File suggestName(EvData data, List<EncodeMovieThread.MovieChannel> channelNames)
+		{
+		File outdir;
+		if(data.io==null || data.io.datadir()==null)
+			outdir=null;
+		else
+			outdir=data.io.datadir();
+		
+		if(outdir==null)
+			return null;
+		else
+			{
+			String lastpart=data.getMetadataName()+"-"+channelNames.get(0).name;
+			for(int i=1;i<channelNames.size();i++)
+				lastpart+="_"+channelNames.get(i).name;
+			File moviePath=new File(outdir,lastpart);
+			return moviePath;
+			}
+		}
+	
+
+	/**
+	 * This is not a proper evop - it returns a colored image
+	 */
+	private static class SpecialOpContrastBrightness extends EvOpSlice1
+		{
+		private final double contrast;
+		private final double brightness;
+		private final EvColor color;
+		
+		public SpecialOpContrastBrightness(double contrast, double brightness, EvColor color)
+			{
+			this.contrast=contrast;
+			this.brightness=brightness;
+			this.color=color;
+			}
+		
+		private static final byte clampByte(int i)
+			{
+			if(i > 255)
+				return -1; //really correct? why -1????
+			if(i < 0)
+				return 0;
+			else
+				return (byte)i;
+			}
+
+
+		@Override
+		public EvPixels exec1(ProgressHandle ph, EvPixels... parr)
+			{
+			EvPixels p=parr[0];
+			
+			if(contrast==1 && brightness==0 && color.equals(EvColor.white))
+				return p;
+			else
+				{
+				double contrastR=contrast*color.getRedDouble();
+				double contrastG=contrast*color.getGreenDouble();
+				double contrastB=contrast*color.getBlueDouble();
+
+				int w=p.getWidth();
+				int h=p.getHeight();
+				double[] aPixels=p.convertToDouble(true).getArrayDouble();
+				BufferedImage buf=new BufferedImage(w,h,BufferedImage.TYPE_3BYTE_BGR);
+
+				byte[] outarr=new byte[w*h*3];
+
+				for(int i=0;i<aPixels.length;i++)
+					{
+					byte b=clampByte((int)(aPixels[i]*contrastB+brightness));
+					byte g=clampByte((int)(aPixels[i]*contrastG+brightness));
+					byte r=clampByte((int)(aPixels[i]*contrastR+brightness));
+					outarr[i*3+0]=r;
+					outarr[i*3+1]=g;
+					outarr[i*3+2]=b;
+					}
+
+				buf.getRaster().setDataElements(0, 0, w, h, outarr);
+				
+				return new EvPixels(buf);
+				}
+			}
+		}
+	
+	/**
+	 * Create a dialog using settings from all open image windows
+	 */
+	public static void createDialogFromImageWindows()
+		{
+		ProgressHandle ph=new ProgressHandle();
+		
+		Map<Integer, Viewer2DWindow> imwindows=new TreeMap<Integer, Viewer2DWindow>();
+		List<EncodeMovieThread.MovieChannel> channelNames=new ArrayList<EncodeMovieThread.MovieChannel>();
+		EvData data=null;
+		for(EvBasicWindow w:EvBasicWindow.windowManager.getAllWindows())
+			if(w instanceof Viewer2DWindow)
+				imwindows.put(w.windowInstance, (Viewer2DWindow)w);
+
+		for(Viewer2DWindow w:imwindows.values())
+			{
+			data=w.getSelectedData();
+			for(Viewer2DWindow.ChannelWidget chw:w.getChannels())
+				{
+				//Transform channel using C/B
+				EvChannel ch=chw.getChannel();
+				if(ch==null)
+					continue;
+				ch=new SpecialOpContrastBrightness(chw.getContrast(),chw.getBrightness(),chw.getColor()).exec1(ph, ch);
+				
+				//Add channel to list
+				channelNames.add(new EncodeMovieThread.MovieChannel(chw.getChannelName(), ch, "", w.getZ()));
+
+				//TODO gotcha - uses settings when window was opened - cannot change later!!!
+				}
+			}
+		
+		if(channelNames.isEmpty())
+			EvBasicWindow.showErrorDialog("You need to have some channels in the image windows open");
+		else
+			{
+			File suggestOutputDir=suggestName(data, channelNames);
+			new MakeMovieWindow(channelNames, suggestOutputDir);	
+			}
+		}
+	
+	
+	
+	
+	
+	
 	
 	/******************************************************************************************************
 	 * Plugin declaration

@@ -43,7 +43,7 @@ public class MakeMovieBasic implements EvBasicWindowExtension
 			if(e.getSource()==miMakeMovie)
 				new MakeMovieWindow();
 			else if(e.getSource()==miMakeMovieImw)
-				MakeMovieWindowFromViewer2D.createDialogFromImageWindows();
+				MakeMovieWindow.createDialogFromImageWindows();
 			}
 		
 		public void buildMenu(EvBasicWindow w){}
