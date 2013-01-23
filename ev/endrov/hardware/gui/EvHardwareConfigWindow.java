@@ -114,7 +114,7 @@ public class EvHardwareConfigWindow extends EvBasicWindow
 	@Override
 	public String windowHelpTopic()
 		{
-		return "The hardware manager";
+		return "Configuring the hardware";
 		}
 
 	/******************************************************************************************************

@@ -348,7 +348,7 @@ public class HardwareControlWindow extends EvBasicWindow implements ActionListen
 	@Override
 	public String windowHelpTopic()
 		{
-		return "The hardware control window";
+		return "Controlling the microscope";
 		}
 	
 	/******************************************************************************************************
