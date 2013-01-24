@@ -27,8 +27,8 @@ public class MakeMovieBasic implements EvBasicWindowExtension
 		}
 	private class Hook implements EvBasicWindowHook, ActionListener
 		{
-		JMenuItem miMakeMovie=new JMenuItem("Make Movie");
-		JMenuItem miMakeMovieImw=new JMenuItem("Make Movie from 2D viewers");
+		JMenuItem miMakeMovie=new JMenuItem("Make movie");
+		JMenuItem miMakeMovieImw=new JMenuItem("Make movie from 2D viewers");
 		
 		public void createMenus(EvBasicWindow w)
 			{

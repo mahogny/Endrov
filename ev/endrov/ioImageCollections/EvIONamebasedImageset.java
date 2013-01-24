@@ -167,7 +167,7 @@ public class EvIONamebasedImageset implements EvIOData
 		public void actionPerformed(ActionEvent e)
 			{
 			if(e.getSource()==bSyntax)
-				EvBrowserUtil.displayURL(EndrovCore.websiteWikiPrefix+"Plugin_ImagesetBasic");
+				EvBrowserUtil.displayURL(EndrovCore.websiteWikiPrefix+"Importing_collections_of_images");
 			else if(e.getSource()==bRebuild)
 				{
 				fileConvention=eSequence.getText();

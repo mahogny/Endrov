@@ -273,7 +273,7 @@ public class ResolutionConfigWindow extends EvBasicWindow implements ActionListe
 	@Override
 	public String windowHelpTopic()
 		{
-		return "Configurating microscope resolutions";
+		return "Configuring microscope resolutions";
 		}
 	
 	/******************************************************************************************************
