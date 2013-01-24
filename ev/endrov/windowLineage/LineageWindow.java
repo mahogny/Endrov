@@ -246,7 +246,7 @@ public class LineageWindow extends EvBasicWindow
 				),c);
 		c.gridx++;
 		
-		addMenubar(menuLineage);
+		addMainMenubarWindowSpecific(menuLineage);
 		new LineageCommonUI(this, this).addToMenu(menuLineage, true);
 		menuLineage.addSeparator();
 		menuLineage.add(miExportImage);

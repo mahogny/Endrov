@@ -53,7 +53,7 @@ public class EvDataMenu implements EvBasicWindowExtension
 		
 		public void createMenus(EvBasicWindow w)
 			{
-			w.addMenubar(mData);
+			w.addMainMenubarCommon(mData);
 			JMenu mFile=w.menuFile;
 			
 			miNew.setIcon(BasicIcon.iconMenuNew);

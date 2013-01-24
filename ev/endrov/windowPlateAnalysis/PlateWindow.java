@@ -134,7 +134,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		comboChannel.addActionListener(this);
 
 		
-		addMenubar(menuPlateWindow);
+		addMainMenubarWindowSpecific(menuPlateWindow);
 
 		//TODO right-click "open in image window"
 

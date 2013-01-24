@@ -36,7 +36,7 @@ public class ImageWindowExtensionROI implements Viewer2DExtension
 	public void newImageWindow(final Viewer2DWindow w)
 		{
 		JMenu miROI=new JMenu("ROI");
-		w.addMenubar(miROI);
+		w.addMainMenubarWindowSpecific(miROI);
 		
 		w.addImageWindowTool(new ImageWindowToolROI(w));
 

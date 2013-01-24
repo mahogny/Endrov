@@ -214,7 +214,7 @@ public class ConsoleWindow extends EvBasicWindow implements ActionListener, KeyL
 */
 		
 		//Menu
-		addMenubar(consoleMenu);
+		addMainMenubarWindowSpecific(consoleMenu);
 		consoleMenu.add(miShowTraces);
 		consoleMenu.add(miMultiLineInput);
 		

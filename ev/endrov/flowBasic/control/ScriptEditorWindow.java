@@ -129,7 +129,7 @@ public class ScriptEditorWindow extends EvBasicWindow implements ActionListener
 		setLayout(new BorderLayout());
 		add(top,BorderLayout.NORTH);
 		add(scroll,BorderLayout.CENTER);
-		addMenubar(menuEdit);
+		addMainMenubarWindowSpecific(menuEdit);
 		
 		setTitleEvWindow("Edit Script "+u.getScriptID());
 		packEvWindow();

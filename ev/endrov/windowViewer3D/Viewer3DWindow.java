@@ -190,7 +190,7 @@ public class Viewer3DWindow extends EvBasicWindow
 		addKeyListener(this);
 
 		//Build view menu
-		addMenubar(menuModel);
+		addMainMenubarWindowSpecific(menuModel);
 		menuModel.add(miView);
 		miView.add(miViewFront);
 		miView.add(miViewBack);

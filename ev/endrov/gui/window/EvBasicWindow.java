@@ -217,19 +217,22 @@ public abstract class EvBasicWindow extends JPanel
 	/**
 	 * Add menu to a menubar, put in alphabetical order
 	 */
-	public static void addMenuSorted(JMenuBar menu, JMenu ni, int startPos)
+	public static void addMenuSorted(JMenuBar menu, JMenu ni)
 		{
-		String thisText = ni.getText().toLowerCase();
-		for (int i = startPos; i<menu.getMenuCount(); i++)
+		if(ni.getName()==null)
+			ni.setName(ni.getText().toLowerCase());
+		String thisText = ni.getName();
+		
+		int i=0;
+		for (; i<menu.getMenuCount(); i++)
 			{
-			JMenuItem nj = (JMenuItem) menu.getMenu(i);
-			if (thisText.compareTo(nj.getText().toLowerCase())<0)
-				{
-				menu.add(ni, i);
-				return;
-				}
+			Component nj = (Component) menu.getMenu(i);
+			if(nj==null) //This case is just strange
+				break;
+			if (thisText.compareTo(nj.getName())<0)
+				break;
 			}
-		menu.add(ni);
+		menu.add(ni, i);
 		}
 
 	/**
@@ -705,11 +708,22 @@ public abstract class EvBasicWindow extends JPanel
 	/**
 	 * Add to the menubar
 	 */
-	public void addMenubar(JMenu ni)
+	public void addMainMenubarCommon(JMenu ni)
 		{
-		addMenuSorted(menubar, ni, 1);
+		if(ni.getName()==null)
+			ni.setName("1_"+ni.getText().toLowerCase());
+		addMenuSorted(menubar, ni);
 		}
 
+	/**
+	 * Add to the menubar
+	 */
+	public void addMainMenubarWindowSpecific(JMenu ni)
+		{
+		if(ni.getName()==null)
+			ni.setName("2_"+ni.getText().toLowerCase());
+		addMenuSorted(menubar, ni);
+		}
 	/**
 	 * Set up basic menus
 	 */
@@ -717,10 +731,12 @@ public abstract class EvBasicWindow extends JPanel
 		{
 		getEvw().setJMenuBar(menubar);
 
+		
 		// Menu structure
-		addMenubar(menuFile);
-		addMenubar(menuWindows);
-		addMenubar(menuOperation);
+		menuFile.setName("0_file");
+		addMainMenubarCommon(menuFile);
+		addMainMenubarCommon(menuWindows);
+		addMainMenubarCommon(menuOperation);
 		EvBasicWindow.addMenuItemSorted(menuFile, menuMaintenance, "sys_maintenance");
 		menuMaintenance.add(miGC);
 		menuMaintenance.add(miResetPC);
@@ -747,8 +763,10 @@ public abstract class EvBasicWindow extends JPanel
 		if(windowHelpTopic()!=null)
 			mHelp.add(miWindowHelp);
 		
-		
-		menubar.add(Box.createHorizontalGlue());
+		Component menuSpacing=Box.createHorizontalGlue();
+		menuSpacing.setName("91_spacing");
+		mHelp.setName("92_help");
+		menubar.add(menuSpacing);
 		menubar.add(mHelp);
 
 		// Listeners

@@ -503,7 +503,7 @@ public class Viewer2DWindow extends EvBasicWindow
 		
 		buildChannelPanel();
 		
-		addMenubar(menuImageWindow);
+		addMainMenubarWindowSpecific(menuImageWindow);
 		buildMenu();
 		
 		attachDragAndDrop(imagePanel);

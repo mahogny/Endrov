@@ -89,7 +89,7 @@ public class ScriptWindow extends EvBasicWindow implements ActionListener
 	public ScriptWindow()
 		{
 		//Menu
-		addMenubar(scriptMenu);
+		addMainMenubarWindowSpecific(scriptMenu);
 		scriptMenu.add(miNew);
 		scriptMenu.add(miOpen);
 		scriptMenu.add(miSave);
