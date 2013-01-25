@@ -13,6 +13,7 @@ import javax.swing.ImageIcon;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
+import endrov.flowBasic.RendererFlowUtil;
 
 /**
  * Common look for all flow constants
@@ -38,7 +39,7 @@ public abstract class FlowUnitConst extends FlowUnitBasic
 	@Override
 	public Color getBackground()
 		{
-		return CategoryInfo.bgColor;
+		return RendererFlowUtil.colConstant;
 		}
 
 	@Override

@@ -19,7 +19,7 @@ import endrov.windowViewer3D.Viewer3DWindow;
  * Meta object: Image annotation
  * @author Johan Henriksson
  */
-public class ImageAnnot extends EvObject implements Cloneable
+public class TextAnnot extends EvObject implements Cloneable
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -46,9 +46,9 @@ public class ImageAnnot extends EvObject implements Cloneable
 	
 	
 	
-	public ImageAnnot clone()
+	public TextAnnot clone()
 		{
-		ImageAnnot a=new ImageAnnot();
+		TextAnnot a=new TextAnnot();
 		a.text=text;
 		a.pos=new Vector3d(pos);
 		a.frame=frame;
@@ -59,9 +59,9 @@ public class ImageAnnot extends EvObject implements Cloneable
 	@Override
 	public boolean equals(Object obj)
 		{
-		if(obj instanceof ImageAnnot)
+		if(obj instanceof TextAnnot)
 			{
-			ImageAnnot a=(ImageAnnot)obj;
+			TextAnnot a=(TextAnnot)obj;
 			return a.text.equals(text) && a.pos.equals(pos) && a.frame==frame;
 			}
 		else
@@ -122,15 +122,15 @@ public class ImageAnnot extends EvObject implements Cloneable
 	static
 		{
 
-		Viewer3DWindow.modelWindowExtensions.add(new ImageAnnotModelExtension());
+		Viewer3DWindow.modelWindowExtensions.add(new TextAnnotModelExtension());
 		
-		EvData.supportedMetadataFormats.put(metaType,ImageAnnot.class);
+		EvData.supportedMetadataFormats.put(metaType,TextAnnot.class);
 		Viewer2DWindow.addImageWindowExtension(new Viewer2DExtension()
 			{
 			public void newImageWindow(Viewer2DWindow w)
 				{
-				ImageAnnotImageRenderer r=new ImageAnnotImageRenderer(w);
-				w.addImageWindowTool(new ImageAnnotImageTool(w,r));
+				TextAnnotImageRenderer r=new TextAnnotImageRenderer(w);
+				w.addImageWindowTool(new TextAnnotImageTool(w,r));
 				w.addImageWindowRenderer(r);
 				}
 			});

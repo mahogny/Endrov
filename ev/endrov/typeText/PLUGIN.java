@@ -10,7 +10,7 @@ public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{
-		return "Image annotation";
+		return "Text annotation";
 		}
 
 	public String getAuthor()
@@ -35,7 +35,7 @@ public class PLUGIN extends EvPluginDefinition
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ImageAnnot.class};
+		return new Class[]{TextAnnot.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

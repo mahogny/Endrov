@@ -120,6 +120,11 @@ public abstract class FlowUnit
 	/**
 	 * Color to use for border
 	 */
+	protected boolean isSelected(FlowView p)
+		{
+		return p.selectedUnits.contains(this);
+		}
+	
 	protected Color getBorderColor(FlowView p)
 		{
 		if (p.selectedUnits.contains(this))
@@ -152,9 +157,9 @@ public abstract class FlowUnit
 
 	public abstract Component getGUIcomponent(FlowView p);
 
-	public abstract int getGUIcomponentOffsetX();
+	public abstract int getGUIcomponentOffsetX(Component comp, Flow flow);
 
-	public abstract int getGUIcomponentOffsetY();
+	public abstract int getGUIcomponentOffsetY(Component comp, Flow flow);
 
 	public abstract void editDialog();
 	

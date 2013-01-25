@@ -22,13 +22,13 @@ import endrov.windowViewer2D.*;
  *
  * @author Johan Henriksson
  */
-public class ImageAnnotImageTool implements Viewer2DTool
+public class TextAnnotImageTool implements Viewer2DTool
 	{
 	private final Viewer2DWindow w;
-	private final ImageAnnotImageRenderer r;
+	private final TextAnnotImageRenderer r;
 	
 	
-	public ImageAnnotImageTool(Viewer2DWindow w, ImageAnnotImageRenderer r)
+	public TextAnnotImageTool(Viewer2DWindow w, TextAnnotImageRenderer r)
 		{
 		this.w=w;
 		this.r=r;
@@ -37,7 +37,7 @@ public class ImageAnnotImageTool implements Viewer2DTool
 
 	public JMenuItem getMenuItem()
 		{
-		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Annotate Image");
+		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Text annotation");
 		mi.setSelected(w.getTool()==this);
 		final Viewer2DTool This=this;
 		mi.addActionListener(new ActionListener(){
@@ -47,16 +47,16 @@ public class ImageAnnotImageTool implements Viewer2DTool
 		}
 	
 	
-	private Tuple<String,ImageAnnot> getHoverAnnot(MouseEvent e)
+	private Tuple<String,TextAnnot> getHoverAnnot(MouseEvent e)
 		{
-		Map<String,ImageAnnot> ann=r.getVisible();
-		ImageAnnot closest=null;
+		Map<String,TextAnnot> ann=r.getVisible();
+		TextAnnot closest=null;
 		String closestName=null;
 		double cdist=0;
 		Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
-		for(Map.Entry<String,ImageAnnot> ae:ann.entrySet())
+		for(Map.Entry<String,TextAnnot> ae:ann.entrySet())
 			{
-			ImageAnnot a=ae.getValue();
+			TextAnnot a=ae.getValue();
 			double dist=(a.pos.x-v.x)*(a.pos.x-v.x) + (a.pos.y-v.y)*(a.pos.y-v.y);
 			if(cdist>dist || closest==null)
 				{
@@ -78,7 +78,7 @@ public class ImageAnnotImageTool implements Viewer2DTool
 		EvContainer data=w.getRootObject();
 		if(data!=null)
 			{
-			Tuple<String,ImageAnnot> ae=getHoverAnnot(e);
+			Tuple<String,TextAnnot> ae=getHoverAnnot(e);
 			if(SwingUtilities.isLeftMouseButton(e))
 				{
 				if(ae==null)
@@ -87,7 +87,7 @@ public class ImageAnnotImageTool implements Viewer2DTool
 					String newtext=JOptionPane.showInputDialog(null, "Enter text");
 					if(newtext!=null && !newtext.equals(""))
 						{
-						ImageAnnot a=new ImageAnnot();
+						TextAnnot a=new TextAnnot();
 						setPos(a,e);
 						a.text=newtext;
 						new UndoOpPutObject("Create annotation", a, data, data.getFreeChildName()).execute();
@@ -96,7 +96,7 @@ public class ImageAnnotImageTool implements Viewer2DTool
 				else
 					{
 					//Rename
-					ImageAnnot a=ae.snd();
+					TextAnnot a=ae.snd();
 					String newtext=JOptionPane.showInputDialog(null, "Enter text", a.text);
 					if(newtext!=null)
 						{
@@ -137,7 +137,7 @@ public class ImageAnnotImageTool implements Viewer2DTool
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			//Start dragging
-			Tuple<String,ImageAnnot> a=getHoverAnnot(e);
+			Tuple<String,TextAnnot> a=getHoverAnnot(e);
 			setActiveAnnot(a);
 			}
 		}
@@ -152,7 +152,7 @@ public class ImageAnnotImageTool implements Viewer2DTool
 			}
 		}
 
-	private void setPos(ImageAnnot a, MouseEvent e)
+	private void setPos(TextAnnot a, MouseEvent e)
 		{
 		Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 		a.pos.x=v.x;
@@ -181,7 +181,7 @@ public class ImageAnnotImageTool implements Viewer2DTool
 	public void deselected() {}
 
 
-	private void setActiveAnnot(Tuple<String,ImageAnnot> activeAnnot)
+	private void setActiveAnnot(Tuple<String,TextAnnot> activeAnnot)
 		{
 		r.activeAnnot = activeAnnot;
 		if(activeAnnot==null)
@@ -191,7 +191,7 @@ public class ImageAnnotImageTool implements Viewer2DTool
 		}
 
 
-	private Tuple<String,ImageAnnot> getActiveAnnot()
+	private Tuple<String,TextAnnot> getActiveAnnot()
 		{
 		return r.activeAnnot;
 		}

@@ -17,6 +17,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.flowBasic.RendererFlowUtil;
 
 public class FlowUnitConcat extends FlowUnitBasic
 	{
@@ -37,7 +38,7 @@ public class FlowUnitConcat extends FlowUnitBasic
 	
 	public String getBasicShowName(){return "Concat";}
 	public ImageIcon getIcon(){return icon;}
-	public Color getBackground(){return CategoryInfo.bgColor;}
+	public Color getBackground(){return RendererFlowUtil.colOperation;}
 
 	public String toXML(Element e)
 		{

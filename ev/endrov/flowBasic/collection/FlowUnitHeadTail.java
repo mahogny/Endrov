@@ -16,6 +16,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.flowBasic.RendererFlowUtil;
 
 public class FlowUnitHeadTail extends FlowUnitBasic
 	{
@@ -34,7 +35,7 @@ public class FlowUnitHeadTail extends FlowUnitBasic
 	
 	public String getBasicShowName(){return "HeadTail";}
 	public ImageIcon getIcon(){return icon;}
-	public Color getBackground(){return CategoryInfo.bgColor;}
+	public Color getBackground(){return RendererFlowUtil.colOperation;}
 
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}

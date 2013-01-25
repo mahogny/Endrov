@@ -7,8 +7,10 @@ package endrov.flowBasic.images;
 
 import java.awt.Color;
 
+import endrov.flowBasic.RendererFlowUtil;
+
 public class CategoryInfo
 	{
 	public static String name="Images";
-	public static Color bgColor=new Color(255,200,255);
+	public static Color bgColor=RendererFlowUtil.colOperation;
 	}

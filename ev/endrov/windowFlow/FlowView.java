@@ -12,6 +12,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
@@ -230,7 +231,9 @@ public class FlowView extends JPanel implements MouseListener, MouseMotionListen
 			if(unit==placingUnit)
 				c.setLocation(0, -dim.height-1000);
 			else
-				c.setLocation(unit.x-camera.x+unit.getGUIcomponentOffsetX(), unit.y-camera.y+unit.getGUIcomponentOffsetY());
+				c.setLocation(
+						unit.x-camera.x+unit.getGUIcomponentOffsetX(c,getFlow()), 
+						unit.y-camera.y+unit.getGUIcomponentOffsetY(c,getFlow()));
 			c.validate();
 			//System.out.println("size "+c.getMinimumSize());
 			}
@@ -260,6 +263,11 @@ public class FlowView extends JPanel implements MouseListener, MouseMotionListen
 	 */
 	protected void paintComponent(Graphics g)
 		{
+		Graphics2D g2=(Graphics2D)g;
+		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+		
 		Vector2i camera=getCamera();
 		g.setColor(Color.WHITE);
 		g.fillRect(0,0,getWidth(),getHeight());
@@ -268,7 +276,6 @@ public class FlowView extends JPanel implements MouseListener, MouseMotionListen
 
 		if(flow!=null)
 			{
-			Graphics2D g2=(Graphics2D)g;
 			g2.translate(-camera.x, -camera.y);
 			
 			//hm. clean up map of connection points?

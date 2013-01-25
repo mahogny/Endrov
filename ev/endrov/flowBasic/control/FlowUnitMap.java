@@ -85,8 +85,8 @@ public class FlowUnitMap extends FlowUnitContainer
 		}
 
 	public Component getGUIcomponent(FlowView p){return null;}
-	public int getGUIcomponentOffsetX(){return 0;}
-	public int getGUIcomponentOffsetY(){return 0;}
+	public int getGUIcomponentOffsetX(Component comp, Flow flow){return 0;}
+	public int getGUIcomponentOffsetY(Component c, Flow f){return 0;}
 
 	/******************************************************************************************************
 	 * Plugin declaration

@@ -14,6 +14,7 @@ import java.util.Collections;
 
 import javax.swing.ImageIcon;
 
+import endrov.flowBasic.RendererFlowUtil;
 import endrov.util.math.EvMathUtil;
 import endrov.windowFlow.FlowView;
 
@@ -29,6 +30,7 @@ public abstract class FlowUnitBasic extends FlowUnit
 	
 	protected int textPosition=TEXTLEFT;
 	
+	private static final int oneMargin=4;
 	
 	/**
 	 * Name to be shown on box
@@ -68,11 +70,16 @@ public abstract class FlowUnitBasic extends FlowUnit
 		//Title is on the left
 		if(textPosition==TEXTLEFT)
 			{
-			int w=fm.stringWidth(getBasicShowName())+4;
+			int w=4; //Left margin
 			
+			//Text space
+			w+=fm.stringWidth(getBasicShowName());
+			
+			//Icon space
 			if(ico!=null)
-				w+=ico.getIconWidth()+2;
+				w+=ico.getIconWidth()+oneMargin;
 
+			//Component space
 			if(comp!=null)
 				{
 				if(fonta>h)
@@ -84,19 +91,22 @@ public abstract class FlowUnitBasic extends FlowUnit
 					{
 					if(comp.getHeight()>h)
 						h=comp.getHeight();
-					w+=comp.getWidth();
+					w+=comp.getWidth()+oneMargin;
 					}
 				}
 			
-			return new Dimension(w+2,h+2);
+			//Right,bottom margin
+			w+=4;
+			h+=2;
+			return new Dimension(w,h);
 			}
-		else //Title is above
+		else if(textPosition==TEXTABOVE)//Title is above
 			{
-			int w=fm.stringWidth(getBasicShowName());
+			int w=oneMargin+fm.stringWidth(getBasicShowName())+oneMargin;
 			int fh=fonta;
 			if(ico!=null)
 				{
-				w+=ico.getIconWidth()+2;
+				w+=ico.getIconWidth()+oneMargin;
 				if(ico.getIconHeight()>fh)
 					fh=ico.getIconHeight();
 				}
@@ -104,16 +114,20 @@ public abstract class FlowUnitBasic extends FlowUnit
 			if(comp!=null)
 				{
 				int insideH=comp.getHeight()+fh;
-				if(insideH>h)
-					h=insideH;
-
-				int cw=comp.getWidth()+3;
+				int cw=comp.getWidth()+oneMargin-1;
+				
+				
 				if(cw>w)
 					w=cw;
+				if(insideH>h)
+					h=insideH;
 				}
 
-			return new Dimension(w,h+1);
+			h++;
+			return new Dimension(w,h);
 			}
+		else
+			throw new RuntimeException("Bad value");
 		}
 	
 	
@@ -127,22 +141,24 @@ public abstract class FlowUnitBasic extends FlowUnit
 		
 		Dimension d=getBoundingBox(comp, panel.getFlow());
 
+		RendererFlowUtil.drawBox(g, x, y, x+d.width-1, y+d.height-1, getBackground(), isSelected(panel));
+		/*
 		g.setColor(getBackground());
 		g.fillRect(x,y,d.width,d.height);
 		g.setColor(getBorderColor(panel));
-		g.drawRect(x,y,d.width,d.height);
+		g.drawRect(x,y,d.width,d.height);*/
 	
 		ImageIcon ico=getIcon();
 		int iconW=0;
 		if(ico!=null)
-			iconW=ico.getIconWidth()+2;
+			iconW=ico.getIconWidth()+4;
 
 		g.setColor(getTextColor());
 		if(textPosition==TEXTLEFT)
 			{
 			if(ico!=null)
-				g.drawImage(ico.getImage(), x+3, y+(d.height-ico.getIconHeight())/2, null);
-			g.drawString(getBasicShowName(), x+iconW+5, y+d.height/2+fonta/2);
+				g.drawImage(ico.getImage(), x+oneMargin-1, y+(d.height-ico.getIconHeight())/2, null);
+			g.drawString(getBasicShowName(), x+iconW+oneMargin, y+d.height/2+fonta/2-1);
 			}
 		else //TEXTABOVE
 			{
@@ -182,23 +198,26 @@ public abstract class FlowUnitBasic extends FlowUnit
 		}
 	
 	
-	public int getGUIcomponentOffsetX()
+	public int getGUIcomponentOffsetX(Component comp, Flow flow)
 		{
 		if(textPosition==TEXTABOVE)
-			return 2;
+			{
+			int offset=getBoundingBox(comp, flow).width - comp.getWidth();
+			return offset/2;
+			}
 		else
 			{
 			ImageIcon ico=getIcon();
 			int iconW=0;
 			if(ico!=null)
-				iconW=ico.getIconWidth()+2;
-			int fw=iconW+5+fm.stringWidth(getBasicShowName());
+				iconW=ico.getIconWidth()+oneMargin;
+			int fw=iconW+oneMargin+fm.stringWidth(getBasicShowName())+oneMargin;
 			return fw;
 			}
 		}
 	
 	
-	public int getGUIcomponentOffsetY()
+	public int getGUIcomponentOffsetY(Component comp, Flow flow)
 		{
 		if(textPosition==TEXTABOVE)
 			{
@@ -210,7 +229,13 @@ public abstract class FlowUnitBasic extends FlowUnit
 			return fh;
 			}
 		else
-			return 1;
+			{
+			int offset=getBoundingBox(comp, flow).height - comp.getHeight();
+			return offset/2;
+			
+//			getGUIcomponent(p.getHeight())
+//			return 1;
+			}
 		}
 	
 	}

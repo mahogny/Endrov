@@ -110,7 +110,10 @@ public class Scene2DView extends JPanel
 		{
 		BufferedImage bim=new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 		Graphics2D g2d=(Graphics2D)bim.getGraphics();
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
+		
 		prepareImages();
 
 		transformIn(g2d);

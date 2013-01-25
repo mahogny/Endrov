@@ -12,23 +12,23 @@ import javax.vecmath.*;
 import endrov.util.collection.Tuple;
 import endrov.windowViewer2D.*;
 
-public class ImageAnnotImageRenderer implements Viewer2DRenderer
+public class TextAnnotImageRenderer implements Viewer2DRenderer
 	{
 	public Viewer2DInterface w;
 	
-	Tuple<String,ImageAnnot> activeAnnot=null;
-	ImageAnnot activeAnnotNew=null;
+	Tuple<String,TextAnnot> activeAnnot=null;
+	TextAnnot activeAnnotNew=null;
 
 	
-	public ImageAnnotImageRenderer(Viewer2DInterface w)
+	public TextAnnotImageRenderer(Viewer2DInterface w)
 		{
 		this.w=w;
 		}
 
 	
-	public Map<String, ImageAnnot> getVisible()
+	public Map<String, TextAnnot> getVisible()
 		{
-		return w.getRootObject().getIdObjects(ImageAnnot.class);
+		return w.getRootObject().getIdObjects(TextAnnot.class);
 		}
 	
 
@@ -37,7 +37,7 @@ public class ImageAnnotImageRenderer implements Viewer2DRenderer
 	 */
 	public void draw(Graphics g)
 		{
-		for(ImageAnnot ann:getVisible().values())
+		for(TextAnnot ann:getVisible().values())
 			{
 			if(activeAnnot!=null && ann==activeAnnot.snd())
 				ann=activeAnnotNew;

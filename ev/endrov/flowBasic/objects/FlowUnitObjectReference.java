@@ -8,11 +8,10 @@ package endrov.flowBasic.objects;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
-import javax.swing.JTextArea;
+
+import javax.swing.ImageIcon;
+import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.jdom.Element;
@@ -23,8 +22,9 @@ import endrov.data.EvPath;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.flowBasic.RendererFlowUtil;
 import endrov.gui.EvSwingUtil;
 import endrov.gui.window.EvBasicWindow;
 import endrov.util.collection.Maybe;
@@ -36,7 +36,7 @@ import endrov.windowFlow.FlowView;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitObjectReference extends FlowUnit
+public class FlowUnitObjectReference extends FlowUnitBasic
 	{
 	private static final String metaType="evobjectio";
 	private static final String showName="ObjectRef";
@@ -71,34 +71,6 @@ public class FlowUnitObjectReference extends FlowUnit
 		nameOfObject=path;
 		}
 	
-	public Dimension getBoundingBox(Component comp, Flow flow)
-		{
-		int w=fm.stringWidth(getLabel());
-		Dimension d=new Dimension(3+w+3+comp.getWidth()+1,comp.getHeight()+8);
-		return d;
-		}
-	
-	public void paint(Graphics g, FlowView panel, Component comp)
-		{
-		Dimension d=getBoundingBox(comp, panel.getFlow());
-		
-		g.setColor(Color.GREEN);
-		g.fillRect(x,y,d.width,d.height);
-		g.setColor(getBorderColor(panel));
-		g.drawRect(x,y,d.width,d.height);
-		g.setColor(getTextColor());
-		g.drawString(getLabel(), x+3, y+d.height/2+fonta/2);
-		
-		panel.drawConnPointLeft(g,this,"parent",x,y+4);
-		panel.drawConnPointLeft(g,this,"in",x,y+d.height-4);
-		panel.drawConnPointRight(g,this,"out",x+d.width,y+d.height/2);
-		}
-
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
-		{
-		Dimension dim=getBoundingBox(comp, flow);
-		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
-		}
 
 	
 	/** Get types of flows in */
@@ -116,32 +88,6 @@ public class FlowUnitObjectReference extends FlowUnit
 
 	
 	
-	public void editDialog()
-		{
-		}
-
-	
-	public Collection<FlowUnit> getSubUnits(Flow flow)
-		{
-		return Collections.singleton((FlowUnit)this);
-		}
-
-	
-	
-	
-	
-	public int getGUIcomponentOffsetX()
-		{
-		int w=fm.stringWidth(getLabel());
-		return 3+w+3;
-		}
-	public int getGUIcomponentOffsetY()
-		{
-		return 5;
-		}
-
-	
-	
 	public void setRef(String s)
 		{
 		nameOfObject=s;
@@ -150,14 +96,9 @@ public class FlowUnitObjectReference extends FlowUnit
 	
 	public Component getGUIcomponent(final FlowView p)
 		{
-		final JTextArea field=new JTextArea(nameOfObject);
+		final JTextField field=new JTextField(nameOfObject);
 		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
-		/*field.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent arg0)
-				{
-				//Should maybe be change listener
-				//should emit an update
-				}});*/
+
 		
 		EvSwingUtil.textAreaChangeListener(field, new ChangeListener(){
 			public void stateChanged(ChangeEvent e)
@@ -244,6 +185,25 @@ public class FlowUnitObjectReference extends FlowUnit
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
 		lastOutput.clear();
 		lastOutput.put("out", obvalue);
+		}
+
+
+	@Override
+	public String getBasicShowName()
+		{
+		return showName;
+		}
+
+	@Override
+	public ImageIcon getIcon()
+		{
+		return null;
+		}
+
+	@Override
+	public Color getBackground()
+		{
+		return RendererFlowUtil.colConstant;
 		}
 
 	

@@ -22,7 +22,7 @@ import endrov.windowViewer3D.*;
  * Extension to Model Window: shows image annotation
  * @author Johan Henriksson
  */
-public class ImageAnnotModelExtension implements Viewer3DWindowExtension
+public class TextAnnotModelExtension implements Viewer3DWindowExtension
 	{
   
   public void newModelWindow(Viewer3DWindow w)
@@ -55,14 +55,14 @@ public class ImageAnnotModelExtension implements Viewer3DWindowExtension
 		
 		public boolean canRender(EvObject ob)
 			{
-			return ob instanceof ImageAnnot;
+			return ob instanceof TextAnnot;
 			}
 
 		
-		public Collection<ImageAnnot> getAnnot()
+		public Collection<TextAnnot> getAnnot()
 			{
-			List<ImageAnnot> v=new LinkedList<ImageAnnot>();
-			for(ImageAnnot lin:w.getSelectedData().getIdObjects(ImageAnnot.class).values())
+			List<TextAnnot> v=new LinkedList<TextAnnot>();
+			for(TextAnnot lin:w.getSelectedData().getIdObjects(TextAnnot.class).values())
 				if(w.showObject(lin))
 					v.add(lin);
 			return v;
@@ -94,7 +94,7 @@ public class ImageAnnotModelExtension implements Viewer3DWindowExtension
 		public void displayFinal(GL glin,List<TransparentRenderer3D> transparentRenderers)
 			{
 			GL2 gl=glin.getGL2();
-			for(ImageAnnot ia:getAnnot())
+			for(TextAnnot ia:getAnnot())
 				renderOne(gl, ia,transparentRenderers);
 			}
 
@@ -104,7 +104,7 @@ public class ImageAnnotModelExtension implements Viewer3DWindowExtension
 		 * Render one annotation
 		 */
 		
-		private void renderOne(GL2 gl, ImageAnnot ia,List<TransparentRenderer3D> transparentRenderers)
+		private void renderOne(GL2 gl, TextAnnot ia,List<TransparentRenderer3D> transparentRenderers)
 			{
 			//Save world coordinate
 			gl.glPushMatrix();

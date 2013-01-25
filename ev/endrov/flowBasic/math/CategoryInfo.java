@@ -9,11 +9,13 @@ import java.awt.Color;
 
 import javax.swing.ImageIcon;
 
+import endrov.flowBasic.RendererFlowUtil;
+
 
 public class CategoryInfo
 	{
 	public static String name="Math";
-	public static Color bgColor=new Color(200,255,200);
+	public static Color bgColor=RendererFlowUtil.colOperation;
 	public static final ImageIcon icon=null;
 	//new ImageIcon(CategoryInfo.class.getResource("jhFlowCategoryFindFeature.png"));
 

@@ -112,12 +112,12 @@ public class FlowUnitShow extends FlowUnit
 	
 	
 	
-	public int getGUIcomponentOffsetX()
+	public int getGUIcomponentOffsetX(Component comp, Flow flow)
 		{
 		int w=fm.stringWidth(getLabel());
 		return 3+w+3;
 		}
-	public int getGUIcomponentOffsetY(){return 0;}
+	public int getGUIcomponentOffsetY(Component c, Flow f){return 0;}
 
 	
 	

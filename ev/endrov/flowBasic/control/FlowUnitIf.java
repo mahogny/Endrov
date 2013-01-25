@@ -5,7 +5,6 @@
  */
 package endrov.flowBasic.control;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -22,6 +21,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.flowBasic.RendererFlowUtil;
 import endrov.windowFlow.FlowView;
 
 /**
@@ -62,7 +62,7 @@ public class FlowUnitIf extends FlowUnit
 
 		
 		Polygon p=getPolygon(d);
-		g.setColor(new Color(255,255,200));
+		g.setColor(RendererFlowUtil.colControl);
 		g.fillPolygon(p);
 		g.setColor(getBorderColor(panel));
 		g.drawPolygon(p);
@@ -123,8 +123,8 @@ public class FlowUnitIf extends FlowUnit
 		}
 	
 	public Component getGUIcomponent(FlowView p){return null;}
-	public int getGUIcomponentOffsetX(){return 0;}
-	public int getGUIcomponentOffsetY(){return 0;}
+	public int getGUIcomponentOffsetX(Component comp, Flow flow){return 0;}
+	public int getGUIcomponentOffsetY(Component c, Flow f){return 0;}
 
 	/******************************************************************************************************
 	 * Plugin declaration
