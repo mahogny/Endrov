@@ -59,7 +59,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	//If channels were objects then this component could be used for that as well
 	//add blobID to EvObject? this would fix the rename issue
 	
-	private JComboBox combo=new JComboBox();
+	private JComboBox<ComboItem> combo=new JComboBox<ComboItem>();
 
 	//Empty item. This will allow comparison by pointer
 	private final ComboItem emptyItem=new ComboItem(null);
@@ -141,18 +141,13 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	private static class ComboItem
 		{
 		private EvPath path;
-		/*
- 		private WeakReference<EvContainer> ob; 
- 		private WeakReference<EvContainer> parent; 
-		private WeakReference<EvData> data; 
-*/
+		
 		public EvContainer getObject()
 			{
 			if(path==null)
 				return null;
 			else
 				return path.getObject();
-			//return ob.get();
 			}
 		public EvData getData()
 			{
@@ -160,7 +155,6 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 				return null;
 			else
 				return (EvData)path.getRoot();
-			//return data.get();
 			}
 		public EvPath getPath()
 			{
@@ -189,8 +183,6 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	public void updateList()
 		{
 		//Remember selection
-		//ComboItem currentItem=(ComboItem)combo.getSelectedItem();
-		//ComboItem currentItem=currentItem;
 		EvContainer currentCont=currentItem==null ? null : currentItem.getObject();
 		
 		combo.removeActionListener(this);

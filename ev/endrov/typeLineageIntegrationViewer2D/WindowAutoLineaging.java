@@ -40,8 +40,7 @@ public class WindowAutoLineaging extends EvBasicWindow implements LineagingAlgor
 	private static final long serialVersionUID = 1L;
 
 	private EvComboObjectOne<Lineage> comboLin=new EvComboObjectOne<Lineage>(new Lineage(), true, true);
-//	private EvComboObjectOne<EvChannel> comboChan=new EvComboObjectOne<EvChannel>(new EvChannel(), true, false);
-	private JComboBox comboAlgo=new JComboBox(LineageAlgorithmDef.listAlgorithms);
+	private JComboBox<LineageAlgorithmDef> comboAlgo=new JComboBox<LineageAlgorithmDef>(LineageAlgorithmDef.listAlgorithms);
 
 	private JPanel panelOptions=new JPanel(new GridLayout(1,1));
 	private JLabel panelStatus=new JLabel();

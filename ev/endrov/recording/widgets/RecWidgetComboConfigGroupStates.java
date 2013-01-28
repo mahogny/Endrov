@@ -12,7 +12,7 @@ import endrov.hardware.EvHardwareConfigGroup;
  * @author Johan Henriksson
  *
  */
-public class RecWidgetComboConfigGroupStates extends JComboBox
+public class RecWidgetComboConfigGroupStates extends JComboBox<String>
 	{
 	private static final long serialVersionUID = 1L;
 
@@ -33,7 +33,7 @@ public class RecWidgetComboConfigGroupStates extends JComboBox
 	
 	public void makeLayout()
 		{
-		DefaultComboBoxModel modelState=(DefaultComboBoxModel)getModel();
+		DefaultComboBoxModel<String> modelState=(DefaultComboBoxModel<String>)getModel();
 		modelState.removeAllElements();
 		
 		if(currentMetastate!=null)

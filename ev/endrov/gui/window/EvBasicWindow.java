@@ -285,9 +285,8 @@ public abstract class EvBasicWindow extends JPanel
 
 	public static void attachDragAndDrop(JComponent c)
 		{
-		// c.getClass().getMethod("setDragEnabled", parameterTypes)
 		if (c instanceof JList)
-			((JList) c).setDragEnabled(false);
+			((JList<?>) c).setDragEnabled(false);
 		c.setTransferHandler(new FSTransfer());
 		}
 

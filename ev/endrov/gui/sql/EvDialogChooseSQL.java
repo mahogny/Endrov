@@ -23,7 +23,7 @@ public class EvDialogChooseSQL extends JDialog implements ActionListener
 
 	private JButton bOk=new JButton("OK");
 	private JButton bCancel=new JButton("Cancel");
-	private JComboBox cbConnections=new JComboBox();
+	private JComboBox<EvSQLConnection> cbConnections=new JComboBox<EvSQLConnection>();
 	
 	public EvDialogChooseSQL()
 		{

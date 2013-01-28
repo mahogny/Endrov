@@ -159,6 +159,7 @@ public abstract class IJROIConverter
 			}
 		
 		
+		zf.close();
 		}
 
 

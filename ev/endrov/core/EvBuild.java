@@ -21,18 +21,21 @@ public class EvBuild
 			{
 			Scanner scanner = new Scanner(isTimestamp);
 			timestamp=scanner.nextLine();
+			scanner.close();
 			}
 		else
 			timestamp="0";
 		
 		Scanner scannerVersion = new Scanner(EndrovCore.class.getResourceAsStream("version.txt"));
 		version=scannerVersion.nextLine()+"."+timestamp;
+		scannerVersion.close();
 
 		InputStream isGit=EndrovCore.class.getResourceAsStream("githash.txt");
 		if(isGit!=null)
 			{
 			Scanner scanner = new Scanner(isGit);
 			githash=scanner.nextLine();
+			scanner.close();
 			}
 		else
 			githash="-";

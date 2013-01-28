@@ -9,7 +9,7 @@ import endrov.hardware.EvDevice;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 
-public abstract class RecWidgetComboDevice extends JComboBox
+public abstract class RecWidgetComboDevice extends JComboBox<EvDevicePath>
 	{
 	private static final long serialVersionUID = 1L;
 
@@ -23,7 +23,7 @@ public abstract class RecWidgetComboDevice extends JComboBox
 		{
 		//TODO should reselect old entry
 		
-		DefaultComboBoxModel model=(DefaultComboBoxModel)getModel();
+		DefaultComboBoxModel<EvDevicePath> model=(DefaultComboBoxModel<EvDevicePath>)getModel();
 		model.removeAllElements();
 		for(Map.Entry<EvDevicePath, EvDevice> e:EvHardware.getDeviceMap().entrySet())
 			{

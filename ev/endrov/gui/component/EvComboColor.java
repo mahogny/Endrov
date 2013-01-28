@@ -21,7 +21,7 @@ import endrov.gui.EvColor;
  * Combo select for colors
  * @author Johan Henriksson
  */
-public class EvComboColor extends JComboBox
+public class EvComboColor extends JComboBox<EvColor>
 	{
 	static final long serialVersionUID=0;
 	
@@ -30,7 +30,7 @@ public class EvComboColor extends JComboBox
 	 * @author Johan Henriksson
 	 *
 	 */
-	private static class Renderer extends JLabel implements ListCellRenderer
+	private static class Renderer extends JLabel implements ListCellRenderer<EvColor>
 		{
 		private static final long serialVersionUID = 1L;
 
@@ -44,7 +44,7 @@ public class EvComboColor extends JComboBox
 			this.showText=showText;
 			}
 
-		public Component getListCellRendererComponent(JList list,	Object value,	int index, boolean isSelected, boolean cellHasFocus) 
+		public Component getListCellRendererComponent(JList<? extends EvColor> list,	EvColor value,	int index, boolean isSelected, boolean cellHasFocus) 
 			{
 			if (isSelected)
 				{
