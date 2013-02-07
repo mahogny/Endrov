@@ -121,18 +121,11 @@ public class Viewer3DWindow extends EvBasicWindow
 	
 
 	
-	/**
-	 * Make a new window at default location
-	 */
-	public Viewer3DWindow()
-		{
-		this(new Rectangle(0,50,1000,800));
-		}
 	
 	/**
-	 * Make a new window at some location
+	 * Make a new window
 	 */
-	public Viewer3DWindow(Rectangle bounds)
+	public Viewer3DWindow()
 		{
 		view=new Viewer3DView(this);
 		frameControl=new FrameControlGeneric(new FrameControlConnection()
@@ -291,7 +284,7 @@ public class Viewer3DWindow extends EvBasicWindow
 		//Window overall things
 		setTitleEvWindow("3D viewer");
 		packEvWindow();                       // problem causer if GLcanvas!!!!
-		setBoundsEvWindow(bounds);			// problem causer!!!
+		setBoundsEvWindow(new Rectangle(0,50,700,550));			// problem causer!!!
 
 		setVisibleEvWindow(true);
 		

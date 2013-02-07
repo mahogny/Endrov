@@ -15,6 +15,7 @@ import endrov.typeImageset.EvPixels;
 import endrov.typeImageset.EvStack;
 import endrov.util.math.Vector2i;
 import endrov.util.math.Vector3i;
+import endrov.util.mathExpr.MathExpr;
 
 
 /**
@@ -150,7 +151,9 @@ public class FlowType
 	public static final FlowType TANY=new FlowType();
 	//	public static final FlowType ANYIMAGE=new FlowType(AnyEvImage.class);
 	public static final FlowType ANYIMAGE=new FlowType(EvChannel.class, EvStack.class, EvPixels.class);
-	
+
+	public static final FlowType TMATHEXPRESSION=new FlowType(MathExpr.class);
+
 	/**
 	 * Suggested units for a given type
 	 */

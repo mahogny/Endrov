@@ -5,6 +5,7 @@
  */
 package endrov.typeParticleMeasure;
 import endrov.core.EvPluginDefinition;
+import endrov.typeParticleMeasure.flow.FlowUnitFilterParticles;
 import endrov.typeParticleMeasure.flow.FlowUnitIdentifyParticles3D;
 import endrov.typeParticleMeasure.flow.FlowUnitMeasureParticle;
 import endrov.typeParticleMeasure.flow.FlowUnitMeasureToFile;
@@ -48,6 +49,7 @@ public class PLUGIN extends EvPluginDefinition
 				FlowUnitIdentifyParticles3D.class,
 				FlowUnitMeasureParticle.class,
 				FlowUnitShowMeasure.class,
+				FlowUnitFilterParticles.class,
 				
 				FlowUnitMeasureToFile.class,
 				FlowUnitMeasureToSQL.class,

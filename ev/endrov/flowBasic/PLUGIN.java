@@ -83,6 +83,7 @@ public class PLUGIN extends EvPluginDefinition
 				FlowUnitConstClass.class,
 				FlowUnitConstEvDecimal.class,
 				FlowUnitConstFile.class,
+				FlowUnitConstExpression.class,
 
 				//Objects
 				FlowUnitGetObjectsOfType.class,

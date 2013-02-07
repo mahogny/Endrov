@@ -1080,6 +1080,20 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			imageThreadLock.notifyAll();
 			}
 		}
+
+
+	public void reevalutate()
+		{
+		synchronized (imageThreadLock)
+			{
+			if(pm!=null)
+				{
+				pm.clearData();
+				layoutWells();
+				}
+			imageThreadLock.notifyAll();
+			}
+		}
 	
 	
 	}

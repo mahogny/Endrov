@@ -70,7 +70,15 @@ public class CalcAggregation
 			return EvMathUtil.minAllDouble(listA);
 			}
 		};
-		
+
+	public static final AggregationMethod aggrCount=new AggregationMethod("Count")
+		{
+		public Double calc(Collection<Double> listA, Collection<Double> listB)
+			{
+			return listA.size();
+			}
+		};
+
 		
 	public static final AggregationMethod aggrStdDev=new AggregationMethod("Std.deviation")
 		{
@@ -170,7 +178,7 @@ public class CalcAggregation
 		return new AggregationMethod[]{
 				//TODO spearman!
 				
-				aggrMean, aggrSum, aggrMin, aggrMax, aggrStdDev, aggrPearson, aggrSkew
+				aggrCount, aggrMean, aggrSum, aggrMin, aggrMax, aggrStdDev, aggrPearson, aggrSkew
 		};
 		}
 

@@ -256,6 +256,8 @@ public class ParticleMeasure extends EvObject
 		 */
 		public Double getDouble(String s)
 			{
+			if(!map.containsKey(s))
+				throw new RuntimeException("Unknown type "+s);
 			Object o=map.get(s);
 			if(o instanceof String)
 				return Double.parseDouble((String)o);
@@ -272,6 +274,8 @@ public class ParticleMeasure extends EvObject
 		 */
 		public Integer getInt(String s)
 			{
+			if(!map.containsKey(s))
+				throw new RuntimeException("Unknown type "+s);
 			Object o=map.get(s);
 			if(o instanceof String)
 				return Integer.parseInt((String)o);
@@ -288,6 +292,8 @@ public class ParticleMeasure extends EvObject
 		 */
 		public String getString(String s)
 			{
+			if(!map.containsKey(s))
+				throw new RuntimeException("Unknown type "+s);
 			Object o=map.get(s);
 			if(o==null)
 				return null;
@@ -300,6 +306,8 @@ public class ParticleMeasure extends EvObject
 		 */
 		public Object getObject(String s)
 			{
+			if(!map.containsKey(s))
+				throw new RuntimeException("Unknown type "+s);
 			return map.get(s);
 			}
 
@@ -416,6 +424,17 @@ public class ParticleMeasure extends EvObject
 		return out;
 		}
 	
+
+	public Set<String> getWellNames()
+		{
+		return wellMap.keySet();
+		}
+	
+	public void clearData()
+		{
+		wellMap.clear();
+		columns.clear();
+		}
 
 	
 	/******************************************************************************************************
@@ -586,10 +605,6 @@ public class ParticleMeasure extends EvObject
 		}
 	
 	
-	public Set<String> getWellNames()
-		{
-		return wellMap.keySet();
-		}
 	
 	
 	

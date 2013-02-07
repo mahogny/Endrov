@@ -106,6 +106,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	private final JMenuItem miZoom=new JMenuItem("Zoom to fit");
 	private final JMenuItem miExportCSV=new JMenuItem("Export as CSV");
 	private final JMenuItem miExportSQL=new JMenuItem("Export to SQL");
+	private final JMenuItem miReevaluate=new JMenuItem("Re-evaluate all");
 //	private final JMenuItem miEvaluate=new JMenuItem("Evaluate flow");
 	
 
@@ -196,11 +197,12 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		menuPlateWindow.add(miZoom);
 		menuPlateWindow.add(miExportCSV);
 		menuPlateWindow.add(miExportSQL);
-//		menuPlateWindow.add(miEvaluate);
+		menuPlateWindow.add(miReevaluate);
 		
 		miZoom.addActionListener(this);
 		miExportCSV.addActionListener(this);
 		miExportSQL.addActionListener(this);
+		miReevaluate.addActionListener(this);
 	//	miEvaluate.addActionListener(this);
 
 		
@@ -581,8 +583,12 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			exportCSV();
 		else if(e.getSource()==miExportSQL)
 			exportSQL();
+		else if(e.getSource()==miReevaluate)
+			imagePanel.reevalutate();
 		}
 
+	
+	
 	
 	
 	public void windowEventUserLoadedFile(EvData data)
