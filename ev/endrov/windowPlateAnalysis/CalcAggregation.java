@@ -75,7 +75,7 @@ public class CalcAggregation
 		{
 		public Double calc(Collection<Double> listA, Collection<Double> listB)
 			{
-			return listA.size();
+			return (double)listA.size();
 			}
 		};
 

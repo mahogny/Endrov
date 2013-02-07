@@ -6,6 +6,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import endrov.gui.EvColor;
+
 /**
  * Scene element: text
  * 
@@ -18,6 +20,7 @@ public class Scene2DText implements Scene2DElement
 	public String text;
 	public Font font;
 	public Alignment alignment=Alignment.Left;
+	public EvColor color=EvColor.red;
 	
 	public enum Alignment
 		{
@@ -37,7 +40,7 @@ public class Scene2DText implements Scene2DElement
 		{
 		Graphics2D g2 = (Graphics2D)g; 			
 
-		g2.setColor(Color.RED);
+		g2.setColor(color.getAWTColor());
 		if(font!=null)
 			g.setFont(font);
 		

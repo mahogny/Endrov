@@ -334,6 +334,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		
 		sceneItemText.alignment=Alignment.Center;
 		sceneItemText.font=new Font("Arial", Font.PLAIN, 15*scaleText);
+		sceneItemText.color=EvColor.white;
 		}
 
 
@@ -721,6 +722,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				Scene2DText st=new Scene2DText(g.x - 20*scaleText, g.y + (i-1)*(g.distance)+50*scaleText, ""+(char)(c+i-1));
 				st.font = gridFont;
 				st.alignment=Alignment.Right;
+				st.color=EvColor.red;
 				grids.add(st);
 				}
 			for(int i=1;i<=g.numNumber;i++)
@@ -728,6 +730,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				Scene2DText st=new Scene2DText(g.x + (i-1)*(g.distance)+50*scaleText, g.y - 40*scaleText, ""+i);
 				st.font=gridFont;
 				st.alignment=Alignment.Center;
+				st.color=EvColor.red;
 				grids.add(st);
 				}
 			}
