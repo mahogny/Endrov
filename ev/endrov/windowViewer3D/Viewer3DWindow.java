@@ -17,6 +17,7 @@ import org.jdom.*;
 
 
 import endrov.core.*;
+import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
@@ -51,8 +52,11 @@ public class Viewer3DWindow extends EvBasicWindow
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 	
-	public static Vector<Viewer3DWindowExtension> modelWindowExtensions=new Vector<Viewer3DWindowExtension>();
-
+	private static Vector<Class<? extends Viewer3DWindowHook>> modelWindowExtensions=new Vector<Class<? extends Viewer3DWindowHook>>();
+	public static void addExtension(Class<? extends Viewer3DWindowHook> e)
+		{
+		modelWindowExtensions.add(e);
+		}
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -61,7 +65,7 @@ public class Viewer3DWindow extends EvBasicWindow
 	
 	private int mouseLastX, mouseLastY;
 	
-	public final Vector<Viewer3DHook> modelWindowHooks=new Vector<Viewer3DHook>();	
+	final Vector<Viewer3DWindowHook> modelWindowHooks=new Vector<Viewer3DWindowHook>();	
 	public final Vector<JComponent> sidePanelItems=new Vector<JComponent>();
 	private final JPanel sidePanel=new JPanel(new GridBagLayout());
 	public final Vector<JComponent> bottomPanelItems=new Vector<JComponent>();
@@ -134,7 +138,7 @@ public class Viewer3DWindow extends EvBasicWindow
 				{
 				//TODO need to be recursive
 				EvDecimal last=null;
-				for(Viewer3DHook h:modelWindowHooks)
+				for(Viewer3DWindowHook h:modelWindowHooks)
 					{
 					EvDecimal f=h.getLastFrame();
 					if(f!=null && (last==null || f.greater(last)))
@@ -156,7 +160,7 @@ public class Viewer3DWindow extends EvBasicWindow
 				{
 				//TODO need to be recursive
 				EvDecimal first=null;
-				for(Viewer3DHook h:modelWindowHooks)
+				for(Viewer3DWindowHook h:modelWindowHooks)
 					{
 					EvDecimal f=h.getFirstFrame();
 					if(f!=null && (first==null || f.less(first)))
@@ -170,9 +174,21 @@ public class Viewer3DWindow extends EvBasicWindow
 			});
 
 		//Add hooks
-		for(Viewer3DWindowExtension e:modelWindowExtensions)
-			e.newModelWindow(this);
-				
+		for(Class<? extends Viewer3DWindowHook> cl:modelWindowExtensions)
+			{
+			try
+				{
+				Viewer3DWindowHook h=cl.newInstance();
+				h.createHook(this);
+				modelWindowHooks.add(h);
+				}
+			catch (Exception e)
+				{
+				EvLog.printError(e);
+				}
+			}
+
+		
 		//Add listeners to view
 		view.addMouseMotionListener(this);
 		view.addMouseListener(this);
@@ -328,7 +344,7 @@ public class Viewer3DWindow extends EvBasicWindow
 		bottomPanelItems.clear();
 		bottomPanelItems.add(bottomMain);
 		bottomPanelItems.add(progress); //Since it belongs to voxel, maybe keep it there?
-		for(Viewer3DHook h:modelWindowHooks)
+		for(Viewer3DWindowHook h:modelWindowHooks)
 			h.fillModelWindowMenus();
 		
 		//Assemble side panel
@@ -374,7 +390,7 @@ public class Viewer3DWindow extends EvBasicWindow
 		frameControl.storeSettings(root);
 		root.setAttribute("sidePanelVisible",""+sidePanelSplitPane.getPanelVisible());
 		
-		for(Viewer3DHook hook:modelWindowHooks)
+		for(Viewer3DWindowHook hook:modelWindowHooks)
 			hook.savePersonalConfig(root);
 		}
 
@@ -384,7 +400,7 @@ public class Viewer3DWindow extends EvBasicWindow
 			{
 			frameControl.getSettings(e);
 			
-			for(Viewer3DHook hook:modelWindowHooks)
+			for(Viewer3DWindowHook hook:modelWindowHooks)
 				hook.readPersonalConfig(e);
 
 			sidePanelSplitPane.setPanelVisible(e.getAttribute("sidePanelVisible").getBooleanValue());
@@ -638,7 +654,7 @@ public class Viewer3DWindow extends EvBasicWindow
 		metaCombo.updateList();
 		objectDisplayList.setData(metaCombo.getSelectedObject());
 		objectDisplayList.updateList();
-		for(Viewer3DHook h:modelWindowHooks)
+		for(Viewer3DWindowHook h:modelWindowHooks)
 			h.datachangedEvent();
 		if(frameControl!=null && view!=null)
 			{

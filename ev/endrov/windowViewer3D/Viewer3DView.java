@@ -233,7 +233,7 @@ public class Viewer3DView extends GLJPanel
 	
 	private GLEventListener glEventListener=new GLEventListener()
 		{		
-		HashSet<Viewer3DHook> hasInited=new HashSet<Viewer3DHook>();
+		HashSet<Viewer3DWindowHook> hasInited=new HashSet<Viewer3DWindowHook>();
 		
 		/**
 		 * Called once when OpenGL is inititalized
@@ -396,7 +396,7 @@ public class Viewer3DView extends GLJPanel
 			
 			//Adjust scale
 			BoundingBox3D totbb=new BoundingBox3D();
-			for(Viewer3DHook h:window.modelWindowHooks)
+			for(Viewer3DWindowHook h:window.modelWindowHooks)
 				for(BoundingBox3D bb:h.adjustScale())
 					totbb.addBoundingBox(bb);
 
@@ -425,7 +425,7 @@ public class Viewer3DView extends GLJPanel
 			checkerr(gl);
 			
 			//(Re-)Init OpenGL if needed. Resizing window sometimes causes a need to re-init 
-			for(Viewer3DHook h:window.modelWindowHooks)
+			for(Viewer3DWindowHook h:window.modelWindowHooks)
 				if(!hasInited.contains(h))
 					{
 					h.initOpenGL(gl);
@@ -435,7 +435,7 @@ public class Viewer3DView extends GLJPanel
 			//Prepare render extensions
 			gl.glLoadIdentity();
 			camera.transformGL(gl);
-			for(Viewer3DHook h:window.modelWindowHooks)
+			for(Viewer3DWindowHook h:window.modelWindowHooks)
 				h.displayInit(gl);
 			
 			checkerr(gl);
@@ -470,7 +470,7 @@ public class Viewer3DView extends GLJPanel
 				checkerr(gl);
 
 				//Render extensions
-				for(Viewer3DHook h:window.modelWindowHooks)
+				for(Viewer3DWindowHook h:window.modelWindowHooks)
 					{
 					h.displaySelect(gl);
 					checkerr(gl,h);
@@ -535,7 +535,7 @@ public class Viewer3DView extends GLJPanel
 				
 				//Render extensions
 				List<TransparentRenderer3D> transparentRenderers=new LinkedList<TransparentRenderer3D>();
-				for(Viewer3DHook h:window.modelWindowHooks)
+				for(Viewer3DWindowHook h:window.modelWindowHooks)
 					{
 					h.displayFinal(gl, transparentRenderers);
 					checkerr(gl,h);
@@ -702,7 +702,7 @@ public class Viewer3DView extends GLJPanel
 		Vector<Vector3d> center=new Vector<Vector3d>();
 
 		//Find centers of everything
-		for(Viewer3DHook h:window.modelWindowHooks)
+		for(Viewer3DWindowHook h:window.modelWindowHooks)
 			for(Vector3d newcenter:h.autoCenterMid())
 				center.add(newcenter);
 
@@ -717,7 +717,7 @@ public class Viewer3DView extends GLJPanel
 
 		//Figure out required distance
 		double dist=0;
-		for(Viewer3DHook h:window.modelWindowHooks)
+		for(Viewer3DWindowHook h:window.modelWindowHooks)
 			{
 			double nrad=h.autoCenterRadius(mid);
 			if(nrad>dist)

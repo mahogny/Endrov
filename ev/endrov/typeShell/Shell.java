@@ -161,7 +161,7 @@ public class Shell extends EvObject
 	public static void initPlugin(){}
 	static
 		{
-		Viewer2DWindow.addImageWindowExtension(new Viewer2DExtension()
+		Viewer2DWindow.addImageWindowExtension(new Viewer2DWindowExtension()
 			{
 			public void newImageWindow(Viewer2DWindow w)
 				{
@@ -179,7 +179,7 @@ public class Shell extends EvObject
 			});
 
 		
-		Viewer3DWindow.modelWindowExtensions.add(new ShellModelExtension());
+		Viewer3DWindow.addExtension(ShellModelExtension.class);
 		
 		EvData.supportedMetadataFormats.put(metaType,Shell.class);
 		

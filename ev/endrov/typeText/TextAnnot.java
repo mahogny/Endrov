@@ -12,7 +12,7 @@ import javax.vecmath.Vector3d;
 
 import endrov.data.*;
 import endrov.windowViewer2D.Viewer2DWindow;
-import endrov.windowViewer2D.Viewer2DExtension;
+import endrov.windowViewer2D.Viewer2DWindowExtension;
 import endrov.windowViewer3D.Viewer3DWindow;
 
 /**
@@ -121,11 +121,10 @@ public class TextAnnot extends EvObject implements Cloneable
 	public static void initPlugin() {}
 	static
 		{
-
-		Viewer3DWindow.modelWindowExtensions.add(new TextAnnotModelExtension());
+		Viewer3DWindow.addExtension(TextAnnotModelExtension.class);
 		
 		EvData.supportedMetadataFormats.put(metaType,TextAnnot.class);
-		Viewer2DWindow.addImageWindowExtension(new Viewer2DExtension()
+		Viewer2DWindow.addImageWindowExtension(new Viewer2DWindowExtension()
 			{
 			public void newImageWindow(Viewer2DWindow w)
 				{

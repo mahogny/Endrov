@@ -321,7 +321,7 @@ public class TimeRemapWindow extends EvBasicWindow implements ActionListener, Ch
 		
 		
 		
-		Viewer2DWindow.addImageWindowExtension(new Viewer2DExtension()
+		Viewer2DWindow.addImageWindowExtension(new Viewer2DWindowExtension()
 			{
 			public void newImageWindow(Viewer2DWindow w)
 				{

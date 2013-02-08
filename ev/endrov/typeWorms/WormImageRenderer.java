@@ -127,7 +127,7 @@ public class WormImageRenderer implements Viewer2DRenderer
 	public static void initPlugin() {}
 	static
 		{
-		Viewer2DWindow.addImageWindowExtension(new Viewer2DExtension()
+		Viewer2DWindow.addImageWindowExtension(new Viewer2DWindowExtension()
 			{
 			public void newImageWindow(Viewer2DWindow w)
 				{

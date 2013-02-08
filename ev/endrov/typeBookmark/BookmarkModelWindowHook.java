@@ -29,7 +29,7 @@ import endrov.gui.undo.UndoOpPutObject;
 import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.BoundingBox3D;
 import endrov.windowViewer3D.Viewer3DWindow;
-import endrov.windowViewer3D.Viewer3DHook;
+import endrov.windowViewer3D.Viewer3DWindowHook;
 import endrov.windowViewer3D.TransparentRenderer3D;
 
 /**
@@ -37,17 +37,15 @@ import endrov.windowViewer3D.TransparentRenderer3D;
  * @author Johan Henriksson
  *
  */
-public class BookmarkModelWindowHook implements Viewer3DHook, ActionListener
+public class BookmarkModelWindowHook implements Viewer3DWindowHook, ActionListener
 	{
-	private final Viewer3DWindow w;
+	private Viewer3DWindow w;
 	private JMenuItem miAddBookmark=new JMenuItem("Add bookmark");
 	private JMenu miBookmark=new JMenu("Bookmarks");
 	
-	public BookmarkModelWindowHook(Viewer3DWindow w)
+	public void createHook(Viewer3DWindow w)
 		{
 		this.w=w;
-		
-		
 		w.menuModel.add(miBookmark);
 		datachangedEvent();
 		}

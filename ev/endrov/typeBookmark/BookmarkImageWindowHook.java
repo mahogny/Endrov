@@ -23,7 +23,7 @@ import endrov.data.gui.EvDataGUI;
 import endrov.gui.EvSwingUtil;
 import endrov.gui.undo.UndoOpPutObject;
 import endrov.windowViewer2D.Viewer2DWindow;
-import endrov.windowViewer2D.Viewer2DExtension;
+import endrov.windowViewer2D.Viewer2DWindowExtension;
 import endrov.windowViewer2D.Viewer2DTool;
 
 /**
@@ -31,7 +31,7 @@ import endrov.windowViewer2D.Viewer2DTool;
  * @author Johan Henriksson
  *
  */
-public class BookmarkImageWindowHook implements Viewer2DExtension
+public class BookmarkImageWindowHook implements Viewer2DWindowExtension
 	{
 	public void newImageWindow(final Viewer2DWindow w)
 		{

@@ -30,7 +30,7 @@ import endrov.windowViewer2D.*;
 /**
  * Image Window: ROI menu
  */
-public class ImageWindowExtensionROI implements Viewer2DExtension
+public class ImageWindowExtensionROI implements Viewer2DWindowExtension
 	{
 		
 	public void newImageWindow(final Viewer2DWindow w)

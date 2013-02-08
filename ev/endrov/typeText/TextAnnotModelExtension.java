@@ -22,152 +22,138 @@ import endrov.windowViewer3D.*;
  * Extension to Model Window: shows image annotation
  * @author Johan Henriksson
  */
-public class TextAnnotModelExtension implements Viewer3DWindowExtension
+public class TextAnnotModelExtension implements Viewer3DWindowHook
 	{
-  
-  public void newModelWindow(Viewer3DWindow w)
+	private Viewer3DWindow w;
+	
+	public void fillModelWindowMenus(){}
+	
+
+	
+	public void createHook(Viewer3DWindow w)
 		{
-		w.modelWindowHooks.add(new NucModelWindowHook(w));
+		this.w=w;
 		}
 	
-	public static class NucModelWindowHook implements Viewer3DHook
-		{
-		private final Viewer3DWindow w;
-		
-		public void fillModelWindowMenus(){}
-		
-
-		
-		public NucModelWindowHook(Viewer3DWindow w)
-			{
-			this.w=w;
-			
-//			JMenu miNuc=new JMenu("Image Annotation");
-		
-//			w.menuModel.add(miNuc);
-			
-			}
-		
-		public void readPersonalConfig(Element e){}
-		public void savePersonalConfig(Element e){}
-		public void datachangedEvent(){}
-		
-		
-		public boolean canRender(EvObject ob)
-			{
-			return ob instanceof TextAnnot;
-			}
-
-		
-		public Collection<TextAnnot> getAnnot()
-			{
-			List<TextAnnot> v=new LinkedList<TextAnnot>();
-			for(TextAnnot lin:w.getSelectedData().getIdObjects(TextAnnot.class).values())
-				if(w.showObject(lin))
-					v.add(lin);
-			return v;
-			}
+	public void readPersonalConfig(Element e){}
+	public void savePersonalConfig(Element e){}
+	public void datachangedEvent(){}
 	
-		public void initOpenGL(GL gl)
-			{
-			}
+	
+	public boolean canRender(EvObject ob)
+		{
+		return ob instanceof TextAnnot;
+		}
 
-		/**
-		 * Prepare for rendering
-		 */
-		public void displayInit(GL gl)
-			{
-			}
+	
+	public Collection<TextAnnot> getAnnot()
+		{
+		List<TextAnnot> v=new LinkedList<TextAnnot>();
+		for(TextAnnot lin:w.getSelectedData().getIdObjects(TextAnnot.class).values())
+			if(w.showObject(lin))
+				v.add(lin);
+		return v;
+		}
 
-		
-		
-		/**
-		 * Render for selection
-		 */
-		public void displaySelect(GL gl)
-			{
-			}
-		
-		/**
-		 * Render graphics
-		 */
-		public void displayFinal(GL glin,List<TransparentRenderer3D> transparentRenderers)
-			{
-			GL2 gl=glin.getGL2();
-			for(TextAnnot ia:getAnnot())
-				renderOne(gl, ia,transparentRenderers);
-			}
+	public void initOpenGL(GL gl)
+		{
+		}
 
+	/**
+	 * Prepare for rendering
+	 */
+	public void displayInit(GL gl)
+		{
+		}
 
-		
-		/**
-		 * Render one annotation
-		 */
-		
-		private void renderOne(GL2 gl, TextAnnot ia,List<TransparentRenderer3D> transparentRenderers)
-			{
-			//Save world coordinate
-			gl.glPushMatrix();
-
-			//Move to cell center = local coordinate
-			gl.glTranslated(ia.pos.x,ia.pos.y,ia.pos.z);
-
-			gl.glScalef(-1,-1,-1); //remove later
-
-
-			//Unrotate camera, then move a bit closer to the camera
-			w.view.camera.unrotateGL(gl);
-
-			
-			Color colorText=Color.BLUE;
-			
-			gl.glRotated(180,   0.0, 0.0, 1.0);
-			//also consider setting size such that it does not vary with distance
-			//3d text at all? overlay rendering should be faster
-			float size=1; //(float)(0.005*nuc.pos.r) //TODO trouble! relate to camera distance 
-			w.view.renderString(gl, transparentRenderers, size, ia.text, colorText);
+	
+	
+	/**
+	 * Render for selection
+	 */
+	public void displaySelect(GL gl)
+		{
+		}
+	
+	/**
+	 * Render graphics
+	 */
+	public void displayFinal(GL glin,List<TransparentRenderer3D> transparentRenderers)
+		{
+		GL2 gl=glin.getGL2();
+		for(TextAnnot ia:getAnnot())
+			renderOne(gl, ia,transparentRenderers);
+		}
 
 
-			//Go back to world coordinates
-			gl.glPopMatrix();
-			}	
-		
+	
+	/**
+	 * Render one annotation
+	 */
+	
+	private void renderOne(GL2 gl, TextAnnot ia,List<TransparentRenderer3D> transparentRenderers)
+		{
+		//Save world coordinate
+		gl.glPushMatrix();
+
+		//Move to cell center = local coordinate
+		gl.glTranslated(ia.pos.x,ia.pos.y,ia.pos.z);
+
+		gl.glScalef(-1,-1,-1); //remove later
+
+
+		//Unrotate camera, then move a bit closer to the camera
+		w.view.camera.unrotateGL(gl);
 
 		
-		/**
-		 * Adjust the scale
-		 */
-		public Collection<BoundingBox3D> adjustScale()
-			{
-			return Collections.emptySet();
-			}
+		Color colorText=Color.BLUE;
+		
+		gl.glRotated(180,   0.0, 0.0, 1.0);
+		//also consider setting size such that it does not vary with distance
+		//3d text at all? overlay rendering should be faster
+		float size=1; //(float)(0.005*nuc.pos.r) //TODO trouble! relate to camera distance 
+		w.view.renderString(gl, transparentRenderers, size, ia.text, colorText);
 
-		
-		
-		
-		
-		
-		/**
-		 * Give suitable center of all objects
-		 */
-		public Collection<Vector3d> autoCenterMid()
-			{
-			return Collections.emptySet();
-			}
-		
-		
-		/**
-		 * Given a middle position, figure out radius required to fit objects
-		 */
-		public double autoCenterRadius(Vector3d mid)
-			{
-			return 0;
-			}
-		
-		public EvDecimal getFirstFrame(){return null;}
-		public EvDecimal getLastFrame(){return null;};
-		
-		};
+
+		//Go back to world coordinates
+		gl.glPopMatrix();
+		}	
+	
+
+	
+	/**
+	 * Adjust the scale
+	 */
+	public Collection<BoundingBox3D> adjustScale()
+		{
+		return Collections.emptySet();
+		}
+
+	
+	
+	
+	
+	
+	/**
+	 * Give suitable center of all objects
+	 */
+	public Collection<Vector3d> autoCenterMid()
+		{
+		return Collections.emptySet();
+		}
+	
+	
+	/**
+	 * Given a middle position, figure out radius required to fit objects
+	 */
+	public double autoCenterRadius(Vector3d mid)
+		{
+		return 0;
+		}
+	
+	public EvDecimal getFirstFrame(){return null;}
+	public EvDecimal getLastFrame(){return null;};
+	
 	}
 
 

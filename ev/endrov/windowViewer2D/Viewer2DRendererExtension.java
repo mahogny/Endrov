@@ -1,7 +1,7 @@
 package endrov.windowViewer2D;
 
 /**
- * An rendering extension to the 2D viewer
+ * A rendering extension to the 2D viewer
  * 
  * @author Johan Henriksson
  *

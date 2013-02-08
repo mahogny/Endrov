@@ -40,7 +40,7 @@ public class ModwPanelExpPattern extends JPanel implements ActionListener, JSnap
 	private final JButton bDelete=BasicIcon.getButtonDelete();
 	private final EvComboColor colorCombo=new EvComboColor(false);
 
-	private final LineageModelExtension.NucModelWindowHook hook;
+	private final LineageModelExtension hook;
 	
 	/**
 	 * Available expression patterns
@@ -64,7 +64,7 @@ public class ModwPanelExpPattern extends JPanel implements ActionListener, JSnap
 	public double add1;
 	// final color = signal*scale1 + add1
 	
-	public ModwPanelExpPattern(LineageModelExtension.NucModelWindowHook hook)
+	public ModwPanelExpPattern(LineageModelExtension hook)
 		{
 		JLabel labelC=new JLabel("C: ");
 		JLabel labelB=new JLabel("B: ");

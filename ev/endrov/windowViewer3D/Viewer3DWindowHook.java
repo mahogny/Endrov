@@ -21,8 +21,10 @@ import endrov.util.math.EvDecimal;
  * Hook, inserted by model window extensions into each model window instance
  * @author Johan Henriksson
  */
-public interface Viewer3DHook
+public interface Viewer3DWindowHook
 	{
+	public void createHook(Viewer3DWindow w);
+	
 	public void readPersonalConfig(Element e);
 	public void savePersonalConfig(Element e);
 	

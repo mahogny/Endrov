@@ -25,8 +25,7 @@ import endrov.util.io.EvFileUtil;
 import endrov.util.math.EvDecimal;
 import endrov.windowViewer3D.BoundingBox3D;
 import endrov.windowViewer3D.Viewer3DWindow;
-import endrov.windowViewer3D.Viewer3DWindowExtension;
-import endrov.windowViewer3D.Viewer3DHook;
+import endrov.windowViewer3D.Viewer3DWindowHook;
 import endrov.windowViewer3D.TransparentRenderer3D;
 
 /**
@@ -34,97 +33,89 @@ import endrov.windowViewer3D.TransparentRenderer3D;
  * 
  * @author Johan Henriksson
  */
-public class ModelWindowScreenshot implements Viewer3DWindowExtension
+public class ModelWindowScreenshot implements Viewer3DWindowHook, ActionListener
 	{
+	private Viewer3DWindow w;
 	
-	public void newModelWindow(final Viewer3DWindow w)
+	public JMenuItem miScreenshot=new JMenuItem("Screenshot"); 
+	
+	public void createHook(Viewer3DWindow w)
 		{
-		w.modelWindowHooks.add(new ModelWindowGridHook(w));
+		this.w=w;
+		w.menuModel.add(miScreenshot);
+		miScreenshot.addActionListener(this);
 		}
-	private class ModelWindowGridHook implements Viewer3DHook, ActionListener
+	
+	
+	
+	public void readPersonalConfig(Element e)
 		{
-		private Viewer3DWindow w;
-		
-		public JMenuItem miScreenshot=new JMenuItem("Screenshot"); 
-		
-		public ModelWindowGridHook(Viewer3DWindow w)
-			{
-			this.w=w;
-			w.menuModel.add(miScreenshot);
-			miScreenshot.addActionListener(this);
-			}
-		
-		
-		
-		public void readPersonalConfig(Element e)
-			{
-			}
-		public void savePersonalConfig(Element e)
-			{
-			}
-		
-		
+		}
+	public void savePersonalConfig(Element e)
+		{
+		}
+	
+	
 
-		public void actionPerformed(ActionEvent e)
+	public void actionPerformed(ActionEvent e)
+		{
+		if(e.getSource()==miScreenshot)
 			{
-			if(e.getSource()==miScreenshot)
-				{
-				BufferedImage image=w.view.getScreenshot();
-				
-				JFileChooser fc=new JFileChooser();
-				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-				int ret=fc.showSaveDialog(w);
-				if(ret==JFileChooser.APPROVE_OPTION)
-					{
-					File f=fc.getSelectedFile();
-					try
-						{
-						ImageIO.write(image, "png", EvFileUtil.makeFileEnding(f, ".png"));
-						}
-					catch (IOException e2)
-						{
-						e2.printStackTrace();
-						}
-					}
-				
-				}
-			}
-		
-		
+			BufferedImage image=w.view.getScreenshot();
 			
-		public Collection<BoundingBox3D> adjustScale()
-			{
-			return Collections.emptySet();
-			}
-		public Collection<Vector3d> autoCenterMid(){return Collections.emptySet();}
-		public double autoCenterRadius(Vector3d mid)
-			{
-			return 0;	
-			}
-		public boolean canRender(EvObject ob){return false;}
-		
-		public void initOpenGL(GL gl)
-			{
-			}
+			JFileChooser fc=new JFileChooser();
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-		
-		public void displayInit(GL gl){}
-		public void displaySelect(GL gl){}
-		public void fillModelWindowMenus(){}
-		public void datachangedEvent(){}
-
-		
-		/**
-		 * Render all grid planes
-		 */
-		public void displayFinal(GL gl,List<TransparentRenderer3D> transparentRenderers)
-			{
+			int ret=fc.showSaveDialog(w);
+			if(ret==JFileChooser.APPROVE_OPTION)
+				{
+				File f=fc.getSelectedFile();
+				try
+					{
+					ImageIO.write(image, "png", EvFileUtil.makeFileEnding(f, ".png"));
+					}
+				catch (IOException e2)
+					{
+					e2.printStackTrace();
+					}
+				}
+			
 			}
-
-		public EvDecimal getFirstFrame(){return null;}
-		public EvDecimal getLastFrame(){return null;}
 		}
+	
+	
+		
+	public Collection<BoundingBox3D> adjustScale()
+		{
+		return Collections.emptySet();
+		}
+	public Collection<Vector3d> autoCenterMid(){return Collections.emptySet();}
+	public double autoCenterRadius(Vector3d mid)
+		{
+		return 0;	
+		}
+	public boolean canRender(EvObject ob){return false;}
+	
+	public void initOpenGL(GL gl)
+		{
+		}
+
+	
+	public void displayInit(GL gl){}
+	public void displaySelect(GL gl){}
+	public void fillModelWindowMenus(){}
+	public void datachangedEvent(){}
+
+	
+	/**
+	 * Render all grid planes
+	 */
+	public void displayFinal(GL gl,List<TransparentRenderer3D> transparentRenderers)
+		{
+		}
+
+	public EvDecimal getFirstFrame(){return null;}
+	public EvDecimal getLastFrame(){return null;}
 	
 
 	/******************************************************************************************************
@@ -133,7 +124,7 @@ public class ModelWindowScreenshot implements Viewer3DWindowExtension
 	public static void initPlugin() {}
 	static
 		{
-		Viewer3DWindow.modelWindowExtensions.add(new ModelWindowScreenshot());
+		Viewer3DWindow.addExtension(ModelWindowScreenshot.class);
 		}
 
 	}

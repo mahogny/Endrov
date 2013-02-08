@@ -16,8 +16,6 @@ import endrov.gui.window.EvBasicWindow;
 import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.Viewer2DWindow;
 import endrov.windowViewer3D.Viewer3DWindow;
-import endrov.windowViewer3D.Viewer3DWindowExtension;
-
 import org.jdom.*;
 
 /**
@@ -154,12 +152,7 @@ public class Bookmark extends EvObject
 	static
 		{
 		EvData.supportedMetadataFormats.put(metaType,Bookmark.class);
-		Viewer3DWindow.modelWindowExtensions.add(new Viewer3DWindowExtension(){
-			public void newModelWindow(Viewer3DWindow w)
-				{
-				w.modelWindowHooks.add(new BookmarkModelWindowHook(w));
-				}
-		});
+		Viewer3DWindow.addExtension(BookmarkModelWindowHook.class);
 		Viewer2DWindow.addImageWindowExtension(new BookmarkImageWindowHook());
 		}
 	}

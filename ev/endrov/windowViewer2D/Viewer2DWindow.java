@@ -57,9 +57,11 @@ public class Viewer2DWindow extends EvBasicWindow
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 	/** Registered extensions */
-	private static final Vector<Viewer2DExtension> imageWindowExtensions=new Vector<Viewer2DExtension>();
 	public static final Vector<Viewer2DRendererExtension> imageWindowRendererExtensions=new Vector<Viewer2DRendererExtension>();
+	private static Vector<Viewer2DWindowExtension> imageWindowExtensions=new Vector<Viewer2DWindowExtension>();
 
+
+	
 	private static final int KEY_STEP_BACK    =KeyBinding.register(new KeyBinding("2D viewer","Step back",'a'));
 	private static final int KEY_STEP_FORWARD =KeyBinding.register(new KeyBinding("2D viewer","Step forward",'d'));
 	private static final int KEY_STEP_UP      =KeyBinding.register(new KeyBinding("2D viewer","Step up",'w'));
@@ -100,7 +102,7 @@ public class Viewer2DWindow extends EvBasicWindow
 
 
 	/** Register an extension to image window */
-	public static void addImageWindowExtension(Viewer2DExtension e)
+	public static void addImageWindowExtension(Viewer2DWindowExtension e)
 		{
 		imageWindowExtensions.add(e);
 		}
@@ -442,7 +444,7 @@ public class Viewer2DWindow extends EvBasicWindow
 		{
 		for(Viewer2DRendererExtension e:imageWindowRendererExtensions)
 			e.newImageWindow(this);
-		for(Viewer2DExtension e:imageWindowExtensions)
+		for(Viewer2DWindowExtension e:imageWindowExtensions)
 			e.newImageWindow(this);
 				
 		imagePanel.setFocusable(true);
@@ -1257,8 +1259,10 @@ public class Viewer2DWindow extends EvBasicWindow
 					public void buildMenu(EvBasicWindow w){}
 					}
 				});
+
+
 		
-		Viewer2DWindow.addImageWindowExtension(new Viewer2DExtension()
+		Viewer2DWindow.addImageWindowExtension(new Viewer2DWindowExtension()
 			{
 			public void newImageWindow(Viewer2DWindow w)
 				{
@@ -1271,5 +1275,6 @@ public class Viewer2DWindow extends EvBasicWindow
 		}
 
 	
-		}
+	
+	}
 

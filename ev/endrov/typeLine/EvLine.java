@@ -16,7 +16,7 @@ import javax.vecmath.Vector4d;
 import endrov.data.*;
 import endrov.util.math.EvDecimal;
 import endrov.windowViewer2D.Viewer2DWindow;
-import endrov.windowViewer2D.Viewer2DExtension;
+import endrov.windowViewer2D.Viewer2DWindowExtension;
 import endrov.windowViewer2D.Viewer2DInterface;
 import endrov.windowViewer2D.Viewer2DRendererExtension;
 import endrov.windowViewer3D.Viewer3DWindow;
@@ -197,11 +197,11 @@ public class EvLine extends EvObject
 	static
 		{
 
-		Viewer3DWindow.modelWindowExtensions.add(new EvLineModelExtension());
+		Viewer3DWindow.addExtension(EvLineModelExtension.class);
 		
 		EvData.supportedMetadataFormats.put(metaType,EvLine.class);
 		
-		Viewer2DWindow.addImageWindowExtension(new Viewer2DExtension()
+		Viewer2DWindow.addImageWindowExtension(new Viewer2DWindowExtension()
 			{
 			public void newImageWindow(Viewer2DWindow w)
 				{

@@ -35,249 +35,241 @@ import endrov.windowViewer3D.*;
  * Extension to Model Window: shows meshs
  * @author Johan Henriksson
  */
-public class Mesh3dModelExtension implements Viewer3DWindowExtension
+public class Mesh3dModelExtension implements Viewer3DWindowHook, Viewer3DMouseListener
 	{
-  public void newModelWindow(Viewer3DWindow w)
+	Viewer3DWindow w;
+	public void fillModelWindowMenus()
 		{
-		w.modelWindowHooks.add(new NucModelWindowHook(w));
+		w.addModelWindowMouseListener(this);
 		}
 	
-	private static class NucModelWindowHook implements Viewer3DHook, Viewer3DMouseListener
+
+	public void createHook(Viewer3DWindow w)
 		{
-		final Viewer3DWindow w;
-		public void fillModelWindowMenus()
-			{
-			w.addModelWindowMouseListener(this);
-			}
+		this.w=w;
 		
+		}
+	
+	public void readPersonalConfig(Element e){}
+	public void savePersonalConfig(Element e){}
+	
+	public void datachangedEvent()
+		{
+		}
+	
+	
+	public boolean canRender(EvObject ob)
+		{
+		return ob instanceof Mesh3D;
+		}
 
-		public NucModelWindowHook(Viewer3DWindow w)
-			{
-			this.w=w;
-			
-			}
-		
-		public void readPersonalConfig(Element e){}
-		public void savePersonalConfig(Element e){}
-		
-		public void datachangedEvent()
-			{
-			}
+	
+	
+	public Collection<Mesh3D> getVisibleObjects()
+		{
+		List<Mesh3D> v=new LinkedList<Mesh3D>();
+		for(Mesh3D ob:w.getSelectedData().getObjects(Mesh3D.class))
+			if(w.showObject(ob))
+				v.add(ob);
 		
 		
-		public boolean canRender(EvObject ob)
-			{
-			return ob instanceof Mesh3D;
-			}
+		
+		return v;
+		}
+	
+	public void initOpenGL(GL gl)
+		{
+		}
 
+	
+	
+	
+	/**
+	 * Prepare for rendering
+	 */
+	public void displayInit(GL gl)
+		{
+		}
+	
+	/**
+	 * Render for selection
+	 */
+	public void displaySelect(GL glin)
+		{
+		Collection<Mesh3D> meshs=getVisibleObjects();
 		
+	//TODO what about meshs that have changed?
 		
-		public Collection<Mesh3D> getVisibleObjects()
+		//Render all meshs
+		for(Mesh3D mesh:meshs)
 			{
-			List<Mesh3D> v=new LinkedList<Mesh3D>();
-			for(Mesh3D ob:w.getSelectedData().getObjects(Mesh3D.class))
-				if(w.showObject(ob))
-					v.add(ob);
-			
-			
-			
-			return v;
-			}
-		
-		public void initOpenGL(GL gl)
-			{
-			}
+			int color=w.view.reserveSelectColor(new SelMesh3D(mesh));
+			//selectColorMap.put(color, new SelMesh3D(mesh));
 
-		
-		
-		
-		/**
-		 * Prepare for rendering
-		 */
-		public void displayInit(GL gl)
-			{
+			displayMesh(w.view, glin, mesh, new EvGLMaterialSelect(color), null);
 			}
+		}
+	
+	/**
+	 * Render graphics
+	 */
+	public void displayFinal(GL glin,List<TransparentRenderer3D> transparentRenderers)
+		{			
+		Collection<Mesh3D> meshs=getVisibleObjects();
 		
-		/**
-		 * Render for selection
-		 */
-		public void displaySelect(GL glin)
-			{
-			Collection<Mesh3D> meshs=getVisibleObjects();
-			
 		//TODO what about meshs that have changed?
+		
+		//Render all meshs
+		for(Mesh3D mesh:meshs)
+			{
+			SelMesh3D selmesh=new SelMesh3D(mesh);
 			
-			//Render all meshs
-			for(Mesh3D mesh:meshs)
+			EvGLMeshVBO.MeshRenderSettings renderSettings=new EvGLMeshVBO.MeshRenderSettings();
+			EvGLMaterial overridematerial=null;
+			
+			if(EvSelection.currentHover.equals(selmesh))
+				renderSettings.outlineColor=EvColor.magenta;
+
+			if(EvSelection.isSelected(selmesh))
+				overridematerial=new EvGLMaterialSolid(new float[]{1.0f,0.0f,0.0f,1.0f},null,null,null);
+			
+			displayMesh(w.view, glin, mesh, overridematerial, renderSettings);
+			}
+		
+		
+		}
+	
+	
+	
+	/**
+	 * Adjust the scale
+	 */
+	public Collection<BoundingBox3D> adjustScale()
+		{
+		Collection<Mesh3D> meshs=getVisibleObjects();
+		List<BoundingBox3D> list=new LinkedList<BoundingBox3D>();
+		for(Mesh3D mesh:meshs)
+			list.add(mesh.getBoundingBox());
+		return list;
+		}
+
+
+	
+	/**
+	 * Give suitable center of all objects
+	 */
+	public Collection<Vector3d> autoCenterMid()
+		{
+		List<Vector3d> list=new LinkedList<Vector3d>(); 
+		for(Mesh3D m:getVisibleObjects())
+			{
+			Vector3d v=m.getVertexAverage();
+			if(v!=null)
+				list.add(v);
+			}
+		return list;
+		}
+	
+	
+	/**
+	 * Given a middle position, figure out radius required to fit objects
+	 */
+	public double autoCenterRadius(Vector3d mid)
+		{
+		//Calculate maximum radius
+		double maxr2=0;
+		for(Mesh3D lin:getVisibleObjects())
+			for(Vector3d pos:lin.vertex)
 				{
-				int color=w.view.reserveSelectColor(new SelMesh3D(mesh));
-				//selectColorMap.put(color, new SelMesh3D(mesh));
-
-				displayMesh(w.view, glin, mesh, new EvGLMaterialSelect(color), null);
+				double dx=pos.x-mid.x;
+				double dy=pos.y-mid.y;
+				double dz=pos.z-mid.z;
+				double r2=dx*dx+dy*dy+dz*dz;
+				if(maxr2<r2)
+					maxr2=r2;
 				}
-			}
-		
-		/**
-		 * Render graphics
-		 */
-		public void displayFinal(GL glin,List<TransparentRenderer3D> transparentRenderers)
-			{			
-			Collection<Mesh3D> meshs=getVisibleObjects();
-			
-			//TODO what about meshs that have changed?
-			
-			//Render all meshs
-			for(Mesh3D mesh:meshs)
-				{
-				SelMesh3D selmesh=new SelMesh3D(mesh);
-				
-				EvGLMeshVBO.MeshRenderSettings renderSettings=new EvGLMeshVBO.MeshRenderSettings();
-				EvGLMaterial overridematerial=null;
-				
-				if(EvSelection.currentHover.equals(selmesh))
-					renderSettings.outlineColor=EvColor.magenta;
+		return Math.sqrt(maxr2);
+		}
+	
+	
+	public EvDecimal getFirstFrame()
+		{
+		return null;
+		}
+	public EvDecimal getLastFrame()
+		{
+		return null;
+		}
 
-				if(EvSelection.isSelected(selmesh))
-					overridematerial=new EvGLMaterialSolid(new float[]{1.0f,0.0f,0.0f,1.0f},null,null,null);
-				
-				displayMesh(w.view, glin, mesh, overridematerial, renderSettings);
-				}
-			
-			
-			}
-		
-		
-		
-		/**
-		 * Adjust the scale
-		 */
-		public Collection<BoundingBox3D> adjustScale()
-			{
-			Collection<Mesh3D> meshs=getVisibleObjects();
-			List<BoundingBox3D> list=new LinkedList<BoundingBox3D>();
-			for(Mesh3D mesh:meshs)
-				list.add(mesh.getBoundingBox());
-			return list;
-			}
+	
 
-
-		
-		/**
-		 * Give suitable center of all objects
-		 */
-		public Collection<Vector3d> autoCenterMid()
-			{
-			List<Vector3d> list=new LinkedList<Vector3d>(); 
-			for(Mesh3D m:getVisibleObjects())
-				{
-				Vector3d v=m.getVertexAverage();
-				if(v!=null)
-					list.add(v);
-				}
-			return list;
-			}
-		
-		
-		/**
-		 * Given a middle position, figure out radius required to fit objects
-		 */
-		public double autoCenterRadius(Vector3d mid)
-			{
-			//Calculate maximum radius
-			double maxr2=0;
-			for(Mesh3D lin:getVisibleObjects())
-				for(Vector3d pos:lin.vertex)
-					{
-					double dx=pos.x-mid.x;
-					double dy=pos.y-mid.y;
-					double dz=pos.z-mid.z;
-					double r2=dx*dx+dy*dy+dz*dz;
-					if(maxr2<r2)
-						maxr2=r2;
-					}
-			return Math.sqrt(maxr2);
-			}
-		
-		
-		public EvDecimal getFirstFrame()
-			{
+	
+	public static SelMesh3D getHoveredMesh()
+		{
+		System.out.println("Hovered: "+EvSelection.currentHover);
+		if(EvSelection.currentHover instanceof SelMesh3D)
+			return (SelMesh3D)EvSelection.currentHover;
+		else
 			return null;
-			}
-		public EvDecimal getLastFrame()
+		}
+	
+	public boolean mouseClicked(MouseEvent e, JPopupMenu menu)
+		{
+		//Left-clicking a particle selects it
+		if(SwingUtilities.isLeftMouseButton(e))
 			{
-			return null;
+			
+			
 			}
-
-		
-
-		
-		public static SelMesh3D getHoveredMesh()
+		else if(SwingUtilities.isRightMouseButton(e))
 			{
-			System.out.println("Hovered: "+EvSelection.currentHover);
-			if(EvSelection.currentHover instanceof SelMesh3D)
-				return (SelMesh3D)EvSelection.currentHover;
-			else
-				return null;
-			}
-		
-		public boolean mouseClicked(MouseEvent e, JPopupMenu menu)
-			{
-			//Left-clicking a particle selects it
-			if(SwingUtilities.isLeftMouseButton(e))
+			if(getHoveredMesh()!=null)
 				{
-				
-				
-				}
-			else if(SwingUtilities.isRightMouseButton(e))
-				{
-				if(getHoveredMesh()!=null)
-					{
 //					JPopupMenu menu=new JPopupMenu();
-					
-					JMenu miSetColor=new JMenu("Set color");
-					menu.add(miSetColor);
-					EvColor.addColorMenuEntries(miSetColor, new EvColor.ColorMenuListener()
+				
+				JMenu miSetColor=new JMenu("Set color");
+				menu.add(miSetColor);
+				EvColor.addColorMenuEntries(miSetColor, new EvColor.ColorMenuListener()
+					{
+					public void setColor(EvColor c)
 						{
-						public void setColor(EvColor c)
-							{
-							Mesh3D mesh=getHoveredMesh().getObject();
-							EvGLMaterial mat=EvGLMaterialSolid.fromColor(c.getRedFloat(), c.getGreenFloat(), c.getBlueFloat());
-							for(Mesh3D.Face f:mesh.faces)
-								f.material=mat;
-							EvBasicWindow.updateWindows();
-							}
-						});
-					
+						Mesh3D mesh=getHoveredMesh().getObject();
+						EvGLMaterial mat=EvGLMaterialSolid.fromColor(c.getRedFloat(), c.getGreenFloat(), c.getBlueFloat());
+						for(Mesh3D.Face f:mesh.faces)
+							f.material=mat;
+						EvBasicWindow.updateWindows();
+						}
+					});
+				
 //					w.createPopupMenu(menu, e);
-					}
 				}
-			return false;
-			
 			}
-		public boolean mouseDragged(MouseEvent e, int dx, int dy)
-			{
-			return false;
-			}
-		public void mouseEntered(MouseEvent e)
-			{
-			}
-		public void mouseExited(MouseEvent e)
-			{
-			}
-		public void mouseMoved(MouseEvent e)
-			{
-			}
-		public void mousePressed(MouseEvent e)
-			{
-			}
-		public void mouseReleased(MouseEvent e)
-			{
-			}
-			
+		return false;
+		
+		}
+	public boolean mouseDragged(MouseEvent e, int dx, int dy)
+		{
+		return false;
+		}
+	public void mouseEntered(MouseEvent e)
+		{
+		}
+	public void mouseExited(MouseEvent e)
+		{
+		}
+	public void mouseMoved(MouseEvent e)
+		{
+		}
+	public void mousePressed(MouseEvent e)
+		{
+		}
+	public void mouseReleased(MouseEvent e)
+		{
+		}
+		
 
-		
-		};
-		
+	
+	
 
 	
 		
@@ -436,7 +428,7 @@ public class Mesh3dModelExtension implements Viewer3DWindowExtension
 	public static void initPlugin() {}
 	static
 		{
-		Viewer3DWindow.modelWindowExtensions.add(new Mesh3dModelExtension());
+		Viewer3DWindow.addExtension(Mesh3dModelExtension.class);
 		}
 	
 
