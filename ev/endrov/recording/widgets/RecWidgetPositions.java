@@ -46,12 +46,12 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 
 	
 	
-	private DefaultListModel<StoredStagePosition> listModelAvailable=new DefaultListModel<StoredStagePosition>();
-	private JList<StoredStagePosition> posListAvailable=new JList<StoredStagePosition>(listModelAvailable);
+	private DefaultListModel listModelAvailable=new DefaultListModel/*<StoredStagePosition>*/();
+	private JList posListAvailable=new JList/*<StoredStagePosition>*/(listModelAvailable);
 	private JScrollPane listScroller = new JScrollPane(posListAvailable);
 	
-	private DefaultListModel<StoredStagePosition> listModelAdded=new DefaultListModel<StoredStagePosition>();
-	private JList<StoredStagePosition> posListAdded=new JList<StoredStagePosition>(listModelAdded);
+	private DefaultListModel listModelAdded=new DefaultListModel/*<StoredStagePosition>*/();
+	private JList posListAdded=new JList/*<StoredStagePosition>*/(listModelAdded);
 	private JScrollPane listScrollerAdded = new JScrollPane(posListAdded);
 	
 	
@@ -112,7 +112,7 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 			{
 			LinkedList<StoredStagePosition> obs=new LinkedList<StoredStagePosition>();
 			for(int i:posListAvailable.getSelectedIndices())
-				obs.add(posListAvailable.getModel().getElementAt(i));
+				obs.add((StoredStagePosition)posListAvailable.getModel().getElementAt(i));
 			for(StoredStagePosition o:obs)
 				{
 				listModelAvailable.removeElement(o);
@@ -124,7 +124,7 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 			{
 			LinkedList<StoredStagePosition> obs=new LinkedList<StoredStagePosition>();
 			for(int i:posListAdded.getSelectedIndices())
-				obs.add(posListAdded.getModel().getElementAt(i));
+				obs.add((StoredStagePosition)posListAdded.getModel().getElementAt(i));
 			for(StoredStagePosition o:obs)
 				{
 				listModelAdded.removeElement(o);

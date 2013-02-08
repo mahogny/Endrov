@@ -24,7 +24,7 @@ public class LineageFateDialog extends JDialog implements ActionListener
 	private final String nucName;
 	
 	private final Vector<String> fateList=new Vector<String>();
-	private final JComboBox<String> cFate=new JComboBox<String>(fateList);
+	private final JComboBox cFate=new JComboBox/*<String>*/(fateList);
 	private final JButton bOk=new JButton("Ok");
 	private final JButton bCancel=new JButton("Cancel");
 	

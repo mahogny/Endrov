@@ -21,7 +21,7 @@ public class EvDialogConnectSQL extends JDialog implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
 
-	private JComboBox<String> comboDriver;
+	private JComboBox/*<String>*/ comboDriver;
 	private JTextField tfURL=new JTextField();
 	private JTextField tfUser=new JTextField();
 	private JTextField tfPassword=new JTextField();
@@ -36,7 +36,7 @@ public class EvDialogConnectSQL extends JDialog implements ActionListener
 		for(String s:EvSQLConnection.getCommonSQLdrivers())
 			classes.add(s);
 		
-		comboDriver=new JComboBox<String>(classes);
+		comboDriver=new JComboBox/*<String>*/(classes);
 		comboDriver.setEditable(true);
 		
 		setLayout(new GridLayout(5,1));

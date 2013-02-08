@@ -103,8 +103,8 @@ public class LineageWindow extends EvBasicWindow
 
 	
 	
-	private JComboBox<String> inpSelectByName;
-	private JComboBox<String> getInpSelectByName()
+	private JComboBox inpSelectByName;
+	private JComboBox getInpSelectByName()
 		{
 		return inpSelectByName;
 		}
@@ -167,7 +167,7 @@ public class LineageWindow extends EvBasicWindow
 		Vector<String> comboNames=new Vector<String>();
 		comboNames.add("");
 		comboNames.addAll(Lineage.cellGroups.groups.keySet());
-		inpSelectByName=new JComboBox<String>(comboNames);
+		inpSelectByName=new JComboBox/*<String>*/(comboNames);
 		inpSelectByName.setEditable(true);
 		inpSelectByName.addActionListener(listenerSelectByName);
 		

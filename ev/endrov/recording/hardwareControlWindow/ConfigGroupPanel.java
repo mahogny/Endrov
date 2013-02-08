@@ -29,7 +29,7 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
 
-		private JComboBox<String> cState=new JComboBox<String>();
+		private JComboBox cState=new JComboBox/*<String>*/();
 		private JButton bAddState=new JImageButton(BasicIcon.iconAdd, "New state for current config group");
 		private JButton bRemoveState=new JImageButton(BasicIcon.iconRemove, "Remove state from group");
 		private JButton bRemoveGroup=new JImageButton(BasicIcon.iconRemove, "Remove config group");
@@ -69,7 +69,7 @@ public class ConfigGroupPanel extends JPanel implements ActionListener
 				add(EvSwingUtil.layoutEvenHorizontal(bAddState,bRemoveState),
 						BorderLayout.EAST);
 				
-				DefaultComboBoxModel<String> modelState=(DefaultComboBoxModel<String>)cState.getModel();
+				DefaultComboBoxModel modelState=(DefaultComboBoxModel/*<String>*/)cState.getModel();
 				modelState.removeAllElements();
 				modelState.addElement("");
 				for(String stateName:group.getStateNames())

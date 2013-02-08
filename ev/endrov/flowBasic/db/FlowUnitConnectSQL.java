@@ -123,7 +123,7 @@ public class FlowUnitConnectSQL extends FlowUnitBasic
 		{
 		private static final long serialVersionUID = 1L;
 		
-		private JComboBox<String> comboDriver;
+		private JComboBox/*<String>*/ comboDriver;
 		private JTextField tfURL=new JTextField(connURL);
 		private JTextField tfUser=new JTextField(connUser);
 		private JTextField tfPassword=new JTextField(connPass);
@@ -136,7 +136,7 @@ public class FlowUnitConnectSQL extends FlowUnitBasic
 			for(String s:EvSQLConnection.getCommonSQLdrivers())
 				classes.add(s);
 			
-			comboDriver=new JComboBox<String>(classes);
+			comboDriver=new JComboBox/*<String>*/(classes);
 			comboDriver.setEditable(true);
 			comboDriver.setSelectedItem(connDriver);
 			

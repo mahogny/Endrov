@@ -178,7 +178,7 @@ public class LineageExpPanel extends JPanel
 		public final List<String> avail=new ArrayList<String>();
 
 		
-		private class CustomComboModel implements ComboBoxModel<String>
+		private class CustomComboModel implements ComboBoxModel
 			{
 			public String selectedExp="";
 			public Object getSelectedItem()
@@ -243,8 +243,8 @@ public class LineageExpPanel extends JPanel
 		public JButton bRemoveRenderer=new JImageButton(BasicIcon.iconButtonDelete,"Remove renderer");
 		
 		public JSnapBackSlider snapContrast=new JSnapBackSlider(JSnapBackSlider.HORIZONTAL,-10000,10000);
-		public JComboBox<String> cExp1=new JComboBox<String>(cm1);
-		public JComboBox<String> cExp2=new JComboBox<String>(cm2);
+		public JComboBox cExp1=new JComboBox(cm1);  //string
+		public JComboBox cExp2=new JComboBox(cm2);
 		
 		
 		
@@ -449,7 +449,7 @@ public class LineageExpPanel extends JPanel
 	 * @author Johan Henriksson
 	 *
 	 */
-	private static class ComboRenderType extends JComboBox<Integer>
+	private static class ComboRenderType extends JComboBox //<Integer>
 		{
 		static final long serialVersionUID=0;
 		
@@ -458,7 +458,7 @@ public class LineageExpPanel extends JPanel
 		 * @author Johan Henriksson
 		 *
 		 */
-		private class CustomRenderer extends JLabel implements ListCellRenderer<Integer>
+		private class CustomRenderer extends JLabel implements ListCellRenderer //<Integer>
 			{
 			private static final long serialVersionUID = 1L;
 	
@@ -469,7 +469,7 @@ public class LineageExpPanel extends JPanel
 				setVerticalAlignment(CENTER);
 				}
 	
-			public Component getListCellRendererComponent(JList<? extends Integer> list,	Integer value,	int index, boolean isSelected, boolean cellHasFocus) 
+			public Component getListCellRendererComponent(JList/*<? extends Integer>*/ list,	Object value,	int index, boolean isSelected, boolean cellHasFocus) 
 				{
 				if (isSelected)
 					{

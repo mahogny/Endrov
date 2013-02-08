@@ -57,7 +57,7 @@ public class JSmartToggleCombo extends JPanel
 	boolean useCombo;
 	
 	JPanel buttonPanel=null;
-	JComboBox<String> combo=null;
+	JComboBox/*<String>*/ combo=null;
 	private int cachedIndex=0;
 	
 	public JSmartToggleCombo(final Vector<String> names)
@@ -99,7 +99,7 @@ public class JSmartToggleCombo extends JPanel
 		else
 			{
 			//Place combo
-			combo=new JComboBox<String>(names);
+			combo=new JComboBox/*<String>*/(names);
 			useCombo=true;
 			add(combo);
 			

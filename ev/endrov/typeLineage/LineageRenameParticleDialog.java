@@ -30,7 +30,7 @@ public class LineageRenameParticleDialog extends JDialog implements ActionListen
 
 	public static Lineage templateLineage=null;
 
-	private final JComboBox<String> inputName=new JComboBox<String>();
+	private final JComboBox/*<String>*/ inputName=new JComboBox();
 	private final JButton bLoad=new JButton("Load template");
 	private final JButton bOk=new JButton("Ok");
 	private final JButton bCancel=new JButton("Cancel");

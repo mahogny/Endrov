@@ -44,8 +44,8 @@ public class PlatePositionsWindow extends EvBasicWindow implements ActionListene
 	/******************************************************************************************************
 	 * Instance *
 	 *****************************************************************************************************/
-	private JList<StoredStagePosition> posList;
-	private DefaultListModel<StoredStagePosition> listModel = new DefaultListModel<StoredStagePosition>();
+	private JList/*<StoredStagePosition>*/ posList;
+	private DefaultListModel/*<StoredStagePosition>*/ listModel = new DefaultListModel/*<StoredStagePosition>*/();
 	private RecWidgetAxisInclude axisList = new RecWidgetAxisInclude();
 
 	private JButton bAdd = new JButton(BasicIcon.iconAdd);
@@ -87,7 +87,7 @@ public class PlatePositionsWindow extends EvBasicWindow implements ActionListene
 		bGoToPos.setToolTipText("Move stage to selected position");
 		bGoToHome.setToolTipText("Move stage to home position");
 		
-		posList = new JList<StoredStagePosition>(listModel);
+		posList = new JList/*<StoredStagePosition>*/(listModel);
 		posList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		posList.setLayoutOrientation(JList.VERTICAL);
 		JScrollPane posListScroller = new JScrollPane(posList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);

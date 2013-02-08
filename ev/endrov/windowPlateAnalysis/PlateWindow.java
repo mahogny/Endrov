@@ -92,10 +92,10 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		};
 	private final EvComboObjectOne<ParticleMeasure> comboParticleMeasure=new EvComboObjectOne<ParticleMeasure>(new ParticleMeasure(), true, true);
 	private final EvComboObjectOne<Flow> comboFlow=new EvComboObjectOne<Flow>(new Flow(), true, true);
-	private JComboBox<String> comboAttribute1=new JComboBox<String>();
-	private JComboBox<String> comboAttribute2=new JComboBox<String>();
-	private JComboBox<String> comboChannel=new JComboBox<String>();
-	private JComboBox<Object> comboDisplay=new JComboBox<Object>(PlateWindowView.getAggrModes());
+	private JComboBox comboAttribute1=new JComboBox/*<String>*/();
+	private JComboBox comboAttribute2=new JComboBox/*<String>*/();
+	private JComboBox comboChannel=new JComboBox/*<String>*/();
+	private JComboBox comboDisplay=new JComboBox/*<Object>*/(PlateWindowView.getAggrModes());
 	private final FrameControl2D frameControl=new FrameControl2D(this, false, true);
 	private PlateWindowView imagePanel=new PlateWindowView(this);	
 	private ChannelWidget cw=new ChannelWidget();
@@ -477,7 +477,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	/**
 	 * Update the options of a combobox 
 	 */
-	private boolean updateCombo(JComboBox<String> cb, List<String> alist)
+	private boolean updateCombo(JComboBox cb, List<String> alist)
 		{
 		//First check if anything has changed at all. If not, leave it be. This removes a lot of potential flicker
 		if(!comboNeedsUpdate(cb, alist))
@@ -501,7 +501,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	/**
 	 * Check if the combobox contains the given list of items
 	 */
-	private boolean comboNeedsUpdate(JComboBox<String> cb, List<String> alist)
+	private boolean comboNeedsUpdate(JComboBox cb, List<String> alist)
 		{
 		if(cb.getItemCount()!=alist.size())
 			return false;

@@ -85,7 +85,7 @@ public class PlateOverviewWindow extends EvBasicWindow implements ActionListener
 	private int overviewImgWidth = 0;
 	private int overviewImgHeight = 0;
 
-	private JComboBox<EvDevicePath> cameraCombo;
+	private JComboBox cameraCombo;
 
 	private JCheckBox tAutoRange = new JCheckBox("Auto", true);
 	private JButton bSetFullRange = new JButton("Full");
@@ -245,7 +245,7 @@ public class PlateOverviewWindow extends EvBasicWindow implements ActionListener
 		for (Viewer2DRendererExtension e : Viewer2DWindow.imageWindowRendererExtensions)
 			e.newImageWindow(this);
 
-		cameraCombo = new JComboBox<EvDevicePath>(new Vector<EvDevicePath>(EvHardware
+		cameraCombo = new JComboBox(new Vector<EvDevicePath>(EvHardware
 				.getDeviceMap(HWCamera.class).keySet()));
 
 		bSnap

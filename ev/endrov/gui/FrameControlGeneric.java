@@ -73,7 +73,7 @@ public class FrameControlGeneric extends JPanel implements ActionListener, Chang
 			}
 		}
 		
-	private JComboBox<Speed> speedCombo;
+	private JComboBox/*<Speed>*/ speedCombo;
 	
 	
 	/** Frame spinner behaviour */
@@ -184,7 +184,7 @@ public class FrameControlGeneric extends JPanel implements ActionListener, Chang
 		speeds.add(new Speed("100"));
 		speeds.add(new Speed("1000"));
 		speeds.add(new Speed("10000"));
-		speedCombo=new JComboBox<Speed>(speeds);
+		speedCombo=new JComboBox(speeds);
 		speedCombo.setSelectedIndex(4);
 
 		setLayout(new GridBagLayout());

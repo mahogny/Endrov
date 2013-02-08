@@ -30,8 +30,8 @@ public class DialogImportDataset extends JFrame implements ActionListener
 	{
 	static final long serialVersionUID=0; 
 	
-	private JComboBox<ComboItemUser> comboUser=new JComboBox<ComboItemUser>();
-	private JComboBox<ComboDataset> comboDataset=new JComboBox<ComboDataset>();
+	private JComboBox comboUser=new JComboBox/*<ComboItemUser>*/();
+	private JComboBox comboDataset=new JComboBox/*<ComboDataset>*/();
 	private JButton bOk=new JButton("OK"); 
 	private JButton bCancel=new JButton("Cancel");
 	
@@ -99,8 +99,7 @@ public class DialogImportDataset extends JFrame implements ActionListener
 		for(long uid:connection.getUserIDs())
 			itemsUsers.add(new ComboItemUser(uid, connection));
 		
-		comboUser=new JComboBox<ComboItemUser>(itemsUsers);
-		//comboDataset=new JComboBox(itemsDataset);
+		comboUser=new JComboBox/*<ComboItemUser>*/(itemsUsers);
 		
 		
 		setLayout(new GridLayout(1,1));
@@ -129,7 +128,7 @@ public class DialogImportDataset extends JFrame implements ActionListener
 		{
 		comboDataset.removeActionListener(this);
 		
-		DefaultComboBoxModel<ComboDataset> model=(DefaultComboBoxModel<ComboDataset>)comboDataset.getModel();
+		DefaultComboBoxModel model=(DefaultComboBoxModel/*<ComboDataset>*/)comboDataset.getModel();
 		model.removeAllElements();
 		ComboItemUser seluser=(ComboItemUser)comboUser.getSelectedItem();
 		if(seluser!=null)

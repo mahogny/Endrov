@@ -92,7 +92,7 @@ public class LiveWindow extends EvBasicWindow implements ActionListener, Viewer2
 
 	private Vector2d lastImageStagePos=new Vector2d();
 	
-	private JComboBox<EvDevicePath> cameraCombo;
+	private JComboBox cameraCombo;
 
 	//Update timer, busy loop for now. replace later by camera event listener	
 	private javax.swing.Timer timer=new javax.swing.Timer(10,this);
@@ -401,7 +401,7 @@ public class LiveWindow extends EvBasicWindow implements ActionListener, Viewer2
 		for(Viewer2DRendererExtension e:Viewer2DWindow.imageWindowRendererExtensions)
 			e.newImageWindow(this);
 		
-		cameraCombo=new JComboBox<EvDevicePath>(new Vector<EvDevicePath>(EvHardware.getDeviceMap(HWCamera.class).keySet()));
+		cameraCombo=new JComboBox(new Vector<EvDevicePath>(EvHardware.getDeviceMap(HWCamera.class).keySet()));
 		
 		tLive.setToolTipText("Continuously take pictures");
 		bSnap.setToolTipText("Manually take a picture and update. Does not save image.");

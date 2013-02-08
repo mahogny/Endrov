@@ -459,7 +459,7 @@ public class NewStart
 			Method mMethod=cl.getMethod("main", String[].class);
 			mMethod.invoke(null, new Object[]{argsa});
 			
-			cload.close();
+//			cload.close();   only java7
 			}
 		catch (Exception e)
 			{

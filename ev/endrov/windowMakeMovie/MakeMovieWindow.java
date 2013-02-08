@@ -93,8 +93,8 @@ public class MakeMovieWindow extends EvBasicWindow implements ActionListener
 	private SpinnerModel wModel =new SpinnerNumberModel(336,0,1000000,1);
 	private JSpinner spinnerW   =new JSpinner(wModel);
 
-	private JComboBox<EvMovieEncoderFactory> codecCombo = new JComboBox<EvMovieEncoderFactory>(EvMovieEncoderFactory.makers);
-	private JComboBox<String> qualityCombo = new JComboBox<String>();
+	private JComboBox codecCombo = new JComboBox/*<EvMovieEncoderFactory>*/(EvMovieEncoderFactory.makers);
+	private JComboBox qualityCombo = new JComboBox/*<String>*/();
 	
 	private JTextField tfFileName=new JTextField();
 	

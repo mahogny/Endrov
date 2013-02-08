@@ -166,7 +166,7 @@ public class FlowUnitMeasureToFile extends FlowUnitBasic
 		private static final long serialVersionUID = 1L;
 
 		private JCheckBox cAddHeader=new JCheckBox();
-		private JComboBox<Delim> cFieldDelim=new JComboBox<Delim>(delimiters);
+		private JComboBox cFieldDelim=new JComboBox/*<Delim>*/(delimiters);
 
 		public TotalPanel()
 			{
