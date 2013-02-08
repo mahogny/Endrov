@@ -1402,7 +1402,8 @@ public class FlowView extends JPanel implements MouseListener, MouseMotionListen
 			}
 		catch (Exception e)
 			{
-			e.printStackTrace();
+			EvLog.printError(e);
+			System.out.println("here!");
 			}
 		}
 	

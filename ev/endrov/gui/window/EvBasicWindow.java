@@ -513,7 +513,7 @@ public abstract class EvBasicWindow extends JPanel
 	 */
 	public void setVisibleEvWindow(boolean b)
 		{
-		getEvw().setVisible(true);
+		getEvw().setVisible(b);
 		}
 
 	public void setResizable(boolean b)

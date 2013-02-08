@@ -19,6 +19,8 @@ import endrov.gui.window.EvBasicWindow;
 import endrov.gui.window.BasicWindowExtensionExitLast;
 import endrov.gui.window.EvRegistrationDialog;
 import endrov.gui.window.EvSplashScreen;
+import endrov.windowConsole.ConsoleLogger;
+import endrov.windowConsole.ConsoleWindow;
 import endrov.windowViewer2D.*;
 
 import java.io.File;
@@ -152,6 +154,9 @@ public class MW
 				}
 			else
 				EvRegistrationDialog.connectAndRegister(false);
+			
+			//Open up the console in the background - this is needed for it to keep track of the log
+			ConsoleLogger.install();
 			
 			//Load files specified on command line
 			new Thread(new Runnable()

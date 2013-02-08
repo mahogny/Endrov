@@ -23,12 +23,9 @@ import endrov.gui.EvSwingUtil;
 import endrov.gui.keybinding.KeyBinding;
 import endrov.gui.window.EvBasicWindow;
 import endrov.script.*;
+import endrov.util.FuncAB;
 
 import org.jdom.*;
-
-
-//import bsh.ConsoleInterface;
-//import bsh.Interpreter;
 
 
 /**
@@ -68,76 +65,8 @@ public class ConsoleWindow extends EvBasicWindow implements ActionListener, KeyL
 	private JButton bMultiGo=new JButton("Run");	
 	private JPanel pMulti=new JPanel(new BorderLayout());
 	
-	/**
-	 * Take new log events and put them in console history
-	 */
-	private EvLog consoleLog=new EvLog()
-		{
-		//TODO probably need to postpone for swing
-		private void appendDate()
-			{
-			NumberFormat nf=NumberFormat.getIntegerInstance();
-			nf.setMinimumIntegerDigits(2);
-			Calendar c=Calendar.getInstance();
-			addHistory("["+nf.format(c.get(Calendar.HOUR_OF_DAY))+":"+nf.format(c.get(Calendar.MINUTE))+":"+nf.format(c.get(Calendar.SECOND))+"] ");
-			}
-		
-		public void listenDebug(String s)
-			{
-			appendDate();
-			addHistory(s);
-			addHistory("\n");
-			}
-	
-		public void listenError(String s, Exception e)
-			{
-			appendDate();
-			if(s!=null)
-				{
-				addHistory(s);
-				addHistory("\n");
-				}
-			if(e!=null)
-				{
-				StringWriter sw=new StringWriter();
-				PrintWriter s2=new PrintWriter(sw);
-				e.printStackTrace(s2);
-				s2.flush();
-	
-				addHistory("Exception message: ");
-				addHistory("\n");
-				addHistory(sw. toString());
-				}
-			}
-	
-		public void listenLog(String s)
-			{
-			appendDate();
-			addHistory(s);
-			addHistory("\n");
-			}
-		};
 
 		
-	/**
-	 * Remove log listener once window is closed. Otherwise the window cannot be eliminated.
-	 */
-	private WindowListener wlist=new WindowListener()
-		{
-		public void windowActivated(WindowEvent e){}
-		public void windowClosed(WindowEvent e)
-			{
-			EvLog.removeListener(consoleLog);
-			}
-		public void windowClosing(WindowEvent e){}
-		public void windowDeactivated(WindowEvent e)
-			{
-			lastFocusComponent=new WeakReference<Component>(null);
-			}
-		public void windowDeiconified(WindowEvent e){}
-		public void windowIconified(WindowEvent e){}
-		public void windowOpened(WindowEvent e){}
-		};
 
 	
 	public void keyPressed(KeyEvent e) {}
@@ -159,22 +88,21 @@ public class ConsoleWindow extends EvBasicWindow implements ActionListener, KeyL
 		{
 		}
 	
-	/**
-	 * Make a new window at default location
-	 */
-	public ConsoleWindow()
-		{
-		this(0,700,1200,200);
-		}
 	
 	public OutputStream consoleOS;
 	
-	
+	/**
+	 * Make a new window
+	 */
+	public ConsoleWindow()
+		{
+		this(true);
+		}
 	
 	/**
-	 * Make a new window at some specific location
+	 * Make a new window
 	 */
-	public ConsoleWindow(int x, int y, int w, int h)
+	public ConsoleWindow(boolean visible)
 		{
 		commandArea.addKeyListener(new KeyListener(){
 			public void keyPressed(KeyEvent e){}
@@ -222,17 +150,18 @@ public class ConsoleWindow extends EvBasicWindow implements ActionListener, KeyL
 		setLayout(new BorderLayout());
 		add(hs,BorderLayout.CENTER);
 		add(commandLine,BorderLayout.SOUTH);
-		
-		//Log handling
-		EvLog.addListener(consoleLog);
-		getEvw().addWindowListener(wlist);
+
+		//Grab previous log from memory
 		history.append(EvLog.memoryLog.get());
+
+		//Ensure console gets log events, if not previously installed
+		ConsoleLogger.install();
 		
 		//Window overall things
 		setTitleEvWindow("Console");
 		packEvWindow();
-		setBoundsEvWindow(x,y,w,h);
-		setVisibleEvWindow(true);
+		setBoundsEvWindow(0,500,600,200);
+		setVisibleEvWindow(visible);
 		}
 	
 	
@@ -374,25 +303,31 @@ public class ConsoleWindow extends EvBasicWindow implements ActionListener, KeyL
 			});
 		}
 
-
+	public static ConsoleWindow openConsole()
+		{
+		return openConsole(true);
+		}
+	
 	/**
 	 * Open console if not already open
 	 */
-	public static ConsoleWindow openConsole()
+	private static ConsoleWindow openConsole(final boolean defaultVisible)
 		{
-/*		int ret=EvSwingUtil.runInSwingThread(new EvParallel.FuncAB<A, B>()
+		return EvSwingUtil.runInSwingThread(new FuncAB<Object, ConsoleWindow>()
 			{
-			});
-	*/	
-		
-		ConsoleWindow c=getConsole();
-		if(c==null)
-			c=new ConsoleWindow();
-		return c;
+			public ConsoleWindow func(Object in)
+				{
+				System.out.println("Open console "+defaultVisible);
+				ConsoleWindow c=getConsole();
+				if(c==null)
+					c=new ConsoleWindow(defaultVisible);
+				if(defaultVisible)
+					c.setVisibleEvWindow(true);
+				return c;
+				}
+			}, null);
 		}
 
-	//TODO: free from basicwindow?
-	
 	
 	/**
 	 * Get a handle to the console
