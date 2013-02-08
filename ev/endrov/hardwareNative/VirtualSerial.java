@@ -64,7 +64,7 @@ public abstract class VirtualSerial implements HWSerial
 		{
 		static final long serialVersionUID=0;
 		
-		private JComboBox cLineBreak=new JComboBox(new LineBreak[]{
+		private JComboBox<LineBreak> cLineBreak=new JComboBox<LineBreak>(new LineBreak[]{
 				new LineBreak("CR/LF","\r\n"),
 				new LineBreak("CR","\r"),
 				new LineBreak("LF","\n"),

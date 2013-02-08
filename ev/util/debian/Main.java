@@ -263,6 +263,9 @@ libjboss-webservices-java
 			Scanner scannerVersion = new Scanner(EvFileUtil.readFile(new File(dEndrov,"endrov/core/version.txt")));
 			Scanner scannerTimestamp = new Scanner(EvFileUtil.readFile(new File(dEndrov,"endrov/core/timestamp.txt")));
 			String version=scannerVersion.nextLine()+"."+scannerTimestamp.nextLine();
+			scannerVersion.close();
+			scannerTimestamp.close();
+			
 			int totalSize=(int)Math.ceil((recursiveSize(dUsr)+100000)/1000000.0);
 			
 			

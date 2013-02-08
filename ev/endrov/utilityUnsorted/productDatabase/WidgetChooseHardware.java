@@ -26,8 +26,8 @@ import endrov.gui.EvSwingUtil;
 public class WidgetChooseHardware extends JPanel
 	{
 	private static final long serialVersionUID = 1L;
-	private JComboBox cManufacturer;
-	private JComboBox cProduct=new JComboBox();
+	private JComboBox<String> cManufacturer;
+	private JComboBox<EntryWrapper> cProduct=new JComboBox<EntryWrapper>();
 	private JTextField fSerial=new JTextField();
 	private JTextField fLot=new JTextField();
 	//JTextField fSerial=new JTextField();
@@ -40,7 +40,7 @@ public class WidgetChooseHardware extends JPanel
 		for(HardwareMetadata e:HardwareDatabase.entries)
 			manufacturers.add(e.getManufacturer());
 
-		cManufacturer=new JComboBox(new Vector<String>(manufacturers));
+		cManufacturer=new JComboBox<String>(new Vector<String>(manufacturers));
 		cManufacturer.setSelectedItem("");
 		addComponents();
 		
@@ -94,7 +94,7 @@ public class WidgetChooseHardware extends JPanel
 				if(e.getManufacturer().equals(selManu))
 					list.add(new EntryWrapper(e));
 			
-			cProduct=new JComboBox(new Vector<EntryWrapper>(list));
+			cProduct=new JComboBox<EntryWrapper>(new Vector<EntryWrapper>(list));
 			//cProduct.setRenderer(new Renderer());
 			}
 		

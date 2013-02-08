@@ -42,7 +42,7 @@ public class RecWidgetSelectProperties extends JPanel implements ActionListener
 	 * @author Johan Henriksson
 	 *
 	 */
-	private class ListModelPropSet implements ListModel
+	private class ListModelPropSet implements ListModel<EvDevicePropPath>
 		{
 		private Set<EvDevicePropPath> set;
 		private List<EvDevicePropPath> list=new ArrayList<EvDevicePropPath>();
@@ -59,7 +59,7 @@ public class RecWidgetSelectProperties extends JPanel implements ActionListener
 			listeners.add(l);
 			}
 	
-		public Object getElementAt(int index)
+		public EvDevicePropPath getElementAt(int index)
 			{
 			return list.get(index);
 			}
@@ -89,8 +89,8 @@ public class RecWidgetSelectProperties extends JPanel implements ActionListener
 	private TreeSet<EvDevicePropPath> setUse=new TreeSet<EvDevicePropPath>();
 	private ListModelPropSet listModelAvail=new ListModelPropSet(setAvail);
 	private ListModelPropSet listModelUse=new ListModelPropSet(setUse);
-	private JList listAvail=new JList(listModelAvail);
-	private JList listUse=new JList(listModelUse);
+	private JList<EvDevicePropPath> listAvail=new JList<EvDevicePropPath>(listModelAvail);
+	private JList<EvDevicePropPath> listUse=new JList<EvDevicePropPath>(listModelUse);
 
 	private JButton bAdd=new JButton("Add>");
 	private JButton bRemove=new JButton("<Remove");
@@ -146,7 +146,10 @@ public class RecWidgetSelectProperties extends JPanel implements ActionListener
 		{
 		if(e.getSource()==bAdd)
 			{
-			for(Object o:listAvail.getSelectedValues())
+			LinkedList<EvDevicePropPath> obs=new LinkedList<EvDevicePropPath>();
+			for(int i:listAvail.getSelectedIndices())
+				obs.add(listAvail.getModel().getElementAt(i));
+			for(EvDevicePropPath o:obs)
 				{
 				listModelAvail.set.remove(o);
 				listModelUse.set.add((EvDevicePropPath)o);
@@ -156,7 +159,10 @@ public class RecWidgetSelectProperties extends JPanel implements ActionListener
 			}
 		else if(e.getSource()==bRemove)
 			{
-			for(Object o:listUse.getSelectedValues())
+			LinkedList<EvDevicePropPath> obs=new LinkedList<EvDevicePropPath>();
+			for(int i:listUse.getSelectedIndices())
+				obs.add(listUse.getModel().getElementAt(i));
+			for(EvDevicePropPath o:obs)
 				{
 				listModelAvail.set.add((EvDevicePropPath)o);
 				listModelUse.set.remove(o);

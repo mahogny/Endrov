@@ -46,12 +46,12 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 
 	
 	
-	private DefaultListModel listModelAvailable=new DefaultListModel();
-	private JList posListAvailable=new JList(listModelAvailable);
+	private DefaultListModel<StoredStagePosition> listModelAvailable=new DefaultListModel<StoredStagePosition>();
+	private JList<StoredStagePosition> posListAvailable=new JList<StoredStagePosition>(listModelAvailable);
 	private JScrollPane listScroller = new JScrollPane(posListAvailable);
 	
-	private DefaultListModel listModelAdded=new DefaultListModel();
-	private JList posListAdded=new JList(listModelAdded);
+	private DefaultListModel<StoredStagePosition> listModelAdded=new DefaultListModel<StoredStagePosition>();
+	private JList<StoredStagePosition> posListAdded=new JList<StoredStagePosition>(listModelAdded);
 	private JScrollPane listScrollerAdded = new JScrollPane(posListAdded);
 	
 	
@@ -110,21 +110,25 @@ public class RecWidgetPositions extends JPanel implements ActionListener, Positi
 		{
 		if(e.getSource()==bAdd)
 			{
-			Object[] got=posListAvailable.getSelectedValues();
-			for(Object o:got)
+			LinkedList<StoredStagePosition> obs=new LinkedList<StoredStagePosition>();
+			for(int i:posListAvailable.getSelectedIndices())
+				obs.add(posListAvailable.getModel().getElementAt(i));
+			for(StoredStagePosition o:obs)
 				{
 				listModelAvailable.removeElement(o);
-				listModelAdded.addElement(o);
+				listModelAdded.addElement((StoredStagePosition)o);
 				positionsUpdated(); //TODO Ugly way
 				}
 			}
 		else if(e.getSource()==bRemove)
 			{
-			Object[] got=posListAdded.getSelectedValues();
-			for(Object o:got)
+			LinkedList<StoredStagePosition> obs=new LinkedList<StoredStagePosition>();
+			for(int i:posListAdded.getSelectedIndices())
+				obs.add(posListAdded.getModel().getElementAt(i));
+			for(StoredStagePosition o:obs)
 				{
 				listModelAdded.removeElement(o);
-				listModelAvailable.addElement(o);
+				listModelAvailable.addElement((StoredStagePosition)o);
 				positionsUpdated(); //TODO Ugly way
 				}
 			}

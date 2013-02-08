@@ -458,6 +458,8 @@ public class NewStart
 			Class<?> cl=cload.loadClass(mainClass);
 			Method mMethod=cl.getMethod("main", String[].class);
 			mMethod.invoke(null, new Object[]{argsa});
+			
+			cload.close();
 			}
 		catch (Exception e)
 			{

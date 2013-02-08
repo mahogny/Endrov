@@ -45,8 +45,8 @@ public class RecWindowBurst extends EvBasicWindow implements ActionListener, EvA
 	private JCheckBox cDuration=new JCheckBox("Duration: ");
 	private JSpinnerSimpleEvDecimal spDuration=new JSpinnerSimpleEvDecimal();
 	private JSpinnerSimpleEvDecimal spRate=new JSpinnerSimpleEvDecimal();
-	private JComboBox cDurationUnit=new JComboBox(new Object[]{"Frames","Seconds"});
-	private JComboBox cRateUnit=new JComboBox(new Object[]{"Hz","ms"});
+	private JComboBox<String> cDurationUnit=new JComboBox<String>(new String[]{"Frames","Seconds"});
+	private JComboBox<String> cRateUnit=new JComboBox<String>(new String[]{"Hz","ms"});
 	private JButton bStartStop=new JButton("Start");
 	private JCheckBox cSwapEarly=new JCheckBox("Early swap to disk"); 
 	private JCheckBox cPauseSwap=new JCheckBox("Pause swap during burst"); 

@@ -48,9 +48,9 @@ public class ModwPanelExpPattern extends JPanel implements ActionListener, JSnap
 	private final List<String> avail=new ArrayList<String>();
 
 
-	private final ComboBoxModel cm1=new CustomComboModel();
+	private final ComboBoxModel<String> cm1=new ExprComboModel();
 	
-	private final JComboBox cExp1=new JComboBox(cm1);
+	private final JComboBox<String> cExp1=new JComboBox<String>(cm1);
 
 	private final JSnapBackSlider snapContrast=new JSnapBackSlider(JSnapBackSlider.HORIZONTAL,-10000,10000);
 	private final JSnapBackSlider snapBrightness=new JSnapBackSlider(JSnapBackSlider.HORIZONTAL,-10000,10000);
@@ -121,7 +121,7 @@ public class ModwPanelExpPattern extends JPanel implements ActionListener, JSnap
 	 * @author Johan Henriksson
 	 *
 	 */
-	private class CustomComboModel implements ComboBoxModel
+	private class ExprComboModel implements ComboBoxModel<String>
 		{
 		public String selectedExp="";
 		public Object getSelectedItem()
@@ -141,7 +141,7 @@ public class ModwPanelExpPattern extends JPanel implements ActionListener, JSnap
 			listener.add(arg);
 			}
 
-		public Object getElementAt(int i)
+		public String getElementAt(int i)
 			{
 			return avail.get(i);
 			}

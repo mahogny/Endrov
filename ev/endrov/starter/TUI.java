@@ -29,6 +29,7 @@ public class TUI
 		EvLog.addListener(new EvLogStdout());
 
 		EndrovCore.loadPlugins();
+		@SuppressWarnings("resource")
 		Scanner in=new Scanner(System.in);
 
 		Script script=new Script();

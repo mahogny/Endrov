@@ -30,7 +30,7 @@ public class LineageDialogMapExp extends EvBasicWindow implements ActionListener
 	private static final long serialVersionUID = 1L;
 	
 	public EvComboObjectOne<Lineage> comboLin=new EvComboObjectOne<Lineage>(new Lineage(), false, false);
-	public JComboBox cOldExpName=new JComboBox(new Vector<String>());
+	public JComboBox<String> cOldExpName=new JComboBox<String>();
 	public JTextField tfNewExpName=new JTextField("exp");
 	
 	private JButton bOk=new JButton("Ok");
@@ -75,7 +75,7 @@ public class LineageDialogMapExp extends EvBasicWindow implements ActionListener
 		Vector<String> expList=new Vector<String>();
 		if(lin!=null)
 			expList.addAll(lin.getAllExpNames());
-		cOldExpName.setModel(new DefaultComboBoxModel(expList));
+		cOldExpName.setModel(new DefaultComboBoxModel<String>(expList));
 		}
 	
 	@Override
