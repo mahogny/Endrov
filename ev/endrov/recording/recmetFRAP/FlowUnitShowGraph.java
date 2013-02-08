@@ -181,7 +181,11 @@ public class FlowUnitShowGraph extends FlowUnitBasic
 	
 	
 	
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	
 	
 

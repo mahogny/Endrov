@@ -178,6 +178,10 @@ public class FlowUnitMeasureParticle extends FlowUnitBasic
 		}
 
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow ParticleMeasure";
+		}
+
 	
 	}

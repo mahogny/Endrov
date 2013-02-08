@@ -34,6 +34,7 @@ import endrov.data.EvPath;
 import endrov.flow.*;
 import endrov.gui.EvSwingUtil;
 import endrov.gui.window.EvBasicWindow;
+import endrov.util.EvBrowserUtil;
 import endrov.util.collection.Tuple;
 import endrov.util.io.EvXmlUtil;
 import endrov.util.math.Vector2i;
@@ -591,8 +592,18 @@ public class FlowView extends JPanel implements MouseListener, MouseMotionListen
 								}
 						});
 	
+					
+						JMenuItem itGetHelp=new JMenuItem("Help for this unit");
+						itGetHelp.addActionListener(new ActionListener(){
+							public void actionPerformed(ActionEvent e)
+								{
+								EvBrowserUtil.openWikiArticle(u.getHelpArticle());
+								}
+						});
+						
 						
 						popup.add(itEval);
+						popup.add(itGetHelp);
 						popup.add(itRemove);
 						hitAnything=true;
 						}

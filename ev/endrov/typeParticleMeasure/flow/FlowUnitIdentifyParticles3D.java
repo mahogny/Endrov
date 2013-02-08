@@ -151,4 +151,9 @@ public class FlowUnitIdentifyParticles3D extends FlowUnitBasic
 		
 		}
 	
+	public String getHelpArticle()
+		{
+		return "Flow ParticleMeasure";
+		}
+
 	}

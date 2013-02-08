@@ -77,5 +77,9 @@ public class FlowUnitMorphConvertToKernel2D extends FlowUnitBasic
 			lastOutput.put("out", new MorphKernelGeneralGray(a,centerX.intValue(),centerY.intValue()));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
 	
 	}

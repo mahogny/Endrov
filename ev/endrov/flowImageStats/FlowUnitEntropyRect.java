@@ -72,5 +72,9 @@ public class FlowUnitEntropyRect extends FlowUnitBasic
 		lastOutput.put("out", new EvOpEntropyRect(pw,ph).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

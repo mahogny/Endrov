@@ -66,5 +66,9 @@ public class FlowUnitCorrectAttenuation extends FlowUnitBasic
 		lastOutput.put("out", new EvOpCorrectAttenuation().exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

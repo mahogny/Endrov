@@ -67,5 +67,10 @@ public class FlowUnitMorphFillHolesGray3D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpMorphFillHolesGray3D().exec1Untyped(exec.ph, a));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
+
 	
 	}

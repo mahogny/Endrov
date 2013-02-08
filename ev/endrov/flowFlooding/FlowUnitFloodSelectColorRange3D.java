@@ -74,5 +74,9 @@ public class FlowUnitFloodSelectColorRange3D extends FlowUnitBasic
 		lastOutput.put("region", new EvOpFloodSelectColorRange3D(pos,rangeMinus,rangePlus).exec1Untyped(exec.ph, image));
 		}
 
-	
+
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
 	}

@@ -99,5 +99,9 @@ public class FlowUnitConstExpression extends FlowUnitConst
 		return field;
 		}
 	
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

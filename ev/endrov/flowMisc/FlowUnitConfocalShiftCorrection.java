@@ -68,5 +68,9 @@ public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
 		lastOutput.put("out", new EvOpConfocalShiftCorrection(b).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

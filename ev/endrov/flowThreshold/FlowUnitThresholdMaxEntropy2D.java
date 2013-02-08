@@ -66,5 +66,9 @@ public class FlowUnitThresholdMaxEntropy2D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpThresholdMaxEntropy2D(Threshold2D.MASK).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Thresholding with flows";
+		}
+
 	}

@@ -162,4 +162,9 @@ public class FlowUnitShow extends FlowUnit
 		}
 	
 	
+	public String getHelpArticle()
+		{
+		return "Scripting with flows";
+		}
+
 	}

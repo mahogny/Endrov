@@ -210,5 +210,9 @@ public class FlowUnitConnectSQL extends FlowUnitBasic
 		}
 
 	
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

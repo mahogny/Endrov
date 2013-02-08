@@ -91,5 +91,9 @@ public class FlowUnitChannelDim2D extends FlowUnitBasic
 			}
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

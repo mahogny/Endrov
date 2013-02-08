@@ -69,5 +69,9 @@ public class FlowUnitCastPixelType extends FlowUnitBasic
 		lastOutput.put("out", new EvOpImageConvertPixel(EvPixelsType.AWT).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

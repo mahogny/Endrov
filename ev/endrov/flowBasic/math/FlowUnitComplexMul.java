@@ -19,7 +19,7 @@ import endrov.typeImageset.AnyEvImage;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitComplexMul extends FlowUnitMathBinCompexOp
+public class FlowUnitComplexMul extends FlowUnitMathBinComplexOp
 	{
 	private static final String metaType="mulComplex";
 	

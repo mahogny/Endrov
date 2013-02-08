@@ -75,5 +75,9 @@ public class FlowUnitFloodSelectSigma3D extends FlowUnitBasic
 		lastOutput.put("region", new EvOpFloodSelectSigma3D(Collections.singleton(pos),f.doubleValue()).exec1Untyped(exec.ph, image));
 		}
 
-	
+
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}	
 	}

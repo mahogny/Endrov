@@ -75,4 +75,9 @@ public class FlowUnitConcat extends FlowUnitBasic
 		}
 
 	
+	public String getHelpArticle()
+		{
+		return "Flow operations on collections";
+		}
+
 	}

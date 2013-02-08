@@ -55,5 +55,5 @@ public class FlowUnitAnd extends FlowUnitLogicBinop
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
 		}
 
-	
+
 	}

@@ -71,4 +71,9 @@ public class FlowUnitAutoContrastBrightness2D extends FlowUnitBasic
 		}
 
 	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

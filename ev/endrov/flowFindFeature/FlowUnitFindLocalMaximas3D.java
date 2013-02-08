@@ -68,5 +68,9 @@ public class FlowUnitFindLocalMaximas3D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpFindLocalMaximas3D().exec1Untyped(exec.ph, a));
 		}
 
-	
+
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}	
 	}

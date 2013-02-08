@@ -7,6 +7,8 @@ package endrov.util;
 
 import java.io.*;
 
+import endrov.core.EndrovCore;
+
 /*
  * Note - you must include the url type -- either "http://" or
  * "file://".
@@ -112,4 +114,10 @@ public class EvBrowserUtil
 	private static final String UNIX_PATH = "firefox";
 	// The flag to display a url.
 	private static final String UNIX_FLAG = "-new-tab";
+	
+	public static void openWikiArticle(String windowHelpTopic)
+		{
+		String url=EndrovCore.websiteWikiPrefix+windowHelpTopic.replace(" ", "_");
+		EvBrowserUtil.displayURL(url);
+		}
 	}

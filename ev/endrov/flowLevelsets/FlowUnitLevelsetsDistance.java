@@ -74,5 +74,9 @@ public class FlowUnitLevelsetsDistance extends FlowUnitBasic
 		lastOutput.put("voronoi", ret[1]);
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

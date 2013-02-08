@@ -126,6 +126,12 @@ public class FlowUnitIf extends FlowUnit
 	public int getGUIcomponentOffsetX(Component comp, Flow flow){return 0;}
 	public int getGUIcomponentOffsetY(Component c, Flow f){return 0;}
 
+
+	public String getHelpArticle()
+		{
+		return "Scripting with flows";
+		}
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

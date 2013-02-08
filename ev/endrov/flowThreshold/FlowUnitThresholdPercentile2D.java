@@ -70,5 +70,9 @@ public class FlowUnitThresholdPercentile2D extends FlowUnitBasic
 		lastOutput.put("out", out);
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Thresholding with flows";
+		}
+
 	}

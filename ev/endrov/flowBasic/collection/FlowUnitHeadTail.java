@@ -54,10 +54,14 @@ public class FlowUnitHeadTail extends FlowUnitBasic
 		}
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
-	{
-//	Map<String,Object> lastOutput=exec.getLastOutput(this);
-	//TODO flowunit
-	}
+		{
+	//	Map<String,Object> lastOutput=exec.getLastOutput(this);
+		//TODO flowunit
+		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow operations on collections";
+		}
+
 	}

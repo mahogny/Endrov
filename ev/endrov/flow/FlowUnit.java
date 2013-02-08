@@ -163,6 +163,7 @@ public abstract class FlowUnit
 
 	public abstract void editDialog();
 	
+	public abstract String getHelpArticle();
 
 
 	public void checkNotNull(Object... list) throws Exception

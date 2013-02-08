@@ -72,5 +72,9 @@ public abstract class FlowUnitMathBinop extends FlowUnitBasic
 		}
 	
 	
-	
+	public String getHelpArticle()
+		{
+		return "Mathematical and logical flow operations";
+		}
+
 	}

@@ -238,4 +238,9 @@ public abstract class FlowUnitBasic extends FlowUnit
 			}
 		}
 	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

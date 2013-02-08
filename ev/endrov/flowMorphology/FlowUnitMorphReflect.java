@@ -20,7 +20,7 @@ import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 
 /**
- * Flow unit: binarize
+ * Flow unit: reflect kernel
  * @author Johan Henriksson
  *
  */
@@ -67,5 +67,9 @@ public class FlowUnitMorphReflect extends FlowUnitBasic
 		lastOutput.put("out", a.reflect());
 		}
 
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
 	
 	}

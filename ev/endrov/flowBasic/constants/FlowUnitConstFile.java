@@ -119,7 +119,11 @@ public class FlowUnitConstFile extends FlowUnitConst
 		return icon;
 		}
 	
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	
 	/******************************************************************************************************
 	 * Plugin declaration

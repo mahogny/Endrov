@@ -70,5 +70,9 @@ public class FlowUnitEntropyCircle extends FlowUnitBasic
 		lastOutput.put("out", new EvOpEntropyCircle(r).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

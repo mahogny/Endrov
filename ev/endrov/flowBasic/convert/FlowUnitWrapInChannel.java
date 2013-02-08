@@ -93,5 +93,9 @@ public class FlowUnitWrapInChannel extends FlowUnitBasic
 			lastOutput.put("out", in);
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

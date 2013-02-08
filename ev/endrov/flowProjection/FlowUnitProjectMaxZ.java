@@ -56,6 +56,11 @@ public class FlowUnitProjectMaxZ extends FlowUnitBasic
 		lastOutput.put("out", new EvOpProjectMaxZ().exec1Untyped(exec.ph, a));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration

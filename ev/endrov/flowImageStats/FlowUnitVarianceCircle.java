@@ -70,5 +70,9 @@ public class FlowUnitVarianceCircle extends FlowUnitBasic
 		lastOutput.put("out", new EvOpVarianceCircle(r).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

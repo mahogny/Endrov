@@ -72,5 +72,9 @@ public class FlowUnitKuwaharaFilter extends FlowUnitBasic
 		lastOutput.put("out", new EvOpKuwaharaFilter2D(pw,ph).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

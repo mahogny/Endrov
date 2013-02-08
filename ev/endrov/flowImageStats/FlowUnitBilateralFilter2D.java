@@ -76,5 +76,9 @@ public class FlowUnitBilateralFilter2D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpBilateralFilter2D(pw,ph,threshold).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

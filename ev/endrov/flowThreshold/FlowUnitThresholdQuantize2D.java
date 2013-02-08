@@ -72,5 +72,9 @@ public class FlowUnitThresholdQuantize2D extends FlowUnitBasic
 		lastOutput.put("out", out);
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Thresholding with flows";
+		}
+
 	}

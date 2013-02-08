@@ -72,5 +72,9 @@ public class FlowUnitConvertFromVector2i extends FlowUnitBasic
 		lastOutput.put("y", in.y);
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

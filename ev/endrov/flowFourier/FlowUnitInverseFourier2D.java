@@ -85,5 +85,9 @@ public class FlowUnitInverseFourier2D extends FlowUnitBasic
 			}
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow operations based on FFT";
+		}
+
 	}

@@ -55,4 +55,9 @@ public class FlowUnitAbs extends FlowUnitMathUniop
 		}
 
 	
+	public String getHelpArticle()
+		{
+		return "flowunit abs";
+		}
+
 	}

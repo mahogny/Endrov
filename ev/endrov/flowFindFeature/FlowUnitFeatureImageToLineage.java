@@ -84,6 +84,10 @@ public class FlowUnitFeatureImageToLineage extends FlowUnitBasic
 		}
 
 	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
 	
 	
 	}

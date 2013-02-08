@@ -74,5 +74,9 @@ public class FlowUnitSize extends FlowUnitBasic
 			throw new BadTypeFlowException("Unsupported collection type "+a.getClass());
 		}
 
+	public String getHelpArticle()
+		{
+		return "Flow operations on collections";
+		}
 	
 	}

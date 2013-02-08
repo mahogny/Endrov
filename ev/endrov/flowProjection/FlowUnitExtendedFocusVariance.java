@@ -57,6 +57,10 @@ public class FlowUnitExtendedFocusVariance extends FlowUnitBasic
 		lastOutput.put("out", new EvOpExtendedFocusVariance().exec1Untyped(exec.ph, a));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

@@ -67,5 +67,9 @@ public class FlowUnitMorphSkeletonizeBinary3D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpMorphSkeletonizeBinary3D().exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
+
 	}

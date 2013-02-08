@@ -102,9 +102,9 @@ public class FlowUnitConstClass extends FlowUnitConst
 	
 	
 	
-	
-	
-	
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
 	
 	}

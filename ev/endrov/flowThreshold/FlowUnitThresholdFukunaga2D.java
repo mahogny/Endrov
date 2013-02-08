@@ -72,5 +72,10 @@ public class FlowUnitThresholdFukunaga2D extends FlowUnitBasic
 		lastOutput.put("out", out);
 		}
 
+	public String getHelpArticle()
+		{
+		return "Thresholding with flows";
+		}
+
 	
 	}

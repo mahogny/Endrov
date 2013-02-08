@@ -94,11 +94,17 @@ public class FlowUnitConstBoolean extends FlowUnitConst
 
 	public void setVar(boolean var)
 		{
-			this.var = var;
+		this.var = var;
 		}
 
 	public boolean isVar()
 		{
-			return var;
+		return var;
 		}
+	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

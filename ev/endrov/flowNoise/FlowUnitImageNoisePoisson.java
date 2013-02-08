@@ -69,5 +69,9 @@ public class FlowUnitImageNoisePoisson extends FlowUnitBasic
 		lastOutput.put("out", new EvOpImageNoisePoisson(lambda).exec1Untyped(exec.ph, image));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Flow noise";
+		}
 	
 	}

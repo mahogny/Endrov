@@ -57,6 +57,10 @@ public class FlowUnitMorphFillHolesGray2D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpMorphFillHolesGray2D().exec1Untyped(exec.ph, a));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

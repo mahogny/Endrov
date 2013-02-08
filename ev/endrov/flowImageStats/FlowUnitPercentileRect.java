@@ -74,5 +74,9 @@ public class FlowUnitPercentileRect extends FlowUnitBasic
 		lastOutput.put("out", new EvOpPercentileRect(pw,ph,perc).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

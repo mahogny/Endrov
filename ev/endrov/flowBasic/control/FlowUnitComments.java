@@ -109,6 +109,10 @@ public class FlowUnitComments extends FlowUnitBasic
 		}
 
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	
 	}

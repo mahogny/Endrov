@@ -69,5 +69,10 @@ public class FlowUnitImageNoiseExponential extends FlowUnitBasic
 		lastOutput.put("out", new EvOpImageNoiseExponential(lambda).exec1Untyped(exec.ph, image));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Flow noise";
+		}
+
 	
 	}

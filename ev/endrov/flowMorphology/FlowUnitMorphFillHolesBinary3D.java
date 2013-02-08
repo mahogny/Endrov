@@ -67,5 +67,9 @@ public class FlowUnitMorphFillHolesBinary3D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpMorphFillHolesBinary3D().exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
+
 	}

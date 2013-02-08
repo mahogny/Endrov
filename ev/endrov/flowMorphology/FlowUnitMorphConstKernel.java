@@ -398,5 +398,9 @@ public class FlowUnitMorphConstKernel extends FlowUnitBasic
 		types.put("out", MorphKernel.FLOWTYPE);
 		}
 
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
 
 	}

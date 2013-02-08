@@ -72,5 +72,9 @@ public class FlowUnitVarianceRect extends FlowUnitBasic
 		lastOutput.put("out", new EvOpVarianceRect(pw,ph).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

@@ -68,5 +68,9 @@ public class FlowUnitMorphBinarize extends FlowUnitBasic
 		lastOutput.put("out", new EvOpMorphBinarize().exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
+
 	}

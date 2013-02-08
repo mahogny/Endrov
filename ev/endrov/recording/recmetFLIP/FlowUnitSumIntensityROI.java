@@ -85,5 +85,9 @@ public class FlowUnitSumIntensityROI extends FlowUnitBasic
 		lastOutput.put("series", series);
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

@@ -56,6 +56,11 @@ public class FlowUnitAverageZ extends FlowUnitBasic
 		lastOutput.put("out", new EvOpAverageZ().exec1Untyped(exec.ph, a));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration

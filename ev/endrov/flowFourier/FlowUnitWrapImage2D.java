@@ -73,5 +73,9 @@ public class FlowUnitWrapImage2D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpWrapImage2D(rotx,roty).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow operations based on FFT";
+		}
+
 	}

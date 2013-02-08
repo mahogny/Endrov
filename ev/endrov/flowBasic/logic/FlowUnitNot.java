@@ -88,5 +88,9 @@ public class FlowUnitNot extends FlowUnitBasic
 			errUnsupportedTypes(lastOutput);
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Mathematical and logical flow operations";
+		}
+
 	}

@@ -70,5 +70,9 @@ public class FlowUnitMorphWhiteTophat2D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpMorphWhiteTophat2D(kernel).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
+
 	}

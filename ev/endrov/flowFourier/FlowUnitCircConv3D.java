@@ -70,5 +70,9 @@ public class FlowUnitCircConv3D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpCircConv3D(kernel).exec1Untyped(exec.ph, image));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow operations based on FFT";
+		}
+
 	}

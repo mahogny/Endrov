@@ -74,5 +74,9 @@ public class FlowUnitConvGaussian3D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpConvGaussian3D(sigmaX,sigmaY,sigmaZ).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow operations based on FFT";
+		}
+
 	}

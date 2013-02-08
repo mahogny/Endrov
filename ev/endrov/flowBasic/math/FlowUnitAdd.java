@@ -58,5 +58,9 @@ public class FlowUnitAdd extends FlowUnitMathBinop
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "flowunit add";
+		}
+
 	}

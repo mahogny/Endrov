@@ -622,8 +622,7 @@ public abstract class EvBasicWindow extends JPanel
 					dialogSysInfo();
 				else if (e.getSource()==miWindowHelp)
 					{
-					String url=EndrovCore.websiteWikiPrefix+windowHelpTopic().replace(" ", "_");
-					EvBrowserUtil.displayURL(url);
+					EvBrowserUtil.openWikiArticle(windowHelpTopic());
 					}
 				else if (e.getSource()==miSaveConfig)
 					EndrovCore.savePersonalConfig();

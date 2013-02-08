@@ -63,5 +63,10 @@ public class FlowUnitFlowParent extends FlowUnitBasic
 		lastOutput.put("parent", exec.getParent());
 		}
 	
+
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
 	}
 	

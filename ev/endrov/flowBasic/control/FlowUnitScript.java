@@ -101,5 +101,10 @@ public class FlowUnitScript extends FlowUnitBasic
 		ScriptEditorWindow.openEditor(this);
 		}
 
+	public String getHelpArticle()
+		{
+		return "Scripting with flows";
+		}
+
 	
 	}

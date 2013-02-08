@@ -74,5 +74,9 @@ public class FlowUnitConvertToVector3i extends FlowUnitBasic
 		lastOutput.put("out", new Vector3i(x,y,z));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

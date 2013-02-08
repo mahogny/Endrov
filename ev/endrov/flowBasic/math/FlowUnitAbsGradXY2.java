@@ -71,4 +71,9 @@ public class FlowUnitAbsGradXY2 extends FlowUnitBasic
 		lastOutput.put("out", new EvOpImageAbsGradXY2().exec1Untyped(exec.ph, a));
 		}
 
+	public String getHelpArticle()
+		{
+		return "flowunit absgradxy2";
+		}
+
 	}

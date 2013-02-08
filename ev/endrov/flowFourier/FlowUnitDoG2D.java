@@ -69,5 +69,9 @@ public class FlowUnitDoG2D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpDifferenceOfGaussian2D(sigma).exec1Untyped(exec.ph, in));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow operations based on FFT";
+		}
+
 	}

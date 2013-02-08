@@ -67,5 +67,9 @@ public class FlowUnitMorphComplementGray2D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpMorphComplementGray2D().exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
+
 	}

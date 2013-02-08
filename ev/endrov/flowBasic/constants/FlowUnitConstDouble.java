@@ -116,5 +116,9 @@ public class FlowUnitConstDouble extends FlowUnitConst
 		return var;
 		}
 	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
 
 	}

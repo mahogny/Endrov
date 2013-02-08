@@ -74,5 +74,9 @@ public class FlowUnitMorphDistanceVoronoi2D extends FlowUnitBasic
 		lastOutput.put("closest", ret[1]);
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
+
 	}

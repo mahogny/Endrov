@@ -67,5 +67,9 @@ public class FlowUnitMorphComplementBinary extends FlowUnitBasic
 		lastOutput.put("out", new EvOpMorphComplementBinary().exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
+
 	}

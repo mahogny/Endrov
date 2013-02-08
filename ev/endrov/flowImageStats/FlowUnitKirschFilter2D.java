@@ -68,5 +68,9 @@ public class FlowUnitKirschFilter2D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpKirsch2D().exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

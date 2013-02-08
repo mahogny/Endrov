@@ -63,5 +63,9 @@ public class FlowUnitImserv extends FlowUnitBasic
 	//TODO flowunit
 	}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

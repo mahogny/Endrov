@@ -73,5 +73,9 @@ public class FlowUnitAverageRect extends FlowUnitBasic
 		lastOutput.put("out", new EvOpAverageRect(pw,ph).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 	}

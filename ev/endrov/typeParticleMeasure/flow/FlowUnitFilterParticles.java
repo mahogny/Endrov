@@ -74,5 +74,10 @@ public class FlowUnitFilterParticles extends FlowUnitBasic
 		lastOutput.put("out", new EvOpFilterParticleMeasure(expr).exec(pm));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Flow ParticleMeasure";
+		}
+
 	
 	}

@@ -21,10 +21,10 @@ import endrov.flow.FlowUnitBasic;
  * @author Johan Henriksson
  *
  */
-public abstract class FlowUnitMathBinCompexOp extends FlowUnitBasic
+public abstract class FlowUnitMathBinComplexOp extends FlowUnitBasic
 	{
 	public String showName,metaType;
-	public FlowUnitMathBinCompexOp(String showName,String metaType)
+	public FlowUnitMathBinComplexOp(String showName,String metaType)
 		{
 		this.showName=showName;
 		this.metaType=metaType;
@@ -75,5 +75,9 @@ public abstract class FlowUnitMathBinCompexOp extends FlowUnitBasic
 		}
 	
 	
-	
+	public String getHelpArticle()
+		{
+		return "Mathematical and logical flow operations";
+		}
+
 	}

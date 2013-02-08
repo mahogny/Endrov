@@ -72,5 +72,9 @@ public class FlowUnitMorphThinBinary2D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpBinMorphThin2D(kernelHit,kernelMiss).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
+
 	}

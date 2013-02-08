@@ -199,7 +199,11 @@ public class FlowUnitMeasureToFile extends FlowUnitBasic
 		}
 	
 	
-	
+	public String getHelpArticle()
+		{
+		return "Flow ParticleMeasure";
+		}
+
 	
 
 	/******************************************************************************************************

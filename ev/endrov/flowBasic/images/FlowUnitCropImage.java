@@ -71,5 +71,9 @@ public class FlowUnitCropImage extends FlowUnitBasic
 		lastOutput.put("out", new EvOpCropImage3D(box).exec1Untyped(exec.ph, a));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
 	
 	}

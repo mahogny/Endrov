@@ -56,6 +56,11 @@ public class FlowUnitProjectSumZ extends FlowUnitBasic
 		lastOutput.put("out", new EvOpProjectSumZ().exec1Untyped(exec.ph, a));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration

@@ -71,5 +71,9 @@ public class FlowUnitImageNoisePepperSalt extends FlowUnitBasic
 		lastOutput.put("out", new EvOpImageNoisePepperSalt(pPepper, pSalt).exec1Untyped(exec.ph, image));
 		}
 
+	public String getHelpArticle()
+		{
+		return "Flow noise";
+		}
 	
 	}

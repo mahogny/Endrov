@@ -121,6 +121,12 @@ public class FlowUnitInput extends FlowUnit
 	public Component getGUIcomponent(FlowView p){return null;}
 	public int getGUIcomponentOffsetX(Component comp, Flow flow){return 0;}
 	public int getGUIcomponentOffsetY(Component c, Flow f){return 0;}
+	
+	public String getHelpArticle()
+		{
+		return "Scripting with flows";
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration

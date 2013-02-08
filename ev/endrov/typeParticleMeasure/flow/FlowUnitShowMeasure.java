@@ -331,7 +331,11 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 	
 	
 	
-	
+	public String getHelpArticle()
+		{
+		return "Flow ParticleMeasure";
+		}
+
 	
 	
 

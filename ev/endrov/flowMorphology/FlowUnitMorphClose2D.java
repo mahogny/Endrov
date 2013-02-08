@@ -70,5 +70,9 @@ public class FlowUnitMorphClose2D extends FlowUnitBasic
 		lastOutput.put("out", new EvOpMorphClose2D(kernel).exec1Untyped(exec.ph, a));
 		}
 
-	
+	public String getHelpArticle()
+		{
+		return "Flow Morphology";
+		}
+
 	}

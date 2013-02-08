@@ -108,10 +108,10 @@ public class FlowUnitConstString extends FlowUnitConst
 		}
 	
 	
-	
-	
-	
-	
+	public String getHelpArticle()
+		{
+		return "Misc flow operations";
+		}
 	
 	
 	}
