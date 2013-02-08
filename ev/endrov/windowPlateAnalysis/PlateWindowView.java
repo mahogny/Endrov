@@ -963,12 +963,15 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		}
 
 
-	
+	/**
+	 * Set the aggregation methods to use
+	 */
 	public void setAggrMethod(Object o, String attr1, String attr2)
 		{
 		aggrMethod=o;
 		this.attr1=attr1;
 		this.attr2=attr2;
+		layoutWells();
 		}
 
 	/**
