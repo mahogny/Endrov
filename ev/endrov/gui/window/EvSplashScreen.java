@@ -40,7 +40,7 @@ public class EvSplashScreen extends JFrame
 			{
 			logLabel.setText(s);
 			}
-		public void listenError(String s, Exception e)
+		public void listenError(String s, Throwable e)
 			{
 			logLabel.setText(s);
 			}

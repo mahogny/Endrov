@@ -53,7 +53,7 @@ public class EvLogFile extends EvLog
 		}
 
 	@Override
-	public synchronized void listenError(String s, Exception e)
+	public synchronized void listenError(String s, Throwable e)
 		{
 		try
 			{

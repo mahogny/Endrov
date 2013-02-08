@@ -43,7 +43,7 @@ public class ConsoleLogger extends EvLog
 			w.addHistory(getDate()+s+"\n");
 		}
 
-	public void listenError(String s, Exception e)
+	public void listenError(String s, Throwable e)
 		{
 		ConsoleWindow w=ConsoleWindow.openConsole();
 		if(s!=null)
@@ -59,6 +59,8 @@ public class ConsoleLogger extends EvLog
 
 			w.addHistory(getDate()+"Exception message: \n"
 					+ sw.toString());
+			if(e instanceof OutOfMemoryError)
+				w.addHistory("Out of memory; visit http://www.endrov.net/wiki/index.php?title=Configuring_available_memory\n");
 			}
 		}
 

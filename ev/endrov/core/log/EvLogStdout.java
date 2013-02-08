@@ -27,7 +27,7 @@ public class EvLogStdout extends EvLog
 	 * @param s Human readable description, may be null
 	 * @param e Low-level error, may be null
 	 */
-	public void listenError(String s, Exception e)
+	public void listenError(String s, Throwable e)
 		{
 		if(s!=null)
 			System.out.println(s);

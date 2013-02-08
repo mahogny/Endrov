@@ -23,7 +23,7 @@ public abstract class EvLog
 	 *****************************************************************************************************/
 
 	public abstract void listenDebug(String s);
-	public abstract void listenError(String s, Exception e);
+	public abstract void listenError(String s, Throwable e);
 	public abstract void listenLog(String s);
 	
 	
@@ -70,7 +70,7 @@ public abstract class EvLog
 	 * @param s Human readable description, may be null
 	 * @param e Low-level error, may be null
 	 */
-	public static void printError(String s, Exception e)
+	public static void printError(String s, Throwable e)
 		{
 		synchronized (listeners)
 			{
@@ -79,7 +79,7 @@ public abstract class EvLog
 			}
 		}
 
-	public static void printError(Exception e)
+	public static void printError(Throwable e)
 		{
 		printError(null,e);
 		}
@@ -101,7 +101,7 @@ public abstract class EvLog
 	/**
 	 * Take an exception and print the error to a string
 	 */
-	public static String logPrintString(Exception e)
+	public static String logPrintString(Throwable e)
 		{
 		StringWriter sw=new StringWriter();
 		PrintWriter s2=new PrintWriter(sw);

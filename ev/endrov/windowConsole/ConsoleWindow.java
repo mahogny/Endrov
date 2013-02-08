@@ -8,9 +8,6 @@ package endrov.windowConsole;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.ref.*;
-import java.text.NumberFormat;
-import java.util.Calendar;
-
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;

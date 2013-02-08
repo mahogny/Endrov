@@ -20,7 +20,6 @@ import endrov.gui.window.BasicWindowExtensionExitLast;
 import endrov.gui.window.EvRegistrationDialog;
 import endrov.gui.window.EvSplashScreen;
 import endrov.windowConsole.ConsoleLogger;
-import endrov.windowConsole.ConsoleWindow;
 import endrov.windowViewer2D.*;
 
 import java.io.File;

@@ -332,7 +332,7 @@ public class Viewer2DView extends JPanel
 						}
 					}
 				}
-			catch(Exception e)
+			catch(Throwable e)
 				{
 				EvLog.printError("image panel: image failed to load",e);
 				}

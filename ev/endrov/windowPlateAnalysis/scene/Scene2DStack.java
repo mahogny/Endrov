@@ -120,7 +120,7 @@ public class Scene2DStack implements Scene2DElement
 					}
 				}
 			}
-		catch(Exception e)
+		catch(Throwable e)
 			{
 			EvLog.printError("image panel: image failed to load",e);
 			}
