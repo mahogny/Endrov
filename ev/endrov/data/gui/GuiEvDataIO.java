@@ -315,7 +315,7 @@ public class GuiEvDataIO
 				}
 			catch (IOException e)
 				{
-				e.printStackTrace();
+				EvBasicWindow.showErrorDialog("Error on saving: "+e.getMessage());
 				}
 			}
 		}
