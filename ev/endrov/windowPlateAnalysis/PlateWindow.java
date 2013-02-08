@@ -560,7 +560,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			dataChangedEvent();
 		else if(e.getSource()==comboAttribute1 || e.getSource()==comboAttribute2)
 			{
-			imagePanel.redrawPanel();
+			updateAttrCombo();
 			}
 /*		else if(e.getSource()==miEvaluate)
 			{

@@ -8,6 +8,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -509,6 +510,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 					int barw=imageSize/barh.length;
 					Scene2DHistogram imp=new Scene2DHistogram(w.x, w.y+imageSize, barw, barh);
 					addElem(imp);
+
+					addScaleBarX(w, raggA);
 					}
 				}
 			else if(aggrMethod.equals(aggrScatter) && w.arrA!=null && w.arrB!=null)
@@ -524,6 +527,9 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				
 				Scene2DScatter imp=new Scene2DScatter(listx, listy);
 				addElem(imp);
+				
+				addScaleBarX(w, raggA);
+				addScaleBarY(w, raggB);
 				}
 			
 			if(drawRect)
@@ -548,6 +554,41 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 
 		addElem(sceneItemText);
 		repaint();
+		}
+	
+	
+	private void addScaleBarX(OneWell w, ValueRange raggX)
+		{
+		NumberFormat nf=NumberFormat.getInstance();
+		nf.setMaximumFractionDigits(5);
+		nf.setGroupingUsed(false);
+		
+		Scene2DText textLower=new Scene2DText(w.x, w.y+imageSize+imageMargin/3, nf.format(raggX.min));
+		Scene2DText textUpper=new Scene2DText(w.x+imageSize, w.y+imageSize+imageMargin/3, ""+nf.format(raggX.max));
+		
+		textLower.alignment=Alignment.Left;
+		textUpper.alignment=Alignment.Right;
+		textUpper.font=textLower.font=new Font("Arial", Font.PLAIN, 4*scaleText);
+		
+		addElem(textLower);
+		addElem(textUpper);
+		}
+
+	private void addScaleBarY(OneWell w, ValueRange raggY)
+		{
+		NumberFormat nf=NumberFormat.getInstance();
+		nf.setMaximumFractionDigits(5);
+		nf.setGroupingUsed(false);
+		
+		Scene2DText textLower=new Scene2DText(w.x+imageSize+imageMargin/10, w.y, nf.format(raggY.min));
+		Scene2DText textUpper=new Scene2DText(w.x+imageSize+imageMargin/10, w.y+imageSize, ""+nf.format(raggY.max));
+		
+		textLower.alignment=Alignment.Left;
+		textUpper.alignment=Alignment.Left;
+		textUpper.font=textLower.font=new Font("Arial", Font.PLAIN, 1*scaleText);
+		
+		addElem(textLower);
+		addElem(textUpper);
 		}
 
 	
@@ -971,7 +1012,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		aggrMethod=o;
 		this.attr1=attr1;
 		this.attr2=attr2;
-		layoutWells();
+		redrawPanel();
 		}
 
 	/**
