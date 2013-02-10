@@ -88,7 +88,7 @@ public class RecWindowMultiDim extends EvBasicWindow
 		//Window overall things
 		setTitleEvWindow("Multidimensional acquisition");
 		packEvWindow();
-		setBoundsEvWindow(800, null);
+		setBoundsEvWindow(700, null);
 		setVisibleEvWindow(true);
 		}
 	

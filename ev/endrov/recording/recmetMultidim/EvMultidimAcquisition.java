@@ -81,7 +81,6 @@ public class EvMultidimAcquisition extends EvAcquisition
 		private EvMultidimAcquisition settings;
 		private boolean toStop=true;
 
-//		private Imageset imset=new Imageset();
 		private EvDevicePath cam=null;
 		private int currentFrameCount;
 		private EvDecimal currentFrame;
@@ -115,9 +114,17 @@ public class EvMultidimAcquisition extends EvAcquisition
 				HWCamera thecam=(HWCamera)cam.getDevice();
 				
 				//Check if this frame should be included
-				if(currentChannel.z0>=currentZCount &&
-						(currentZCount-currentChannel.z0)%currentChannel.zInc==0 &&
-						currentFrameCount%currentChannel.tinc==0)
+				//Sometimes an entire stack could be excluded - then this exclusion should be done earlier
+				if(
+						currentChannel.zFirst>=currentZCount &&
+						(currentChannel.zLast==null || currentChannel.zLast<=currentZCount) &&
+						
+						currentChannel.tFirst>=currentFrameCount &&
+						(currentChannel.tLast==null || currentChannel.tLast<=currentFrameCount) &&
+						
+						(currentZCount-currentChannel.zFirst)%currentChannel.zIncrement==0 &&
+						(currentFrameCount-currentChannel.tFirst)%currentChannel.tIncrement==0
+						)
 					{
 					//Snap image, average if needed
 					CameraImage camIm=thecam.snap();
@@ -136,42 +143,25 @@ public class EvMultidimAcquisition extends EvAcquisition
 					EvImagePlane evim=new EvImagePlane(pix);
 
 					
-//					EvContainer container=imset;
 					Imageset thisImset;
 					if(currentPos==null)
-					{
+						{
 						thisImset=(Imageset)container;
-					}
+						}
 					else
-					{
+						{
 						EvObject thisOb=container.metaObject.get(currentPos);
 						if(thisOb==null)
 							container.metaObject.put(currentPos, thisOb=new Imageset());
 						thisImset=(Imageset)thisOb;
-					}
-					
-					
-					
-					/*
-					private Imageset imset=new Imageset();
-					
-					String channelName=settings.containerStoreName;
-					boolean isRGB=false;
-					if(isRGB)
-						{
-						imset.metaObject.put(channelName+"R", new EvChannel());
-						imset.metaObject.put(channelName+"G", new EvChannel());
-						imset.metaObject.put(channelName+"B", new EvChannel());
 						}
-					else
-						imset.metaObject.put(channelName, new EvChannel());
-					*/
 					
-					//TODO fix container store name!!!!??
+					
+					
 					
 					//Get a stack, fill in metadata
 					EvChannel ch=thisImset.getCreateChannel(settings.containerStoreName);
-					EvStack stack=new EvStack();//.getCreateFrame(currentFrame);
+					EvStack stack=new EvStack();
 					ch.putStack(currentFrame, stack);
 					
 					ResolutionManager.Resolution res=ResolutionManager.getCurrentResolutionNotNull(cam);
@@ -179,15 +169,15 @@ public class EvMultidimAcquisition extends EvAcquisition
 					stack.setRes(
 						res.x,
 						res.y,
-						dz.multiply(currentChannel.zInc).doubleValue()
+						dz.multiply(currentChannel.zIncrement).doubleValue()
 					);
 					stack.setDisplacement(new Vector3d(
 							RecordingResource.getCurrentStageX(),  //Always do this?
 							RecordingResource.getCurrentStageY(),
-							dz.multiply(currentChannel.z0).doubleValue() //scary!!!!
+							dz.multiply(currentChannel.zFirst).doubleValue() //scary!!!!
 							));
 					
-					int zpos=(currentZCount-currentChannel.z0)/currentChannel.zInc;
+					int zpos=(currentZCount-currentChannel.zFirst)/currentChannel.zIncrement;
 					
 					stack.putPlane(zpos,evim);   //Need to account for the possibility to skip slices!!! and offset!!!
 					//int zpos=currentZCount-currentChannel.z0;
@@ -260,7 +250,6 @@ public class EvMultidimAcquisition extends EvAcquisition
 						{
 						RecordingResource.setCurrentStageZ(slices.start.add(dz.multiply(az)).doubleValue());
 						currentZCount=az;
-						//currentZ=dz.multiply(az);
 						recurse.exec();
 						if(toStop)
 							return;

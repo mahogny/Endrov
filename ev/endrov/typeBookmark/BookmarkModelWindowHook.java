@@ -113,7 +113,7 @@ public class BookmarkModelWindowHook implements Viewer3DWindowHook, ActionListen
 	public void displaySelect(GL gl)
 		{
 		}
-	public void fillModelWindowMenus()
+	public void fillMenus()
 		{
 		}
 	public EvDecimal getFirstFrame()

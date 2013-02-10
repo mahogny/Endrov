@@ -26,7 +26,7 @@ public class TextAnnotModelExtension implements Viewer3DWindowHook
 	{
 	private Viewer3DWindow w;
 	
-	public void fillModelWindowMenus(){}
+	public void fillMenus(){}
 	
 
 	

@@ -345,7 +345,7 @@ public class Viewer3DWindow extends EvBasicWindow
 		bottomPanelItems.add(bottomMain);
 		bottomPanelItems.add(progress); //Since it belongs to voxel, maybe keep it there?
 		for(Viewer3DWindowHook h:modelWindowHooks)
-			h.fillModelWindowMenus();
+			h.fillMenus();
 		
 		//Assemble side panel
 		int counta=0;

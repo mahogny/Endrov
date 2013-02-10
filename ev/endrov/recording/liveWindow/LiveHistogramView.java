@@ -25,10 +25,13 @@ public class LiveHistogramView extends JPanel
 	{
 	private static final long serialVersionUID = 1L;
 
-	//private int rangeMin;
-	protected int rangeMax=255;
+	protected int histoRangeMin=0;
+	protected int histoRangeMax=255;
+
+	protected int showRangeMin=0;
+	protected int showRangeMax=255;
 	
-	private EvPixels[] currentImage;
+	private EvPixels currentImage;
 	private BufferedImage cachedImage=null; //cached image
 
 	private int height=50;
@@ -45,14 +48,13 @@ public class LiveHistogramView extends JPanel
 	/**
 	 * Set pixels to calculate histogram from. #bits determines maximum range
 	 */
-	public void setImage(EvPixels[] p, int numBits)
+	public void setImage(EvPixels p, int numBits)
 		{
 		cachedImage=null;
 		
 		currentImage=p;
 		
-		//rangeMin=0;
-		rangeMax=2<<numBits-1;
+		showRangeMax=2<<numBits-1;
 		repaint();
 		}
 
@@ -78,11 +80,23 @@ public class LiveHistogramView extends JPanel
 		int screenWidth=getWidth();
 		int[] bins=new int[screenWidth];
 		
+		//Figure out min range
+		int min=Integer.MAX_VALUE;
+		for(int v:p)
+			if(v<min)
+				min=v;
+		histoRangeMin=min;
+		
+		if(min>0)
+			min=0;
+		showRangeMin=min;
+		
 		//Figure out max range
-		int max=0;
+		int max=Integer.MIN_VALUE;
 		for(int v:p)
 			if(v>max)
 				max=v;
+		histoRangeMax=max;
 		
 		if(max<256)
 			max=256;
@@ -94,22 +108,19 @@ public class LiveHistogramView extends JPanel
 			max=65536;
 		else
 			max=(1<<32)-1;
-		rangeMax=max;
+		showRangeMax=max;
 		
 		//Calculate histogram
 		for(int v:p)
 			{
 			if(v<0)
-				{
 				v=0;
-//				System.out.print(v+" ");
-				}
 			
-			int i=v*screenWidth/rangeMax;
+			int i=(v-showRangeMin)*screenWidth/(showRangeMax-showRangeMin);
 			bins[i]++;
 			}
 
-		//Show CDF rather than PDF
+		//Option: Show CDF rather than PDF
 		if(showCDF)
 			{
 			int totalSum=0;
@@ -120,11 +131,6 @@ public class LiveHistogramView extends JPanel
 				}
 			}
 		
-		//Normalize according to largest possible peak
-		/*int totalNum=p.length;
-		for(int i=0;i<bins.length;i++)
-			bins[i]=bins[i]*height/totalNum;*/
-
 		//Normalize according to largest peak found
 		int maxH=1;
 		for(int i=0;i<bins.length;i++)
@@ -132,7 +138,6 @@ public class LiveHistogramView extends JPanel
 				maxH=bins[i];
 		for(int i=0;i<bins.length;i++)
 			bins[i]=bins[i]*height/maxH;
-		
 		
 		return bins;
 		}
@@ -153,14 +158,14 @@ public class LiveHistogramView extends JPanel
 	private void makeImage()
 		{
 		//Only int values will be fast for now. no floating point
-		currentImage[0]=currentImage[0].convertToInt(true); 
+		currentImage=currentImage.convertToInt(true); 
 
 		BufferedImage bim=cachedImage=new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_BYTE_GRAY);
 		Graphics g2=bim.getGraphics();
 		g2.setColor(Color.WHITE);
 		g2.fillRect(0, 0, getWidth(), getHeight());
-		if(currentImage[0].getType()==EvPixelsType.INT)
-			renderBins(g2,calculateHistogram(currentImage[0].getArrayInt()));
+		if(currentImage.getType()==EvPixelsType.INT)
+			renderBins(g2,calculateHistogram(currentImage.getArrayInt()));
 		}
 	
 	
@@ -171,7 +176,7 @@ public class LiveHistogramView extends JPanel
 	public int toScreenX(int x)
 		{
 		int screenWidth=getWidth();
-		return x*screenWidth/rangeMax;
+		return x*screenWidth/showRangeMax;
 		}
 
 	/**
@@ -180,7 +185,7 @@ public class LiveHistogramView extends JPanel
 	public int toWorldX(int x)
 		{
 		int screenWidth=getWidth();
-		return x*rangeMax/screenWidth;
+		return x*showRangeMax/screenWidth;
 		}
 
 	

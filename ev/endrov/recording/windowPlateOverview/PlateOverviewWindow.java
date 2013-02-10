@@ -330,7 +330,7 @@ public class PlateOverviewWindow extends EvBasicWindow implements ActionListener
 		else if (e.getSource()==tAutoRange)
 			{
 			if (lastCameraImage!=null)
-				histoView.calcAutoRange(lastCameraImage);
+				histoView.calcAutoRange();
 			histoView.repaint();
 			drawArea.repaint();
 			}
@@ -569,9 +569,17 @@ public class PlateOverviewWindow extends EvBasicWindow implements ActionListener
 
 			drawArea.overviewImage = newOverviewImage;
 			}
+		updateHisto();
 		drawArea.repaint();
 		}
 
+	private void updateHisto()
+		{
+		histoView.setImage(drawArea.overviewImage, 32);
+		if (lastCameraImage!=null)
+			histoView.calcAutoRange();
+		}
+	
 	public void resetView()
 		{
 		lastCameraImage = null;
@@ -586,6 +594,7 @@ public class PlateOverviewWindow extends EvBasicWindow implements ActionListener
 			drawArea.overviewImage = new EvPixels(EvPixelsType.INT,
 					(int) cam.getCamWidth(), (int) cam.getCamHeight());
 			}
+		updateHisto();
 		repaint();
 		}
 

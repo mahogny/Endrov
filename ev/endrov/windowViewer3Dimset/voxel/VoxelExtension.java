@@ -165,7 +165,7 @@ public class VoxelExtension implements Viewer3DWindowHook, ActionListener
 	public void displaySelect(GL gl){}
 	public void readPersonalConfig(Element e){}
 	public void savePersonalConfig(Element e){}
-	public void fillModelWindowMenus()
+	public void fillMenus()
 		{
 //			w.bottomPanelItems.add(totalPanel);
 		w.sidePanelItems.add(addIsolevel);

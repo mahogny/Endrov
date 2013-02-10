@@ -19,11 +19,10 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
-import endrov.typeImageset.EvPixels;
-
 
 /**
- * Histogram extended with range 
+ * Histogram, with a range setting displayed on top
+ * 
  * @author Johan Henriksson
  *
  */
@@ -64,58 +63,19 @@ public class LiveHistogramViewRanged extends LiveHistogramView implements MouseL
 		g.setColor(rangeBarColor);
 		vertStitch(g, xLower);
 		vertStitch(g, xUpper);		
-//		System.out.println("limit "+lower+"    "+upper);
 		}
 	
 	
 	/**
-	 * Calculate range automatically from image
+	 * Calculate range automatically from the image that has been set
 	 */
-	public void calcAutoRange(EvPixels[] p)
+	public void calcAutoRange()
 		{
-		if(p.length==1)
-			calcAutoRange(p[0].convertToInt(true).getArrayInt());
-		else
-			{
-			calcAutoRange(p[0].convertToInt(true).getArrayInt());
-			extendAutoRange(p[1].convertToInt(true).getArrayInt());
-			extendAutoRange(p[2].convertToInt(true).getArrayInt());
-			}
+		lower=histoRangeMin;
+		upper=histoRangeMax;
+//		calcAutoRange(p.convertToInt(true).getArrayInt());
 		}
 	
-	/**
-	 * Calculate range automatically from image
-	 */
-	private void calcAutoRange(int[] p)
-		{
-		int min=p[0], max=p[0];
-		for(int i=1;i<p.length;i++)
-			{
-			int v=p[i];
-			if(v<min)
-				min=v;
-			else if(v>max)
-				max=v;
-			}
-		lower=min;
-		upper=max;
-		}
-	
-
-	private void extendAutoRange(int[] p)
-		{
-		int min=p[0], max=p[0];
-		for(int i=1;i<p.length;i++)
-			{
-			int v=p[i];
-			if(v<min)
-				min=v;
-			else if(v>max)
-				max=v;
-			}
-		lower=Math.min(min,lower);
-		upper=Math.max(max,upper);
-		}
 
 
 	public void mouseClicked(MouseEvent e)
@@ -167,7 +127,7 @@ public class LiveHistogramViewRanged extends LiveHistogramView implements MouseL
 	/**
 	 * Move one limit using the mouse 
 	 */
-	public void moveLimit(MouseEvent e)
+	private void moveLimit(MouseEvent e)
 		{
 		int mx=toWorldX(e.getX());
 //		int xLower=toScreenX(lower);
@@ -178,10 +138,10 @@ public class LiveHistogramViewRanged extends LiveHistogramView implements MouseL
 		else
 			upper=mx;
 		
-		if(lower<0)
-			lower=0;
-		if(upper>rangeMax)
-			upper=rangeMax;
+		if(lower<showRangeMin)
+			lower=showRangeMin;
+		if(upper>showRangeMax)
+			upper=showRangeMax;
 		
 		repaint();
 		

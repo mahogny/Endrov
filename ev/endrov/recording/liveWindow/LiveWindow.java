@@ -238,16 +238,17 @@ public class LiveWindow extends EvBasicWindow implements ActionListener, Viewer2
 						lastCameraImage=cim.getPixels();
 						lastResolution=getCameraResolution();
 
-						//Update range if needed
-						if(lastCameraImage!=null && tAutoRange.isSelected())
-							histoView.calcAutoRange(lastCameraImage);
 						
 						//System.out.println("Acquiring live took - setimagehisto ms: "+(System.currentTimeMillis()-curTime));
 
 						int numBits=getNumCameraBits();
-						histoView.setImage(lastCameraImage, numBits);
+						histoView.setImage(lastCameraImage[0], numBits);   //TODO support color images!
 						//System.out.println("Acquiring live took ms: "+(System.currentTimeMillis()-curTime));
-						
+
+						//Update range if needed
+						if(lastCameraImage!=null && tAutoRange.isSelected())
+							histoView.calcAutoRange();
+
 						//Update size of this window if camera area size changes
 						if(lastCameraImage!=null)
 							{
@@ -506,7 +507,7 @@ public class LiveWindow extends EvBasicWindow implements ActionListener, Viewer2
 		else if(e.getSource()==tAutoRange)
 			{
 			if(lastCameraImage!=null)
-				histoView.calcAutoRange(lastCameraImage);
+				histoView.calcAutoRange();
 			histoView.repaint();
 			drawArea.repaint();
 			}

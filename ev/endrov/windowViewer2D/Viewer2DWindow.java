@@ -24,6 +24,7 @@ import endrov.data.EvData;
 import endrov.data.gui.EvDataGUI;
 import endrov.gui.*;
 import endrov.gui.component.EvComboColor;
+import endrov.gui.component.EvHidableSidePaneRight;
 import endrov.gui.component.JImageButton;
 import endrov.gui.component.JSnapBackSlider;
 import endrov.gui.component.JSnapBackSlider.SnapChangeListener;
@@ -38,6 +39,7 @@ import endrov.util.ProgressHandle;
 import endrov.util.math.EvDecimal;
 import endrov.windowConsole.*;
 import endrov.windowViewer2D.Viewer2DView.ImagePanelImage;
+import endrov.windowViewer2D.basicExt2.Viewer2DChannelHook;
 import endrov.windowViewer2D.basicExtensions.ImageWindowToolChannelDisp;
 import endrov.windowViewer2D.basicExtensions.ImageWindowToolEditImage;
 import endrov.windowViewer2D.basicExtensions.ImageWindowToolPixelInfo;
@@ -116,7 +118,8 @@ public class Viewer2DWindow extends EvBasicWindow
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
-	
+
+	private final Vector<Viewer2DWindowHook> imageWindowHooks=new Vector<Viewer2DWindowHook>();
 	
 
 	
@@ -146,7 +149,7 @@ public class Viewer2DWindow extends EvBasicWindow
 	private final Vector<ChannelWidget> channelWidget=new Vector<ChannelWidget>();
 	private final FrameControl2D frameControl=new FrameControl2D(this, true, true);
 	
-	private final JPanel channelPanel=new JPanel();
+	private final JPanel bottomPanel=new JPanel();
 
 	private final JMenu menuImageWindow=new JMenu("2D Viewer");
 	private final JCheckBoxMenuItem miToolNone=new JCheckBoxMenuItem("No tool");
@@ -158,6 +161,13 @@ public class Viewer2DWindow extends EvBasicWindow
 
 	private final JPanel bottomPanelFirstRow=new JPanel(new BorderLayout());
 
+	
+	public final Vector<JComponent> sidePanelItems=new Vector<JComponent>();
+	private final JPanel sidePanel=new JPanel(new GridBagLayout());
+
+	private final EvHidableSidePaneRight sidePanelSplitPane;
+	
+	
 	
 	public List<ChannelWidget> getChannels()
 		{
@@ -497,13 +507,16 @@ public class Viewer2DWindow extends EvBasicWindow
 		rightPanel.add(zoomPanel);
 		rightPanel.add(rotatePanel);
 		
+		sidePanelSplitPane=new EvHidableSidePaneRight(imagePanel, sidePanel, true);
+
+		
 		setLayout(new BorderLayout());
-		add(imagePanel,BorderLayout.CENTER);
-		add(channelPanel,BorderLayout.SOUTH);
+		add(sidePanelSplitPane,BorderLayout.CENTER);
+		add(bottomPanel,BorderLayout.SOUTH);
 		add(rightPanel,BorderLayout.EAST);
 
 		
-		buildChannelPanel();
+		updateToolPanels();
 		
 		addMainMenubarWindowSpecific(menuImageWindow);
 		buildMenu();
@@ -531,7 +544,7 @@ public class Viewer2DWindow extends EvBasicWindow
 		ChannelWidget chWidget=new ChannelWidget();
 		rChannelGroup.add(chWidget.rSelect);
 		channelWidget.add(chWidget);
-		buildChannelPanel();
+		updateToolPanels();
 		}
 
 	/**
@@ -545,7 +558,7 @@ public class Viewer2DWindow extends EvBasicWindow
 			rChannelGroup.remove(chan.rSelect);
 			if(chan.rSelect.isSelected())
 				channelWidget.get(0).rSelect.setSelected(true);
-			buildChannelPanel();
+			updateToolPanels();
 			updateImagePanel();
 			}
 		}
@@ -553,16 +566,38 @@ public class Viewer2DWindow extends EvBasicWindow
 	/**
 	 * Build list of channel widgets
 	 */
-	private void buildChannelPanel()
+	private void updateToolPanels()
 		{
-		channelPanel.removeAll();
-		channelPanel.setLayout(new GridLayout(1+channelWidget.size(),1,0,0));
-		channelPanel.add(bottomPanelFirstRow);
+		//Assemble bottom panel
+		bottomPanel.removeAll();
+		bottomPanel.setLayout(new GridLayout(1+channelWidget.size(),1,0,0));
+		bottomPanel.add(bottomPanelFirstRow);
 		
 		for(ChannelWidget w:channelWidget)
-			channelPanel.add(w);
-		channelPanel.setVisible(false);
-		channelPanel.setVisible(true);  //TODO invalidate or something
+			bottomPanel.add(w);
+		bottomPanel.setVisible(false);
+		bottomPanel.setVisible(true);  //TODO invalidate or something
+		
+		//Update side panel
+		sidePanelItems.clear();
+		for(Viewer2DWindowHook h:imageWindowHooks)
+			h.fillMenus(this);
+		
+		//Assemble side panel
+		int counta=0;
+		sidePanel.removeAll();
+		for(JComponent c:sidePanelItems)
+			{
+			GridBagConstraints cr=new GridBagConstraints();	cr.gridy=counta;	cr.fill=GridBagConstraints.HORIZONTAL;
+			cr.weightx=1;
+			sidePanel.add(c,cr);
+			counta++;
+			}
+		GridBagConstraints cr=new GridBagConstraints();	cr.gridy=counta;	cr.fill=GridBagConstraints.VERTICAL; cr.weighty=1;
+		sidePanel.add(new JLabel(""),cr);
+		sidePanel.revalidate();
+		
+		
 		}
 	
 	
@@ -1270,8 +1305,13 @@ public class Viewer2DWindow extends EvBasicWindow
 				w.addImageWindowTool(new ImageWindowToolScreenshot(w));
 				w.addImageWindowTool(new ImageWindowToolPixelInfo(w));
 				w.addImageWindowTool(new ImageWindowToolEditImage(w));
+
+
+				w.imageWindowHooks.add(new Viewer2DChannelHook());
+				
 				}
 			});
+		
 		}
 
 	

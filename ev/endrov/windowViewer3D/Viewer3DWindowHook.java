@@ -37,7 +37,7 @@ public interface Viewer3DWindowHook
 	public void displayFinal(GL gl,List<TransparentRenderer3D> transparentRenderers);
 
 	
-	public void fillModelWindowMenus();
+	public void fillMenus();
 	
 	
 	public Collection<BoundingBox3D> adjustScale();

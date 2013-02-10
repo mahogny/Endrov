@@ -103,7 +103,7 @@ public class ModelWindowScreenshot implements Viewer3DWindowHook, ActionListener
 	
 	public void displayInit(GL gl){}
 	public void displaySelect(GL gl){}
-	public void fillModelWindowMenus(){}
+	public void fillMenus(){}
 	public void datachangedEvent(){}
 
 	

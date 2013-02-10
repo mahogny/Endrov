@@ -54,7 +54,7 @@ public class LineageModelExtension implements Viewer3DWindowHook, ActionListener
 
 	private Vector<Map<LineageSelParticle, Lineage.InterpolatedParticle>> interpNuc=new Vector<Map<LineageSelParticle, Lineage.InterpolatedParticle>>();
 	Viewer3DWindow w;
-	public void fillModelWindowMenus()
+	public void fillMenus()
 		{
 		w.sidePanelItems.add(bAddExpPattern);
 		for(ModwPanelExpPattern ti:expsettings)

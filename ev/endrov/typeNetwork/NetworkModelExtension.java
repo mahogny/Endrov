@@ -34,7 +34,7 @@ public class NetworkModelExtension implements Viewer3DWindowHook, ActionListener
   private static int NUC_SHOW_DIV=12;
 
 	Viewer3DWindow w;
-	public void fillModelWindowMenus()
+	public void fillMenus()
 		{
 		}
 	

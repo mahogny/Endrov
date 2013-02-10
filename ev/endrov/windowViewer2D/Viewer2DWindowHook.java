@@ -5,8 +5,6 @@
  */
 package endrov.windowViewer2D;
 
-import endrov.util.math.EvDecimal;
-
 
 /**
  * Hook, inserted by model window extensions into each model window instance
@@ -28,7 +26,7 @@ public interface Viewer2DWindowHook
 	*/
 
 	
-	public void fillMenus();
+	public void fillMenus(Viewer2DWindow w);
 	
 	/*
 	public Collection<BoundingBox3D> adjustScale();
@@ -38,8 +36,10 @@ public interface Viewer2DWindowHook
 	
 	//These two could be put in a special class that EvContainer can implement.
 	//it can then be shared with imagewindow
+	/*
 	public EvDecimal getFirstFrame();
 	public EvDecimal getLastFrame();
-	
+	*/
 	public void datachangedEvent();
+	
 	}

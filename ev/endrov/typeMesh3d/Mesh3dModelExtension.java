@@ -38,7 +38,7 @@ import endrov.windowViewer3D.*;
 public class Mesh3dModelExtension implements Viewer3DWindowHook, Viewer3DMouseListener
 	{
 	Viewer3DWindow w;
-	public void fillModelWindowMenus()
+	public void fillMenus()
 		{
 		w.addModelWindowMouseListener(this);
 		}

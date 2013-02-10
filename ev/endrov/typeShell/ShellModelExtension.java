@@ -28,7 +28,7 @@ public class ShellModelExtension implements Viewer3DWindowHook
 	
 	public void readPersonalConfig(Element e){}
 	public void savePersonalConfig(Element e){}
-	public void fillModelWindowMenus(){}
+	public void fillMenus(){}
 	public void datachangedEvent(){}
 	
 	

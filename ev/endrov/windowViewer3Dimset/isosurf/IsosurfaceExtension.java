@@ -102,7 +102,7 @@ public class IsosurfaceExtension implements Viewer3DWindowHook, ActionListener
 	public void readPersonalConfig(Element e){}
 	public void savePersonalConfig(Element e){}
 	public void datachangedEvent(){}
-	public void fillModelWindowMenus()
+	public void fillMenus()
 		{
 		w.sidePanelItems.add(addIsolevel);
 		for(ToolIsolayer ti:isolayers)
