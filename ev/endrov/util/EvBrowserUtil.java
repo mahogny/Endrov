@@ -21,60 +21,66 @@ public class EvBrowserUtil
 	 *
 	 * @param url the file's url (the url must start with either "http://"	or "file://").
 	 */
-	public static void displayURL(String url)
+	public static void displayURL(final String url)
 		{
-		try
+		new Thread()
 			{
-			if(isMacPlatform())
-				Runtime.getRuntime().exec("open "+url);
-			else if (isWindowsPlatform())
-				Runtime.getRuntime().exec(WIN_PATH + " " + WIN_FLAG + " " + url);
-			else
+			public void run()
 				{
-				//TODO JAVA6
-				/*
-				if(java.awt.Desktop.isDesktopSupported())
+				try
 					{
-					System.out.println("Desktop supported!");
-					try
+					if(isMacPlatform())
+						Runtime.getRuntime().exec("open "+url);
+					else if (isWindowsPlatform())
+						Runtime.getRuntime().exec(WIN_PATH + " " + WIN_FLAG + " " + url);
+					else
 						{
-						Desktop.getDesktop().browse(new URI(url));
-						}
-					catch (URISyntaxException e)
-						{
-						e.printStackTrace();
+						//TODO JAVA6
+						/*
+						if(java.awt.Desktop.isDesktopSupported())
+							{
+							System.out.println("Desktop supported!");
+							try
+								{
+								Desktop.getDesktop().browse(new URI(url));
+								}
+							catch (URISyntaxException e)
+								{
+								e.printStackTrace();
+								}
+							}
+						else*/
+							{
+							//Fallback
+						
+							// cmd = 'netscape -remote openURL(http://www.javaworld.com)'
+							String cmd=UNIX_PATH + " " + UNIX_FLAG +" -- "+ url;
+							System.out.println("Running command:" + cmd);
+							Process p = Runtime.getRuntime().exec(cmd);
+							try
+								{
+								// wait for exit code -- if it's 0, command worked,
+								// otherwise we need to start the browser up.
+								int exitCode = p.waitFor();
+								if (exitCode != 0)
+									Runtime.getRuntime().exec(UNIX_PATH + " " + url);
+								}
+							catch(InterruptedException x)
+								{
+								System.err.println("Error bringing up browser");
+								System.err.println("Caught: " + x);
+								}
+							}
 						}
 					}
-				else*/
+				catch(IOException x)
 					{
-					//Fallback
-				
-					// cmd = 'netscape -remote openURL(http://www.javaworld.com)'
-					String cmd=UNIX_PATH + " " + UNIX_FLAG +" -- "+ url;
-					System.out.println("Running command:" + cmd);
-					Process p = Runtime.getRuntime().exec(cmd);
-					try
-						{
-						// wait for exit code -- if it's 0, command worked,
-						// otherwise we need to start the browser up.
-						int exitCode = p.waitFor();
-						if (exitCode != 0)
-							Runtime.getRuntime().exec(UNIX_PATH + " " + url);
-						}
-					catch(InterruptedException x)
-						{
-						System.err.println("Error bringing up browser");
-						System.err.println("Caught: " + x);
-						}
+					// couldn't exec browser
+					System.err.println("Could not invoke browser");
+					System.err.println("Caught: " + x);
 					}
 				}
-			}
-		catch(IOException x)
-			{
-			// couldn't exec browser
-			System.err.println("Could not invoke browser");
-			System.err.println("Caught: " + x);
-			}
+			}.run();
 		}
 	
 	
