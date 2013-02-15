@@ -182,6 +182,7 @@ public class ParticleMeasure extends EvObject
 			{
 			if(!lazyCalc.isEmpty())
 				{
+				System.out.println("running pm lazy calc");
 				List<Runnable> c=new LinkedList<Runnable>(lazyCalc);
 				lazyCalc.clear();
 				for(Runnable r:c)

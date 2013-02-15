@@ -344,6 +344,11 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		{
 		public Double min, max;
 		
+		public boolean hasValue()
+			{
+			return min!=null;
+			}
+		
 		public void add(double v)
 			{
 			if(max==null || v>max)
@@ -559,6 +564,9 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	
 	private void addScaleBarX(OneWell w, ValueRange raggX)
 		{
+		if(!raggX.hasValue())
+			return;
+		
 		NumberFormat nf=NumberFormat.getInstance();
 		nf.setMaximumFractionDigits(5);
 		nf.setGroupingUsed(false);
@@ -576,6 +584,9 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 
 	private void addScaleBarY(OneWell w, ValueRange raggY)
 		{
+		if(!raggY.hasValue())
+			return;
+		
 		NumberFormat nf=NumberFormat.getInstance();
 		nf.setMaximumFractionDigits(5);
 		nf.setGroupingUsed(false);
