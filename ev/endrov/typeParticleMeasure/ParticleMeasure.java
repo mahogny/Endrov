@@ -5,6 +5,9 @@
  */
 package endrov.typeParticleMeasure;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +23,7 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
@@ -445,6 +449,19 @@ public class ParticleMeasure extends EvObject
 	@Override
 	public void loadMetadata(Element e)
 		{
+		Element eCSV=e.getChild("CSV");
+		try
+			{
+			ParticleMeasureIO.readCSV(this, new StringReader(eCSV.getText()), '\t');
+			}
+		catch (IOException e1)
+			{
+			EvLog.printError(e1);
+			}
+		
+		
+		
+		/*
 		columns.clear();
 		wellMap.clear();
 		
@@ -511,11 +528,22 @@ public class ParticleMeasure extends EvObject
 					throw new RuntimeException("Not recognized "+oe.getName());
 				}
 		columns.addAll(columnsList);
+		*/
 		}
 
 	@Override
 	public String saveMetadata(Element e)
 		{
+		StringWriter sw=new StringWriter();
+		ParticleMeasureIO.saveCSV(this, sw, true, "\t", true);
+		sw.flush();
+		
+		Element eCSV=new Element("CSV");
+		eCSV.setText(sw.toString());
+		e.addContent(eCSV);
+		
+		
+		/*
 		//Write out columns and their types
 		for(String col:getColumns())
 			{
@@ -579,6 +607,7 @@ public class ParticleMeasure extends EvObject
 					}
 				}
 			}
+			*/
 		return metaType;
 		}
 	

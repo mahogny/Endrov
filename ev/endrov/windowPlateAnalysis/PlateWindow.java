@@ -655,7 +655,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 				try
 					{
 					FileWriter fw=new FileWriter(f);
-					ParticleMeasureIO.saveCSV(pm, fw, true, "\t");
+					ParticleMeasureIO.saveCSV(pm, fw, true, "\t", true);
 					fw.close();
 					}
 				catch (IOException e)

@@ -24,6 +24,7 @@ import endrov.core.log.EvLogStdout;
 import endrov.data.EvData;
 import endrov.typeImageset.Imageset;
 import endrov.typeLineage.Lineage;
+import endrov.util.io.CsvFileReaderDeprecated;
 import endrov.util.io.EvFileUtil;
 
 
@@ -43,7 +44,7 @@ public class PaperCeExpressionUtil
 
 	public static Map<String,String> readMap(File f) throws IOException
 		{
-		CsvFileReader csvOrf2gene=new CsvFileReader(f, '\t');
+		CsvFileReaderDeprecated csvOrf2gene=new CsvFileReaderDeprecated(f, '\t');
 		Map<String,String> map=new TreeMap<String, String>();
 		ArrayList<String> l;
 		while((l=csvOrf2gene.readLine())!=null)
@@ -53,7 +54,7 @@ public class PaperCeExpressionUtil
 	
 	public static Set<String> readSet(File f) throws IOException
 		{
-		CsvFileReader csvOrf2gene=new CsvFileReader(f, '\t');
+		CsvFileReaderDeprecated csvOrf2gene=new CsvFileReaderDeprecated(f, '\t');
 		Set<String> map=new TreeSet<String>();
 		ArrayList<String> l;
 		while((l=csvOrf2gene.readLine())!=null)

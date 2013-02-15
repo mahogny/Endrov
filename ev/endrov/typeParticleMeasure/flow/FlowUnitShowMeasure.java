@@ -323,7 +323,7 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			if(e.getSource()==bCopyToClipboard)
 				{
 				StringWriter sw=new StringWriter();
-				ParticleMeasureIO.saveCSV(measure, sw, true, "\t");
+				ParticleMeasureIO.saveCSV(measure, sw, true, "\t", true);
 				EvSwingUtil.setClipBoardString(sw.getBuffer().toString());
 				}
 			}
