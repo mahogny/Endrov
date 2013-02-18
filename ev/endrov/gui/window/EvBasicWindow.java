@@ -30,6 +30,7 @@ import endrov.gui.icon.BasicIcon;
 import endrov.gui.keybinding.JInputManager;
 import endrov.gui.keybinding.JinputListener;
 import endrov.gui.keybinding.KeyBinding;
+import endrov.gui.memoryUsageWindow.MemoryUsageWindow;
 import endrov.starter.EvSystemUtil;
 import endrov.typeImageset.EvImageSwap;
 import endrov.typeImageset.EvPixels;
@@ -636,6 +637,8 @@ public abstract class EvBasicWindow extends JPanel
 					}
 				else if(e.getSource()==miSetSwap)
 					dialogSetSwap();
+				else if(e.getSource()==miMemoryUsageGraph)
+					new MemoryUsageWindow();
 				}
 
 		};
@@ -664,6 +667,7 @@ public abstract class EvBasicWindow extends JPanel
 	private JMenuItem miSaveConfig = new JMenuItem("Save config now");
 	private JMenuItem miRegInfo = new JMenuItem("Change registration information");
 	private JMenuItem miSetSwap = new JMenuItem("Set swap directory");
+	private JMenuItem miMemoryUsageGraph = new JMenuItem("Memory usage graph");
 
 	/**
 	 * Add to the menu Window
@@ -745,6 +749,7 @@ public abstract class EvBasicWindow extends JPanel
 		menuMaintenance.add(miRegInfo);
 		menuMaintenance.add(miSetSwap);
 		 
+		
 		EvBasicWindow.addMenuItemSorted(menuFile, miQuit, "zquit");
 
 		for (EvBasicWindowHook hook : basicWindowExtensionHook.values())
@@ -758,6 +763,7 @@ public abstract class EvBasicWindow extends JPanel
 		mHelp.add(miWebPlugins);
 		mHelp.add(miReportBug);
 		mHelp.add(miSysInfo);
+		mHelp.add(miMemoryUsageGraph);
 		if(windowHelpTopic()!=null)
 			mHelp.add(miWindowHelp);
 		
@@ -785,6 +791,7 @@ public abstract class EvBasicWindow extends JPanel
 		miSaveConfig.addActionListener(listener);
 		miRegInfo.addActionListener(listener);
 		miSetSwap.addActionListener(listener);
+		miMemoryUsageGraph.addActionListener(listener);
 		}
 
 	/**

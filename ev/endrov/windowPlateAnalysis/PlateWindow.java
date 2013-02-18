@@ -47,6 +47,7 @@ import endrov.typeParticleMeasure.ParticleMeasure;
 import endrov.typeParticleMeasure.ParticleMeasureIO;
 import endrov.typeParticleMeasure.ParticleMeasure.Well;
 import endrov.util.math.EvDecimal;
+import endrov.windowPlateAnalysis.PlateAnalysisQueueWidget.WellRunnable;
 
 /**
  * Plate window - For high-throughput analysis
@@ -96,10 +97,13 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	private JComboBox comboAttribute2=new JComboBox/*<String>*/();
 	private JComboBox comboChannel=new JComboBox/*<String>*/();
 	private JComboBox comboDisplay=new JComboBox/*<Object>*/(PlateWindowView.getAggrModes());
+	private PlateAnalysisQueueWidget queue=new PlateAnalysisQueueWidget();
+	
 	private final FrameControl2D frameControl=new FrameControl2D(this, false, true);
 	private PlateWindowView imagePanel=new PlateWindowView(this);	
 	private ChannelWidget cw=new ChannelWidget();
-
+	private JButton bAddToQueue=new JButton("Add to queue");
+	
 	private boolean disableDataChanged=false;
 
 	private final JMenu menuPlateWindow=new JMenu("PlateWindow");
@@ -133,7 +137,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		comboAttribute1.addActionListener(this);
 		comboAttribute2.addActionListener(this);
 		comboChannel.addActionListener(this);
-
+		bAddToQueue.addActionListener(this);
 		
 		addMainMenubarWindowSpecific(menuPlateWindow);
 
@@ -153,7 +157,8 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 												new JLabel("Flow for computation:"),
 												comboFlow,
 												new JLabel("Measure values:"),
-												comboParticleMeasure)),
+												comboParticleMeasure,
+												bAddToQueue)),
 								EvSwingUtil.withTitledBorder("Display",
 										EvSwingUtil.layoutCompactVertical(
 												new JLabel("Channel:"),
@@ -162,10 +167,10 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 												comboAttribute1,
 												new JLabel("Secondary attribute:"),
 												comboAttribute2,
-												new JLabel("Display:"),
+												new JLabel("Show as:"),
 												comboDisplay)
 												)),
-						null,
+						EvSwingUtil.withTitledBorder("Batch queue",	queue),
 						null
 						)),
 				BorderLayout.CENTER);
@@ -570,21 +575,23 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		else if(e.getSource()==miZoom)
 			imagePanel.zoomToFit();
 		else if(e.getSource()==miSize100)
-			imagePanel.setThumbnailSize(100);
+			imagePanel.setThumbnailImageSize(100);
 		else if(e.getSource()==miSize200)
-			imagePanel.setThumbnailSize(200);
+			imagePanel.setThumbnailImageSize(200);
 		else if(e.getSource()==miSize300)
-			imagePanel.setThumbnailSize(300);
+			imagePanel.setThumbnailImageSize(300);
 		else if(e.getSource()==miSize500)
-			imagePanel.setThumbnailSize(500);
+			imagePanel.setThumbnailImageSize(500);
 		else if(e.getSource()==miSizeOrig)
-			imagePanel.setThumbnailSize(null);
+			imagePanel.setThumbnailImageSize(null);
 		else if(e.getSource()==miExportCSV)
 			exportCSV();
 		else if(e.getSource()==miExportSQL)
 			exportSQL();
 		else if(e.getSource()==miReevaluate)
-			imagePanel.reevalutate();
+			imagePanel.clearPM();
+		else if(e.getSource()==bAddToQueue)
+			addToQueue();
 		}
 
 	
@@ -708,7 +715,11 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			showErrorDialog("No particle data is selected");
 		}
 	
-	
+
+	/**
+	 * Testing
+	 * @param args
+	 */
 	public static void main(String[] args)
 		{
 		
@@ -749,13 +760,13 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 				pm.addColumn("b");
 
 				int id=0;
-						for(int i=0;i<100;i++)
-							{
-							ParticleMeasure.Particle m=fi.getCreateParticle(id++);
-							double r=Math.random();
-							m.put("a", r);
-							m.put("b", r+Math.random());
-							}
+				for(int i=0;i<100;i++)
+					{
+					ParticleMeasure.Particle m=fi.getCreateParticle(id++);
+					double r=Math.random();
+					m.put("a", r);
+					m.put("b", r+Math.random());
+					}
 
 				}
 		
@@ -771,6 +782,34 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		return "High-throughput screenings with multi-well plates";
 		}
 
+	
+	public void attributesMayHaveUpdated()
+		{
+		updateAttrCombo();
+		}
+	
+	public WellRunnable getNextBackgroundTask()
+		{
+		return queue.getNextBackgroundTask();
+		}
+	
+
+	private void addToQueue()
+		{
+		EvPath pathData=comboData.getSelectedPath();
+		EvPath pathFlow=comboFlow.getSelectedPath();
+		EvPath pathOutput=comboParticleMeasure.getSelectedPath();
+
+		comboFlow.getSelectedPath();
+		
+		if(pathData!=null && pathFlow!=null && pathOutput!=null)
+			{
+			queue.addJob(pathData, pathFlow, pathOutput);
+			imagePanel.startWorkerThread();
+			}
+		}
+
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/
@@ -778,37 +817,31 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	static
 		{
 		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
+			{
+			public void newBasicWindow(EvBasicWindow w)
 				{
-				public void newBasicWindow(EvBasicWindow w)
+				w.addHook(this.getClass(),new Hook());
+				}
+			class Hook implements EvBasicWindowHook, ActionListener
+				{
+				public void createMenus(EvBasicWindow w)
 					{
-					w.addHook(this.getClass(),new Hook());
+					JMenuItem mi=new JMenuItem("Plate analysis",BasicIcon.iconImage);
+					mi.addActionListener(this);
+					w.addMenuWindow(mi);
 					}
-				class Hook implements EvBasicWindowHook, ActionListener
+				
+				public void actionPerformed(ActionEvent e) 
 					{
-					public void createMenus(EvBasicWindow w)
-						{
-						JMenuItem mi=new JMenuItem("Plate analysis",BasicIcon.iconImage);
-						mi.addActionListener(this);
-						w.addMenuWindow(mi);
-						}
-					
-					public void actionPerformed(ActionEvent e) 
-						{
-						new PlateWindow();
-						}
-					
-					public void buildMenu(EvBasicWindow w){}
+					new PlateWindow();
 					}
-				});
-		
+				
+				public void buildMenu(EvBasicWindow w){}
+				}
+			});
 		}
 	
 	
-	public void attributesMayHaveUpdated()
-		{
-		updateAttrCombo();
-		}
-	
-	
+
 	}
 
