@@ -1,7 +1,6 @@
 package endrov.typeParticleMeasure;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.sql.PreparedStatement;
@@ -11,11 +10,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+
 import endrov.core.EvSQLConnection;
 import endrov.typeParticleMeasure.ParticleMeasure.Frame;
-import endrov.typeParticleMeasure.ParticleMeasure.Particle;
+import endrov.typeParticleMeasure.ParticleMeasure.ColumnSet;
 import endrov.typeParticleMeasure.ParticleMeasure.Well;
-import endrov.util.io.EvSpreedsheetImporter;
+import endrov.util.io.EvCSVWriter;
+import endrov.util.io.EvSpreadsheetImporter;
 import endrov.util.math.EvDecimal;
 
 /**
@@ -26,35 +27,130 @@ import endrov.util.math.EvDecimal;
  */
 public class ParticleMeasureIO
 	{
-	
+
+
+
 	/**
 	 * Write data as a CSV-style table
 	 */
-	public static void saveCSV(ParticleMeasure pm, Writer io, boolean addHeader, String fieldDelim, boolean quote)
+	public static void writeCSVperwell(ParticleMeasure pm, Writer io, boolean addHeader, String fieldDelim, boolean quote) throws IOException
 		{
-//		System.out.println("field delim:"+fieldDelim+":");
+		EvCSVWriter csvWriter=new EvCSVWriter(io, fieldDelim, quote);
 		
-		PrintWriter pw=new PrintWriter(io);
+//		System.out.println("field delim:"+fieldDelim+":");
 		
 		LinkedList<String> colWithSpecial=new LinkedList<String>();
 		colWithSpecial.add("well");
-		colWithSpecial.add("frame");
-		colWithSpecial.add("particle");
-		colWithSpecial.addAll(pm.getColumns());
+		colWithSpecial.addAll(pm.getParticleColumns());
 		
 		//Add header
 		if(addHeader)
 			{
 			for(String s:colWithSpecial)
+				csvWriter.writeEntry(s);
+			csvWriter.writeEndOfLine();
+			}
+
+		//For all wells
+		for(String wellName:pm.getWellNames())
+			{
+			//For all frames
+			Well well=pm.getWell(wellName);
+			ColumnSet p=well.getWellColumns();
+			for(String columnName:colWithSpecial)
 				{
-				pw.print(fieldDelim);
-				if(quote)
-					pw.print("\"");
-				pw.print(s);
-				if(quote)
-					pw.print("\"");
+				//Get column data
+				String colData;
+				if(columnName.equals("well"))
+					colData=wellName;
+				else
+					colData=p.getString(columnName);
+
+				//Print field
+				csvWriter.writeEntry(colData);
 				}
-			pw.println();
+			csvWriter.writeEndOfLine();
+			}
+		csvWriter.close();
+		}
+
+	
+	
+	/**
+	 * Write data as a CSV-style table
+	 */
+	public static void writeCSVperframe(ParticleMeasure pm, Writer io, boolean addHeader, String fieldDelim, boolean quote) throws IOException
+		{
+		EvCSVWriter csvWriter=new EvCSVWriter(io, fieldDelim, quote);
+		
+//		System.out.println("field delim:"+fieldDelim+":");
+		
+		LinkedList<String> colWithSpecial=new LinkedList<String>();
+		colWithSpecial.add("well");
+		colWithSpecial.add("frame");
+		colWithSpecial.addAll(pm.getParticleColumns());
+		
+		//Add header
+		if(addHeader)
+			{
+			for(String s:colWithSpecial)
+				csvWriter.writeEntry(s);
+			csvWriter.writeEndOfLine();
+			}
+
+		//For all wells
+		for(String wellName:pm.getWellNames())
+			{
+			//For all frames
+			Well well=pm.getWell(wellName);
+			for(EvDecimal frame:well.getFrames())
+				{
+				
+				ColumnSet p=well.getFrame(frame).getFrameColumns();
+				for(String columnName:colWithSpecial)
+					{
+					//Get column data
+					String colData;
+					if(columnName.equals("well"))
+						colData=wellName;
+					else if(columnName.equals("frame"))
+						colData=frame.toString();
+					else
+						colData=p.getString(columnName);
+
+					//Print field
+					csvWriter.writeEntry(colData);
+					}
+				csvWriter.writeEndOfLine();
+				}
+			}
+		csvWriter.close();
+		}
+
+	
+	
+	
+	/**
+	 * Write data as a CSV-style table
+	 */
+	public static void writeCSVperparticle(ParticleMeasure pm, Writer io, boolean addHeader, String fieldDelim, boolean quote) throws IOException
+		{
+		EvCSVWriter csvWriter=new EvCSVWriter(io, fieldDelim, quote);
+		
+//		System.out.println("field delim:"+fieldDelim+":");
+		
+		LinkedList<String> colWithSpecial=new LinkedList<String>();
+		colWithSpecial.add("well");
+		colWithSpecial.add("frame");
+		colWithSpecial.add("particle");
+		colWithSpecial.addAll(pm.getParticleColumns());
+		
+		//Add header
+		if(addHeader)
+			{
+			for(String s:colWithSpecial)
+				csvWriter.writeEntry(s);
+			csvWriter.writeEndOfLine();
 			}
 
 		//For all wells
@@ -65,10 +161,9 @@ public class ParticleMeasureIO
 			for(EvDecimal frame:well.getFrames())
 				{
 				//For all particles
-				for(Map.Entry<Integer, Particle> e:well.getFrame(frame).entrySet())
+				for(Map.Entry<Integer, ColumnSet> e:well.getFrame(frame).entrySet())
 					{
-					boolean firstCol=true;
-					Particle p=e.getValue();
+					ColumnSet p=e.getValue();
 					for(String columnName:colWithSpecial)
 						{
 						//Get column data
@@ -82,28 +177,15 @@ public class ParticleMeasureIO
 						else
 							colData=p.getString(columnName);
 
-						//Handle special chars
-						colData.replace("\\", "\\\\");
-						colData.replace("\n", "\\n");
-						colData.replace(fieldDelim, "\\"+fieldDelim);
-						
 						//Print field
-						if(!firstCol)
-							pw.print(fieldDelim);
-						firstCol=false;
-						if(quote)
-							pw.print("\"");
-						pw.print(colData);
-						if(quote)
-							pw.print("\"");
+						csvWriter.writeEntry(colData);
 						}
-					pw.println();
+					csvWriter.writeEndOfLine();
 					}
 				
 				}
 			}
-		
-		pw.flush();
+		csvWriter.close();
 		}
 
 	
@@ -113,24 +195,22 @@ public class ParticleMeasureIO
 	 */
 	public static void readCSV(ParticleMeasure pm, Reader is, char fieldDelim) throws IOException
 		{
-		pm.clearData();
+//		pm.clearData();
 		
-		EvSpreedsheetImporter importer=new EvSpreedsheetImporter();
+		EvSpreadsheetImporter importer=new EvSpreadsheetImporter();
 		importer.importCSV(is, fieldDelim, '\"');
 
 		//Read header
 		ArrayList<String> header=importer.readLine();
-		for(String h:header)
-			if(!(h.equals("well") || h.equals("particle") || h.equals("frame")))
-				pm.addColumn(h);
+		boolean addedHeader=false;
+		header.remove("well");
+		header.remove("particle");
+		header.remove("frame");
 
-		int genParticleID=0;
-		
 		ArrayList<String> line;
 		while((line=importer.readLine())!=null)
 			{
 			//Read line
-
 			String wellName=null;
 			Integer particleID=null;
 			EvDecimal frameNum=null;
@@ -158,19 +238,56 @@ public class ParticleMeasureIO
 				pm.setWell(wellName, well);
 				}
 			
+			ParticleMeasure.ColumnSet p;
 			if(frameNum==null)
-				throw new IOException("Column data for frame missing");
-			ParticleMeasure.Frame frame=well.getFrame(frameNum);
-			if(frame==null)
 				{
-				frame=new Frame();
-				well.setFrame(frameNum, frame);
+				//This is a per-well file
+				p=well.getWellColumns();
+
+				if(!addedHeader)
+					{
+					for(String h:header)
+						pm.addWellColumn(h);
+					addedHeader=true;
+					}
+
+				}
+			else
+				{
+				//Get frame
+				ParticleMeasure.Frame frame=well.getFrame(frameNum);
+				if(frame==null)
+					{
+					frame=new Frame();
+					well.setFrame(frameNum, frame);
+					}
+
+				//Get particle, if CSV is for particles
+				if(particleID==null)
+					{
+					//This is a per-frame file
+					p=frame.getFrameColumns();
+					if(!addedHeader)
+						{
+						for(String h:header)
+							pm.addFrameColumn(h);
+						addedHeader=true;
+						}
+					}
+				else
+					{
+					//This is a file for particles
+					p=frame.getCreateParticle(particleID);
+					if(!addedHeader)
+						{
+						for(String h:header)
+							pm.addParticleColumn(h);
+						addedHeader=true;
+						}
+					}
 				}
 
-			if(particleID==null)
-				particleID=genParticleID++;
-			ParticleMeasure.Particle p=frame.getCreateParticle(particleID);
-			
+			//Add all attributes
 			for(Map.Entry<String, Object> e:values.entrySet())
 				p.put(e.getKey(), e.getValue());
 			}
@@ -205,7 +322,7 @@ public class ParticleMeasureIO
 		StringBuffer createTable=new StringBuffer();
 		createTable.append("create table "+tablename+" (");
 		createTable.append("dataid TEXT, well TEXT, frame DECIMAL, particle INTEGER");
-		for(String column:pm.getColumns())
+		for(String column:pm.getParticleColumns())
 			createTable.append(", "+column+" DECIMAL"); //TODO types
 		createTable.append(");");
 		PreparedStatement stmCreateTable=conn.getConnection().prepareStatement(createTable.toString());
@@ -241,7 +358,7 @@ public class ParticleMeasureIO
 	 */
 	public static void insertIntoSQLtable(ParticleMeasure pm, EvSQLConnection conn, String dataid, String tablename) throws SQLException
 		{
-		Set<String> col=pm.getColumns();
+		Set<String> col=pm.getParticleColumns();
 
 		StringBuffer insert=new StringBuffer();
 		insert.append("insert into "+tablename+" (");
@@ -265,12 +382,12 @@ public class ParticleMeasureIO
 			for(EvDecimal frame:well.getFrames())
 				{
 				stmInsertTable.setBigDecimal(3, frame.toBigDecimal());			
-				for(Map.Entry<Integer, Particle> e:well.getFrame(frame).entrySet())
+				for(Map.Entry<Integer, ColumnSet> e:well.getFrame(frame).entrySet())
 					{
 					int particleID=e.getKey();
 					stmInsertTable.setInt(4, particleID);
 					
-					Particle particle=e.getValue();
+					ColumnSet particle=e.getValue();
 					int colid=5;
 					for(String columnName:col)
 						{

@@ -235,7 +235,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		ValueRange raggA=new ValueRange();
 		ValueRange raggB=new ValueRange();
 		if(!aggrMethod.equals(aggrHide) && !aggrMethod.equals(aggrImage) && pm!=null && attr1!=null && attr2!=null && 
-				pm.getColumns().contains(attr1) && pm.getColumns().contains(attr2))
+				pm.getParticleColumns().contains(attr1) && pm.getParticleColumns().contains(attr2))
 			{
 			for(Map.Entry<EvPath, OneWell> e:wellMap.entrySet())
 				{
@@ -258,7 +258,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 					ParticleMeasure.Frame mapp=pmw.getFrame(currentFrame);
 					if(mapp!=null)
 						{
-						for(ParticleMeasure.Particle pi:mapp.getParticles())
+						for(ParticleMeasure.ColumnSet pi:mapp.getParticles())
 							{
 							listA.add(pi.getDouble(attr1));
 							listB.add(pi.getDouble(attr2));

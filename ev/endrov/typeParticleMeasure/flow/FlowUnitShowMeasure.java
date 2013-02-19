@@ -11,6 +11,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 
@@ -27,6 +28,7 @@ import javax.swing.table.TableModel;
 
 import org.jdom.Element;
 
+import endrov.core.log.EvLog;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
@@ -195,7 +197,7 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			}
 		
 		
-		public ParticleMeasure.Particle getCurrentPropMap(int id)
+		public ParticleMeasure.ColumnSet getCurrentPropMap(int id)
 			{
 			ParticleMeasure.Well well=measure.getWell(wellName);
 			if(well!=null)
@@ -217,7 +219,7 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			{
 			measure=m;			
 			mapToColumn.clear();
-			mapToColumn.addAll(measure.getColumns());
+			mapToColumn.addAll(measure.getParticleColumns());
 			
 			//table.setMinimumSize(new Dimension((mapToColumn.size()+1)*40,10));
 
@@ -292,7 +294,7 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 				return id;
 			else
 				{
-				ParticleMeasure.Particle info=getCurrentPropMap(id);
+				ParticleMeasure.ColumnSet info=getCurrentPropMap(id);
 				String prop=mapToColumn.get(columnIndex-1);
 				return info.getObject(prop).toString();
 				}
@@ -322,9 +324,17 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			{
 			if(e.getSource()==bCopyToClipboard)
 				{
-				StringWriter sw=new StringWriter();
-				ParticleMeasureIO.saveCSV(measure, sw, true, "\t", true);
-				EvSwingUtil.setClipBoardString(sw.getBuffer().toString());
+				try
+					{
+					StringWriter sw=new StringWriter();
+					ParticleMeasureIO.writeCSVperparticle(measure, sw, true, "\t", true);
+					ParticleMeasureIO.writeCSVperframe(measure, sw, true, "\t", true);
+					EvSwingUtil.setClipBoardString(sw.getBuffer().toString());
+					}
+				catch (IOException e1)
+					{
+					EvLog.printError(e1);
+					}
 				}
 			}
 		}

@@ -40,9 +40,10 @@ public class PlateAnalysisQueueWidget extends JPanel
 	public PlateAnalysisQueueWidget()
 		{
 		setLayout(new BorderLayout());
-		JScrollPane scroll=new JScrollPane(midpanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	//	JScrollPane scroll=new JScrollPane(midpanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
-		add(scroll, BorderLayout.CENTER);
+	//	add(scroll, BorderLayout.CENTER);
+		add(midpanel, BorderLayout.CENTER);
 		
 		updateListLayout();
 		}

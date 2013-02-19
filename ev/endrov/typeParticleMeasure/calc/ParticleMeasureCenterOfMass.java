@@ -73,7 +73,7 @@ public class ParticleMeasureCenterOfMass implements MeasurePropertyType
 		//Write into particles
 		for(int id:sum.keySet())
 			{
-			ParticleMeasure.Particle p=info.getCreateParticle(id);
+			ParticleMeasure.ColumnSet p=info.getCreateParticle(id);
 			Vector3d s=sum.get(id);
 			double v=vol.get(id);
 			p.put(propertyName+"X", s.x/v);

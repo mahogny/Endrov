@@ -41,8 +41,8 @@ public class ParticleMeasureWellFlowExec
 		
 		//Merge data into current pm
 		totalPM.setWell(pathToWell.toString(), well);
-		for(String s:wellPM.getColumns())
-			totalPM.addColumn(s);
+		for(String s:wellPM.getParticleColumns())
+			totalPM.addParticleColumn(s);
 		}
 	
 	

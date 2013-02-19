@@ -94,7 +94,7 @@ public class ParticleMeasureGeometricPCA implements MeasurePropertyType
 		//Write into particles
 		for(int id:sumX.keySet())
 			{
-			ParticleMeasure.Particle p=info.getCreateParticle(id);
+			ParticleMeasure.ColumnSet p=info.getCreateParticle(id);
 
 			//Calculate covariance
 			Cov cov=sumX.get(id);

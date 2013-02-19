@@ -113,7 +113,7 @@ public class FlowUnitMeasureToFile extends FlowUnitBasic
 		lastOutput.put("out",measure);
 		
 		FileWriter fw=new FileWriter(file); 
-		ParticleMeasureIO.saveCSV(measure, fw, addHeaders, fieldDelim, true);
+		ParticleMeasureIO.writeCSVperparticle(measure, fw, addHeaders, fieldDelim, true);
 		}
 	
 

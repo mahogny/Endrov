@@ -15,7 +15,7 @@ import org.jdom.Element;
  * Import Excel and CSV tables
  * @author Johan Henriksson
  */
-public class EvSpreedsheetImporter
+public class EvSpreadsheetImporter
 	{
 	public List<ArrayList<String>> rows=new LinkedList<ArrayList<String>>();
 	
