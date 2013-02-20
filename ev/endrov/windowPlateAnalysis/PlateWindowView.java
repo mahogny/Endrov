@@ -7,6 +7,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
@@ -46,6 +47,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	{
 	private static final long serialVersionUID = 1L;
 
+	
+	public static final String layoutByWellID="Well ID";
 	
 	public interface Listener
 		{
@@ -544,6 +547,15 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 	
 
 	
+	private String layoutMethod=layoutByWellID;
+	
+	public void setLayoutMethod(String method)
+		{
+		layoutMethod=method;
+		layoutWells();
+		}
+
+	
 
 	public void layoutWells()
 		{
@@ -551,64 +563,125 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		for(EvPath p:wellMap.keySet())
 			wellNames.add(p.getLeafName());
 
-		//Grid-structured layout
-		grids.clear();
-		MultiWellGridLayout g=MultiWellGridLayout.isMultiwellFormat(wellNames);
-		if(g!=null)
+		//Check which layout method to use
+		String orderByColumn=null;
+		if(!layoutMethod.equals(layoutByWellID) && pm!=null)
 			{
-			/////////Multi-well layout
+			if(pm.getWellColumns().contains(layoutByWellID))
+				orderByColumn=layoutByWellID;
+			}
+
+		if(orderByColumn!=null)
+			{
+			/////////// Multiple rows. One for each type
 			
-			//Set image positions
+			//Collect available attributes
+			TreeMap<String,Integer> valueRowCount=new TreeMap<String, Integer>();
 			for(EvPath p:wellMap.keySet())
 				{
-				OneWell well=wellMap.get(p);
-				MultiWellPlateIndex pos=MultiWellPlateIndex.parse(p.getLeafName());
-				if(pos!=null)
-					{
-					well.x=(pos.indexNumber-1)*(imageSize+imageMargin);
-					well.y=(pos.indexLetter-1)*(imageSize+imageMargin);
-					}
+				ParticleMeasure.Well w=pm.getWell(p.toString());
+				String attr=w.getWellColumns().getObject(orderByColumn).toString();
+				valueRowCount.put(attr, 0);
 				}
-
-			//Place text
-			Font gridFont=new Font("Arial", Font.PLAIN, 60*scaleText);
-			for(int i=1;i<=g.numLetter;i++)
+				
+			//Make a header for each column
+			Font headerFont=new Font("Arial", Font.PLAIN, 20*scaleText);
+			ArrayList<String> headers=new ArrayList<String>(valueRowCount.keySet());
+			for(int i=0;i<headers.size();i++)
 				{
-				char c='A';
-				Scene2DText st=new Scene2DText(g.x - 20*scaleText, g.y + (i-1)*(g.distance)+50*scaleText, ""+(char)(c+i-1));
-				st.font = gridFont;
-				st.alignment=Alignment.Right;
-				st.color=EvColor.red;
-				grids.add(st);
-				}
-			for(int i=1;i<=g.numNumber;i++)
-				{
-				Scene2DText st=new Scene2DText(g.x + (i-1)*(g.distance)+50*scaleText, g.y - 40*scaleText, ""+i);
-				st.font=gridFont;
+				Scene2DText st=new Scene2DText(i*(imageSize*2+imageMargin), imageSize/2, headers.get(i));
+				st.font=headerFont;
 				st.alignment=Alignment.Center;
-				st.color=EvColor.red;
 				grids.add(st);
 				}
+			
+
+			//Place wells under headers
+			Font wellNameFont=new Font("Arial", Font.PLAIN, 20*scaleText);
+			for(EvPath p:wellMap.keySet())
+				{
+				ParticleMeasure.Well w=pm.getWell(p.toString());
+				String attr=w.getWellColumns().getObject(orderByColumn).toString();
+
+				int indexHeader=headers.indexOf(attr);
+				int rowIndex=valueRowCount.get(attr);
+				valueRowCount.put(attr, rowIndex+1);
+
+				//Layout well
+				OneWell well=wellMap.get(p);
+				well.x=indexHeader*(imageSize*2+imageMargin);   //Text beneath would make more sense(?)
+				well.y=rowIndex*(imageSize+imageMargin);
+				
+				//Name of well
+				Scene2DText st=new Scene2DText(imageSize+imageMargin, rowIndex*(imageSize+imageMargin) + imageSize/2, p.toString());
+				st.font=wellNameFont;
+				st.alignment=Alignment.Left;
+				grids.add(st);
+				}
+			
 			}
 		else
 			{
-			/////////General layout
-			
-			Font gridFont=new Font("Arial", Font.PLAIN, 20*scaleText);
-			int posIndex=0;
-			for(EvPath p:wellMap.keySet())
+			//Grid-structured layout
+			grids.clear();
+			MultiWellGridLayout g=MultiWellGridLayout.isMultiwellFormat(wellNames);
+			if(g!=null)
 				{
-				OneWell well=wellMap.get(p);
-				well.x=0;
-				well.y=posIndex*(imageSize+imageMargin);
+				/////////Multi-well layout
 				
-				Scene2DText st=new Scene2DText(imageSize+imageMargin, posIndex*(imageSize+imageMargin) + imageSize/2, p.toString());
-				st.font=gridFont;
-				st.alignment=Alignment.Left;
-				grids.add(st);
-				
-				posIndex++;
+				//Set image positions
+				for(EvPath p:wellMap.keySet())
+					{
+					OneWell well=wellMap.get(p);
+					MultiWellPlateIndex pos=MultiWellPlateIndex.parse(p.getLeafName());
+					if(pos!=null)
+						{
+						well.x=(pos.indexNumber-1)*(imageSize+imageMargin);
+						well.y=(pos.indexLetter-1)*(imageSize+imageMargin);
+						}
+					}
+
+				//Place text
+				Font gridFont=new Font("Arial", Font.PLAIN, 60*scaleText);
+				for(int i=1;i<=g.numLetter;i++)
+					{
+					char c='A';
+					Scene2DText st=new Scene2DText(g.x - 20*scaleText, g.y + (i-1)*(g.distance)+50*scaleText, ""+(char)(c+i-1));
+					st.font = gridFont;
+					st.alignment=Alignment.Right;
+					st.color=EvColor.red;
+					grids.add(st);
+					}
+				for(int i=1;i<=g.numNumber;i++)
+					{
+					Scene2DText st=new Scene2DText(g.x + (i-1)*(g.distance)+50*scaleText, g.y - 40*scaleText, ""+i);
+					st.font=gridFont;
+					st.alignment=Alignment.Center;
+					st.color=EvColor.red;
+					grids.add(st);
+					}
 				}
+			else
+				{
+				/////////General layout. Just a linear list
+				
+				Font gridFont=new Font("Arial", Font.PLAIN, 20*scaleText);
+				int posIndex=0;
+				for(EvPath p:wellMap.keySet())
+					{
+					OneWell well=wellMap.get(p);
+					well.x=0;
+					well.y=posIndex*(imageSize+imageMargin);
+					
+					Scene2DText st=new Scene2DText(imageSize+imageMargin, posIndex*(imageSize+imageMargin) + imageSize/2, p.toString());
+					st.font=gridFont;
+					st.alignment=Alignment.Left;
+					grids.add(st);
+					
+					posIndex++;
+					}
+				}
+
 			}
 		}
 		
@@ -987,6 +1060,11 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			imageThreadLock.notifyAll();
 			}
 		}
+
+
+	
+	
+	
 	
 	
 	}

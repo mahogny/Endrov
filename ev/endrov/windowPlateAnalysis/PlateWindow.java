@@ -6,6 +6,7 @@
 package endrov.windowPlateAnalysis;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -393,15 +394,24 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		}
 	
 	
+	
 
 	private void updateAttrCombo()
 		{
+		//Attributes
 		List<String> alist=getAttributes();
 		updateCombo(comboAttribute1,alist);
 		updateCombo(comboAttribute2,alist);
 		imagePanel.setAggrMethod(comboDisplay.getSelectedItem(), 
 				(String)comboAttribute1.getSelectedItem(),
 				(String)comboAttribute2.getSelectedItem());
+		
+		//Layout options
+		List<String> llist=new ArrayList<String>();
+		llist.add(PlateWindowView.layoutByWellID);
+		llist.addAll(getWellAttributes());
+		updateCombo(comboLayout,llist);
+		imagePanel.setLayoutMethod((String)comboDisplay.getSelectedItem());
 		}
 	
 	/**
@@ -558,7 +568,22 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		if(pm!=null)
 			{
 			list.addAll(pm.getParticleColumns());
-			list.remove("source");
+//			list.remove("source");   //TODO what is this?
+			}
+		return list;
+		}
+
+	/**
+	 * Get available particle well attributes
+	 */
+	private List<String> getWellAttributes()
+		{
+		LinkedList<String> list=new LinkedList<String>();
+		ParticleMeasure pm=getParticleMeasure();
+		if(pm!=null)
+			{
+			list.addAll(pm.getWellColumns());
+//			list.remove("source");
 			}
 		return list;
 		}
