@@ -580,7 +580,12 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			for(EvPath p:wellMap.keySet())
 				{
 				ParticleMeasure.Well w=pm.getWell(p.toString());
-				String attr=w.getWellColumns().getObject(orderByColumn).toString();
+				Object attrOb=w.getWellColumns().getObject(orderByColumn);
+				String attr;
+				if(attrOb!=null)
+					attr=attrOb.toString();
+				else
+					attr="NULL";
 				valueRowCount.put(attr, 0);
 				}
 				
@@ -601,7 +606,12 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			for(EvPath p:wellMap.keySet())
 				{
 				ParticleMeasure.Well w=pm.getWell(p.toString());
-				String attr=w.getWellColumns().getObject(orderByColumn).toString();
+				Object attrOb=w.getWellColumns().getObject(orderByColumn);
+				String attr;
+				if(attrOb!=null)
+					attr=attrOb.toString();
+				else
+					attr="NULL";
 
 				int indexHeader=headers.indexOf(attr);
 				int rowIndex=valueRowCount.get(attr);
