@@ -12,7 +12,6 @@ import java.util.TreeSet;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
