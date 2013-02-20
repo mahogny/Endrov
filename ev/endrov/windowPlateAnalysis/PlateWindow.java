@@ -114,7 +114,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	private final JMenuItem miExportCSV=new JMenuItem("Export as CSV");
 	private final JMenuItem miImportCSV=new JMenuItem("Import from CSV");
 	private final JMenuItem miExportSQL=new JMenuItem("Export to SQL");
-	private final JMenuItem miReevaluate=new JMenuItem("Re-evaluate all");
+	private final JMenuItem miReevaluate=new JMenuItem("Clear previous measure values");
 
 	private final JMenu menuImageSize=new JMenu("Thumbnail size");
 	private final JMenuItem miSize100=new JMenuItem("100px");
@@ -398,20 +398,22 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 
 	private void updateAttrCombo()
 		{
-		//Attributes
-		List<String> alist=getAttributes();
+		List<String> alist=getParticleAttributes();
 		updateCombo(comboAttribute1,alist);
 		updateCombo(comboAttribute2,alist);
 		imagePanel.setAggrMethod(comboDisplay.getSelectedItem(), 
 				(String)comboAttribute1.getSelectedItem(),
 				(String)comboAttribute2.getSelectedItem());
 		
-		//Layout options
+		}
+	
+	public void updateLayoutCombo()
+		{
 		List<String> llist=new ArrayList<String>();
 		llist.add(PlateWindowView.layoutByWellID);
 		llist.addAll(getWellAttributes());
 		updateCombo(comboLayout,llist);
-		imagePanel.setLayoutMethod((String)comboDisplay.getSelectedItem());
+		imagePanel.setLayoutMethod((String)comboLayout.getSelectedItem());
 		}
 	
 	/**
@@ -429,7 +431,8 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			comboFlow.updateList();
 			updateChannelCombo();
 			updateAttrCombo();
-
+			updateLayoutCombo();
+			
 			updateWells();
 
 			updateWindowTitle();
@@ -497,7 +500,6 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		
 		//Update panel
 		imagePanel.layoutWells();
-		imagePanel.redrawPanel(); //TODO not always needed
 		}
 
 
@@ -561,7 +563,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	/**
 	 * Get available particle attributes
 	 */
-	private List<String> getAttributes()
+	private List<String> getParticleAttributes()
 		{
 		LinkedList<String> list=new LinkedList<String>();
 		ParticleMeasure pm=getParticleMeasure();
@@ -581,10 +583,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		LinkedList<String> list=new LinkedList<String>();
 		ParticleMeasure pm=getParticleMeasure();
 		if(pm!=null)
-			{
 			list.addAll(pm.getWellColumns());
-//			list.remove("source");
-			}
 		return list;
 		}
 
@@ -621,11 +620,10 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			{
 			updateAttrCombo();
 			}
-/*		else if(e.getSource()==miEvaluate)
+		else if(e.getSource()==comboLayout)
 			{
-//			imagePanel.execFlowAllWell();
-			dataChangedEvent();  //Overkill?
-			}*/
+			updateLayoutCombo();
+			}
 		else if(e.getSource()==miZoom)
 			imagePanel.zoomToFit();
 		else if(e.getSource()==miSize100)
@@ -771,9 +769,8 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		if(pm!=null)
 			{
 			File f=openDialogOpenFile(); 
-			if(f!=null && f.getName().endsWith(".csv"))
+			if(f!=null)
 				{
-				
 				try
 					{
 					FileReader reader=new FileReader(f);
@@ -785,6 +782,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 					showErrorDialog("Error reading file: "+e.getMessage());
 					EvLog.printError(e.getMessage(), e);
 					}
+				dataChangedEvent();
 				}
 			}
 		else
@@ -797,7 +795,6 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		ParticleMeasure pm=getParticleMeasure();
 		if(pm!=null)
 			{
-			
 			EvSQLConnection conn=EvDialogChooseSQL.openDialog();
 			if(conn!=null)
 				{
@@ -886,8 +883,6 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 				}
 		
 		EvDataGUI.registerOpenedData(d);
-		
-		
 		}
 	
 
@@ -901,6 +896,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	public void attributesMayHaveUpdated()
 		{
 		updateAttrCombo();
+		updateLayoutCombo();
 		}
 	
 	public WellRunnable getNextBackgroundTask()

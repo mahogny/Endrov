@@ -29,19 +29,21 @@ public class EvSpreadsheetImporter
 
 		int lastCapacity=0;
 		
+		
 		Scanner s=new Scanner(is);
 		while(s.hasNextLine())
 			{
+			//Read line
 			String line=s.nextLine();
 			LinkedList<Character> ll=new LinkedList<Character>();
 			for(char c:line.toCharArray())
 				ll.add(c);
-			ArrayList<String> row=new ArrayList<String>(lastCapacity);
+			ArrayList<String> onerow=new ArrayList<String>(lastCapacity);
 			
 			//For every column
 			while(!ll.isEmpty())
 				{
-				char c=ll.poll();
+				char c=ll.removeFirst();
 				StringBuffer tok=new StringBuffer();
 				if(c==quoteCharacter)
 					{
@@ -61,9 +63,9 @@ public class EvSpreadsheetImporter
 						else
 							tok.append(c);
 						}
-					row.add(tok.toString());
+					onerow.add(tok.toString());
 					if(!ll.isEmpty())
-						ll.poll(); //Move past next text delimiter
+						ll.removeFirst(); //Move past next text delimiter
 					}
 				else
 					{
@@ -77,13 +79,12 @@ public class EvSpreadsheetImporter
 						else
 							tok.append(c);
 						}
-					System.out.println("# "+tok.toString());
-					row.add(tok.toString());
+					onerow.add(tok.toString());
 					}
 				}
 			
-			rows.add(row);
-			lastCapacity=row.size();
+			rows.add(onerow);
+			lastCapacity=onerow.size();
 			}
 		s.close();
 		}

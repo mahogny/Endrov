@@ -559,6 +559,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 
 	public void layoutWells()
 		{
+		grids.clear();
+		
 		TreeSet<String> wellNames=new TreeSet<String>();
 		for(EvPath p:wellMap.keySet())
 			wellNames.add(p.getLeafName());
@@ -567,8 +569,8 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 		String orderByColumn=null;
 		if(!layoutMethod.equals(layoutByWellID) && pm!=null)
 			{
-			if(pm.getWellColumns().contains(layoutByWellID))
-				orderByColumn=layoutByWellID;
+			if(pm.getWellColumns().contains(layoutMethod))
+				orderByColumn=layoutMethod;
 			}
 
 		if(orderByColumn!=null)
@@ -580,13 +582,21 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			for(EvPath p:wellMap.keySet())
 				{
 				ParticleMeasure.Well w=pm.getWell(p.toString());
-				Object attrOb=w.getWellColumns().getObject(orderByColumn);
 				String attr;
-				if(attrOb!=null)
-					attr=attrOb.toString();
+				if(w!=null)
+					{
+					Object attrOb=w.getWellColumns().getObject(orderByColumn);
+					if(attrOb!=null)
+						attr=attrOb.toString();
+					else
+						attr="NULL";
+					valueRowCount.put(attr, 0);
+					}
 				else
+					{
 					attr="NULL";
-				valueRowCount.put(attr, 0);
+					valueRowCount.put(attr, 0);
+					}
 				}
 				
 			//Make a header for each column
@@ -594,7 +604,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			ArrayList<String> headers=new ArrayList<String>(valueRowCount.keySet());
 			for(int i=0;i<headers.size();i++)
 				{
-				Scene2DText st=new Scene2DText(i*(imageSize*2+imageMargin), imageSize/2, headers.get(i));
+				Scene2DText st=new Scene2DText(i*(imageSize+imageMargin)+imageSize/2, -imageSize/3, headers.get(i));
 				st.font=headerFont;
 				st.alignment=Alignment.Center;
 				grids.add(st);
@@ -602,38 +612,44 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 			
 
 			//Place wells under headers
-			Font wellNameFont=new Font("Arial", Font.PLAIN, 20*scaleText);
+			Font wellNameFont=new Font("Arial", Font.PLAIN, 5*scaleText);
 			for(EvPath p:wellMap.keySet())
 				{
 				ParticleMeasure.Well w=pm.getWell(p.toString());
-				Object attrOb=w.getWellColumns().getObject(orderByColumn);
 				String attr;
-				if(attrOb!=null)
-					attr=attrOb.toString();
+				if(w!=null)
+					{
+					Object attrOb=w.getWellColumns().getObject(orderByColumn);
+					if(attrOb!=null)
+						attr=attrOb.toString();
+					else
+						attr="NULL";
+					}
 				else
 					attr="NULL";
 
-				int indexHeader=headers.indexOf(attr);
+				int headerIndex=headers.indexOf(attr);
 				int rowIndex=valueRowCount.get(attr);
 				valueRowCount.put(attr, rowIndex+1);
 
 				//Layout well
 				OneWell well=wellMap.get(p);
-				well.x=indexHeader*(imageSize*2+imageMargin);   //Text beneath would make more sense(?)
-				well.y=rowIndex*(imageSize+imageMargin);
+				well.x=headerIndex*(imageSize+imageMargin);   //Text beneath would make more sense(?)
+				well.y=rowIndex*(imageSize+imageMargin*2);
 				
 				//Name of well
-				Scene2DText st=new Scene2DText(imageSize+imageMargin, rowIndex*(imageSize+imageMargin) + imageSize/2, p.toString());
+				Scene2DText st=new Scene2DText(
+						headerIndex*(imageSize+imageMargin) + imageSize/2, 
+						rowIndex*(imageSize+imageMargin*2) - imageMargin/3, p.toString());
 				st.font=wellNameFont;
-				st.alignment=Alignment.Left;
+				st.alignment=Alignment.Center;
+				st.color=EvColor.white;
 				grids.add(st);
 				}
 			
 			}
 		else
 			{
-			//Grid-structured layout
-			grids.clear();
 			MultiWellGridLayout g=MultiWellGridLayout.isMultiwellFormat(wellNames);
 			if(g!=null)
 				{
@@ -693,6 +709,9 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				}
 
 			}
+
+		//Also redraw panel
+		redrawPanel();
 		}
 		
 
@@ -720,57 +739,12 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 						if(w.pixels==null || w.imp==null || w.imp.pixels==null)
 							return new Runnable(){public void run(){loadImageForWell(w);}};
 					}
-/*				
-				//If a histogram/scatter plot is to be shown, see if there is anything that must be calculated
-				if(!aggrMethod.equals(aggrHide))
-					{
-					//Run flow on currently selected images
-					for(final EvPath pathToWell:wellMap.keySet())
-						{
-						if(pm!=null && pathToFlow!=null)
-							{
-							ParticleMeasure.Well pmw=pm.getWell(pathToWell.toString());
-							if(pmw==null)
-								{
-								return new Runnable()
-									{
-									public void run()
-										{
-										OneWell well=wellMap.get(pathToWell);
-										if(well!=null && well.evChannel!=null)
-											{
-											setCalculatingText(well);
-											
-											try
-												{
-												ParticleMeasure wellPM=ParticleMeasureWellFlowExec.execFlowOnWell(pathToWell, pathToFlow);
-												ParticleMeasureWellFlowExec.mergeWellPM(pm, wellPM, pathToWell);
-												
-												SwingUtilities.invokeAndWait(new Runnable(){public void run(){
-													redrawPanel();
-													listener.attributesMayHaveUpdated();
-													setCalculatingText(null);
-													}}); 
-												 //This does way more work than needed(?)
-												}
-											catch (Exception e)
-												{
-												EvLog.printError(e);
-												}
-											}
-										}
-									};
-								}
-							}
-						}
-					}
-*/
+				
 				//If there is no job for the data displayed, then instead check the batch queue
 				final WellRunnable runnable=listener.getNextBackgroundTask();
 				if(runnable!=null)
 					{
-					
-					
+					//Embed runnable in a 
 					return new Runnable()
 						{
 							public void run()
@@ -788,14 +762,26 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 									runnable.run();
 
 									SwingUtilities.invokeAndWait(new Runnable(){public void run(){
-										redrawPanel();
 										listener.attributesMayHaveUpdated();
 										setCalculatingText(null);
+										redrawPanel();
 									}});
 									}
 								catch (Throwable e)
 									{
-									EvLog.printError(e);
+									try
+										{
+										EvLog.printError(e);
+										SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+											listener.attributesMayHaveUpdated();
+											setCalculatingText(null);
+											redrawPanel();
+										}});
+										}
+									catch (Exception e1)
+										{
+										EvLog.printError(e1);
+										}
 									} 
 								}
 						};

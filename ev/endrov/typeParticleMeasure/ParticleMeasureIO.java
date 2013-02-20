@@ -203,10 +203,13 @@ public class ParticleMeasureIO
 		//Read header
 		ArrayList<String> header=importer.readLine();
 		boolean addedHeader=false;
-		header.remove("well");
-		header.remove("particle");
-		header.remove("frame");
 
+		ArrayList<String> headerNoSpecial=new ArrayList<String>(header);
+		headerNoSpecial.remove("well");
+		headerNoSpecial.remove("particle");
+		headerNoSpecial.remove("frame");
+		
+		
 		ArrayList<String> line;
 		while((line=importer.readLine())!=null)
 			{
@@ -226,11 +229,21 @@ public class ParticleMeasureIO
 				else if(h.equals("frame"))
 					frameNum=new EvDecimal(c);
 				else
-					values.put(h,Double.parseDouble(c)); //Right now treat all as doubles
+					{
+					try
+						{
+						double d=Double.parseDouble(c);
+						values.put(h,d);
+						}
+					catch (NumberFormatException e1)
+						{
+						values.put(h,c.toString());
+						}
+					}
 				}
 
 			if(wellName==null)
-				throw new IOException("Column data for well missing");
+				throw new IOException("Data in column well is missing");
 			ParticleMeasure.Well well=pm.getWell(wellName);
 			if(well==null)
 				{
@@ -246,7 +259,7 @@ public class ParticleMeasureIO
 
 				if(!addedHeader)
 					{
-					for(String h:header)
+					for(String h:headerNoSpecial)
 						pm.addWellColumn(h);
 					addedHeader=true;
 					}
@@ -269,7 +282,7 @@ public class ParticleMeasureIO
 					p=frame.getFrameColumns();
 					if(!addedHeader)
 						{
-						for(String h:header)
+						for(String h:headerNoSpecial)
 							pm.addFrameColumn(h);
 						addedHeader=true;
 						}
@@ -280,14 +293,14 @@ public class ParticleMeasureIO
 					p=frame.getCreateParticle(particleID);
 					if(!addedHeader)
 						{
-						for(String h:header)
+						for(String h:headerNoSpecial)
 							pm.addParticleColumn(h);
 						addedHeader=true;
 						}
 					}
 				}
 
-			//Add all attributes
+			//Add all attributes to column
 			for(Map.Entry<String, Object> e:values.entrySet())
 				p.put(e.getKey(), e.getValue());
 			}
