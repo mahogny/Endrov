@@ -924,6 +924,10 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/
+	
+	
+	private static ImageIcon iconMultiwell=new ImageIcon(PlateWindow.class.getResource("multiwell.png"));
+	
 	public static void initPlugin() {}
 	static
 		{
@@ -937,7 +941,7 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 				{
 				public void createMenus(EvBasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("Plate analysis",BasicIcon.iconImage);
+					JMenuItem mi=new JMenuItem("Plate analysis",iconMultiwell);
 					mi.addActionListener(this);
 					w.addMenuWindow(mi);
 					}
