@@ -74,14 +74,14 @@ public class RecWindowMultiDim extends EvBasicWindow
 
 		add(
 				EvSwingUtil.layoutCompactVertical(
-					wslices,wtimes,worder,wacq
+					wslices,wtimes,worder
 					),
 				BorderLayout.EAST);
 		add(
 				EvSwingUtil.layoutACB(
 					EvSwingUtil.layoutCompactVertical(wchans,wpos), 
 					wdesc, 
-					null),
+					wacq),
 				BorderLayout.CENTER);
 		
 		
