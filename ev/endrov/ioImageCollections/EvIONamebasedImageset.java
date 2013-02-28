@@ -14,8 +14,10 @@ import java.util.*;
 import java.util.List;
 
 import endrov.core.*;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvIOData;
+import endrov.data.EvPath;
 import endrov.data.RecentReference;
 import endrov.data.gui.DataMenuExtension;
 import endrov.data.gui.EvDataGUI;
@@ -110,7 +112,7 @@ public class EvIONamebasedImageset implements EvIOData
 		private JButton bRebuild=new JButton("Rebuild database");
 		private JButton bSyntax=new JButton("Website");
 		
-		private JTextField eSequence=new JTextField("foo-%C-%F-%Z.jpg");
+		private JTextField eSequence=new JTextField("foo-%W-%C-%F-%Z.jpg");
 		private JTextField eChannels=new JTextField("chan1,chan2");
 		private JTextArea eLog=new JTextArea();
 
@@ -196,6 +198,7 @@ public class EvIONamebasedImageset implements EvIOData
 		int channelNum=0;
 		int slice=0;
 		int frame=0;
+		String well=null;
 		}
 		
 	/**
@@ -225,7 +228,7 @@ public class EvIONamebasedImageset implements EvIOData
 				while(ctok.hasMoreTokens())
 					channelVector.add(ctok.nextToken());
 
-				//Get the imageset and clean it up
+				/*
 				Imageset im;
 				Collection<Imageset> ims=data.getObjects(Imageset.class);
 				if(!ims.isEmpty())
@@ -239,7 +242,12 @@ public class EvIONamebasedImageset implements EvIOData
 				//Remove all channels
 				for(String s:im.getChannels().keySet())
 					im.metaObject.remove(s);
-
+*/
+				
+				//Get the imageset and clean it up
+				for(EvPath p:data.getIdObjectsRecursive(Imageset.class).keySet())
+					p.getParent().getObject().removeMetaObjectByValue(p.getObject());
+				
 
 				//Go through list of files, just to see what there is
 				List<FileInfo> files=new LinkedList<FileInfo>();
@@ -255,7 +263,7 @@ public class EvIONamebasedImageset implements EvIOData
 				
 				//Add all the files
 				for(FileInfo info:files)
-					buildAddFile(im,info,channelVector);
+					buildAddFile(data,info,channelVector);
 				}
 			catch (Exception e)
 				{
@@ -287,6 +295,28 @@ public class EvIONamebasedImageset implements EvIOData
 					i+=2;
 					if(type=='%')
 						j++;
+					else if(type=='W')
+						{
+						StringBuilder sb=new StringBuilder();
+						
+						while(j<filename.length())
+							{
+							char c=filename.charAt(j);
+							if(Character.isLetter(c) || Character.isDigit(c))
+								{
+								sb.append(c);
+								j++;
+								}
+							else
+								break;
+							}
+						info.well=sb.toString();
+						if(info.well.length()==0)
+							{
+							rebuildLog.append("Not matching "+filename+" Missing parameter "+type+", filename pos"+j+"\n");
+							return null;
+							}
+						}
 					else
 						{
 						String params=parseInt(filename.substring(j));
@@ -346,7 +376,7 @@ public class EvIONamebasedImageset implements EvIOData
 		/**
 		 * Add file to channels
 		 */
-		private void buildAddFile(Imageset im, FileInfo info, List<String> channelVector) throws Exception
+		private void buildAddFile(EvContainer con, FileInfo info, List<String> channelVector) throws Exception
 			{
 			if(info.channelNum>=channelVector.size())
 				throw new Exception("For "+info.f+", no channel for index "+info.channelNum+". Note that channels start counting from 0.\n"
@@ -355,6 +385,15 @@ public class EvIONamebasedImageset implements EvIOData
 			
 			String channelName=channelVector.get(info.channelNum);
 
+			//Get the right well
+			String nameImageset=info.well;
+			if(nameImageset==null)
+				nameImageset="im";
+			Imageset im=(Imageset)con.getChild(info.well);
+			if(im==null)
+				con.putChild(info.well,im=new Imageset());
+
+			
 			//Get a place to put EVimage. Create holders if needed
 			EvChannel ch=im.getCreateChannel(channelName);
 			System.out.println(ch);

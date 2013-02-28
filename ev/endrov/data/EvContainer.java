@@ -225,7 +225,7 @@ public class EvContainer
 	/**
 	 * Remove an object via the pointer
 	 */
-	public void removeMetaObjectByValue(EvObject ob)
+	public void removeMetaObjectByValue(EvContainer ob)
 		{
 		String id=null;
 		for(Map.Entry<String, EvObject> entry:metaObject.entrySet())
@@ -403,6 +403,11 @@ public class EvContainer
 	public Icon getContainerIcon()
 		{
 		return containerIcon;
+		}
+
+	public void putChild(String name, EvObject child)
+		{
+		metaObject.put(name, child);
 		}
 	
 	}
