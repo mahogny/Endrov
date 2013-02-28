@@ -57,7 +57,7 @@ public class ParticleMeasureVolume implements MeasurePropertyType
 		//Write into particles
 		for(int id:vol.keySet())
 			{
-			ParticleMeasure.Particle p=info.getCreateParticle(id);
+			ParticleMeasure.ColumnSet p=info.getCreateParticle(id);
 			p.put(propertyName, vol.get(id));
 			}
 		}

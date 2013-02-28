@@ -40,7 +40,7 @@ public class EvOpFilterParticleMeasure
 		else
 			return pm.filter(new ParticleMeasure.ParticleFilter()
 				{
-					public boolean acceptParticle(int id, final ParticleMeasure.Particle info)
+					public boolean acceptParticle(int id, final ParticleMeasure.ColumnSet info)
 						{
 						//This object will be created many many times. Would be better if the filter got an entire frame to take care of
 						final MathExprEnvironment env=new MathExprStdEnvironment()

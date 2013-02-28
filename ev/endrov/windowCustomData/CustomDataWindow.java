@@ -9,6 +9,7 @@ package endrov.windowCustomData;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileReader;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -21,7 +22,7 @@ import endrov.gui.component.EvComboObjectOne;
 import endrov.gui.window.EvBasicWindow;
 import endrov.gui.window.EvBasicWindowExtension;
 import endrov.gui.window.EvBasicWindowHook;
-import endrov.util.io.EvSpreedsheetImporter;
+import endrov.util.io.EvSpreadsheetImporter;
 import endrov.util.io.EvXmlUtil;
 
 import org.jdom.*;
@@ -378,9 +379,9 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 						if(elementName==null || elementName.equals(""))
 							return;
 
-						EvSpreedsheetImporter imp=new EvSpreedsheetImporter();
+						EvSpreadsheetImporter imp=new EvSpreadsheetImporter();
 						if(filename.getName().endsWith(".csv"))
-							imp.importCSV(filename.getAbsolutePath(), ',', '\"');
+							imp.importCSV(new FileReader(filename), ',', '\"');
 						else
 							imp.importExcel(filename.getAbsolutePath());
 

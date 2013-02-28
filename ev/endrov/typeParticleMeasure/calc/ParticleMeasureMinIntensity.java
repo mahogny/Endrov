@@ -55,7 +55,7 @@ public class ParticleMeasureMinIntensity implements MeasurePropertyType
 		//Write into particles
 		for(int id:min.keySet())
 			{
-			ParticleMeasure.Particle p=info.getCreateParticle(id);
+			ParticleMeasure.ColumnSet p=info.getCreateParticle(id);
 			p.put(propertyName, min.get(id));
 			}
 		

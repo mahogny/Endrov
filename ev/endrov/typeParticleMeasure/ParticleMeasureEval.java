@@ -35,7 +35,7 @@ public class ParticleMeasureEval
 		//Figure out columns
 		for(String s:useMeasures)
 			for(String col:MeasureProperty.measures.get(s).getColumns())
-				pm.addColumn(col);
+				pm.addParticleColumn(col);
 
 		//Make a new well (any reason to write into an existing one?)
 		Well well=new Well();

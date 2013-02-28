@@ -5,6 +5,9 @@
  */
 package endrov.typeParticleMeasure;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +23,7 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
@@ -87,7 +91,7 @@ public class ParticleMeasure extends EvObject
 		/**
 		 * Accept a particle?
 		 */
-		public boolean acceptParticle(int id, Particle info);
+		public boolean acceptParticle(int id, ColumnSet info);
 		}
 	
 	
@@ -98,6 +102,12 @@ public class ParticleMeasure extends EvObject
 		{
 		private TreeMap<EvDecimal,Frame> frameMap=new TreeMap<EvDecimal, ParticleMeasure.Frame>();
 		
+		private ColumnSet columns=new ColumnSet();
+
+		public ColumnSet getWellColumns()
+			{
+			return columns;
+			}
 		
 		/**
 		 * Get data for one frame. Evaluate if necessary
@@ -152,7 +162,7 @@ public class ParticleMeasure extends EvObject
 							//Filter particles
 							for(int id:oldInfo.getParticleIDs())
 								{
-								Particle pInfo=oldInfo.getParticle(id);
+								ColumnSet pInfo=oldInfo.getParticle(id);
 								if(filter.acceptParticle(id, pInfo))
 									newInfo.putParticle(id,pInfo);
 								}
@@ -171,9 +181,10 @@ public class ParticleMeasure extends EvObject
 	 */
 	public static class Frame 
 		{
-		private HashMap<Integer,Particle> particleMap=new HashMap<Integer, Particle>();
+		private HashMap<Integer,ColumnSet> particleMap=new HashMap<Integer, ColumnSet>();
+		private ColumnSet columns=new ColumnSet();
+		
 		private List<Runnable> lazyCalc=new LinkedList<Runnable>();
-
 
 		/**
 		 * Calculate values using all lazy evaluations
@@ -191,23 +202,28 @@ public class ParticleMeasure extends EvObject
 			}
 
 		
-		
-		public Particle getCreateParticle(int id)
+		public ColumnSet getFrameColumns()
 			{
 			runLazyEvaluations();
-			Particle info=particleMap.get(id);
+			return columns;
+			}
+		
+		public ColumnSet getCreateParticle(int id)
+			{
+			runLazyEvaluations();
+			ColumnSet info=particleMap.get(id);
 			if(info==null)
-				particleMap.put(id,info=new Particle());
+				particleMap.put(id,info=new ColumnSet());
 			return info;
 			}
 
-		public void putParticle(int id, Particle value)
+		public void putParticle(int id, ColumnSet value)
 			{
 			runLazyEvaluations();
 			particleMap.put(id, value);
 			}
 
-		public Particle getParticle(int id)
+		public ColumnSet getParticle(int id)
 			{
 			runLazyEvaluations();
 			return particleMap.get(id);
@@ -219,7 +235,7 @@ public class ParticleMeasure extends EvObject
 			return particleMap.keySet();
 			}
 
-		public Set<Map.Entry<Integer, Particle>> entrySet()
+		public Set<Map.Entry<Integer, ColumnSet>> entrySet()
 			{
 			runLazyEvaluations();
 			return particleMap.entrySet();
@@ -231,7 +247,7 @@ public class ParticleMeasure extends EvObject
 			return particleMap.size();
 			}
 
-		public Collection<Particle> getParticles()
+		public Collection<ColumnSet> getParticles()
 			{
 			runLazyEvaluations();
 			return particleMap.values();
@@ -248,7 +264,7 @@ public class ParticleMeasure extends EvObject
 	/**
 	 * Data for one particle. It's in the form Key -> Value. Value can be of any type, but functions exist for automatic data conversions
 	 */
-	public static class Particle
+	public static class ColumnSet
 		{
 		private HashMap<String, Object> map=new HashMap<String, Object>();
 	
@@ -326,6 +342,14 @@ public class ParticleMeasure extends EvObject
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
+
+	/**
+	 * Empty measure
+	 */
+	public ParticleMeasure()
+		{
+		}
+
 	/**
 	 * All wells (containing the particles) 
 	 */
@@ -334,10 +358,19 @@ public class ParticleMeasure extends EvObject
 	/**
 	 * Columns ie properties, for each particle
 	 */
-	private TreeSet<String> columns=new TreeSet<String>();
+	private TreeSet<String> particleColumns=new TreeSet<String>();
 
+	/**
+	 * Columns ie properties, for each well/frame
+	 */
+	private TreeSet<String> frameColumns=new TreeSet<String>();
 	
 	
+	/**
+	 * Columns ie properties, for each well
+	 */
+	private TreeSet<String> wellColumns=new TreeSet<String>();
+
 
 	/**
 	 * Get a well
@@ -355,33 +388,32 @@ public class ParticleMeasure extends EvObject
 		wellMap.put(wellName, well);
 		}
 
-	
-
-
-
-
-	/**
-	 * Empty measure
-	 */
-	public ParticleMeasure()
-		{
-		}
-
-	
-	
-	
-	
-	
 		
 	
 	/**
-	 * Get which columns exist
+	 * Get which columns exist for each particle
 	 */
-	public SortedSet<String> getColumns()
+	public SortedSet<String> getParticleColumns()
 		{
-		return Collections.unmodifiableSortedSet(columns);
+		return Collections.unmodifiableSortedSet(particleColumns);
 		}
-	
+
+	/**
+	 * Get which columns exist for each well/frame
+	 */
+	public SortedSet<String> getFrameColumns()
+		{
+		return Collections.unmodifiableSortedSet(frameColumns);
+		}
+
+	/**
+	 * Get which columns exist for each well
+	 */
+	public SortedSet<String> getWellColumns()
+		{
+		return Collections.unmodifiableSortedSet(wellColumns);
+		}
+
 	
 	@Override
 	public void buildMetamenu(JMenu menu, EvContainer parentObject)
@@ -405,9 +437,19 @@ public class ParticleMeasure extends EvObject
 		}
 	
 
-	public void addColumn(String s)
+	public void addFrameColumn(String s)
 		{
-		columns.add(s);
+		frameColumns.add(s);
+		}
+
+	public void addWellColumn(String s)
+		{
+		wellColumns.add(s);
+		}
+
+	public void addParticleColumn(String s)
+		{
+		particleColumns.add(s);
 		}
 
 	
@@ -416,7 +458,7 @@ public class ParticleMeasure extends EvObject
 		ParticleMeasure out=new ParticleMeasure();
 		
 		//Copy all the columns
-		out.columns.addAll(columns);
+		out.particleColumns.addAll(particleColumns);
 		
 		//Copy all wells
 		for(Map.Entry<String, Well> f:wellMap.entrySet())
@@ -434,7 +476,7 @@ public class ParticleMeasure extends EvObject
 	public void clearData()
 		{
 		wellMap.clear();
-		columns.clear();
+		particleColumns.clear();
 		}
 
 	
@@ -445,140 +487,56 @@ public class ParticleMeasure extends EvObject
 	@Override
 	public void loadMetadata(Element e)
 		{
-		columns.clear();
-		wellMap.clear();
+		Element ePerParticle=e.getChild("perparticle");
+		Element ePerFrame=e.getChild("perframe");
+		Element ePerWell=e.getChild("perwell");
+		try
+			{
+			ParticleMeasureIO.readCSV(this, new StringReader(ePerParticle.getText()), '\t');
+			ParticleMeasureIO.readCSV(this, new StringReader(ePerFrame.getText()), '\t');
+			ParticleMeasureIO.readCSV(this, new StringReader(ePerWell.getText()), '\t');
+			}
+		catch (IOException e1)
+			{
+			EvLog.printError(e1);
+			}
 		
-		LinkedList<String> columnsList=new LinkedList<String>();
-		for(Object o:e.getChildren())
-			if(o instanceof Element)
-				{
-				Element oe=(Element)o;
-				//Columns must come first
-				if(oe.getName().equals("column"))
-					columnsList.add(oe.getAttributeValue("name"));
-				else if(oe.getName().equals("well"))
-					{
-					//For each well
-					Well well=new Well();
-					String wellName=oe.getAttributeValue("name");
-					
-					//For each frame
-					for(Object o2:oe.getChildren())
-						if(o2 instanceof Element)
-							{
-							Element eFrame=(Element)o2;
-							EvDecimal frame=new EvDecimal(eFrame.getAttributeValue("frame"));
-							Frame f=new Frame();
-
-							//For each particle
-							for(Object o3:eFrame.getChildren())
-								if(o3 instanceof Element)
-									{
-									Element eParticle=(Element)o3;
-									int pid=Integer.parseInt(eParticle.getAttributeValue("id"));
-									Particle p=new Particle();
-									
-									//For each column
-									int colindex=0;
-									for(Object o4:eParticle.getChildren())
-										if(o4 instanceof Element)
-											{
-											Element eElem=(Element)o4;
-											
-											String val=eElem.getAttributeValue("v");
-											if(eElem.getName().equals("d"))
-												p.put(columnsList.get(colindex), Double.parseDouble(val));
-											else if(eElem.getName().equals("i"))
-												p.put(columnsList.get(colindex), Integer.parseInt(val));
-											else if(eElem.getName().equals("null"))
-												p.put(columnsList.get(colindex), null);
-											else if(eElem.getName().equals("s"))
-												p.put(columnsList.get(colindex), val);
-											else
-												throw new RuntimeException("Unknown type "+eElem.getName());
-											colindex++;
-											}
-									if(colindex!=columnsList.size())
-										throw new RuntimeException("Too few columns for one particle");
-									
-									f.putParticle(pid, p);
-									}
-							well.setFrame(frame, f);
-							}
-					setWell(wellName, well);
-					}
-				else
-					throw new RuntimeException("Not recognized "+oe.getName());
-				}
-		columns.addAll(columnsList);
 		}
 
 	@Override
 	public String saveMetadata(Element e)
 		{
-		//Write out columns and their types
-		for(String col:getColumns())
+		try
 			{
-			Element eCol=new Element("column");
-			eCol.setAttribute("name", col);
-			e.addContent(eCol);
+			StringWriter swParticle=new StringWriter();
+			ParticleMeasureIO.writeCSVperparticle(this, swParticle, true, "\t", true);
+			swParticle.flush();
+
+			StringWriter swFrame=new StringWriter();
+			ParticleMeasureIO.writeCSVperframe(this, swFrame, true, "\t", true);
+			swFrame.flush();
+
+			StringWriter swWell=new StringWriter();
+			ParticleMeasureIO.writeCSVperwell(this, swWell, true, "\t", true);
+			swWell.flush();
+
+			Element ePerParticle=new Element("perparticle");
+			ePerParticle.setText(swParticle.toString());
+			e.addContent(ePerParticle);
+			
+			Element ePerFrame=new Element("perframe");
+			ePerFrame.setText(swParticle.toString());
+			e.addContent(ePerFrame);
+			
+			Element ePerWell=new Element("perwell");
+			ePerWell.setText(swParticle.toString());
+			e.addContent(ePerWell);
+			}
+		catch (IOException e1)
+			{
+			EvLog.printError(e1);
 			}
 		
-		//For each well
-		for(String wellName:getWellNames())
-			{
-			Well well=getWell(wellName);
-			Element eWell=new Element("well");
-			eWell.setAttribute("name", wellName);
-			e.addContent(eWell);
-			
-			//For each frame
-			for(EvDecimal frame:well.getFrames())
-				{
-				Frame f=well.getFrame(frame);
-
-				Element eFrame=new Element("frame");
-				eFrame.setAttribute("frame", frame.toString());
-				eWell.addContent(eFrame);
-				
-				//For each particle
-				for(int pid:f.getParticleIDs())
-					{
-					Element eParticle=new Element("p");
-					eParticle.setAttribute("id",Integer.toString(pid));
-					eFrame.addContent(eParticle);
-					Particle p=f.getParticle(pid);
-					
-					//For each column
-					for(String col:getColumns())
-						{
-						Element eElem;
-						Object o=p.getObject(col);
-						if(o==null)
-							{
-							eElem=new Element("null");
-							}
-						else if(o instanceof Double)
-							{
-							eElem=new Element("d");
-							eElem.setAttribute("v", o.toString());
-							}
-						else if(o instanceof Integer)
-							{
-							eElem=new Element("i");
-							eElem.setAttribute("v", o.toString());
-							}
-						else //if(o instanceof String)
-							{
-							//Convert anything else to a string
-							eElem=new Element("s");
-							eElem.setAttribute("v", o.toString());
-							}
-						eParticle.addContent(eElem);
-						}
-					}
-				}
-			}
 		return metaType;
 		}
 	
@@ -604,10 +562,6 @@ public class ParticleMeasure extends EvObject
 		MeasureProperty.registerMeasure("perimeter", new ParticleMeasurePerimeter());
 		MeasureProperty.registerMeasure("Geometric PCA", new ParticleMeasureGeometricPCA());
 		}
-	
-	
-	
-	
 	
 
 	}

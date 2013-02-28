@@ -1,4 +1,4 @@
-package util2.paperCeExpression.collectData;
+package endrov.util.io;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -9,13 +9,13 @@ import java.util.ArrayList;
  * @author Johan Henriksson
  *
  */
-public class CsvFileReader
+public class CsvFileReaderDeprecated
 	{
 	private BufferedReader in;
 	private char sep;
 	
 	
-	public CsvFileReader(File f, char sep) throws IOException
+	public CsvFileReaderDeprecated(File f, char sep) throws IOException
 		{
 		in=new BufferedReader(new FileReader(f));
 		this.sep=sep;

@@ -77,7 +77,7 @@ public class ParticleMeasurePerimeter implements MeasurePropertyType
 		//Write into particles
 		for(int id:perimeter.keySet())
 			{
-			ParticleMeasure.Particle p=info.getCreateParticle(id);
+			ParticleMeasure.ColumnSet p=info.getCreateParticle(id);
 			double v=perimeter.get(id);
 			p.put(propertyName, v);
 			}

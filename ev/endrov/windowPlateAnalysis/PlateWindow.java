@@ -6,6 +6,7 @@
 package endrov.windowPlateAnalysis;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.TreeSet;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -47,6 +49,7 @@ import endrov.typeParticleMeasure.ParticleMeasure;
 import endrov.typeParticleMeasure.ParticleMeasureIO;
 import endrov.typeParticleMeasure.ParticleMeasure.Well;
 import endrov.util.math.EvDecimal;
+import endrov.windowPlateAnalysis.PlateAnalysisQueueWidget.WellRunnable;
 
 /**
  * Plate window - For high-throughput analysis
@@ -94,21 +97,24 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	private final EvComboObjectOne<Flow> comboFlow=new EvComboObjectOne<Flow>(new Flow(), true, true);
 	private JComboBox comboAttribute1=new JComboBox/*<String>*/();
 	private JComboBox comboAttribute2=new JComboBox/*<String>*/();
+	private JComboBox comboLayout=new JComboBox/*<String>*/();
 	private JComboBox comboChannel=new JComboBox/*<String>*/();
 	private JComboBox comboDisplay=new JComboBox/*<Object>*/(PlateWindowView.getAggrModes());
+	private PlateAnalysisQueueWidget queue=new PlateAnalysisQueueWidget();
+	
 	private final FrameControl2D frameControl=new FrameControl2D(this, false, true);
 	private PlateWindowView imagePanel=new PlateWindowView(this);	
 	private ChannelWidget cw=new ChannelWidget();
-
+	private JButton bAddToQueue=new JButton("Add to queue");
+	
 	private boolean disableDataChanged=false;
 
 	private final JMenu menuPlateWindow=new JMenu("PlateWindow");
 	private final JMenuItem miZoom=new JMenuItem("Zoom to fit");
 	private final JMenuItem miExportCSV=new JMenuItem("Export as CSV");
+	private final JMenuItem miImportCSV=new JMenuItem("Import from CSV");
 	private final JMenuItem miExportSQL=new JMenuItem("Export to SQL");
-	private final JMenuItem miReevaluate=new JMenuItem("Re-evaluate all");
-//	private final JMenuItem miEvaluate=new JMenuItem("Evaluate flow");
-	
+	private final JMenuItem miReevaluate=new JMenuItem("Clear previous measure values");
 
 	private final JMenu menuImageSize=new JMenu("Thumbnail size");
 	private final JMenuItem miSize100=new JMenuItem("100px");
@@ -116,11 +122,24 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	private final JMenuItem miSize300=new JMenuItem("300px");
 	private final JMenuItem miSize500=new JMenuItem("500px");
 	private final JMenuItem miSizeOrig=new JMenuItem("Orig size");
+
+	/**
+	 * Update for right side bar
+	 */
+	private ComponentListener resizer=new ComponentListener()
+		{
+		public void componentResized(ComponentEvent arg0)
+			{
+			PlateWindow.this.revalidate();
+			}
+		public void componentShown(ComponentEvent arg0){}
+		public void componentMoved(ComponentEvent arg0){}
+		public void componentHidden(ComponentEvent arg0){}
+		};
 	
 	/**
 	 * Make a new window at given location
 	 */
-	
 	public PlateWindow()
 		{
 		cw.updatePanelContrastBrightness();
@@ -132,42 +151,56 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		comboDisplay.addActionListener(this);
 		comboAttribute1.addActionListener(this);
 		comboAttribute2.addActionListener(this);
+		comboLayout.addActionListener(this);
 		comboChannel.addActionListener(this);
-
+		bAddToQueue.addActionListener(this);
 		
 		addMainMenubarWindowSpecific(menuPlateWindow);
 
 		//TODO right-click "open in image window"
+
+		JComponent rightPanel=EvSwingUtil.layoutACB(
+				EvSwingUtil.layoutCompactVertical(
+						EvSwingUtil.withTitledBorder("Data location",
+								EvSwingUtil.layoutCompactVertical(
+										new JLabel("Images:"),
+										comboData,
+										new JLabel("Flow for computation:"),
+										comboFlow,
+										new JLabel("Measure values:"),
+										comboParticleMeasure,
+										bAddToQueue)),
+						EvSwingUtil.withTitledBorder("Display",
+								EvSwingUtil.layoutCompactVertical(
+										new JLabel("Layout by:"),
+										comboLayout,
+										new JLabel("Channel:"),
+										comboChannel,
+										new JLabel("Primary attribute:"),
+										comboAttribute1,
+										new JLabel("Secondary attribute:"),
+										comboAttribute2,
+										new JLabel("Show as:"),
+										comboDisplay)
+										)),
+				EvSwingUtil.withTitledBorder("Batch queue",	queue),
+				null
+				);
+		JScrollPane scroll=new JScrollPane(rightPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		
+		//Force update of layout whenever a subcomponent changes size (or the right bar will end up too small)
+		comboData.addComponentListener(resizer);
+		comboFlow.addComponentListener(resizer);
+		comboChannel.addComponentListener(resizer);
+		comboAttribute1.addComponentListener(resizer);
+		comboAttribute2.addComponentListener(resizer);
 
 		//Do the main layout
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutLCR(
 				null, 
 				imagePanel, 
-				EvSwingUtil.layoutACB(
-						EvSwingUtil.layoutCompactVertical(
-								EvSwingUtil.withTitledBorder("Data location",
-										EvSwingUtil.layoutCompactVertical(
-												new JLabel("Images:"),
-												comboData,
-												new JLabel("Flow for computation:"),
-												comboFlow,
-												new JLabel("Measure values:"),
-												comboParticleMeasure)),
-								EvSwingUtil.withTitledBorder("Display",
-										EvSwingUtil.layoutCompactVertical(
-												new JLabel("Channel:"),
-												comboChannel,
-												new JLabel("Primary attribute:"),
-												comboAttribute1,
-												new JLabel("Secondary attribute:"),
-												comboAttribute2,
-												new JLabel("Display:"),
-												comboDisplay)
-												)),
-						null,
-						null
-						)),
+				scroll),
 				BorderLayout.CENTER);
 		add(
 				EvSwingUtil.layoutLCR(
@@ -195,11 +228,13 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		
 			
 		menuPlateWindow.add(miZoom);
+		menuPlateWindow.add(miImportCSV);
 		menuPlateWindow.add(miExportCSV);
 		menuPlateWindow.add(miExportSQL);
 		menuPlateWindow.add(miReevaluate);
 		
 		miZoom.addActionListener(this);
+		miImportCSV.addActionListener(this);
 		miExportCSV.addActionListener(this);
 		miExportSQL.addActionListener(this);
 		miReevaluate.addActionListener(this);
@@ -359,15 +394,26 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		}
 	
 	
+	
 
 	private void updateAttrCombo()
 		{
-		List<String> alist=getAttributes();
+		List<String> alist=getParticleAttributes();
 		updateCombo(comboAttribute1,alist);
 		updateCombo(comboAttribute2,alist);
 		imagePanel.setAggrMethod(comboDisplay.getSelectedItem(), 
 				(String)comboAttribute1.getSelectedItem(),
 				(String)comboAttribute2.getSelectedItem());
+		
+		}
+	
+	public void updateLayoutCombo()
+		{
+		List<String> llist=new ArrayList<String>();
+		llist.add(PlateWindowView.layoutByWellID);
+		llist.addAll(getWellAttributes());
+		updateCombo(comboLayout,llist);
+		imagePanel.setLayoutMethod((String)comboLayout.getSelectedItem());
 		}
 	
 	/**
@@ -385,7 +431,8 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			comboFlow.updateList();
 			updateChannelCombo();
 			updateAttrCombo();
-
+			updateLayoutCombo();
+			
 			updateWells();
 
 			updateWindowTitle();
@@ -453,7 +500,6 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		
 		//Update panel
 		imagePanel.layoutWells();
-		imagePanel.redrawPanel(); //TODO not always needed
 		}
 
 
@@ -517,15 +563,27 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	/**
 	 * Get available particle attributes
 	 */
-	private List<String> getAttributes()
+	private List<String> getParticleAttributes()
 		{
 		LinkedList<String> list=new LinkedList<String>();
 		ParticleMeasure pm=getParticleMeasure();
 		if(pm!=null)
 			{
-			list.addAll(pm.getColumns());
-			list.remove("source");
+			list.addAll(pm.getParticleColumns());
+//			list.remove("source");   //TODO what is this?
 			}
+		return list;
+		}
+
+	/**
+	 * Get available particle well attributes
+	 */
+	private List<String> getWellAttributes()
+		{
+		LinkedList<String> list=new LinkedList<String>();
+		ParticleMeasure pm=getParticleMeasure();
+		if(pm!=null)
+			list.addAll(pm.getWellColumns());
 		return list;
 		}
 
@@ -562,29 +620,32 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			{
 			updateAttrCombo();
 			}
-/*		else if(e.getSource()==miEvaluate)
+		else if(e.getSource()==comboLayout)
 			{
-//			imagePanel.execFlowAllWell();
-			dataChangedEvent();  //Overkill?
-			}*/
+			updateLayoutCombo();
+			}
 		else if(e.getSource()==miZoom)
 			imagePanel.zoomToFit();
 		else if(e.getSource()==miSize100)
-			imagePanel.setThumbnailSize(100);
+			imagePanel.setThumbnailImageSize(100);
 		else if(e.getSource()==miSize200)
-			imagePanel.setThumbnailSize(200);
+			imagePanel.setThumbnailImageSize(200);
 		else if(e.getSource()==miSize300)
-			imagePanel.setThumbnailSize(300);
+			imagePanel.setThumbnailImageSize(300);
 		else if(e.getSource()==miSize500)
-			imagePanel.setThumbnailSize(500);
+			imagePanel.setThumbnailImageSize(500);
 		else if(e.getSource()==miSizeOrig)
-			imagePanel.setThumbnailSize(null);
+			imagePanel.setThumbnailImageSize(null);
+		else if(e.getSource()==miImportCSV)
+			importCSV();
 		else if(e.getSource()==miExportCSV)
 			exportCSV();
 		else if(e.getSource()==miExportSQL)
 			exportSQL();
 		else if(e.getSource()==miReevaluate)
-			imagePanel.reevalutate();
+			imagePanel.clearPM();
+		else if(e.getSource()==bAddToQueue)
+			addToQueue();
 		}
 
 	
@@ -641,6 +702,22 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	
 	
 	
+	private File removeCSVending(File f)
+		{
+		String a1=".pm.particle.csv";
+		String a2=".pm.frame.csv";
+		String a3=".pm.well.csv";
+				
+		if(f.getName().endsWith(a1))
+			return new File(f.getParentFile(), f.getName().substring(0,f.getName().length()-a1.length()));
+		else if(f.getName().endsWith(a2))
+			return new File(f.getParentFile(), f.getName().substring(0,f.getName().length()-a2.length()));
+		else if(f.getName().endsWith(a3))
+			return new File(f.getParentFile(), f.getName().substring(0,f.getName().length()-a3.length()));
+		else
+			return f;
+		}
+	
 	/**
 	 * Export data to CSV
 	 */
@@ -649,14 +726,27 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		ParticleMeasure pm=getParticleMeasure();
 		if(pm!=null)
 			{
-			File f=openDialogSaveFile(".pm.csv");
+			File f=openDialogSaveFile(""); 
 			if(f!=null)
 				{
+				f=removeCSVending(f);
+				File fPerParticle=new File(f.getParentFile(), f.getName()+".pm.particle.csv");
+				File fPerFrame=new File(f.getParentFile(), f.getName()+".pm.frame.csv");
+				File fPerWell=new File(f.getParentFile(), f.getName()+".pm.well.csv");
+				
 				try
 					{
-					FileWriter fw=new FileWriter(f);
-					ParticleMeasureIO.saveCSV(pm, fw, true, "\t");
-					fw.close();
+					FileWriter fwPerParticle=new FileWriter(fPerParticle);
+					ParticleMeasureIO.writeCSVperparticle(pm, fwPerParticle, true, "\t", true);
+					fwPerParticle.close();
+					
+					FileWriter fwPerFrame=new FileWriter(fPerFrame);
+					ParticleMeasureIO.writeCSVperframe(pm, fwPerFrame, true, "\t", true);
+					fwPerFrame.close();
+
+					FileWriter fwPerWell=new FileWriter(fPerWell);
+					ParticleMeasureIO.writeCSVperwell(pm, fwPerWell, true, "\t", true);
+					fwPerWell.close();
 					}
 				catch (IOException e)
 					{
@@ -670,12 +760,41 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		}
 
 	
+	/**
+	 * Import data from CSV
+	 */
+	private void importCSV()
+		{
+		ParticleMeasure pm=getParticleMeasure();
+		if(pm!=null)
+			{
+			File f=openDialogOpenFile(); 
+			if(f!=null)
+				{
+				try
+					{
+					FileReader reader=new FileReader(f);
+					ParticleMeasureIO.readCSV(pm, reader, '\t');
+					reader.close();
+					}
+				catch (IOException e)
+					{
+					showErrorDialog("Error reading file: "+e.getMessage());
+					EvLog.printError(e.getMessage(), e);
+					}
+				dataChangedEvent();
+				}
+			}
+		else
+			showErrorDialog("No particle data is selected");
+		}
+
+	
 	private void exportSQL()
 		{
 		ParticleMeasure pm=getParticleMeasure();
 		if(pm!=null)
 			{
-			
 			EvSQLConnection conn=EvDialogChooseSQL.openDialog();
 			if(conn!=null)
 				{
@@ -708,7 +827,11 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 			showErrorDialog("No particle data is selected");
 		}
 	
-	
+
+	/**
+	 * Testing
+	 * @param args
+	 */
 	public static void main(String[] args)
 		{
 		
@@ -745,23 +868,21 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 				ParticleMeasure.Frame fi=new ParticleMeasure.Frame();
 				pmw.setFrame(EvDecimal.ZERO, fi);
 //				pm.addColumn("source");
-				pm.addColumn("a");
-				pm.addColumn("b");
+				pm.addParticleColumn("a");
+				pm.addParticleColumn("b");
 
 				int id=0;
-						for(int i=0;i<100;i++)
-							{
-							ParticleMeasure.Particle m=fi.getCreateParticle(id++);
-							double r=Math.random();
-							m.put("a", r);
-							m.put("b", r+Math.random());
-							}
+				for(int i=0;i<100;i++)
+					{
+					ParticleMeasure.ColumnSet m=fi.getCreateParticle(id++);
+					double r=Math.random();
+					m.put("a", r);
+					m.put("b", r+Math.random());
+					}
 
 				}
 		
 		EvDataGUI.registerOpenedData(d);
-		
-		
 		}
 	
 
@@ -771,6 +892,35 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 		return "High-throughput screenings with multi-well plates";
 		}
 
+	
+	public void attributesMayHaveUpdated()
+		{
+		updateAttrCombo();
+		updateLayoutCombo();
+		}
+	
+	public WellRunnable getNextBackgroundTask()
+		{
+		return queue.getNextBackgroundTask();
+		}
+	
+
+	private void addToQueue()
+		{
+		EvPath pathData=comboData.getSelectedPath();
+		EvPath pathFlow=comboFlow.getSelectedPath();
+		EvPath pathOutput=comboParticleMeasure.getSelectedPath();
+
+		comboFlow.getSelectedPath();
+		
+		if(pathData!=null && pathFlow!=null && pathOutput!=null)
+			{
+			queue.addJob(pathData, pathFlow, pathOutput);
+			imagePanel.startWorkerThread();
+			}
+		}
+
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/
@@ -778,37 +928,31 @@ public class PlateWindow extends EvBasicWindow implements ChangeListener, Action
 	static
 		{
 		EvBasicWindow.addBasicWindowExtension(new EvBasicWindowExtension()
+			{
+			public void newBasicWindow(EvBasicWindow w)
 				{
-				public void newBasicWindow(EvBasicWindow w)
+				w.addHook(this.getClass(),new Hook());
+				}
+			class Hook implements EvBasicWindowHook, ActionListener
+				{
+				public void createMenus(EvBasicWindow w)
 					{
-					w.addHook(this.getClass(),new Hook());
+					JMenuItem mi=new JMenuItem("Plate analysis",BasicIcon.iconImage);
+					mi.addActionListener(this);
+					w.addMenuWindow(mi);
 					}
-				class Hook implements EvBasicWindowHook, ActionListener
+				
+				public void actionPerformed(ActionEvent e) 
 					{
-					public void createMenus(EvBasicWindow w)
-						{
-						JMenuItem mi=new JMenuItem("Plate analysis",BasicIcon.iconImage);
-						mi.addActionListener(this);
-						w.addMenuWindow(mi);
-						}
-					
-					public void actionPerformed(ActionEvent e) 
-						{
-						new PlateWindow();
-						}
-					
-					public void buildMenu(EvBasicWindow w){}
+					new PlateWindow();
 					}
-				});
-		
+				
+				public void buildMenu(EvBasicWindow w){}
+				}
+			});
 		}
 	
 	
-	public void attributesMayHaveUpdated()
-		{
-		updateAttrCombo();
-		}
-	
-	
+
 	}
 

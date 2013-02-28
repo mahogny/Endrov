@@ -15,34 +15,37 @@ import org.jdom.Element;
  * Import Excel and CSV tables
  * @author Johan Henriksson
  */
-public class EvSpreedsheetImporter
+public class EvSpreadsheetImporter
 	{
-	public List<List<String>> rows=new LinkedList<List<String>>();
+	public List<ArrayList<String>> rows=new LinkedList<ArrayList<String>>();
 	
 
 	/**
 	 * Import CSV file given delimiter
 	 */
-	public void importCSV(String filename, char fieldDelim, char textDelim) throws Exception
+	public void importCSV(Reader is, char fieldDelim, char quoteCharacter) throws IOException
 		{
 		rows.clear();
 
-		Scanner s=new Scanner(new FileInputStream(filename));
+		int lastCapacity=0;
+		
+		
+		Scanner s=new Scanner(is);
 		while(s.hasNextLine())
 			{
+			//Read line
 			String line=s.nextLine();
 			LinkedList<Character> ll=new LinkedList<Character>();
 			for(char c:line.toCharArray())
 				ll.add(c);
-			List<String> row=new LinkedList<String>();
-			rows.add(row);
+			ArrayList<String> onerow=new ArrayList<String>(lastCapacity);
 			
 			//For every column
 			while(!ll.isEmpty())
 				{
-				char c=ll.poll();
+				char c=ll.removeFirst();
 				StringBuffer tok=new StringBuffer();
-				if(c==textDelim)
+				if(c==quoteCharacter)
 					{
 					//Text within text delimiter
 					for(;;)
@@ -55,14 +58,14 @@ public class EvSpreedsheetImporter
 							tok.append("\n");
 							}
 						c=ll.poll();
-						if(c==textDelim)
+						if(c==quoteCharacter)
 							break; 
 						else
 							tok.append(c);
 						}
-					row.add(tok.toString());
+					onerow.add(tok.toString());
 					if(!ll.isEmpty())
-						ll.poll(); //Move past next text delimiter
+						ll.removeFirst(); //Move past next text delimiter
 					}
 				else
 					{
@@ -76,10 +79,12 @@ public class EvSpreedsheetImporter
 						else
 							tok.append(c);
 						}
-					System.out.println("# "+tok.toString());
-					row.add(tok.toString());
+					onerow.add(tok.toString());
 					}
 				}
+			
+			rows.add(onerow);
+			lastCapacity=onerow.size();
 			}
 		s.close();
 		}
@@ -96,10 +101,11 @@ public class EvSpreedsheetImporter
 		//Take first sheet
 		HSSFSheet sheet = wb.getSheetAt(0);
 
+		int lastCapacity=0;
 		for(int rowi=0;sheet.getRow(rowi)!=null;rowi++)
 			{
 			HSSFRow row = sheet.getRow(rowi);
-			List<String> a=new LinkedList<String>();
+			ArrayList<String> a=new ArrayList<String>(lastCapacity);
 
 			for(int coli=0;row.getCell((short)coli)!=null;coli++)
 				{
@@ -110,6 +116,7 @@ public class EvSpreedsheetImporter
 					a.add(""+c.getNumericCellValue());
 				}
 			rows.add(a);
+			lastCapacity=a.size();
 			}
 		}
 	
@@ -152,5 +159,13 @@ public class EvSpreedsheetImporter
 				}
 			}
 		}
+
 	
+	public ArrayList<String> readLine()
+		{
+		if(rows.isEmpty())
+			return null;
+		else
+			return rows.remove(0);
+		}
 	}

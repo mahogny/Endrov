@@ -56,7 +56,7 @@ public class ParticleMeasureMaxIntensity implements MeasurePropertyType
 		//Write into particles
 		for(int id:max.keySet())
 			{
-			ParticleMeasure.Particle p=info.getCreateParticle(id);
+			ParticleMeasure.ColumnSet p=info.getCreateParticle(id);
 			p.put(propertyName, max.get(id));
 			}
 		

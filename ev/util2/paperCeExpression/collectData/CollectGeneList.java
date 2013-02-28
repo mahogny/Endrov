@@ -11,6 +11,7 @@ import java.util.TreeSet;
 import endrov.core.EndrovCore;
 import endrov.core.log.EvLog;
 import endrov.core.log.EvLogStdout;
+import endrov.util.io.CsvFileReaderDeprecated;
 
 public class CollectGeneList
 	{
@@ -18,7 +19,7 @@ public class CollectGeneList
 	
 	public static Map<String,String> readMap(File f) throws IOException
 		{
-		CsvFileReader csvOrf2gene=new CsvFileReader(f, '\t');
+		CsvFileReaderDeprecated csvOrf2gene=new CsvFileReaderDeprecated(f, '\t');
 		Map<String,String> map=new TreeMap<String, String>();
 		ArrayList<String> l;
 		while((l=csvOrf2gene.readLine())!=null)
@@ -28,7 +29,7 @@ public class CollectGeneList
 	
 	public static Set<String> readSet(File f) throws IOException
 		{
-		CsvFileReader csvOrf2gene=new CsvFileReader(f, '\t');
+		CsvFileReaderDeprecated csvOrf2gene=new CsvFileReaderDeprecated(f, '\t');
 		Set<String> map=new TreeSet<String>();
 		ArrayList<String> l;
 		while((l=csvOrf2gene.readLine())!=null)
