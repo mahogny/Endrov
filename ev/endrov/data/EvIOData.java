@@ -55,5 +55,6 @@ public interface EvIOData
 	 */
 	public File datadir();
 
-	
+
+	public void close() throws IOException;
 	}

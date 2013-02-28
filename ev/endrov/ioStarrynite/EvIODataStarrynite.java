@@ -306,7 +306,10 @@ public class EvIODataStarrynite implements EvIOData
 		return imageset;
 		}
 
-	
+	public void close() throws IOException
+		{
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration

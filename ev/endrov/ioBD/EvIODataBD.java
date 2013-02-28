@@ -181,6 +181,10 @@ public class EvIODataBD implements EvIOData
 		return imageset;
 		}
 
+	public void close() throws IOException
+		{
+		}
+
 	
 
 	/******************************************************************************************************
