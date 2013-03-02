@@ -203,66 +203,102 @@ public class Viewer2DView extends JPanel
 		public double brightness=0;
 		private BufferedImage bufi=null;
 		public EvColor color;
+		public boolean idcolor;
 		
 		
 		
 		
 		public BufferedImage applyIntensityTransform(EvPixels p)
 			{
-			double contrastR=contrast*color.getRedDouble();
-			double contrastG=contrast*color.getGreenDouble();
-			double contrastB=contrast*color.getBlueDouble();
-			
-			//if(1==1)
-				//{
-				
+			if(idcolor)
+				{
+				////////////////// Transform: Treat colors as IDs, try to generate colors far from each other
 				int w=p.getWidth();
 				int h=p.getHeight();
-				double[] aPixels=p.convertToDouble(true).getArrayDouble();
+				int[] aPixels=p.convertToInt(true).getArrayInt();
 				BufferedImage buf=new BufferedImage(w,h,BufferedImage.TYPE_3BYTE_BGR);
 				
-				
-				//System.out.println("Got image, first pixel values "+p.convertToInt(true).getArrayInt()[0]+"   "+p.convertToInt(true).getArrayInt()[1]);
-				
-
 				byte[] outarr=new byte[w*h*3];
-				//DataBufferByte out=new DataBufferByte(w*h*3);
-				//double[]
-				
 				for(int i=0;i<w*h;i++)
 					{
-					//double c=aPixels[i]*contrast+brightness;
-					byte b=clampByte((int)(aPixels[i]*contrastB+brightness));
-					byte g=clampByte((int)(aPixels[i]*contrastG+brightness));
-					byte r=clampByte((int)(aPixels[i]*contrastR+brightness));
-					//System.out.println(b);
-					/*if(c>255) c=255;
-					else if(c<0) c=0;*/
-					outarr[i*3+0]=r;
-					outarr[i*3+1]=g;
-					outarr[i*3+2]=b;
-					//out.
+					int thisp=aPixels[i];
+					if(thisp==0)
+						{
+						//0 should be black
+						outarr[i*3+0]=0;
+						outarr[i*3+1]=0;
+						outarr[i*3+2]=0;
+						}
+					else
+						{
+						//Other IDs, map "randomly". Using 3,5,7 which are co-prime to generate a decent number of colors, but it does not guarantee that two adjacent
+						//regions will have different colors
+						outarr[i*3+0]=clampByte(50+(thisp%3)*68);
+						outarr[i*3+1]=clampByte(50+(thisp%5)*41);
+						outarr[i*3+2]=clampByte(50+(thisp%7)*29);
+						}
 					}
-
-				//bufi.getRaster().setPixels(0, 0, w, h, arrayI);
-				
-				//DataBufferByte out=new DataBufferByte(outarr, w*h*3);
 				buf.getRaster().setDataElements(0, 0, w, h, outarr);
-				//bufi.getRaster().set
-				
 				return buf;
-				
-			//	}
-				/*
+				}
 			else
 				{
-			//This works for grayscale!
-				BufferedImage buf=EvOpImageMapScreen.apply(p, contrast, brightness).quickReadOnlyAWT();
-				return buf;
-				}*/
-			
-			
-			
+				/////////////////// Transform: contrast/brightness
+				
+				double contrastR=contrast*color.getRedDouble();
+				double contrastG=contrast*color.getGreenDouble();
+				double contrastB=contrast*color.getBlueDouble();
+				
+				//if(1==1)
+					//{
+					
+					int w=p.getWidth();
+					int h=p.getHeight();
+					double[] aPixels=p.convertToDouble(true).getArrayDouble();
+					BufferedImage buf=new BufferedImage(w,h,BufferedImage.TYPE_3BYTE_BGR);
+					
+					
+					//System.out.println("Got image, first pixel values "+p.convertToInt(true).getArrayInt()[0]+"   "+p.convertToInt(true).getArrayInt()[1]);
+					
+	
+					byte[] outarr=new byte[w*h*3];
+					//DataBufferByte out=new DataBufferByte(w*h*3);
+					//double[]
+					
+					for(int i=0;i<w*h;i++)
+						{
+						//double c=aPixels[i]*contrast+brightness;
+						byte b=clampByte((int)(aPixels[i]*contrastB+brightness));
+						byte g=clampByte((int)(aPixels[i]*contrastG+brightness));
+						byte r=clampByte((int)(aPixels[i]*contrastR+brightness));
+						//System.out.println(b);
+						/*if(c>255) c=255;
+						else if(c<0) c=0;*/
+						outarr[i*3+0]=r;
+						outarr[i*3+1]=g;
+						outarr[i*3+2]=b;
+						//out.
+						}
+	
+					//bufi.getRaster().setPixels(0, 0, w, h, arrayI);
+					
+					//DataBufferByte out=new DataBufferByte(outarr, w*h*3);
+					buf.getRaster().setDataElements(0, 0, w, h, outarr);
+					//bufi.getRaster().set
+					
+					return buf;
+					
+				//	}
+					/*
+				else
+					{
+				//This works for grayscale!
+					BufferedImage buf=EvOpImageMapScreen.apply(p, contrast, brightness).quickReadOnlyAWT();
+					return buf;
+					}*/
+				
+				
+				}
 			
 			
 			

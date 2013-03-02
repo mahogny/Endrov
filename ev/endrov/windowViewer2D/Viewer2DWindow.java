@@ -26,6 +26,7 @@ import endrov.gui.*;
 import endrov.gui.component.EvComboColor;
 import endrov.gui.component.EvHidableSidePaneRight;
 import endrov.gui.component.JImageButton;
+import endrov.gui.component.JImageToggleButton;
 import endrov.gui.component.JSnapBackSlider;
 import endrov.gui.component.JSnapBackSlider.SnapChangeListener;
 import endrov.gui.icon.BasicIcon;
@@ -73,7 +74,7 @@ public class Viewer2DWindow extends EvBasicWindow
 	private static ImageIcon iconLabelBrightness=new ImageIcon(BasicIcon.class.getResource("labelBrightness.png"));
 	private static ImageIcon iconLabelContrast=new ImageIcon(BasicIcon.class.getResource("labelContrast.png"));
 	private static ImageIcon iconLabelFitRange=new ImageIcon(BasicIcon.class.getResource("labelFitRange.png"));
-	
+	private static ImageIcon iconLabelIDColor=new ImageIcon(BasicIcon.class.getResource("labelIDcolor.png"));
 	
 	public static int snapDistance=10;
 	
@@ -245,8 +246,7 @@ public class Viewer2DWindow extends EvBasicWindow
 		private final EvComboColor comboColor=new EvComboColor(false, channelColorList, EvColor.white);
 		private final JImageButton bRemoveChannel=new JImageButton(BasicIcon.iconRemove,"Remove channel");
 		private final JImageButton bFitRange=new JImageButton(iconLabelFitRange,"Fit range");
-		
-		
+		private final JImageToggleButton bIDcolor=new JImageToggleButton(iconLabelIDColor,"Assume colors are IDs - improves contrast");
 		
 		public ChannelWidget()
 			{
@@ -273,7 +273,7 @@ public class Viewer2DWindow extends EvBasicWindow
 			add(EvSwingUtil.layoutLCR(
 					null,
 					brightnessPanel,
-					EvSwingUtil.layoutEvenHorizontal(bFitRange, bRemoveChannel)
+					EvSwingUtil.layoutEvenHorizontal(bIDcolor, bFitRange, bRemoveChannel)
 					));
 
 			
@@ -282,6 +282,7 @@ public class Viewer2DWindow extends EvBasicWindow
 			comboChannel.addActionListener(this);
 			bRemoveChannel.addActionListener(this);
 			bFitRange.addActionListener(this);
+			bIDcolor.addActionListener(this);
 			
 			sliderContrast.addSnapListener(this);
 			sliderBrightness.addSnapListener(this);
@@ -305,7 +306,11 @@ public class Viewer2DWindow extends EvBasicWindow
 				}
 			updateImagePanel();
 			}
-	
+
+		public boolean colorAsID()
+			{
+			return bIDcolor.isSelected();
+			}
 		
 		public void actionPerformed(ActionEvent e)
 			{
@@ -321,6 +326,8 @@ public class Viewer2DWindow extends EvBasicWindow
 				removeChannel(this);
 			else if(e.getSource()==bFitRange)
 				fitRange();
+			else if(e.getSource()==bIDcolor)
+				updateImagePanel();
 			else
 				updateImagePanel();
 			}
@@ -767,6 +774,7 @@ public class Viewer2DWindow extends EvBasicWindow
 				pi.brightness=cw.getBrightness();//cw.sliderBrightness.getValue();
 				pi.contrast=cw.getContrast();//Math.pow(2,cw.sliderContrast.getValue()/1000.0);
 				pi.color=cw.getColor();
+				pi.idcolor=cw.colorAsID();
 				
 				EvDecimal frame=frameControl.getFrame();
 				EvDecimal z=frameControl.getZ();

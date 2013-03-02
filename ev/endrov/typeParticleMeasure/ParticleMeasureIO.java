@@ -41,7 +41,7 @@ public class ParticleMeasureIO
 		
 		LinkedList<String> colWithSpecial=new LinkedList<String>();
 		colWithSpecial.add("well");
-		colWithSpecial.addAll(pm.getParticleColumns());
+		colWithSpecial.addAll(pm.getWellColumns());
 		
 		//Add header
 		if(addHeader)
@@ -88,7 +88,7 @@ public class ParticleMeasureIO
 		LinkedList<String> colWithSpecial=new LinkedList<String>();
 		colWithSpecial.add("well");
 		colWithSpecial.add("frame");
-		colWithSpecial.addAll(pm.getParticleColumns());
+		colWithSpecial.addAll(pm.getFrameColumns());
 		
 		//Add header
 		if(addHeader)

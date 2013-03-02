@@ -10,6 +10,7 @@ import endrov.typeImageset.EvStack;
 import endrov.typeParticleMeasure.ParticleMeasure.Frame;
 import endrov.typeParticleMeasure.ParticleMeasure.Well;
 import endrov.typeParticleMeasure.calc.MeasureProperty;
+import endrov.typeParticleMeasure.calc.MeasurePropertyType;
 import endrov.util.ProgressHandle;
 import endrov.util.math.EvDecimal;
 
@@ -57,7 +58,15 @@ public class ParticleMeasureEval
 					{
 					//Run each measure
 					for(String s:useMeasures)
-						MeasureProperty.measures.get(s).analyze(progh, weakStackValue.get(), weakChMask.get().getStack(frame),weakInfo.get());
+						{
+						MeasurePropertyType measure=MeasureProperty.measures.get(s);
+						if(measure==null)
+							throw new RuntimeException("The measure is null - implementation problem");
+						EvChannel chMask=weakChMask.get();
+						if(chMask==null)
+							throw new RuntimeException("The channel mask is null - implementation problem");
+						measure.analyze(progh, weakStackValue.get(), chMask.getStack(frame),weakInfo.get());
+						}
 					}
 				});
 			
