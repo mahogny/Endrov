@@ -6,6 +6,7 @@
 package endrov.ioOMERO;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 
 import loci.common.DataTools;
@@ -281,5 +282,10 @@ public class EvIODataOMERO implements EvIOData
 	public void saveData(EvData d, FileIOStatusCallback cb)
 		{
 		}
+	
+	public void close() throws IOException
+		{
+		}
+
 	
 	}

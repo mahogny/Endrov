@@ -1293,7 +1293,10 @@ public class EvIODataOST implements EvIOData
 		}
 	*/
 	
-	
+	public void close() throws IOException
+		{
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration

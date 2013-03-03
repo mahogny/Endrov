@@ -101,6 +101,11 @@ public class EvMultidimAcquisition extends EvAcquisition
 			{
 			public RecOp recurse;
 			public abstract void exec();
+			
+			/**
+			 * Should return true if the operations below cover all channels, false if only one
+			 */
+			public abstract boolean coversAllChannels();
 			}
 
 		/**
@@ -108,6 +113,11 @@ public class EvMultidimAcquisition extends EvAcquisition
 		 */
 		private class RecOpSnap extends RecOp	
 			{
+			public boolean coversAllChannels()
+				{
+				return false;
+				}
+			
 			@Override
 			public void exec()
 				{
@@ -199,6 +209,11 @@ public class EvMultidimAcquisition extends EvAcquisition
 		 */
 		private class RecOpChannel extends RecOp
 			{
+			public boolean coversAllChannels()
+				{
+				return true;
+				}
+			
 			public void exec()
 				{
 				for(RecSettingsChannel.OneChannel ch:channel.channels)
@@ -220,6 +235,25 @@ public class EvMultidimAcquisition extends EvAcquisition
 		 */
 		private class RecOpStack extends RecOp
 			{
+			public boolean coversAllChannels()   //Maybe return (channel, [stacks])
+				{
+				return recurse.coversAllChannels();
+				}
+			
+			private void stackDone()
+				{
+				if(coversAllChannels())
+					{
+					
+					}
+				else
+					{
+					//Only the current channels
+					
+//					ExpandedDynamicRange.expandDynamicRangeByExposureTime(currentChannel, stack);
+					}
+				}
+			
 			public void exec()
 				{
 				if(slices.zType==RecSettingsSlices.ZType.ONEZ)
@@ -229,6 +263,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 					dz=EvDecimal.ONE;
 					//currentZ=EvDecimal.ZERO;
 					recurse.exec();
+					stackDone();
 					}
 				else if(slices.zType==RecSettingsSlices.ZType.NUMZ)
 					{
@@ -252,8 +287,12 @@ public class EvMultidimAcquisition extends EvAcquisition
 						currentZCount=az;
 						recurse.exec();
 						if(toStop)
+							{
+							stackDone();
 							return;
+							}
 						}
+					stackDone();
 					}
 				}
 			
@@ -266,6 +305,11 @@ public class EvMultidimAcquisition extends EvAcquisition
 		 */
 		private class RecOpTime extends RecOp
 			{
+			public boolean coversAllChannels()
+				{
+				return recurse.coversAllChannels();
+				}
+			
 			public void exec()
 				{
 				if(times.tType==RecSettingsTimes.TimeType.ONET)
@@ -361,29 +405,33 @@ public class EvMultidimAcquisition extends EvAcquisition
 		 * Move to the next position, recurse
 		 */
 		private class RecOpPos extends RecOp
-		{
-			public void exec()
-			{	
-				for(StoredStagePosition pos:positions.positions)
+			{
+			public boolean coversAllChannels()
 				{
+				return recurse.coversAllChannels();
+				}
+			
+			public void exec()
+				{	
+				//Get all the axes to move
+				for(StoredStagePosition pos:positions.positions)
+					{
 					Map<String, Double> gotoPos=new HashMap<String, Double>();			
-					
-					//get all the axes
 					for(int i = 0; i<pos.getAxisInfo().length; i++){
 						gotoPos.put(pos.getAxisInfo()[i].getDevice().getAxisName()[pos.getAxisInfo()[i].getAxis()],
 								pos.getAxisInfo()[i].getValue());
 					}
-					//go to position
-					RecordingResource.setStagePos(gotoPos);
-					System.out.println(gotoPos);
-					currentPos=pos.getName();		
 					
-					//Optionally use autofocus
-					if(settings.positions.useAutofocus)
-						RecordingResource.autofocus();
-					
-					recurse.exec();
-					
+				//Go to position
+				RecordingResource.setStagePos(gotoPos);
+				System.out.println(gotoPos);
+				currentPos=pos.getName();		
+				
+				//Optionally use autofocus
+				if(settings.positions.useAutofocus)
+					RecordingResource.autofocus();
+				
+				recurse.exec();
 				}			
 			}
 		}

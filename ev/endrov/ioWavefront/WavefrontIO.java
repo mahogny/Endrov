@@ -393,7 +393,11 @@ public class WavefrontIO implements EvIOData
 		//		d.metaObject.put("model", Mesh3D.generateTestModel());
 		}
 	
-	
+
+	public void close() throws IOException
+		{
+		}
+
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

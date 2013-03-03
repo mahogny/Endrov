@@ -51,6 +51,7 @@ public class EvCommonImageIO
 		try
 			{
 			String fend=EvFileUtil.fileEnding(file);
+			fend=fend.toLowerCase();
 			//Use JAI if possible, it can be assumed to be very fast
 			
 			if(fend!=null)
@@ -79,12 +80,15 @@ public class EvCommonImageIO
 			IFormatReader reader;
 			if(fend.equals("tiff") || fend.equals("tif"))
 				{
-				reader=new TiffReader();
+				TiffReader tr=new TiffReader();
+				tr.setGroupFiles(false);
+				reader=tr;
 				}
 			else
 				{
 				reader=new ImageReader();
 				}
+			//reader.setAllowOpenFiles(false);  //for scifio
 
 			int id=z==null?0:z;
 			reader.setId(file.getAbsolutePath());

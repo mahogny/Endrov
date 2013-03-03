@@ -420,7 +420,11 @@ public class EvIOSequenceImageset implements EvIOData
 
 
 
-	
+
+	public void close() throws IOException
+		{
+		}
+
 	
 	/******************************************************************************************************
 	 * Plugin declaration

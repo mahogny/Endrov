@@ -1021,6 +1021,12 @@ public class EvIODataBioformats implements EvIOData
 	protected void finalize() throws Throwable
 		{
 		super.finalize();
+		close();
+		}
+
+	
+	public void close() throws IOException
+		{
 		if(imageReader!=null)
 			{
 			//System.out.println("Closed eviodatabioformats for "+basedir);
@@ -1028,7 +1034,7 @@ public class EvIODataBioformats implements EvIOData
 			imageReader=null;
 			}
 		}
-
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

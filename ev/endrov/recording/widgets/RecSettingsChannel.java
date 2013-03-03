@@ -21,7 +21,9 @@ public class RecSettingsChannel
 		{
 		public String name;
 		public EvDecimal exposure;
+		
 		public boolean adjustRangeByExposure;
+		public double adjustRangeTargetSignal=200;
 		
 		public int zIncrement=1;  //Always >=1
 		public int zFirst;
@@ -31,7 +33,7 @@ public class RecSettingsChannel
 		public int tFirst;
 		public Integer tLast;
 		
-		public int averaging=1;  //Always >=1
+		public int averaging=1;  //Always >=1. One could consider alternative models for removing noise than averaging - in particular, spatial relationships
 		}
 	
 	public String configGroup;

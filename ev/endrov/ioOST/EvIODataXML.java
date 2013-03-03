@@ -94,7 +94,10 @@ public class EvIODataXML implements EvIOData
 		}
 
 	
-	
+	public void close() throws IOException
+		{
+		}
+
 
 
 	/******************************************************************************************************
