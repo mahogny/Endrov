@@ -38,6 +38,7 @@ public class EvCSVWriter
 	public void writeEndOfLine() throws IOException
 		{
 		io.append("\n");
+		firstEntry=true;
 		}
 	
 	public void close() throws IOException
