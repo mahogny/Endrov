@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -122,6 +123,8 @@ public class PlateAnalysisQueueWidget extends JPanel
 					}
 				}
 			wellPathsList.addAll(wellPaths);
+			
+			setBorder(BorderFactory.createEtchedBorder());
 			}
 		
 		public void actionPerformed(ActionEvent e)
