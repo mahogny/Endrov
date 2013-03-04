@@ -514,11 +514,12 @@ public class Viewer2DWindow extends EvBasicWindow
 		rightPanel.add(zoomPanel);
 		rightPanel.add(rotatePanel);
 		
-		sidePanelSplitPane=new EvHidableSidePaneRight(imagePanel, sidePanel, true);
+		sidePanelSplitPane=new EvHidableSidePaneRight(imagePanel, sidePanel, true);  //TODO use!
 
 		
 		setLayout(new BorderLayout());
-		add(sidePanelSplitPane,BorderLayout.CENTER);
+//		add(sidePanelSplitPane,BorderLayout.CENTER);   //TODO for later extension
+		add(imagePanel,BorderLayout.CENTER);
 		add(bottomPanel,BorderLayout.SOUTH);
 		add(rightPanel,BorderLayout.EAST);
 
