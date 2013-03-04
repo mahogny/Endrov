@@ -125,32 +125,50 @@ public abstract class MemoizeX<E> implements Stoppable
 
 		//First find the starting points of the evaluation
 		Set<MemoizeX<?>> roots=new HashSet<MemoizeX<?>>();
-		Set<MemoizeX<?>> needEval=new HashSet<MemoizeX<?>>();
-		findRoots(roots, needEval, thisLock);
+		Set<MemoizeX<?>> stillNeedEval=new HashSet<MemoizeX<?>>();
+		Set<MemoizeX<?>> virtualEvaluated=new HashSet<MemoizeX<?>>();
+		calculateEvaluationTree(roots, stillNeedEval, virtualEvaluated, thisLock);
+		Set<MemoizeX<?>> origNeedEval=new HashSet<MemoizeX<?>>(stillNeedEval);
 		//System.out.println("roots "+roots);
 		//System.out.println("need eval "+needEval);
+		
 		
 		//Find the best evaluation order by following a working set
 		ArrayList<MemoizeX<?>> evalOrder=new ArrayList<MemoizeX<?>>();
 		Set<MemoizeX<?>> front=new HashSet<MemoizeX<?>>(roots);
-		Set<MemoizeX<?>> virtualEvaluated=new HashSet<MemoizeX<?>>();
+		
+		//This is for later: units that need not be evaluated at all
 		Set<MemoizeX<?>> needNotEval=new HashSet<MemoizeX<?>>();
 		
 		synchronized(this)
 			{
+			//While there is more to evaluate...
 			while(!front.isEmpty())
 				{
-				//For each unit, see which one is best to evaluate
+				//Check which unit to evaluate releases the most memory
 				Integer bestCountRelease=null;
 				MemoizeX<?> bestRelease=null;
-				
-				//Check which unit to evaluate releases
 				for(MemoizeX<?> m:front)
 					{					
-					//If this unit cannot be evaluated then ignore it for now
+					//If the unit is already evaluated then it can be checked off immediately
+					if(virtualEvaluated.contains(m))
+						{
+						bestRelease=m;
+						break;
+						}
+					
+					
+					//If not all the inputs for this unit has been calculated yet, then don't consider it (this test could be made faster)
+					for(MemoizeX<?> dep:m.hasToRunFirst.keySet())
+						if(stillNeedEval.contains(dep))
+							continue;
+					
+					/*
+					//If not all the inputs for this unit has been calculated yet, then don't consider it
 					//TODO would be better to keep a separate list for non-runnable units. would scale much better! 
-					if(!virtualEvaluated.containsAll(m.hasToRunFirst.keySet()) && !m.isEvaluated())
+					if(!virtualEvaluated.containsAll(m.hasToRunFirst.keySet()) && !virtualEvaluated.contains(m))   // was !m.isEvaluated()
 						continue;
+					*/
 					
 					//Count how many units can be released
 					int countRelease=0;
@@ -174,28 +192,44 @@ public abstract class MemoizeX<E> implements Stoppable
 						}
 					
 					}
+
+				//Check if any unit at all can be evaluated
+				if(bestRelease==null)
+					{
+					//This smells circular dependency. Dump everything so it can be debugged
+					
+					System.out.println("roots: "+roots);
+					
+					for(MemoizeX<?> m:origNeedEval)
+						System.out.println("Dep:"+m+"\tneeds\t"+m.hasToRunFirst.keySet());
+					
+					
+					throw new RuntimeException("Internal error: no unit can be evaluated");
+					}
 				
-				
-				//Simulate evaluating this unit
+				//Simulate evaluating this unit (=build the list of units to evaluate)
 				virtualEvaluated.add(bestRelease);
 				evalOrder.add(bestRelease);
 				front.remove(bestRelease);
-				if(front!=this)
+				stillNeedEval.remove(this);
+				if(front!=this)  //Maybe this can be done better?
 					{
 					for(MemoizeX<?> m:bestRelease.canRunNext.keySet())
 						{
-						if(needEval.contains(m))
+						//Only add relevant new operations to the queue
+						if(stillNeedEval.contains(m))
 							front.add(m);
+							/*
+							     I believe this code is redundant with the early eval check above. hm but it breaks if I remove it
 						else
 							{
-							//If this unit does not need evaluation at all then consider it done. Add it to virtual done set so the dependency is unlocked
+							//If this unit does not need evaluation at all then consider it done. Add it to "virtual done" set so the dependency is unlocked
 							virtualEvaluated.add(m);
 							needNotEval.add(m);
 							}
+							*/
 						}
 						
-					//front.addAll(bestRelease.canRunNext.keySet());
-					
 					}
 				}
 			}
@@ -237,15 +271,21 @@ public abstract class MemoizeX<E> implements Stoppable
 				}
 			
 			//See if any previous node can be unloaded
-			for(MemoizeX<?> before:m.hasToRunFirst.keySet())
-				if(evaluated.containsAll(before.canRunNext.keySet()))
-					{
-					//Unlock the value of the previous node and try to delete the value
-					before.unlock(thisLock);
-					
-					//System.out.println("Deleting "+before);
-					before.forget();
-					}
+			nodeNeededCheck: for(MemoizeX<?> before:m.hasToRunFirst.keySet())
+				{
+				//The node can be unloaded, if all nodes *to be evaluated* have been evaluated.
+				//Sometimes there is no need to evaluate a node because it is not needed later on 
+				for(MemoizeX<?> out:before.canRunNext.keySet())
+					if(origNeedEval.contains(out))
+						if(!evaluated.contains(out))
+							break nodeNeededCheck;
+				
+				//Unlock the value of the previous node and try to delete the value
+				before.unlock(thisLock);
+				
+				//System.out.println("Deleting "+before);
+				before.forget();
+				}
 			
 			}
 
@@ -272,18 +312,36 @@ public abstract class MemoizeX<E> implements Stoppable
 	/**
 	 * For calculating the value, find the first nodes that must be evaluated. Lock the values of these nodes with given lock.
 	 * Also check which nodes need evaluation
+	 * 
+	 * @param needEval          These are units that at some point will need to be evaluated
+	 * @param roots             These are units that does not depend on anything, but might (or might not) need evaluation
+	 * @param alreadyEvaluated  
 	 */
-	private synchronized void findRoots(Set<MemoizeX<?>> roots, Set<MemoizeX<?>> needEval, Object lock)
+	private synchronized void calculateEvaluationTree(Set<MemoizeX<?>> roots, Set<MemoizeX<?>> needEval, Set<MemoizeX<?>> alreadyEvaluated, Object lock)
 		{
-		needEval.add(this);
-		if(isEvaluated() || hasToRunFirst.isEmpty())
+		//Lock this object in memory
+		//Need to ensure this object is unlocked later!!!!! TODO
+		locksValue.add(lock);
+		
+		
+		if(isEvaluated())
 			{
+			alreadyEvaluated.add(this);
 			roots.add(this);
-			locksValue.add(lock);
 			}
 		else
-			for(MemoizeX<?> m:hasToRunFirst.keySet())
-				m.findRoots(roots, needEval, lock);
+			{
+			//This unit must be evaluated later
+			needEval.add(this);
+			
+			//Add this unit as a root, or recurse
+			if(hasToRunFirst.isEmpty())
+				roots.add(this);
+			else
+				for(MemoizeX<?> m:hasToRunFirst.keySet())
+					m.calculateEvaluationTree(roots, needEval, alreadyEvaluated, lock);
+			}
+		
 		}
 	
 
