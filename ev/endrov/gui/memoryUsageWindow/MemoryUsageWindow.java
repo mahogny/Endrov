@@ -31,6 +31,7 @@ public class MemoryUsageWindow extends EvBasicWindow implements ActionListener
 		
 		//Window overall things
 		packEvWindow();
+		setTitleEvWindow("Memory usage");
 		setBoundsEvWindow(50,50,500,100);
 		setLocationEvWindow(null);
 		setVisibleEvWindow(true);
