@@ -150,9 +150,10 @@ public class ConsoleWindow extends EvBasicWindow implements ActionListener, KeyL
 
 		//Grab previous log from memory
 		history.append(EvLog.memoryLog.get());
-
+		
 		//Ensure console gets log events, if not previously installed
 		ConsoleLogger.install();
+		
 		
 		//Window overall things
 		setTitleEvWindow("Console");

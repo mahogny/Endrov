@@ -33,13 +33,35 @@ public abstract class EvLog
 
 	private static HashSet<EvLog> listeners=new HashSet<EvLog>();
 
+	/**
+	 * Add another listener, if not already added
+	 */
 	public static void addListener(EvLog log)
 		{
 		synchronized (listeners)
 			{
-			listeners.add(log);
+			//An entirely new set is created - this means that currently printing logs than just move on as usual, iterating on the old copy
+			HashSet<EvLog> newListeners=new HashSet<EvLog>(listeners);
+			if(!newListeners.contains(log))
+				newListeners.add(log);
+			listeners=newListeners;
 			}
 		}
+	
+	/**
+	 * Remove a listener
+	 */
+	public static void removeListener(EvLog log)
+		{
+		synchronized (listeners)
+			{
+			//An entirely new set is created - this means that currently printing logs than just move on as usual, iterating on the old copy
+			HashSet<EvLog> newListeners=new HashSet<EvLog>(listeners);
+				newListeners.remove(log);
+			listeners=newListeners;
+			}
+		}
+
 	
 	/**
 	 * Keep track of what has happen in memory in case one wants to look at it aposteriori
@@ -47,10 +69,7 @@ public abstract class EvLog
 	public static EvLogMemory memoryLog=new EvLogMemory();
 	static
 	{
-	synchronized (listeners)
-		{
-		listeners.add(memoryLog);
-		}
+	addListener(memoryLog);
 	}
 	
 	/**
@@ -58,11 +77,8 @@ public abstract class EvLog
 	 */
 	public static void printDebug(String s)
 		{
-		synchronized (listeners)
-			{
-			for(EvLog l:listeners)
-				l.listenDebug(s);
-			}
+		for(EvLog l:getImmutableListeners())
+			l.listenDebug(s);
 		}
 
 	/**
@@ -72,11 +88,8 @@ public abstract class EvLog
 	 */
 	public static void printError(String s, Throwable e)
 		{
-		synchronized (listeners)
-			{
-			for(EvLog l:listeners)
-				l.listenError(s,e);
-			}
+		for(EvLog l:getImmutableListeners())
+			l.listenError(s,e);
 		}
 
 	public static void printError(Throwable e)
@@ -90,10 +103,18 @@ public abstract class EvLog
 	 */
 	public static void printLog(String s)
 		{
+		for(EvLog l:getImmutableListeners())
+			l.listenLog(s);
+		}
+	
+	/**
+	 * Get an immutable list of listeners - can be iterated over without race conditions
+	 */
+	private static Collection<EvLog> getImmutableListeners()
+		{
 		synchronized (listeners)
 			{
-			for(EvLog l:listeners)
-				l.listenLog(s);
+			return listeners;
 			}
 		}
 
@@ -110,11 +131,4 @@ public abstract class EvLog
 		return sw.toString();
 		}
 	
-	public static void removeListener(EvLog consoleLog)
-		{
-		synchronized (listeners)
-			{
-			listeners.remove(consoleLog);
-			}
-		}
 	}
