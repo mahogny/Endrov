@@ -35,6 +35,7 @@ import endrov.starter.EvSystemUtil;
 import endrov.typeImageset.EvImageSwap;
 import endrov.typeImageset.EvPixels;
 import endrov.util.EvBrowserUtil;
+import endrov.util.FuncAB;
 
 import org.jdom.*;
 
@@ -404,28 +405,23 @@ public abstract class EvBasicWindow extends JPanel
 				{
 				new Thread()
 					{
-						public void run()
+					public void run()
+						{
+						EndrovCore.waitUntilStartedUp();
+						List<String> flist = new LinkedList<String>();
+						for (File f : files)
+							flist.add(f.getAbsolutePath());
+						
+						GuiEvDataIO.loadFiles(flist, new FuncAB<EvData, Object>()
 							{
-							EndrovCore.waitUntilStartedUp();
-							List<String> flist = new LinkedList<String>();
-							for (File f : files)
-								flist.add(f.getAbsolutePath());
-							for (EvData d : GuiEvDataIO.loadFile(flist))
-								EvDataGUI.registerOpenedData(d);
-
-							/*
-							 * LoadProgressDialog loadDialog=new
-							 * LoadProgressDialog(files.size()); final List<EvData> dlist=new
-							 * LinkedList<EvData>(); int i=0; for(File f:files) {
-							 * loadDialog.setCurFile(i); loadDialog.fileIOStatus(0,
-							 * "Loading "+f); EvData d=EvData.loadFile(f); if(d==null)
-							 * JOptionPane.showMessageDialog(null, "Failed to open "+f); else
-							 * { EvData.setLastDataPath(f.getParentFile()); dlist.add(d); }
-							 * i++; } SwingUtilities.invokeLater(new Runnable(){ public void
-							 * run() { for(EvData d:dlist) EvData.registerOpenedData(d); } });
-							 * loadDialog.dispose();
-							 */
-							}
+							public Object func(EvData data)
+								{
+								EvDataGUI.registerOpenedData(data);
+								return null;
+								}
+							});
+							
+						}
 					}.start();
 				return true;
 				}

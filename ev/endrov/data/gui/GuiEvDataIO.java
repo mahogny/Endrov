@@ -5,24 +5,18 @@
  */
 package endrov.data.gui;
 
-import java.awt.GridLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JProgressBar;
 
-import org.jdesktop.swingworker.SwingWorker;
 
 import endrov.core.log.EvLog;
 import endrov.data.EvData;
 import endrov.data.EvIODataReaderWriterDeclaration;
 import endrov.gui.window.EvBasicWindow;
+import endrov.util.FuncAB;
 
 
 /**
@@ -32,64 +26,88 @@ import endrov.gui.window.EvBasicWindow;
  */
 public class GuiEvDataIO
 	{
+	
+	
 	/**
-	 * Loading task
+	 * Task for loading a list of files
 	 */
-	private static class DataLoader extends SwingWorker<List<EvData>, Void> implements EvData.FileIOStatusCallback
+	private static class DataLoader implements EvData.FileIOStatusCallback, EvDataProgressWindow.Task
 		{
 		private List<String> path;
 		private int nowAt=0;
+		private EvDataProgressWindow w;
+		final FuncAB<EvData, Object> callback;
 		
-		public DataLoader(List<String> path) 
+		public DataLoader(List<String> path, final FuncAB<EvData, Object> callback) 
 			{ 
+			this.callback=callback;
 			this.path=path;
 			}
 		
-		public List<EvData> doInBackground() 
-			{
-			List<EvData> output=new LinkedList<EvData>();
-			for(int i=0;i<path.size();i++)
-				{
-				output.add(EvData.loadFile(path.get(i),this));
-				nowAt++;
-				fileIOStatus(0, "");
-				}
-			return output;
-			}
 		
 		public void fileIOStatus(double proc, String text)
 			{
 			if(proc>=0 && proc<=1)
-				setProgress((int)(100*nowAt+proc*100)/path.size());
+				w.setProgress((int)(100*nowAt+proc*100)/path.size());
 			else
 				EvLog.printError("fileIOstatus range should be 0-1", null);
+			}
+
+		public void run(EvDataProgressWindow w)
+			{
+			this.w=w;
+			for(int i=0;i<path.size();i++)
+				{
+				w.setStatusText("Loading "+path.get(i));
+				EvData data=EvData.loadFile(path.get(i),this);
+				callback.func(data);
+				
+				nowAt++;
+				fileIOStatus(0, "");
+				}
+			}
+
+		public void cancel()
+			{
+			// TODO Auto-generated method stub
 			}
 		
 		}
 		
 
 	/**
-	 * Saving task
+	 * Task to save files
 	 */
-	private static class DataSaver extends SwingWorker<Void, Void> implements EvData.FileIOStatusCallback
+	private static class DataSaver implements EvData.FileIOStatusCallback, EvDataProgressWindow.Task
 		{
 		private Collection<EvData> datas;
 		private int nowAt=0;
+		private EvDataProgressWindow w; 
 		
 		public DataSaver(Collection<EvData> path) 
 			{ 
 			this.datas=path;
 			}
 		
-		public Void doInBackground() 
+		public void fileIOStatus(double proc, String text)
 			{
+			if(proc>=0 && proc<=1)
+				w.setProgress((int)(100*nowAt+proc*100)/datas.size());
+			else
+				EvLog.printError("fileIOstatus range should be 0-1", null);
+			}
+
+		public void run(EvDataProgressWindow w)
+			{
+			this.w=w;
 			for(EvData data:datas)
 				{
 				try
 					{
+					w.setStatusText("Saving "+data.io.getMetadataName());
 					data.saveData();
 					}
-				catch (IOException e)
+				catch (Throwable e)
 					{
 					// TODO implement properly
 					e.printStackTrace();
@@ -97,54 +115,21 @@ public class GuiEvDataIO
 				nowAt++;
 				fileIOStatus(0, "");
 				}
-			return null;
 			}
-		
-		public void fileIOStatus(double proc, String text)
+
+		public void cancel()
 			{
-			if(proc>=0 && proc<=1)
-				setProgress((int)(100*nowAt+proc*100)/datas.size());
-			else
-				EvLog.printError("fileIOstatus range should be 0-1", null);
+			// TODO implement properly
 			}
+
 		
 		}
 
 		
 	/**
-	 * Progress bar
-	 */
-	private static class DataProgress extends JFrame
-		{
-		static final long serialVersionUID=0;
-		private JProgressBar progressBar = new JProgressBar(0, 100);
-		
-		public DataProgress(String title, SwingWorker<?, ?> task)
-			{
-			super(title);
-			setSize(200,50);
-			setLocationRelativeTo(null);
-			setLayout(new GridLayout(1,1));
-			add(progressBar);
-			setVisible(true);
-		
-			task.addPropertyChangeListener(new PropertyChangeListener() 
-				{
-				public void propertyChange(PropertyChangeEvent evt) 
-					{
-					if("progress".equals(evt.getPropertyName())) 
-						progressBar.setValue((Integer)evt.getNewValue());
-					}
-				});
-			}
-		}
-			
-	
-	
-	/**
 	 * Load file by open dialog
 	 */
-	public static String showLoadDialog(String customtitle)
+	public static String showLoadFileDialog(String customtitle)
 		{
 		JFileChooser fc=new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -181,59 +166,26 @@ public class GuiEvDataIO
 	
 	/**
 	 * Load file, select with a dialog
+	 * 
+	 * @para     customTitle   Can be null
+	 * @param    callback      See loadFiles  
 	 */
-	public static EvData loadFileDialog()
+	public static void showLoadFileDialog(String customTitle, final FuncAB<EvData, Object> callback)
 		{
-		return loadFileDialog(null);
-		}
-		
-	/**
-	 * Load file, select with a dialog
-	 */
-	public static EvData loadFileDialog(String customTitle)
-		{
-		String file=showLoadDialog(customTitle);
+		final String file=showLoadFileDialog(customTitle);
 		if(file!=null)
-			return loadFile(file);
-		else
-			return null;
+			loadFiles(Arrays.asList(file), callback);
 		}
 	
-	/**
-	 * Load one file
-	 */
-	public static EvData loadFile(String file)
-		{
-		List<String> input=new LinkedList<String>();
-		input.add(file);
-		return loadFile(input).get(0);
-		}
 
 	/**
-	 * Load files
+	 * Load files, with a status dialog
+	 * 
+	 * @param callback  Will be invoked for each file. Should return null. Guaranteed to be run inside the swing thread 
 	 */
-	public static List<EvData> loadFile(List<String> file)
+	public static void loadFiles(Collection<String> file, final FuncAB<EvData, Object> callback)
 		{
-		DataLoader task = new DataLoader(file);
-		DataProgress progress=new DataProgress("Loading",task);
-		try
-			{
-			task.execute();
-			return task.get();
-			}
-		catch (InterruptedException e)
-			{
-			e.printStackTrace();
-			}
-		catch (ExecutionException e)
-			{
-			e.printStackTrace();
-			}
-		finally
-			{
-			progress.dispose();
-			}
-		return null;
+		new EvDataProgressWindow("Loading", new DataLoader(new LinkedList<String>(file), callback));
 		}
 
 	/**
@@ -249,29 +201,11 @@ public class GuiEvDataIO
 
 	/**
 	 * Save files
-	 * TODO throw exception
 	 */
 	public static void saveFile(List<EvData> file)
 		{
 		DataSaver task = new DataSaver(file);
-		DataProgress progress=new DataProgress("Saving",task);
-		try
-			{
-			task.execute();
-			task.get();
-			}
-		catch (InterruptedException e)
-			{
-			e.printStackTrace();
-			}
-		catch (ExecutionException e)
-			{
-			e.printStackTrace();
-			}
-		finally
-			{
-			progress.dispose();
-			}
+		new EvDataProgressWindow("Saving",task);
 		}
 			
 	

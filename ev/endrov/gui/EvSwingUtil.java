@@ -363,7 +363,7 @@ public class EvSwingUtil
 						}
 					});
 				}
-			catch (Exception e)
+			catch (Throwable e)
 				{
 				throw new RuntimeException("Unexpected swing thread error");
 				}

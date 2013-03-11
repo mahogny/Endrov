@@ -26,6 +26,7 @@ import endrov.gui.window.EvBasicWindow;
 import endrov.gui.window.EvBasicWindowExtension;
 import endrov.gui.window.EvBasicWindowHook;
 import endrov.gui.window.EvBasicWindow.DialogReturnStatus;
+import endrov.util.FuncAB;
 
 /**
  * Extension to BasicWindow
@@ -85,8 +86,14 @@ public class EvDataMenu implements EvBasicWindowExtension
 				}
 			else if(e.getSource()==miOpenFile)
 				{
-				EvData data=GuiEvDataIO.loadFileDialog(null);
-				EvDataGUI.registerOpenedData(data);
+				GuiEvDataIO.showLoadFileDialog(null, new FuncAB<EvData, Object>()
+					{
+					public Object func(EvData data)
+						{
+						EvDataGUI.registerOpenedData(data);
+						return null;
+						}
+					}); 
 				}
 			else if(e.getSource()==miOpenFilePath)
 				loadByPath();
@@ -112,8 +119,14 @@ public class EvDataMenu implements EvBasicWindowExtension
 				final File thefile=new File(fileName);
 				if(thefile.exists())
 					{
-					EvData data=GuiEvDataIO.loadFile(thefile.getAbsolutePath());
-					EvDataGUI.registerOpenedData(data);
+					GuiEvDataIO.loadFiles(Arrays.asList(thefile.getAbsolutePath()), new FuncAB<EvData, Object>()
+						{
+						public Object func(EvData data)
+							{
+							EvDataGUI.registerOpenedData(data);
+							return null;
+							}
+						});
 					}
 				else
 					JOptionPane.showMessageDialog(null, "Path does not exist");
@@ -263,7 +276,16 @@ public class EvDataMenu implements EvBasicWindowExtension
 				mRecent.add(mi);
 				mi.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e)
-						{EvDataGUI.registerOpenedData(EvData.loadFile(rref.url));}
+						{
+						GuiEvDataIO.loadFiles(Arrays.asList(rref.url), new FuncAB<EvData, Object>()
+							{
+							public Object func(EvData data)
+								{
+								EvDataGUI.registerOpenedData(data);
+								return null;
+								}
+							});
+						}
 					});
 				}
 			JMenuItem miClearRecent=new JMenuItem("Clear");

@@ -44,6 +44,7 @@ import endrov.typeLineage.Lineage.MeshRenderMode;
 import endrov.typeLineage.Lineage.Particle;
 import endrov.typeLineage.expression.ParticleDialogIntegrate;
 import endrov.typeLineage.util.LineageMergeUtil;
+import endrov.util.FuncAB;
 import endrov.util.collection.Tuple;
 import endrov.util.math.EvDecimal;
 import endrov.util.math.EvGeomUtil;
@@ -1067,22 +1068,28 @@ public class LineageCommonUI implements ActionListener
 	/**
 	 * Map e.g. the c.elegans model onto this lineage
 	 */
-	public static void mapModel(EvContainer con, Lineage lin)
+	public static void mapModel(final EvContainer con, final Lineage lin)
 		{
-		EvData modelData=GuiEvDataIO.loadFileDialog("Choose c.elegans model");
-		if(modelData!=null)
+		GuiEvDataIO.showLoadFileDialog("Choose c.elegans model", new FuncAB<EvData, Object>()
 			{
-			Iterator<Lineage> lins=modelData.getIdObjectsRecursive(Lineage.class).values().iterator();
-			if(lins.hasNext())
+			public Object func(EvData modelData)
 				{
-				Lineage modelLin=lins.next();
-				Lineage mappedLin=LineageMergeUtil.mapModelToRec(lin, modelLin);
-				con.metaObject.put("estcell", mappedLin);
-				EvBasicWindow.updateWindows();
+				if(modelData!=null)
+					{
+					Iterator<Lineage> lins=modelData.getIdObjectsRecursive(Lineage.class).values().iterator();
+					if(lins.hasNext())
+						{
+						Lineage modelLin=lins.next();
+						Lineage mappedLin=LineageMergeUtil.mapModelToRec(lin, modelLin);
+						con.metaObject.put("estcell", mappedLin);
+						EvBasicWindow.updateWindows();
+						}
+					else
+						EvBasicWindow.showErrorDialog("No lineage in file");
+					}
+				return null;
 				}
-			else
-				EvBasicWindow.showErrorDialog("No lineage in file");
-			}
+			});
 		}
 
 	/**

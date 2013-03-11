@@ -18,6 +18,7 @@ import javax.swing.text.JTextComponent;
 import endrov.data.EvData;
 import endrov.data.gui.GuiEvDataIO;
 import endrov.gui.window.EvBasicWindow;
+import endrov.util.FuncAB;
 
 
 /**
@@ -94,17 +95,23 @@ public class LineageRenameParticleDialog extends JDialog implements ActionListen
 		if(e.getSource()==bLoad)
 			{
 			timer=null;
-			EvData data=GuiEvDataIO.loadFileDialog();
-			if(data!=null)
+			
+			GuiEvDataIO.showLoadFileDialog(null, new FuncAB<EvData, Object>()
 				{
-				List<Lineage> lins=data.getObjects(Lineage.class);
-				if(!lins.isEmpty())
+				public Object func(EvData data)
 					{
-					templateLineage=lins.get(0);
-					fillCombo();
-					return;
+					if(data!=null)
+						{
+						List<Lineage> lins=data.getObjects(Lineage.class);
+						if(!lins.isEmpty())
+							{
+							templateLineage=lins.get(0);
+							fillCombo();
+							}
+						}
+					return null;
 					}
-				}
+				});
 			}
 		else if(e.getSource()==inputName && e.getActionCommand().equals("comboBoxChanged"))
 			{
