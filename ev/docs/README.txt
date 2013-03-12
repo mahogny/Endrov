@@ -9,7 +9,8 @@ several libraries are under GPL. See upstream for more information.
  
 User Guide
 --------------------------------------------------------------------
-For the sake of keeping things up to date, refer to our website for any documentation.
+For the sake of keeping things up to date, we have only included the minimum documentation
+with the software. Instead, check the tutorials and help on our website:
 http://www.endrov.net
 
 Contact
