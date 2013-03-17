@@ -1,4 +1,4 @@
-package endrov.flowThreshold;
+package endrov.flowBasic.colorspace;
 
 
 import endrov.flow.EvOpSlice1;
@@ -13,11 +13,11 @@ import endrov.util.ProgressHandle;
  * @author Johan Henriksson
  *
  */
-public class EvOpQuantize2D extends EvOpSlice1
+public class EvOpQuantizeColors2D extends EvOpSlice1
 	{
 	private final int numLevels;
 	
-	public EvOpQuantize2D(int numLevels)
+	public EvOpQuantizeColors2D(int numLevels)
 		{
 		this.numLevels = numLevels;
 		}

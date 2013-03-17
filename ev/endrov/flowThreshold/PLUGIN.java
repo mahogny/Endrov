@@ -40,7 +40,6 @@ public class PLUGIN extends EvPluginDefinition
 				FlowUnitThresholdOtsu2D.class,
 				FlowUnitThresholdFukunaga2D.class,
 				FlowUnitThresholdPercentile2D.class,
-				FlowUnitThresholdQuantize2D.class
 				};
 		}
 	

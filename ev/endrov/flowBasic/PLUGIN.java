@@ -9,6 +9,10 @@ import endrov.core.EvPluginDefinition;
 import endrov.flowBasic.collection.FlowUnitConcat;
 import endrov.flowBasic.collection.FlowUnitHeadTail;
 import endrov.flowBasic.collection.FlowUnitSize;
+import endrov.flowBasic.colorspace.EvOpColorRGBtoHSV;
+import endrov.flowBasic.colorspace.EvOpQuantizeColors2D;
+import endrov.flowBasic.colorspace.FlowUnitColorRGBtoHSV;
+import endrov.flowBasic.colorspace.FlowUnitQuantizeColors2D;
 import endrov.flowBasic.constants.*;
 import endrov.flowBasic.control.FlowUnitComments;
 import endrov.flowBasic.control.FlowUnitIf;
@@ -107,6 +111,10 @@ public class PLUGIN extends EvPluginDefinition
 				FlowUnitConvertToVector3i.class,
 				FlowUnitWrapInChannel.class,
 
+				//Colorspace
+				FlowUnitQuantizeColors2D.class,
+				FlowUnitColorRGBtoHSV.class,
+				
 				//db
 				FlowUnitConnectSQL.class,
 				/*

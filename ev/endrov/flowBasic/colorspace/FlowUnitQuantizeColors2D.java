@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowThreshold;
+package endrov.flowBasic.colorspace;
 
 
 import java.awt.Color;
@@ -18,6 +18,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.flowBasic.RendererFlowUtil;
 import endrov.typeImageset.AnyEvImage;
 
 /**
@@ -25,7 +26,7 @@ import endrov.typeImageset.AnyEvImage;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitThresholdQuantize2D extends FlowUnitBasic
+public class FlowUnitQuantizeColors2D extends FlowUnitBasic
 	{
 	public static final String showName="Quantize";
 	private static final String metaType="quantizeColors2d";
@@ -36,7 +37,7 @@ public class FlowUnitThresholdQuantize2D extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitThresholdQuantize2D.class, CategoryInfo.icon,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitQuantizeColors2D.class, CategoryInfo.icon,
 				"Reduce number of colors by quantizing, slice by slice. Speeds up histogram-based algorithms"));
 		}
 	
@@ -46,7 +47,7 @@ public class FlowUnitThresholdQuantize2D extends FlowUnitBasic
 	public void fromXML(Element e){}
 	public String getBasicShowName(){return showName;}
 	public ImageIcon getIcon(){return CategoryInfo.icon;}
-	public Color getBackground(){return CategoryInfo.bgColor;}
+	public Color getBackground(){return RendererFlowUtil.colOperation;}
 	
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
@@ -68,7 +69,7 @@ public class FlowUnitThresholdQuantize2D extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Integer numLevels=(Integer)flow.getInputValue(this, exec, "numLevels");
 		
-		AnyEvImage out=new EvOpQuantize2D(numLevels).exec1Untyped(exec.ph, a);
+		AnyEvImage out=new EvOpQuantizeColors2D(numLevels).exec1Untyped(exec.ph, a);
 		lastOutput.put("out", out);
 		}
 
