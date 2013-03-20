@@ -50,7 +50,7 @@ starters:
 #	java -jar startEndrov.jar --macstarter
 
 macplugin:
-	jar cfv libs/bin_mac/macbinding.jar endrov/macBinding/*.class
+	jar cfv libs/bin_mac/macbinding.jar endrov/bindingMac/*.class
 
 #applet:
 #	jar cfv evapplet/applet.jar evapplet/*.class

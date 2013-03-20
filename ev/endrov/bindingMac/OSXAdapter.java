@@ -6,13 +6,13 @@
 package endrov.bindingMac;
 
 import java.io.File;
-import javax.swing.JOptionPane;
-//import javax.swing.SwingUtilities;
 
 import com.apple.eawt.*;
-import endrov.core.EndrovCore;
-import endrov.data.EvData;
+import com.apple.mrj.MRJApplicationUtils;
+import com.apple.mrj.MRJOpenDocumentHandler;
+
 import endrov.gui.window.EvBasicWindow;
+import endrov.starter.MW;
 
 
 public class OSXAdapter extends ApplicationAdapter implements MRJOpenDocumentHandler
@@ -84,22 +84,7 @@ public class OSXAdapter extends ApplicationAdapter implements MRJOpenDocumentHan
 	 */
 	public void handleOpenFile(final File f)
 		{
-//		JOptionPane.showMessageDialog(null, "open file");
-		//used to be done with swingutils.
-		new Runnable() { 
-			public void run()
-				{ 
-				EndrovCore.waitUntilStartedUp();
-				
-				EvData d=EvData.loadFile(f);
-				if(d==null)
-					JOptionPane.showMessageDialog(null, "Failed to open "+f);
-				else
-					{
-					EvData.registerOpenedData(d);
-					EvBasicWindow.updateLoadedFile(d);
-					}
-				}}.run(); 
+		MW.openFileOnLoad(f);
 		}
 
 	

@@ -44,7 +44,7 @@ public class PLUGIN extends EvPluginDefinition
 		{
 		try
 			{
-			return new Class[]{Class.forName("endrov.macBinding.OSXAdapter"),Class.forName("endrov.macBinding.EncodeQT")};
+			return new Class[]{Class.forName("endrov.bindingMac.OSXAdapter"),Class.forName("endrov.bindingMac.EncodeQT")};
 			}
 		catch (ClassNotFoundException e)
 			{

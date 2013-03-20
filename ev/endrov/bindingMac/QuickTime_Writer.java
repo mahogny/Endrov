@@ -8,9 +8,30 @@ package endrov.bindingMac;
 import java.awt.image.*;
 import java.io.*;
 
+import quicktime.QTException;
+import quicktime.QTSession;
+import quicktime.io.OpenMovieFile;
+import quicktime.io.QTFile;
+import quicktime.qd.QDConstants;
+import quicktime.qd.QDGraphics;
+import quicktime.qd.QDRect;
+import quicktime.std.StdQTConstants;
+import quicktime.std.image.CSequence;
+import quicktime.std.image.CodecComponent;
+import quicktime.std.image.CompressedFrameInfo;
+import quicktime.std.image.ImageDescription;
+import quicktime.std.image.QTImage;
+import quicktime.std.movies.Movie;
+import quicktime.std.movies.Track;
+import quicktime.std.movies.media.VideoMedia;
+import quicktime.util.EndianOrder;
+import quicktime.util.QTHandle;
+import quicktime.util.RawEncodedImage;
+
 //This plugin uses QuickTime for Java to save the current stack as a QuickTime movie.
 //It is based on the VideoSampleBuilder example from chapter 8 of "QuickTime for Java: 
 //A Developer's Notebook" by Chris Adamson (www.oreilly.com/catalog/quicktimejvaadn/).
+@SuppressWarnings("deprecation")
 public class QuickTime_Writer implements StdQTConstants 
 	{
 	static final int KEY_FRAME_RATE = 30;
@@ -73,7 +94,7 @@ public class QuickTime_Writer implements StdQTConstants
 		imgDesc2.setWidth(finalWidth);
 		imgDesc2.setHeight(finalHeight);
 		QDGraphics gw = new QDGraphics(imgDesc2, 0);
-		QDRect bounds = new QDRect (0, 0, finalWidth, finalHeight);
+		QDRect bounds = new QDRect(0, 0, finalWidth, finalHeight);
 		int rawImageSize = QTImage.getMaxCompressionSize(gw, bounds, gw.getPixMap().getPixelSize(), codecQuality, codecType, CodecComponent.anyCodec);
 		QTHandle imageHandle = new QTHandle(rawImageSize, true);
 		imageHandle.lock();

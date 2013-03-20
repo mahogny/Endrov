@@ -8,11 +8,32 @@ package endrov.bindingMac;
 import java.awt.image.*;
 import java.io.*;
 
-import endrov.makeMovie.EvMovieMaker;
+import quicktime.QTSession;
+import quicktime.io.OpenMovieFile;
+import quicktime.io.QTFile;
+import quicktime.qd.QDConstants;
+import quicktime.qd.QDGraphics;
+import quicktime.qd.QDRect;
+import quicktime.std.StdQTConstants;
+import quicktime.std.StdQTConstants6;
+import quicktime.std.image.CSequence;
+import quicktime.std.image.CodecComponent;
+import quicktime.std.image.CompressedFrameInfo;
+import quicktime.std.image.ImageDescription;
+import quicktime.std.image.QTImage;
+import quicktime.std.movies.Movie;
+import quicktime.std.movies.Track;
+import quicktime.std.movies.media.VideoMedia;
+import quicktime.util.EndianOrder;
+import quicktime.util.QTHandle;
+import quicktime.util.RawEncodedImage;
+
+import endrov.movieEncoder.EvMovieEncoder;
 
 /**
  * Interface to quicktime. Encapsulates all shitty commands.
  */
+@SuppressWarnings("deprecation")
 public class QTMovieMaker implements StdQTConstants, EvMovieEncoder
 	{	
 	/** Available codecs */

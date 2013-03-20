@@ -94,7 +94,7 @@ public class MW
 			{
 			try
 				{
-				Class<?> c=Class.forName("endrov.macBinding.OSXAdapter");
+				Class<?> c=Class.forName("endrov.bindingMac.OSXAdapter");
 				Method m=c.getDeclaredMethod("registerMacOSXApplication", new Class[]{});
 				m.invoke(null, new Object[]{});
 				System.out.println("invoked");
@@ -191,5 +191,25 @@ public class MW
 		
 		//Help memory debugging; remove dead objects
 		System.gc();
+		}
+
+	public static void openFileOnLoad(final File f) 
+		{
+		
+
+		new Thread(new Runnable() { 
+		public void run()
+			{ 
+			EndrovCore.waitUntilStartedUp();
+	
+			EvData d=EvData.loadFile(f);
+			if(d==null)
+				JOptionPane.showMessageDialog(null, "Failed to open "+f);
+			else
+				{
+				EvDataGUI.registerOpenedData(d);
+				EvBasicWindow.updateLoadedFile(d);
+				}
+			}}).start(); 
 		}
 	}
