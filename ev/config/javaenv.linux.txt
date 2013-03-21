@@ -1,2 +1,2 @@
--Xmx5700M -Djava.security.manager -Djava.security.policy=config/java.policy
+-Xmx2000M -Djava.security.manager -Djava.security.policy=config/java.policy
 

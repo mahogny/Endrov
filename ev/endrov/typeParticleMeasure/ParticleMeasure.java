@@ -181,7 +181,12 @@ public class ParticleMeasure extends EvObject
 	 */
 	public static class Frame 
 		{
-		private HashMap<Integer,ColumnSet> particleMap=new HashMap<Integer, ColumnSet>();
+		private HashMap<Integer,ColumnSet> particleMap=new HashMap<Integer, ColumnSet>();  
+		//TODO: expensive! should have a linear list instead? a linked list makes most sense during the first build-up, but not later.
+		//The arraylist is also doubling, which is amortized time O(n). it may take more space than needed, but a list of pointers for one frame is not that bad 
+		
+		
+		
 		private ColumnSet columns=new ColumnSet();
 		
 		private List<Runnable> lazyCalc=new LinkedList<Runnable>();
@@ -266,7 +271,10 @@ public class ParticleMeasure extends EvObject
 	 */
 	public static class ColumnSet
 		{
-		private HashMap<String, Object> map=new HashMap<String, Object>();
+		private HashMap<String, Object> map=new HashMap<String, Object>();  
+		//TODO this is expensive, both over time and over wells! keep a common hashmap just for the positions in the array? or use a column-oriented storage?
+		//that said, per-well info is not expensive in this format. 
+		//Pass around a columnsetindex to avoid having pointers all over the place?
 	
 		/**
 		 * Get value as double
