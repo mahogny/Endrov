@@ -273,10 +273,10 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 			{
 			//Get statistics about the candidates. To weight different errors,
 			//they should be normalized.
-			double maxIntensityDiff=Double.MIN_VALUE;
-			double maxPcRatio=Double.MIN_VALUE;
-			double maxSigmaRatio=Double.MIN_VALUE;
-			double maxPc=Double.MIN_VALUE;
+			double maxIntensityDiff=-Double.MAX_VALUE;
+			double maxPcRatio=-Double.MAX_VALUE;
+			double maxSigmaRatio=-Double.MAX_VALUE;
+			double maxPc=-Double.MAX_VALUE;
 			for(CandDivPair p:divlist)
 				{
 				if(p.intensDiff>maxIntensityDiff)
@@ -1230,7 +1230,7 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 				{
 				double sumSigma=0;
 //				double sumSigma2=0;
-				double maxSigma=Double.MIN_VALUE;
+				double maxSigma=-Double.MAX_VALUE;
 				double minSigma=Double.MAX_VALUE;
 				int countSigma=0;
 				for(Candidate cand:candlist)

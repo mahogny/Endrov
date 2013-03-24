@@ -43,6 +43,7 @@ import net.imglib2.Cursor;
 import net.imglib2.converter.Converter;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ComplexType;
@@ -150,9 +151,12 @@ public class EvStackAdapter
 
 	protected static < T extends NumericType< T > & NativeType< T > > void setAxesFromEvStack( final ImgPlus<T> image, final EvStack imp ) 
 	{
+	int currentDim = 2;
+	image.setAxis(Axes.Z, currentDim);
+	currentDim++;
+	
 	/*
 
-		int currentDim = 2;
 
 		if (imp.getNChannels() > 1) {
 			image.setAxis(Axes.CHANNEL, currentDim);
@@ -160,8 +164,6 @@ public class EvStackAdapter
 		}
 
 		if (imp.getNSlices() > 1) {
-			image.setAxis(Axes.Z, currentDim);
-			currentDim++;
 		}
 
 		if (imp.getNFrames() > 1) {
@@ -182,8 +184,9 @@ public class EvStackAdapter
 		for( int i = 0; i < d; ++i )
 			spacing[i] = 1f;
 
-		spacing[0]=imp.getWidth();
+		spacing[0]=imp.getWidth();   //TODO wrong. should use resolution here instead!
 		spacing[1]=imp.getHeight();
+		spacing[2]=imp.getDepth();
 
 //		final Calibration c = new ;//imp.getCalibration();
 		/*

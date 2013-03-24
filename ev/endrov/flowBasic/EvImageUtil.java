@@ -60,7 +60,7 @@ public class EvImageUtil
 		a=a.getReadOnly(EvPixelsType.DOUBLE);
 		
 		double[] aPixels=a.getArrayDouble();
-		double ret=Double.MIN_VALUE;
+		double ret=-Double.MAX_VALUE;
 		for(double d:aPixels)
 			if(d>ret)
 				ret=d;

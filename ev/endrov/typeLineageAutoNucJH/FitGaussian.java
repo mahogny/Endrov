@@ -63,7 +63,7 @@ public class FitGaussian
 		final int ey=Math.min(h,(int)(midyInit+extent+1));
 		
 		double minIntensity=Double.MAX_VALUE;
-		double maxIntensity=Double.MIN_VALUE;
+		double maxIntensity=-Double.MAX_VALUE;
 		for(int y=sy;y<ey;y++)
 			{
 			int base=y*w;

@@ -734,7 +734,7 @@ public class LineageView extends JPanel
 					//Use the average position of children as position of this branch
 					double sum=0;
 					double miny=Double.MAX_VALUE;
-					double maxy=Double.MIN_VALUE;
+					double maxy=-Double.MAX_VALUE;
 					for(String cName:childrenToLayout)
 						{
 						ParticleState cInternal=linstate.particleState.get(cName);

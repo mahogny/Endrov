@@ -83,7 +83,7 @@ public class EvStackImg< T extends NativeType< T >, A extends ArrayDataAccess<A>
 			final int channels,
 			final int entitiesPerPixel )
 	{
-		super( reduceDimensions( new long[] { width, height, channels, depth, frames } ), entitiesPerPixel );
+		super( reduceDimensions( new long[] { width, height, depth, channels, frames } ), entitiesPerPixel );
 
 		this.width = width;
 		this.height = height;
@@ -122,14 +122,14 @@ public class EvStackImg< T extends NativeType< T >, A extends ArrayDataAccess<A>
 			height = 1;
 
 		if ( dim.length > 2 )
-			channels = ( int ) dim[ 2 ];
-		else
-			channels = 1;
-
-		if ( dim.length > 3 )
-			depth = ( int ) dim[ 3 ];
+			depth = ( int ) dim[ 2 ];
 		else
 			depth = 1;
+
+		if ( dim.length > 3 )
+			channels = ( int ) dim[ 3 ];
+		else
+			channels = 1;
 
 		if ( dim.length > 4 )
 			frames = ( int ) dim[ 4 ];
@@ -197,15 +197,10 @@ public class EvStackImg< T extends NativeType< T >, A extends ArrayDataAccess<A>
 
 		n = 1;
 
-		/* channels */
 		if ( impDimensions[ 2 ] > 1 )
 			dim[ ++n ] = impDimensions[ 2 ];
-
-		/* depth */
 		if ( impDimensions[ 3 ] > 1 )
 			dim[ ++n ] = impDimensions[ 3 ];
-
-		/* frames */
 		if ( impDimensions[ 4 ] > 1 )
 			dim[ ++n ] = impDimensions[ 4 ];
 

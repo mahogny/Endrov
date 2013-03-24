@@ -1,17 +1,16 @@
 /*
-built-in
+These are built-in variables:
 varying vec4 gl_Color;
 varying vec4 gl_SecondaryColor;
 varying vec4 gl_TexCoord[];
-varying float gl_FogFragCoord;*/
+varying float gl_FogFragCoord;
+*/
 
+//Output values per pixel
 varying vec3 texCoords;
 varying vec4 vcolor;
 
-
-//varying float contrast;
-//varying float brightness;
-
+//Input parameters
 uniform float contrast;
 uniform float brightness;
 

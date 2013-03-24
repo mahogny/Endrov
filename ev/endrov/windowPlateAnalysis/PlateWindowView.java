@@ -19,7 +19,7 @@ import endrov.core.log.EvLog;
 import endrov.data.EvPath;
 import endrov.gui.EvColor;
 import endrov.gui.EvSwingUtil;
-import endrov.imglib.evop.EvOpScaleImage;
+import endrov.imglib.evop.EvOpScaleImage2D;
 import endrov.typeImageset.EvChannel;
 import endrov.typeImageset.EvImagePlane;
 import endrov.typeImageset.EvPixels;
@@ -823,7 +823,7 @@ public class PlateWindowView extends Scene2DView implements MouseListener, Mouse
 				if(thumbnailSize!=null)
 					{
 					double scaleFactor=thumbnailSize/(double)stack.getWidth();
-					stack=new EvOpScaleImage(scaleFactor, scaleFactor).exec1(null, stack);  //TODO no reason to scale all stack
+					stack=new EvOpScaleImage2D(scaleFactor, scaleFactor).exec1(null, stack);  //TODO no reason to scale all stack
 					}
 				EvImagePlane evim=stack.getPlane(z);
 				EvPixels pixels=evim.getPixels();

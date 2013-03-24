@@ -436,7 +436,7 @@ public class WormPathGuessing
 			int[] directions, int previous, int nSteps)
 		{
 		Vector2i best = new Vector2i(-1, -1);
-		double max = Double.MIN_VALUE;
+		double max = -Double.MAX_VALUE;
 		double heuristic = 2;
 		for (int i = 0; i<neigh.length; i++)
 			{

@@ -15,7 +15,7 @@ public class BoundingBox3D
 	public BoundingBox3D()
 		{
 		xmin=ymin=zmin=Double.MAX_VALUE;
-		xmax=ymax=zmax=Double.MIN_VALUE;
+		xmax=ymax=zmax=-Double.MAX_VALUE;
 		}
 	
 	public BoundingBox3D(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax)

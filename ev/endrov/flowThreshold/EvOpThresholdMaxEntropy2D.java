@@ -69,7 +69,7 @@ public class EvOpThresholdMaxEntropy2D extends Threshold2D
 		//Go through, find
 		Iterator<Map.Entry<Integer, Integer>> it=hist.entrySet().iterator();
 		Iterator<Integer> itCount=cumHist.values().iterator();
-		double maxVal=Double.MIN_VALUE;
+		double maxVal=-Double.MAX_VALUE;
 		double maxThres=0;
 		while(it.hasNext())
 			{

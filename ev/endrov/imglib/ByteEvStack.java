@@ -92,7 +92,7 @@ public class ByteEvStack< T extends NativeType< T > > extends EvStackImg< T, Byt
 		super(
 				imp.getWidth(),
 				imp.getHeight(),
-				1,//imp.getNSlices(),
+				imp.getDepth(), //1,//imp.getNSlices(),
 				1,//imp.getNFrames(),
 				1,//imp.getNChannels(),
 				1 );

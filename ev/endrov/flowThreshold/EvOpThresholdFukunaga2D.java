@@ -97,7 +97,7 @@ public class EvOpThresholdFukunaga2D extends Threshold2D
 			{
 			Best best=new Best();
 			best.thres=new double[numClasses-1];
-			best.sigma=Double.MIN_VALUE;
+			best.sigma=-Double.MAX_VALUE;
 			double mg=cumsumHistTimesValue[cumsumHist.length-1];
 			recurse(cumsumKey, cumsumHist, cumsumHistTimesValue, new int[numClasses-1], 0, best, 0, mg);
 			System.out.println("Best thresholds "+Arrays.toString(best.thres));

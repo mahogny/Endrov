@@ -92,7 +92,7 @@ public class IntEvStack< T extends NativeType< T > > extends EvStackImg< T, IntA
 		super(
 				imp.getWidth(),
 				imp.getHeight(),
-				1,//imp.getNSlices(),
+				imp.getDepth(), //1,//imp.getNSlices(),
 				1,//imp.getNFrames(),
 				1,//imp.getNChannels(),
 				1 );

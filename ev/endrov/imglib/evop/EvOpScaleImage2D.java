@@ -35,11 +35,11 @@ import endrov.util.ProgressHandle;
  * 
  * 
  */
-public class EvOpScaleImage extends EvOpStack1
+public class EvOpScaleImage2D extends EvOpStack1
 	{
 	private final double scaleX, scaleY;
 	
-	public EvOpScaleImage(double scaleX, double scaleY)
+	public EvOpScaleImage2D(double scaleX, double scaleY)
 		{
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
@@ -64,43 +64,7 @@ public class EvOpScaleImage extends EvOpStack1
 		
 		
 		
-		
-		// Define the transformation model
-//		RigidModel2D model = new RigidModel2D();
-	//	model.set( (float)Math.toRadians( 15 ),  0, 0 );
 
-		// Define the transformation model
-		//TranslationModel2D model = new TranslationModel2D();
-		//model.set( 10.1f, -12.34f );
-
-			// compute the gradient on the image
-		/*
-		Matrix3x3 m=new Matrix3x3();
-
-		Matrix
-		
-		AffineTransform2D t2=new AffineTransform2D();
-
-		
-		AffineTransform t=new AffineTransform(m
-				);
-		t.scale(scaleX);
-		*/
-//		AffineModel2D model=new AffineModel();
-//		model.set(t);
-		
-//		model.
-		
-//		ImageTransform<FloatType> t=new ImageTransform<FloatType>(image, model, new NLinearInterpolatorFactory<FloatType>());
-		
-//			Img<FloatType> transformed = ImageTransform;
-//			.transform( image );
-	
-			// show the new Img that contains the gradient
-
-		
-		
-		
 		
 		
 		NLinearInterpolatorFactory< FloatType > factory2 = new NLinearInterpolatorFactory< FloatType >();
@@ -109,12 +73,12 @@ public class EvOpScaleImage extends EvOpStack1
 			Views.extendMirrorSingle( image ), factory2 );
 
 		// define the area in the interpolated image
-		double[] min = new double[]{ 0,0 };
-		double[] max = new double[]{ in.getWidth(), in.getHeight() };
+		double[] min = new double[]{ 0,0,0 };
+		double[] max = new double[]{ in.getWidth(), in.getHeight(), in.getDepth() };
 
 		FinalRealInterval interval = new FinalRealInterval( min, max );
 
-		Img<FloatType> imgout= magnify( interpolant2, interval, new EvStackImgFactory< FloatType >(), scaleX ) ;
+		Img<FloatType> imgout= magnifyXY( interpolant2, interval, new EvStackImgFactory< FloatType >(), scaleX, scaleY ) ;
 		
 //		Img<FloatType> imgout=Gauss.toFloat(8, image);
 		//Img<FloatType> imgout=Gauss.toFloat(8, image);
@@ -123,8 +87,7 @@ public class EvOpScaleImage extends EvOpStack1
 
 		try
 			{
-			EvStack out=
-					s2.getEvStack();
+			EvStack out=s2.getEvStack();
 			
 			out.copyMetaFrom(in);
 			out.setRes(
@@ -140,31 +103,34 @@ public class EvOpScaleImage extends EvOpStack1
 			throw new RuntimeException();
 			}
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 
-				
-			
-			
-	
-			
-			
-			
-		
-		
 		}
 	
 	
 	
 	///From https://raw.github.com/imagej/imglib/master/imglib2/examples/src/main/java/Example7.java
+
+	public static < T extends Type< T > > Img< T > magnifyXY( RealRandomAccessible< T > source,
+			RealInterval interval, ImgFactory< T > factory, double magnificationX, double magnificationY)
+		{
+		int numDimensions = interval.numDimensions();
+		double[] magArr=new double[numDimensions];
+		for(int i=0;i<numDimensions;i++)
+			magArr[i]=1;
+		magArr[0]=magnificationX;
+		magArr[1]=magnificationY;
+		return magnify(source, interval, factory, magArr);
+		}
+
+	public static < T extends Type< T > > Img< T > magnify( RealRandomAccessible< T > source,
+			RealInterval interval, ImgFactory< T > factory, double magnification)
+		{
+		int numDimensions = interval.numDimensions();
+		double[] magArr=new double[numDimensions];
+		for(int i=0;i<numDimensions;i++)
+			magArr[i]=magnification;
+		return magnify(source, interval, factory, magArr);
+		}
 	
 	/**
 	 * Compute a magnified version of a given real interval
@@ -172,11 +138,11 @@ public class EvOpScaleImage extends EvOpStack1
 	 * @param source - the input data
 	 * @param interval - the real interval on the source that should be magnified
 	 * @param factory - the image factory for the output image
-	 * @param magnification - the ratio of magnification
+	 * @param magnificationX - the ratio of magnification
 	 * @return - an Img that contains the magnified image content
 	 */
 	public static < T extends Type< T > > Img< T > magnify( RealRandomAccessible< T > source,
-		RealInterval interval, ImgFactory< T > factory, double magnification)
+		RealInterval interval, ImgFactory< T > factory, double[] magnification)
 	{
 		int numDimensions = interval.numDimensions();
 
@@ -187,7 +153,7 @@ public class EvOpScaleImage extends EvOpStack1
 		for ( int d = 0; d < numDimensions; ++d )
 		{
 			intervalSize[ d ] = interval.realMax( d ) - interval.realMin( d );
-			pixelSize[ d ] = Math.round( intervalSize[ d ] * magnification ) + 1;
+			pixelSize[ d ] = Math.round( intervalSize[ d ] * magnification[d] ) + 1;
 		}
 
 		// create the output image
