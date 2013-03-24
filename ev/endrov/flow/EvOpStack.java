@@ -41,14 +41,12 @@ public abstract class EvOpStack extends EvOpGeneral
 			ret[ac]=stack[ac].getPlane(0).getPixels(ph);
 		return ret;
 		}
-	
-	
-	
+		
 
 	public EvChannel[] exec(ProgressHandle ph, EvChannel... ch)
 		{
 		System.out.println("here1");
-		return applyStackOp(ph, ch, this);
+		return applyStackOpOnChannelsSameSize(ph, ch, this);
 		}
 	
 	public EvPixels exec1(ProgressHandle ph, EvPixels... p)
@@ -69,12 +67,14 @@ public abstract class EvOpStack extends EvOpGeneral
 	
 	/**
 	 * Lazily create a channel using an operator that combines input channels.
+	 * For this function to work, the output channel must have the same resolution and size
+	 * as the input channels
 	 * 
 	 * Should ONLY be used for EvOpStack and EvOpStack1 
 	 * (why?)
 	 * 
 	 */
-	static EvChannel[] applyStackOp(ProgressHandle progh, EvChannel[] ch, EvOpGeneral op)
+	public static EvChannel[] applyStackOpOnChannelsSameSize(ProgressHandle progh, EvChannel[] ch, EvOpGeneral op)
 		{
 		//System.out.println("here3 ");
 
@@ -177,6 +177,66 @@ public abstract class EvOpStack extends EvOpGeneral
 			}
 		return retch;
 		}
+
+	
+	
+	
+	/**
+	 * Lazily create a channel using an operator that combines input channels.
+	 * For this function to work, the output channel must have the same resolution and size
+	 * as the input channels
+	 * 
+	 * This function contains an optimization such that not all planes must be immediately generated, but
+	 * rather it is done on a stack level
+	 * 
+	 * Should ONLY be used for EvOpStack and EvOpStack1 
+	 * (why?)
+	 * 
+	 */
+	public static EvChannel[] applyStackOpOnChannelsDifferentSize(ProgressHandle progh, EvChannel[] ch, EvOpGeneral op)
+		{
+		int numInputChannels=ch.length;
+		int numOutputChannels=op.getNumberChannels();
+
+		//Create output channels
+		EvChannel[] retch=new EvChannel[numOutputChannels];
+		for(int curOutputChanIndex=0;curOutputChanIndex<retch.length;curOutputChanIndex++)
+			{
+			EvChannel curReturnChan=new EvChannel();
+			retch[curOutputChanIndex]=curReturnChan;
+			}
+
+		
+		//First argument decides which frames to apply for
+		EvChannel refChannel=ch[0];
+		
+			
+		//Operates on common subset of channels
+		for(EvDecimal channelEntryFrame:refChannel.getFrames())
+			{
+			final EvStack curInputStack=refChannel.getStack(progh, channelEntryFrame);
+			
+			
+			
+			
+			final EvStack[] imlist=new EvStack[numInputChannels];
+			int ci=0;
+			for(EvChannel cit:ch)
+				{
+				imlist[ci]=cit.getStack(progh, channelEntryFrame);
+				ci++;
+				}
+			
+
+			
+			EvStack[] out=op.exec(progh, imlist);
+			
+			for(int curOutputChanIndex=0;curOutputChanIndex<retch.length;curOutputChanIndex++)
+				retch[curOutputChanIndex].putStack(channelEntryFrame, out[curOutputChanIndex]);
+			}
+		return retch;
+		}
+
 	
 	
 	private static class MemoizeExecStack extends MemoizeX<EvStack[]>

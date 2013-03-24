@@ -9,8 +9,10 @@ import java.io.File;
 
 import javax.vecmath.Vector3d;
 
+import endrov.flow.EvOpStack;
 import endrov.flow.EvOpStack1;
 import endrov.roi.primitive.BoxROI;
+import endrov.typeImageset.EvChannel;
 import endrov.typeImageset.EvImagePlane;
 import endrov.typeImageset.EvImageReader;
 import endrov.typeImageset.EvPixels;
@@ -22,11 +24,6 @@ import endrov.util.ProgressHandle;
  * Crop image to fit within limits
  * 
  * TODO a resampling is equivalent to a crop, but more general and does not suffer from rotation problems!!!!
- * 
- * 
- * TODO BUG
- * in evopstack, output is pre-generated to be of same dimension in z. this causes huge problems!
- * 
  * 
  * 
  * @author Johan Henriksson
@@ -52,6 +49,11 @@ public class EvOpCropImage3D extends EvOpStack1
 		}
 	
 	
+	public EvChannel[] exec(ProgressHandle progh, EvChannel... ch)
+		{
+		return EvOpStack.applyStackOpOnChannelsDifferentSize(progh, ch, this);
+		}
+
 	
 	/**
 	 * Crop an entire stack to lie within ROI
@@ -128,9 +130,10 @@ public class EvOpCropImage3D extends EvOpStack1
 					return null;
 					}
 				};
-			newim.registerLazyOp(newim.io); //TODO
+			newim.registerLazyOp(newim.io);
 			int outZindex=az-fromZ;
 			stackOut.putPlane(outZindex, newim);
+			System.out.println("-------------------------- "+outZindex);
 			}
 		
 		System.out.println("Depth "+stackOut.getDepth());
