@@ -5,16 +5,11 @@
  */
 package endrov.flow;
 
-import java.io.File;
-
 import endrov.typeImageset.EvChannel;
 import endrov.typeImageset.EvImagePlane;
-import endrov.typeImageset.EvImageReader;
 import endrov.typeImageset.EvPixels;
 import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
-import endrov.util.lazy.MemoizeX;
-import endrov.util.math.EvDecimal;
 
 /**
  * Image operation defined by operation on stacks

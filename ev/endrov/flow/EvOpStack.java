@@ -214,11 +214,6 @@ public abstract class EvOpStack extends EvOpGeneral
 		//Operates on common subset of channels
 		for(EvDecimal channelEntryFrame:refChannel.getFrames())
 			{
-			final EvStack curInputStack=refChannel.getStack(progh, channelEntryFrame);
-			
-			
-			
-			
 			final EvStack[] imlist=new EvStack[numInputChannels];
 			int ci=0;
 			for(EvChannel cit:ch)
