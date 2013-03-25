@@ -19,8 +19,8 @@ import static java.lang.Math.*;
  */
 public class BestFitRotTransScale
 	{
-	public Map<Lineage,LinInfo> lininfo=new HashMap<Lineage, LinInfo>();
-	public List<LinPair> pair=new LinkedList<LinPair>();
+	public Map<Lineage,TransformedLineage> lininfo=new HashMap<Lineage, TransformedLineage>();
+	public List<LineagePair> pair=new LinkedList<LineagePair>();
 	public Lineage refLin;
 	
 	
@@ -30,9 +30,9 @@ public class BestFitRotTransScale
 	///////////////////////////////////////////////////////////////////////////////////
 	
 	/**
-	 * Info about one lineage
+	 * One lineage about to be transformed
 	 */
-	public static class LinInfo
+	public static class TransformedLineage
 		{
 		public double[] x=new double[]{0,0,0, 0,0,0, 1};
 		public double[] dx=new double[]{0,0,0, 0,0,0, 0};
@@ -129,43 +129,45 @@ public class BestFitRotTransScale
 	/**
 	 * One pair of lineages
 	 */
-	public static class LinPair
+	public static class LineagePair
 		{
-		public Set<String> commonNuc=new HashSet<String>();		
+		public HashMap<String,Double> commonNuc=new HashMap<String,Double>();		
 		public Lineage goalLin, newLin;
 		
+		
+		private void addCommonNuc(String nuc, double weight)
+			{
+			commonNuc.put(nuc,weight);
+			}
 		
 		/**
 		 * Sum up dx for one pair
 		 */
-		public void oneIteration(BestFitRotTransScale parent)
+		public void sumDxOneIteration(BestFitRotTransScale parent)
 			{
-			LinInfo newInfo=parent.lininfo.get(newLin);
-			LinInfo goalInfo=parent.lininfo.get(goalLin);
+			TransformedLineage newInfo=parent.lininfo.get(newLin);
+			TransformedLineage goalInfo=parent.lininfo.get(goalLin);
 			double newdx[]=new double[7];
 			double goaldx[]=new double[7];
-			for(String nucname:commonNuc)
+			for(String nucname:commonNuc.keySet())
 				{
 				Vector3d tv=newInfo.transformed.get(nucname);
 				Vector3d gv=goalInfo.transformed.get(nucname);
-//				System.out.println(nucname+" "+tv+" "+gv);
 				Vector3d diff=new Vector3d(tv);
 				diff.sub(gv);
 				parent.incNumPointEps(diff.lengthSquared());
 				
+				double weight=commonNuc.get(nucname);
 				
 				
 				for(int j=1;j<=7;j++)
 					{
-//					Vector3d dtrans=transform(rotx, roty, rotz, rotxp, rotyp, rotzp, trans, scale, v, j);
 					Vector3d dtrans=newInfo.dtransform.get(nucname)[j-1];
-					//newInfo.dx[j-1]+=2*dtrans.dot(diff);
-					newdx[j-1]+=2*dtrans.dot(diff);
+					newdx[j-1]+=2*dtrans.dot(diff)*weight;
 					
 					//Difference inverted, changes sign
 					Vector3d dtrans2=goalInfo.dtransform.get(nucname)[j-1];
-					//goalInfo.dx[j-1]-=2*dtrans2.dot(diff);
-					goaldx[j-1]-=2*dtrans2.dot(diff);
+					goaldx[j-1]-=2*dtrans2.dot(diff)*weight;
 					}
 				}
 			newInfo.numpoint+=commonNuc.size();
@@ -186,11 +188,9 @@ public class BestFitRotTransScale
 
 	
 	private double eps;
-	//private int numpoint;
 	
 	private void incNumPointEps(double eps)
 		{
-//		numpoint++;
 		this.eps+=eps;
 		}
 
@@ -216,23 +216,24 @@ public class BestFitRotTransScale
 			{
 			for(Lineage lin2:lininfo.keySet())
 				{
-				LinPair p=new LinPair();
+				LineagePair p=new LineagePair();
 				p.goalLin=lin;
 				p.newLin=lin2;
 				pair.add(p);
 				}
 			
-			lininfo.put(lin,new LinInfo());
+			lininfo.put(lin,new TransformedLineage());
 			}
 		}
 	
 	public void findCommonNuc()
 		{
-		for(LinPair p:pair)
+		for(LineagePair p:pair)
 			{
 			p.commonNuc.clear();
-			p.commonNuc.addAll(lininfo.get(p.newLin).untransformed.keySet());
-			p.commonNuc.retainAll(lininfo.get(p.goalLin).untransformed.keySet());
+			for(String nucname:lininfo.get(p.newLin).untransformed.keySet())
+			p.addCommonNuc(nucname,1);
+			p.commonNuc.keySet().retainAll(lininfo.get(p.goalLin).untransformed.keySet());
 			}
 		}
 	
@@ -246,21 +247,14 @@ public class BestFitRotTransScale
 			{
 			doOneIteration();
 			
-//			System.exit(0);
-			
 			if(i%40==0)
 				System.out.println("eps "+eps);
-//			System.out.println("eps "+eps);
-			if((i>minit))// && eps<okEps*numpoint) || numpoint==0)
+			if((i>minit))
 				{
 				System.out.println("ok");
 				break;
 				}
 			}
-		//Update to latest transformation
-//		for(LinInfo info:lininfo.values())
-//			info.update();
-//		System.exit(0);
 		}
 	
 	/**
@@ -269,16 +263,14 @@ public class BestFitRotTransScale
 	public void doOneIteration()
 		{
 		//Transform all points
-//		numpoint=0;
 		eps=0;
-		for(LinInfo info:lininfo.values())
+		for(TransformedLineage info:lininfo.values())
 			info.update();
 		
 		//For every pair, calculate how to move
 		//Turns out to be faster single-threaded
-		for(LinPair p:pair)
-			p.oneIteration(this);
-//		System.out.println("#point "+numpoint);
+		for(LineagePair p:pair)
+			p.sumDxOneIteration(this);
 
 		//Apply move
 		double lambdaT=0.1;
@@ -288,7 +280,7 @@ public class BestFitRotTransScale
 
 		//numpoint for each info?
 
-		for(LinInfo info:lininfo.values())
+		for(TransformedLineage info:lininfo.values())
 			if(info.numpoint>0)
 				{
 				//Weigh
