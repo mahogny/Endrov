@@ -389,9 +389,9 @@ public class EvIONamebasedImageset implements EvIOData
 			String nameImageset=info.well;
 			if(nameImageset==null)
 				nameImageset="im";
-			Imageset im=(Imageset)con.getChild(info.well);
+			Imageset im=(Imageset)con.getChild(nameImageset);
 			if(im==null)
-				con.putChild(info.well,im=new Imageset());
+				con.putChild(nameImageset,im=new Imageset());
 
 			
 			//Get a place to put EVimage. Create holders if needed
