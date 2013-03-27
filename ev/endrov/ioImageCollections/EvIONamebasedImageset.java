@@ -13,7 +13,13 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+import loci.formats.FormatException;
+import loci.formats.IFormatReader;
+import loci.formats.ImageReader;
+import loci.formats.in.TiffReader;
+
 import endrov.core.*;
+import endrov.core.log.EvLog;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvIOData;
@@ -27,6 +33,7 @@ import endrov.gui.icon.BasicIcon;
 import endrov.gui.window.EvBasicWindow;
 import endrov.typeImageset.*;
 import endrov.util.EvBrowserUtil;
+import endrov.util.io.EvFileUtil;
 import endrov.util.math.EvDecimal;
 
 /**
@@ -50,7 +57,10 @@ public class EvIONamebasedImageset implements EvIOData
 	private double resX=1;
 	private double resY=1;
 	private double resZ=1;
+
+	boolean filesAsStacks=false;
 	
+
 	
 	/**
 	 * Create a new recording. Basedir points to imageset- ie without the channel name
@@ -121,12 +131,14 @@ public class EvIONamebasedImageset implements EvIOData
 		private JTextField eSpacingZ=new JTextField("1");
 
 		
+		private JCheckBox cbFilesAsStacks=new JCheckBox("Interpret files as stacks");
+		
 		
 		public FileConvention()
 			{
 			setTitle(EndrovCore.programName+" Name based Import File Conventions");
 			
-			JPanel input=new JPanel(new GridLayout(7,1));
+			JPanel input=new JPanel(new GridLayout(8,1));
 			input.add(new JLabel(basedir.toString()));
 			input.add(EvSwingUtil.withLabel("Name:",eSequence));
 			input.add(new JLabel("Name is case-sensitive!"));
@@ -135,6 +147,8 @@ public class EvIONamebasedImageset implements EvIOData
 			input.add(EvSwingUtil.withLabel("Resolution X [px/um]:",eResX));
 			input.add(EvSwingUtil.withLabel("Resolution Y [px/um]:",eResY));
 			input.add(EvSwingUtil.withLabel("Spacing Z [um/plane]:",eSpacingZ));
+			
+			input.add(cbFilesAsStacks);
 			
 			eSequence.setPreferredSize(new Dimension(430,20));
 			eChannels.setPreferredSize(new Dimension(400,20));
@@ -177,6 +191,7 @@ public class EvIONamebasedImageset implements EvIOData
 				resX=Double.parseDouble(eResX.getText());
 				resY=Double.parseDouble(eResY.getText());
 				resZ=Double.parseDouble(eSpacingZ.getText());
+				filesAsStacks=cbFilesAsStacks.isSelected();
 				NamebasedDatabaseBuilder b=new NamebasedDatabaseBuilder();
 				b.run(data);
 				eLog.setText(b.rebuildLog.toString());
@@ -394,9 +409,11 @@ public class EvIONamebasedImageset implements EvIOData
 				con.putChild(nameImageset,im=new Imageset());
 
 			
-			//Get a place to put EVimage. Create holders if needed
+			//Get channel
 			EvChannel ch=im.getCreateChannel(channelName);
 			System.out.println(ch);
+
+			//Get stack
 			EvStack stack=ch.getStack(new EvDecimal(info.frame));
 			if(stack==null)
 				{
@@ -404,18 +421,33 @@ public class EvIONamebasedImageset implements EvIOData
 				ch.putStack(new EvDecimal(info.frame), stack);
 				}
 			
-			//Plug EVimage
-			EvImagePlane evim=new EvImagePlane();
-			stack.setRes(resX,resY,resZ);
-			evim.io=new EvSingleImageFileReader(info.f);
+			int numPlanesInFile=1;
 			
-			stack.putPlane(info.slice-minZ, evim);
+			if(filesAsStacks)
+				{
+				numPlanesInFile=countImagePlanes(info.f);
+				System.out.println("********* "+numPlanesInFile);
+				}
 			
-			String filename=info.f.getName();
-			String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+info.frame+" Sl: "+info.slice+"\n";
-			System.out.println(newLogEntry);
-			rebuildLog.append(newLogEntry);
-			countFilesAdded++;
+			
+			
+			//Create planes
+			for(int i=0;i<numPlanesInFile;i++)
+				{
+				EvImagePlane evim=new EvImagePlane();
+				stack.setRes(resX,resY,resZ);
+				evim.io=new EvSingleImageFileReader(info.f, i);
+				
+				int slice=i+info.slice-minZ;
+				stack.putPlane(slice, evim);
+				
+				String filename=info.f.getName();
+				String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+info.frame+" Sl: "+slice+"\n";
+				System.out.println(newLogEntry);
+				rebuildLog.append(newLogEntry);
+				countFilesAdded++;
+				}
+				
 			}
 		
 		
@@ -521,5 +553,62 @@ public class EvIONamebasedImageset implements EvIOData
 		
 		}
 		
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Count number of planes in file
+	 * 
+	 * @throws IOException 
+	 */
+	public static int countImagePlanes(File file) throws IOException
+		{
+		try
+			{
+			String fend=EvFileUtil.fileEnding(file);
+			fend=fend.toLowerCase();
+			//Use JAI if possible, it can be assumed to be very fast
+			
+			
+			//Rely on Bioformats in the worst case. Use the most stupid reader available, or bio-formats might attempt
+			//detecting a special format
+			IFormatReader reader;
+			if(fend!=null && (fend.equals("tiff") || fend.equals("tif")))
+				{
+				TiffReader tr=new TiffReader();
+				tr.setGroupFiles(false);
+				reader=tr;
+				}
+			else
+				{
+				reader=new ImageReader();
+				}
+			//reader.setAllowOpenFiles(false);  //for scifio
+
+			reader.setId(file.getAbsolutePath());
+			
+			int count=reader.getImageCount();
+
+//			String[] dimTypes=reader.getChannelDimTypes();
+	//		int[] dimLengths=reader.getChannelDimLengths();
+			
+			
+			reader.close();
+			
+			return count;
+			}
+		catch (FormatException e)
+			{
+			EvLog.printError("Bioformats failed to read image "+file, null);
+			throw new IOException(e.getMessage());
+			}
+		}
+
+	
+	
 	
 	}
