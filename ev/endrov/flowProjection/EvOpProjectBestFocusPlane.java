@@ -7,26 +7,13 @@ package endrov.flowProjection;
 
 import java.util.Iterator;
 
-import net.imglib2.Cursor;
-import net.imglib2.IterableInterval;
-import net.imglib2.RealInterval;
-import net.imglib2.RealRandomAccess;
-import net.imglib2.RealRandomAccessible;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.Type;
-import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Util;
 import endrov.flow.EvOpStack1;
-import endrov.flowImageStats.EvOpVarianceRect;
 import endrov.imglib.EvStackAdapter;
 import endrov.typeImageset.EvImagePlane;
 import endrov.typeImageset.EvPixels;
-import endrov.typeImageset.EvPixelsType;
 import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 import endrov.util.math.EvMathUtil;

@@ -44,8 +44,6 @@ import endrov.typeImageset.EvPixels;
 import endrov.typeImageset.EvStack;
 import endrov.typeLine.EvLine;
 import endrov.typeLineage.Lineage;
-import endrov.typeLineageIntegrationViewer2D.LineagingAlgorithm;
-import endrov.typeLineageIntegrationViewer2D.LineagingAlgorithm.LineageAlgorithmDef;
 import endrov.typeShell.Shell;
 import endrov.util.*;
 import endrov.util.collection.EvParallel;
@@ -55,6 +53,8 @@ import endrov.util.math.EvDecimal;
 import endrov.util.math.EvMathUtil;
 import endrov.util.math.ImVector3d;
 import endrov.util.math.Vector3i;
+import endrov.windowAutoLineaging.LineagingAlgorithm;
+import endrov.windowAutoLineaging.LineagingAlgorithm.LineageAlgorithmDef;
 
 /**
  * Autolineage algorithm: JH-his-1 <br/>
