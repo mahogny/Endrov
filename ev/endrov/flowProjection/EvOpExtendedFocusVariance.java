@@ -14,7 +14,7 @@ import endrov.typeImageset.EvStack;
 import endrov.util.ProgressHandle;
 
 /**
- * Extended focus i.e.
+ * Extended focus i.e. take pieces from different places, where the image is assumed to have the best focus
  * 
  * @author Johan Henriksson
  *
