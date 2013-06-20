@@ -3,14 +3,14 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.windowAutoLineaging;
+package endrov.ioSimiBioCell;
 import endrov.core.EvPluginDefinition;
 
 public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{
-		return "Automatic Lineaging";
+		return "I/O: Simi BioCell lineages";
 		}
 
 	public String getAuthor()
@@ -35,9 +35,7 @@ public class PLUGIN extends EvPluginDefinition
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{
-				WindowAutoLineaging.class,
-				AutolineageGeneric.class};
+		return new Class[]{SimiBiocellIO.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

@@ -1,0 +1,35 @@
+SIMI*BIOCELL
+400
+---
+0
+---
+1 1
+0
+---
+
+
+
+
+
+
+
+
+1 1 0 0 AB
+0 0 -1 -1
+0 5 -1 -1 0 255
+2
+1 134 105 4 -1 -1 -1
+4 134 106 5 -1 -1 -1
+
+<cells left count> < cells right count> <active cell left> <active cell right> <gen.name1>
+<gen.time of birth sec.> <g.level> <g.wildtype> <g.color> <g.name2>
+<birth fram> <mitosis lvl> <wildtype> <size> <shape> <color> <name>
+<coordinates count>
+<frame> <x> <y> <level> <size> <shape>
+---
+<wildtype> is a number that defines the fate of a cell in the tree - in the files I have send you this has not been used, so the value is always -1.
+<color> is a real hexadecimal RGB value (e.g. 00ff00 for green)
+<size> and <shape> are internal values of BioCell
+<coordinates> are real pixels
+<g.name2> and <name> might be empty - they depend on the template used.
+
