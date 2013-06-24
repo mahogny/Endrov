@@ -8,11 +8,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import endrov.core.log.EvLog;
 import endrov.data.EvData;
 import endrov.data.EvIODataReaderWriterDeclaration;
 import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.data.EvData.FileIOStatusCallback;
+import endrov.data.gui.EvDataGUI;
+import endrov.typeImageset.EvChannel;
+import endrov.typeImageset.EvStack;
 import endrov.typeLineage.Lineage;
 import endrov.typeLineage.Lineage.Particle;
 import endrov.typeLineage.Lineage.ParticlePos;
@@ -59,11 +63,27 @@ public class SimiBiocellIO implements EvIOData
 	 */
 	public Lineage readFile(File f) throws IOException
 		{
-		double xy_res=1;
+		double xy_res=1;   //um/px
 		double z_res=50;
+
 		/*
 		int time_interval=1*60;
 		*/
+		
+		///// This file format does not contain the resolution. Try to detect it by looking for other loaded images
+		for(EvData data:EvDataGUI.openedData)
+			{
+			for(EvChannel ch:data.getIdObjectsRecursive(EvChannel.class).values())
+				{
+				EvStack stack=ch.getFirstStack(null);
+				xy_res=stack.getRes().x;
+				z_res=stack.getRes().z;
+				EvLog.printLog("Auto-detected resolution: "+xy_res+"  "+z_res);
+				}
+			}
+		
+		
+		
 		
 		BufferedReader br=new BufferedReader(new FileReader(f));
 		
