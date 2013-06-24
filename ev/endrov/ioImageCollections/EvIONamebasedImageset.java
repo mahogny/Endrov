@@ -7,11 +7,14 @@ package endrov.ioImageCollections;
 
 import javax.swing.*;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import endrov.core.*;
 import endrov.data.EvContainer;
@@ -199,6 +202,7 @@ public class EvIONamebasedImageset implements EvIOData
 		int slice=0;
 		int frame=0;
 		String well=null;
+		String dataset;
 		}
 		
 	/**
@@ -206,13 +210,31 @@ public class EvIONamebasedImageset implements EvIOData
 	 */
 	private class NamebasedDatabaseBuilder
 		{
-		File[] fileList;
+		//File[] fileList;
+		List<File> fileList=new ArrayList<File>();
 		int currentFile=0;
 		private StringBuffer rebuildLog=new StringBuffer();
 		
 		private int countFilesAdded=0;
 		
 		private Integer minZ=null;
+		
+		
+		private void getAllFiles(List<File> files, File dir)
+			{
+			for(File f:dir.listFiles())
+				if(!f.getName().startsWith("."))
+					{
+					if(f.isDirectory())
+						{
+						getAllFiles(files, f);
+						}
+					else
+						{
+						files.add(f);
+						}
+					}
+			}
 		
 		public void run(EvData data)
 			{
@@ -221,7 +243,8 @@ public class EvIONamebasedImageset implements EvIOData
 			try
 				{
 				File dir=basedir;
-				fileList=dir.listFiles();
+				fileList.clear();
+				getAllFiles(fileList, dir);
 
 				//Parse list of channels into vector
 				StringTokenizer ctok=new StringTokenizer(channelList,",");
@@ -282,7 +305,12 @@ public class EvIONamebasedImageset implements EvIOData
 			{
 			FileInfo info=new FileInfo();
 			info.f=f;
-			String filename=f.getName();
+			//String filename=f.getName();
+			
+			System.out.println(File.pathSeparatorChar);
+			String filename=getRelativePath(f.getPath(), basedir.getPath(), File.separator);
+			
+			
 			int i=0;
 			int j=0;
 			while(i<fileConvention.length())
@@ -295,6 +323,30 @@ public class EvIONamebasedImageset implements EvIOData
 					i+=2;
 					if(type=='%')
 						j++;
+					else if(type=='D')
+						{
+						StringBuilder sb=new StringBuilder();
+						
+						while(j<filename.length())
+							{
+							char c=filename.charAt(j);
+							if(c!='.')//Character.isLetter(c) || Character.isDigit(c))
+								{
+								if(c=='/')
+									c='@';
+								sb.append(c);
+								j++;
+								}
+							else
+								break;
+							}
+						info.dataset=sb.toString();
+						if(info.dataset.length()==0)
+							{
+							rebuildLog.append("Not matching "+filename+" Missing parameter "+type+", filename pos"+j+"\n");
+							return null;
+							}
+						}
 					else if(type=='W')
 						{
 						StringBuilder sb=new StringBuilder();
@@ -385,13 +437,18 @@ public class EvIONamebasedImageset implements EvIOData
 			
 			String channelName=channelVector.get(info.channelNum);
 
-			//Get the right well
+			//Get the right well / imageset
 			String nameImageset=info.well;
+			
+			if(info.dataset!=null)
+				nameImageset=info.dataset;  //TODO handle dataset and well simulatenously
+			
+			
 			if(nameImageset==null)
 				nameImageset="im";
-			Imageset im=(Imageset)con.getChild(info.well);
+			Imageset im=(Imageset)con.getChild(nameImageset);
 			if(im==null)
-				con.putChild(info.well,im=new Imageset());
+				con.putChild(nameImageset,im=new Imageset());
 
 			
 			//Get a place to put EVimage. Create holders if needed
@@ -436,14 +493,11 @@ public class EvIONamebasedImageset implements EvIOData
 		/** Get the next file to assign frame/slice */
 		private File nextFile()
 			{
-			if(currentFile<fileList.length)
+			if(currentFile<fileList.size())
 				{
-				File f=fileList[currentFile];
+				File f=fileList.get(currentFile);
 				currentFile++;
-				if(!f.getName().startsWith("."))
-					return f;
-				else
-					return nextFile();
+				return f;
 				}
 			else
 				return null;
@@ -521,5 +575,127 @@ public class EvIONamebasedImageset implements EvIOData
 		
 		}
 		
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+  /**
+   * Get the relative path from one file to another, specifying the directory separator. 
+   * If one of the provided resources does not exist, it is assumed to be a file unless it ends with '/' or
+   * '\'.
+   * 
+   * @param targetPath targetPath is calculated to this file
+   * @param basePath basePath is calculated from this file
+   * @param pathSeparator directory separator. The platform default is not assumed so that we can test Unix behaviour when running on Windows (for example)
+   * @return
+   */
+	public static String getRelativePath(String targetPath, String basePath,
+			String pathSeparator)
+		{
+		// Normalize the paths
+		String normalizedTargetPath = FilenameUtils.normalizeNoEndSeparator(targetPath);
+		String normalizedBasePath = FilenameUtils.normalizeNoEndSeparator(basePath);
+
+		// Undo the changes to the separators made by normalization
+		if (pathSeparator.equals("/"))
+			{
+			normalizedTargetPath = FilenameUtils.separatorsToUnix(normalizedTargetPath);
+			normalizedBasePath = FilenameUtils.separatorsToUnix(normalizedBasePath);
+
+			}
+		else if (pathSeparator.equals("\\"))
+			{
+			normalizedTargetPath = FilenameUtils.separatorsToWindows(normalizedTargetPath);
+			normalizedBasePath = FilenameUtils.separatorsToWindows(normalizedBasePath);
+			}
+		else
+			{
+			throw new IllegalArgumentException("Unrecognised dir separator '"
+					+pathSeparator+"'");
+			}
+
+		String[] base = normalizedBasePath.split(Pattern.quote(pathSeparator));
+		String[] target = normalizedTargetPath.split(Pattern.quote(pathSeparator));
+
+		// First get all the common elements. Store them as a string,
+		// and also count how many of them there are.
+		StringBuffer common = new StringBuffer();
+
+		int commonIndex = 0;
+		while (commonIndex<target.length&&commonIndex<base.length
+				&&target[commonIndex].equals(base[commonIndex]))
+			{
+			common.append(target[commonIndex]+pathSeparator);
+			commonIndex++;
+			}
+
+		if (commonIndex==0)
+			{
+			// No single common path element. This most
+			// likely indicates differing drive letters, like C: and D:.
+			// These paths cannot be relativized.
+			throw new PathResolutionException("No common path element found for '"
+					+normalizedTargetPath+"' and '"+normalizedBasePath+"'");
+			}
+
+		// The number of directories we have to backtrack depends on whether the
+		// base is a file or a dir
+		// For example, the relative path from
+		//
+		// /foo/bar/baz/gg/ff to /foo/bar/baz
+		//
+		// ".." if ff is a file
+		// "../.." if ff is a directory
+		//
+		// The following is a heuristic to figure out if the base refers to a file
+		// or dir. It's not perfect, because
+		// the resource referred to by this path may not actually exist, but it's
+		// the best I can do
+		boolean baseIsFile = true;
+
+		File baseResource = new File(normalizedBasePath);
+
+		if (baseResource.exists())
+			{
+			baseIsFile = baseResource.isFile();
+
+			}
+		else if (basePath.endsWith(pathSeparator))
+			{
+			baseIsFile = false;
+			}
+
+		StringBuffer relative = new StringBuffer();
+
+		if (base.length!=commonIndex)
+			{
+			int numDirsUp = baseIsFile ? base.length-commonIndex-1 : base.length-commonIndex;
+
+			for (int i = 0; i<numDirsUp; i++)
+				relative.append(".."+pathSeparator);
+			}
+		relative.append(normalizedTargetPath.substring(common.length()));
+		return relative.toString();
+		}
+
+  static class PathResolutionException extends RuntimeException 
+  	{
+		private static final long serialVersionUID = 1L;
+
+		PathResolutionException(String msg) 
+			{
+      super(msg);
+			}
+  	}
+	
 	
 	}
