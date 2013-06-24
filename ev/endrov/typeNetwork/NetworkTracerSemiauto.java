@@ -66,7 +66,7 @@ public class NetworkTracerSemiauto extends NetworkTracerInterface
 			double[][] cost=stack.getArraysDoubleReadOnly(new ProgressHandle());
 			
 			//Find max value
-			double max=Double.MIN_VALUE;
+			double max=-Double.MAX_VALUE;
 			for(int az=0;az<cost.length;az++)
 				for(int ax=0;ax<cost[az].length;ax++)
 					{

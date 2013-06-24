@@ -39,7 +39,7 @@ public class EvOpAutoContrastBrightness2D extends EvOpSlice1
 		double[] inPixels=in.getArrayDouble();
 
 		double min=Double.MAX_VALUE;
-		double max=Double.MIN_VALUE;
+		double max=-Double.MAX_VALUE;
 		for(int i=0;i<inPixels.length;i++)
 			{
 			double p=inPixels[i];

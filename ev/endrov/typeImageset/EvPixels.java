@@ -679,6 +679,8 @@ public class EvPixels implements AnyEvImage
 	 */
 	public void setPixels(EvPixels im)
 		{
+		if(im==null)
+			throw new NullPointerException("Trying to copy null image");
 		unallocate();
 		
 		type=im.type;

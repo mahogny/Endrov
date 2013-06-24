@@ -247,11 +247,11 @@ public class MakeStdWorm5
 	 */
 	public static void writeRigidFitCoord(Lineage newlin, BestFitRotTransScale bf, Lineage lin, EvDecimal curframe)
 		{
-		for(String nucName:bf.lininfo.get(lin).untransformed.keySet())
+		for(String nucName:bf.transformedLineage.get(lin).originalPoint.keySet())
 			{
 			Lineage.ParticlePos npos=newlin.getCreateParticle(nucName).getCreatePos(curframe);
-			npos.setPosCopy(bf.lininfo.get(lin).transformed.get(nucName));
-			npos.r=bf.lininfo.get(lin).untransformedR.get(nucName);
+			npos.setPosCopy(bf.transformedLineage.get(lin).transformedPoint.get(nucName));
+			npos.r=bf.transformedLineage.get(lin).untransformedR.get(nucName);
 			}
 		}
 	
@@ -340,8 +340,8 @@ public class MakeStdWorm5
 				for(Map.Entry<LineageSelParticle, Lineage.InterpolatedParticle> entry:interp.entrySet())
 					{
 					String nucname=entry.getKey().snd();
-					bf.lininfo.get(lin).untransformed.put(nucname, entry.getValue().pos.getPosCopy());
-					bf.lininfo.get(lin).untransformedR.put(nucname, entry.getValue().pos.r);
+					bf.transformedLineage.get(lin).originalPoint.put(nucname, entry.getValue().pos.getPosCopy());
+					bf.transformedLineage.get(lin).untransformedR.put(nucname, entry.getValue().pos.r);
 					}
 				}
 			bf.refLin=refLin;

@@ -3,14 +3,14 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowProjection;
+package endrov.windowAutoLineaging;
 import endrov.core.EvPluginDefinition;
 
 public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{
-		return "Flows: Projection";
+		return "Automatic Lineaging";
 		}
 
 	public String getAuthor()
@@ -36,13 +36,8 @@ public class PLUGIN extends EvPluginDefinition
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				FlowUnitAverageZ.class,
-				FlowUnitProjectMaxZ.class,
-				FlowUnitProjectSumZ.class,
-				
-				FlowUnitExtendedFocusVariance.class,
-				FlowUnitBestFocusPlane.class,
-				};
+				WindowAutoLineaging.class,
+				AutolineageGeneric.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

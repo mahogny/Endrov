@@ -40,12 +40,12 @@ public abstract class EvOpStack1 extends EvOpGeneral
 		return new EvPixels[]{exec1(ph,p)};
 		}
 	
-	public EvChannel[] exec(ProgressHandle ph, EvChannel... ch)
+	public EvChannel[] exec(ProgressHandle progh, EvChannel... ch)
 		{
-		return EvOpStack.applyStackOp(ph, ch, this);
+		return EvOpStack.applyStackOpOnChannelsSameSize(progh, ch, this);
 		}
-	
 
+	
 
 	public EvStack[] exec(ProgressHandle ph, EvStack... p)
 		{

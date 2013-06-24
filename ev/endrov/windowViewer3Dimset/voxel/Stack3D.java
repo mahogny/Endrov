@@ -579,10 +579,14 @@ public class Stack3D extends StackRendererInterface
 		{
 		GL2 gl=glin.getGL2();
 
+		Viewer3DView.checkerr(gl);
+
 		//Draw edges
 		if(drawEdges)
 			for(VoxelStack os:texSlices)
 					renderEdge(gl, os.realw, os.realh, os.reald);
+
+		Viewer3DView.checkerr(gl);
 
 		//Draw voxels
 		for(VoxelStack os:texSlices)
@@ -603,14 +607,13 @@ public class Stack3D extends StackRendererInterface
 	private void renderVoxelStack(GL2 gl,List<TransparentRenderer3D> transparentRenderers, final EvGLCamera cam, final VoxelStack os, final boolean solidColor, final boolean mixColors,
 			Viewer3DView view)
 		{
-		//TODO Figure out color
-//		final Color color=new Color(1.0f,1.0f,1.0f);
-		
 		Viewer3DView.checkerr(gl);
 
 		//Load shader
 		if(shader3d==null)
 			shader3d=new EvGLShader(gl,Stack3D.class.getResource("3dvert.glsl"),Stack3D.class.getResource("3dfrag.glsl"), view);
+
+		Viewer3DView.checkerr(gl);
 
 		//Get direction of camera as vector, and z-position
 		Vector3d camv=cam.rotateVector(0, 0, 1);
@@ -624,6 +627,8 @@ public class Stack3D extends StackRendererInterface
 			public void activate(GL gl1)
 				{
 				GL2 gl=gl1.getGL2();
+
+				Viewer3DView.checkerr(gl);
 
 //			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 				if(!solidColor)
@@ -642,11 +647,15 @@ public class Stack3D extends StackRendererInterface
 				os.tex.bind(gl);
 				shader3d.prepareShader(gl);
 				shader3d.use(gl);
-				
+
+				Viewer3DView.checkerr(gl);
+
 				int posContrast=shader3d.getUniformLocation(gl, "contrast");
 				int posBrightness=shader3d.getUniformLocation(gl, "brightness");
 				gl.glUniform1f(posContrast, contrast);
 				gl.glUniform1f(posBrightness, brightness);
+				
+				Viewer3DView.checkerr(gl);
 				}
 			public boolean optimizedSwitch(GL gl, TransparentRenderer3D.RenderState currentState)
 				{
@@ -695,7 +704,9 @@ public class Stack3D extends StackRendererInterface
 		double stepsize=shortestSide/200;
 
 		boolean drawDirectly=false;
-		
+
+		Viewer3DView.checkerr(gl);
+
 		//Generate all planes
 		if(drawDirectly) renderstate.activate(gl);
 		for(double q=minBoxCornerDistances;q<maxBoxCornerDistances;q+=stepsize)
@@ -717,13 +728,16 @@ public class Stack3D extends StackRendererInterface
 			}
 		if(drawDirectly) renderstate.deactivate(gl);
 		
-		
+		Viewer3DView.checkerr(gl);
+
 		//Print new discovered cases
 		for(String s:newcases.values())
 			System.out.println(s);
 		if(!newcases.isEmpty())
 			System.out.println("# cases: "+newcases.size());
 		
+		Viewer3DView.checkerr(gl);
+
 		}
 	
 	

@@ -129,14 +129,6 @@ public class LineageImageTool implements Viewer2DTool, ActionListener
 		});
 		menu.add(miNew);
 		
-		JMenuItem miAuto=new JMenuItem("Autolineage...");
-		miAuto.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e)
-				{
-				new WindowAutoLineaging();
-				}
-		});		
-		menu.add(miAuto);
 		}
 
 	public JMenuItem getMenuItem()

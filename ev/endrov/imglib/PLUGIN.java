@@ -3,14 +3,16 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowProjection;
+package endrov.imglib;
+
 import endrov.core.EvPluginDefinition;
+import endrov.imglib.evop.FlowUnitScaleImage2D;
 
 public class PLUGIN extends EvPluginDefinition
 	{
 	public String getPluginName()
 		{
-		return "Flows: Projection";
+		return "Flows: ImgLib operations";
 		}
 
 	public String getAuthor()
@@ -35,14 +37,13 @@ public class PLUGIN extends EvPluginDefinition
 	
 	public Class<?>[] getInitClasses()
 		{
+		
+		
 		return new Class[]{
-				FlowUnitAverageZ.class,
-				FlowUnitProjectMaxZ.class,
-				FlowUnitProjectSumZ.class,
-				
-				FlowUnitExtendedFocusVariance.class,
-				FlowUnitBestFocusPlane.class,
-				};
+				FlowUnitScaleImage2D.class,
+		};
+		
+		
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

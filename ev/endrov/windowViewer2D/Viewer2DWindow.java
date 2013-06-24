@@ -345,14 +345,13 @@ public class Viewer2DWindow extends EvBasicWindow
 				int w=p.getWidth();
 				int h=p.getHeight();
 				double lowest=Double.MAX_VALUE;
-				double highest=Double.MIN_VALUE;
+				double highest=-Double.MAX_VALUE;
 				for(int i=0;i<w*h;i++)
 					{
 					if(arr[i]<lowest)
 						lowest=arr[i];
 					if(arr[i]>highest)
 						highest=arr[i];
-//					System.out.println("pix "+arr[i]);
 					}
 				
 				System.out.println("highest "+highest+" lowest "+lowest);
@@ -922,14 +921,15 @@ public class Viewer2DWindow extends EvBasicWindow
 					
 					Vector3d disp=stack.getDisplacement();
 					sb.append(
-							"ResX: "+stack.getRes().x + " "+
-							"ResY: "+stack.getRes().y + " "+
-							"ResZ: "+stack.getRes().z + " "+
+							"ResXYZ [um/px]: "+stack.getRes().x + ", "+
+							stack.getRes().y + ", "+
+							stack.getRes().z + " "+
 							"DX: "+disp.x + " "+
 							"DY: "+disp.y + " "+
 							"DZ: "+disp.z + " "+
-							"Width(px): "+stack.getWidth()+" "+
-							"Height(px): "+stack.getHeight() +" "+
+							"Width[px]: "+stack.getWidth()+" "+
+							"Height[px]: "+stack.getHeight() +" "+
+							"Depth[px]: "+stack.getDepth() +" "+
 							"Pixel format: "+stack.getPixelFormat()
 							);
 					sb.append("\n");

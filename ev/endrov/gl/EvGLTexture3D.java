@@ -67,6 +67,9 @@ public class EvGLTexture3D
 			gl.glTexImage3D(GL2.GL_TEXTURE_3D, 0, GL2.GL_ALPHA, width, height, depth, 0, GL2.GL_ALPHA, GL2.GL_UNSIGNED_BYTE, b.rewind());
 //				System.out.println("error "+new GLU().gluErrorString(gl.glGetError()));
 			gl.glDisable( GL2.GL_TEXTURE_3D );
+			Viewer3DView.checkerr(gl);
+			
+			//TODO handle the case of no support for non-POT textures. Either interpolate, or disable volume rendering on these
 			}
 		}
 	

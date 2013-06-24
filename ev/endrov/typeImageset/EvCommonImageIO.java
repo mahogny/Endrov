@@ -20,7 +20,10 @@ import ome.xml.model.enums.PixelType;
 import ome.xml.model.primitives.PositiveInteger;
 
 import loci.common.DataTools;
+import loci.common.services.DependencyException;
+import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
+import loci.formats.ChannelSeparator;
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
@@ -78,7 +81,7 @@ public class EvCommonImageIO
 			//Rely on Bioformats in the worst case. Use the most stupid reader available, or bio-formats might attempt
 			//detecting a special format
 			IFormatReader reader;
-			if(fend.equals("tiff") || fend.equals("tif"))
+			if(fend!=null && (fend.equals("tiff") || fend.equals("tif")))
 				{
 				TiffReader tr=new TiffReader();
 				tr.setGroupFiles(false);
@@ -88,10 +91,58 @@ public class EvCommonImageIO
 				{
 				reader=new ImageReader();
 				}
+			reader.setOriginalMetadataPopulated(true);
 			//reader.setAllowOpenFiles(false);  //for scifio
 
-			int id=z==null?0:z;
+			IMetadata retrieve=null;
+			try 
+				{
+				ServiceFactory factory = new ServiceFactory();
+				OMEXMLService service = factory.getInstance(OMEXMLService.class);
+				retrieve=service.createOMEXMLMetadata(null, null);
+				reader.setMetadataStore(retrieve);
+				}
+			catch (DependencyException de) 
+				{
+				throw new RuntimeException(de.getMessage());
+				}
+			catch (ServiceException se) 
+				{
+				throw new FormatException(se);
+				}
+
 			reader.setId(file.getAbsolutePath());
+			reader=new ChannelSeparator(reader);
+
+
+			
+
+		/*
+		 does not work. read metadata instead
+			DimensionSwapper sw=new DimensionSwapper(reader);
+			sw.swapDimensions("XYCZT");
+			reader=sw;*/
+
+			
+			if(z==null)
+				z=0;
+			
+			int sizeT=retrieve.getPixelsSizeT(0).getValue();
+			int sizeZ=retrieve.getPixelsSizeZ(0).getValue();
+			int index;
+			if(sizeT==1)
+				index=reader.getIndex(z, 0, 0);
+			else
+				index=reader.getIndex(0, 0, z);
+
+			System.out.println("----- size "+sizeT+"   "+sizeZ);
+			
+			int id=index;
+			
+			
+//			int count=reader.getImageCount();
+
+			
 			return new BioformatsSliceIO(reader,0,id,file, true).get(new ProgressHandle());
 			
 			

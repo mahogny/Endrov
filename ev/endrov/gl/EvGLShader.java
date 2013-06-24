@@ -67,6 +67,7 @@ public class EvGLShader
 		needInit=true;
 		prepareShader(glin);
 		view.registerShader(this);
+		Viewer3DView.checkerr(glin);
 		}
 	
 	public void needReinit()
@@ -89,11 +90,13 @@ public class EvGLShader
 					{
 					idv=gl.glCreateShader(GL2.GL_VERTEX_SHADER);
 					uploadURL(gl, idv, srcv,"v");
+					Viewer3DView.checkerr(glin);
 					}
 				if(srcf!=null)
 					{
 					idf=gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
 					uploadURL(gl, idf, srcf,"f");
+					Viewer3DView.checkerr(glin);
 					}
 				if(srcv==null && srcf==null)
 					throw new RuntimeException("Tried to create shaded with neither vertex nor fragment program");

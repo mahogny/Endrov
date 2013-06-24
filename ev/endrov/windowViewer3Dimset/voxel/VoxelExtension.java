@@ -302,7 +302,9 @@ public class VoxelExtension implements Viewer3DWindowHook, ActionListener
 					
 				
 				}
-			
+
+			Viewer3DView.checkerr(gl);
+
 			//Render current stack
 			if(currentStackRenderer!=null)
 				currentStackRenderer.render(gl,transparentRenderers,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected(), w.view);

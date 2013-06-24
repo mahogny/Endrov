@@ -57,42 +57,40 @@ import net.imglib2.type.NativeType;
  * @author Johan Henriksson
  */
 public class FloatEvStack< T extends NativeType< T > > extends EvStackImg< T, FloatArray >
-{
+	{
 	final EvStack imp;
 
 	public FloatEvStack( final long[] dim, final int entitiesPerPixel )
-	{
+		{
 		super( dim, entitiesPerPixel );
 
 		if ( entitiesPerPixel == 1 )
-		{
+			{
 		
 			imp=new EvStack();
 			imp.allocate(width, height, depth, EvPixelsType.FLOAT);
 		
 			mirror.clear();
-//			for ( int t = 0; t < frames; ++t )
 				for ( int z = 0; z < depth; ++z )
-//					for ( int c = 0; c < channels; ++c )
 					mirror.add( new FloatArray( ( float[] )imp.getPlane(z).getPixels().getArrayFloat() ) );
-//						mirror.add( new ByteArray( ( byte[] )imp.getStack().getProcessor( imp.getStackIndex( c + 1, z + 1 , t + 1 ) ).getPixels() ) );
-		}
+			}
 		else
-		{
+			{
 			imp = null;
 
 			mirror.clear();
 			for ( int i = 0; i < numSlices; ++i )
 				mirror.add( new FloatArray( width * height * entitiesPerPixel ) );
+			}
 		}
-	}
 
 	public FloatEvStack( final EvStack imp )
-	{
+		{
 		super(
 				imp.getWidth(),
 				imp.getHeight(),
-				1,//imp.getNSlices(),
+				imp.getDepth(),
+//				1,//imp.getNSlices(),
 				1,//imp.getNFrames(),
 				1,//imp.getNChannels(),
 				1 );
@@ -100,21 +98,19 @@ public class FloatEvStack< T extends NativeType< T > > extends EvStackImg< T, Fl
 		this.imp = imp;
 
 		mirror.clear();
-//		for ( int t = 0; t < frames; ++t )
-			for ( int z = 0; z < depth; ++z )
-	//			for ( int c = 0; c < channels; ++c )
-				mirror.add( new FloatArray( ( float[] )imp.getPlane(z).getPixels().getArrayFloat() ) );
+		for ( int z = 0; z < depth; ++z )
+			mirror.add( new FloatArray( ( float[] )imp.getPlane(z).getPixels().getArrayFloat() ) );
 //					mirror.add( new ByteArray( ( byte[] )imp.getStack().getProcessor( imp.getStackIndex( c + 1, z + 1 , t + 1 ) ).getPixels() ) );
-	}
+		}
 
 	/**
 	 * This has to be overwritten, otherwise two different instances exist (one in the imageplus, one in the mirror)
 	 */
 	@Override
 	public void setPlane( final int no, final FloatArray plane )
-	{
+		{
 		System.arraycopy( plane.getCurrentStorageArray(), 0, mirror.get( no ).getCurrentStorageArray(), 0, plane.getCurrentStorageArray().length );
-	}
+		}
 
 	@Override
 	public void close()

@@ -3,16 +3,18 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.typeLineageIntegrationViewer2D;
+package endrov.windowAutoLineaging;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -24,10 +26,12 @@ import endrov.gui.EvSwingUtil;
 import endrov.gui.component.EvComboObjectOne;
 import endrov.gui.component.JSpinnerSimpleEvFrame;
 import endrov.gui.window.EvBasicWindow;
+import endrov.gui.window.EvBasicWindowExtension;
+import endrov.gui.window.EvBasicWindowHook;
 import endrov.typeLineage.Lineage;
-import endrov.typeLineageIntegrationViewer2D.LineagingAlgorithm.LineageAlgorithmDef;
 import endrov.util.ProgressHandle;
 import endrov.util.math.EvDecimal;
+import endrov.windowAutoLineaging.LineagingAlgorithm.LineageAlgorithmDef;
 
 /**
  * Window letting user control an algorithm for automatic lineaging
@@ -300,4 +304,39 @@ public class WindowAutoLineaging extends EvBasicWindow implements LineagingAlgor
 		return null;
 		}		
 	
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvBasicWindow.addBasicWindowExtension(
+			new EvBasicWindowExtension()
+				{
+				public void newBasicWindow(EvBasicWindow w)
+					{
+					w.addHook(this.getClass(),new Hook());
+					}
+				
+				class Hook implements EvBasicWindowHook, ActionListener
+					{
+					public void createMenus(EvBasicWindow w)
+						{
+						JMenuItem mi=new JMenuItem("Particle tracker",new ImageIcon(getClass().getResource("iconWindow.png")));
+						mi.addActionListener(this);
+						w.addMenuWindow(mi);
+						}
+					
+					public void actionPerformed(ActionEvent e) 
+						{
+						new WindowAutoLineaging();
+						}
+					
+					public void buildMenu(EvBasicWindow w){}
+					}
+				});
+		}
+
+
 	}
