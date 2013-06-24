@@ -70,8 +70,14 @@ public class EvOpWatershed extends EvOpStack1
 				if(curList.isEmpty())
 					intensityList.removeFirst();
 				else
-					return curList.removeFirst();
+					return returnAndRecycle(curList);
 				}
+			}
+		
+		private PriPixel returnAndRecycle(LinkedList<PriPixel> list)
+			{
+			PriPixel p=list.removeFirst();
+			return p;
 			}
 		
 		public void addAllIntensity(int[][] intensities)
@@ -94,7 +100,7 @@ public class EvOpWatershed extends EvOpStack1
 			intensityList.addAll(allValues.descendingSet());
 			}
 		
-		public void add(int x, int y, int z,
+		public void add(short x, short y, short z,
 				int group, int intensity) 
 			{
 			//If finding a new peak, then just grow according to distance. To not backtrack, add them to the currently considered intensity
@@ -106,7 +112,9 @@ public class EvOpWatershed extends EvOpStack1
 			if(list==null)
 				System.out.println("Missing intensity "+intensity);
 			
-			list.addLast(new PriPixel(x,y,z,group));
+			PriPixel retp=new PriPixel();
+			retp.set(x,y,z,group);
+			list.addLast(retp);
 			}
 		
 		
@@ -118,34 +126,34 @@ public class EvOpWatershed extends EvOpStack1
 	 */
 	private static class PriPixel
 		{
-		int x,y,z;
-		
+		short x,y,z;
 		int group;
 		
-		public PriPixel(int x, int y, int z, int group)
+		
+		
+		public void set(short x, short y, short z, int group)
 			{
 			this.x = x;
 			this.y = y;
 			this.z = z;
 			this.group=group;
 			}
-		
 		}
 	
 	public static class IDPoint
 		{
-		int x,y,z;
+		short x,y,z;
 		int id;
 		
 		public IDPoint(Vector3i p, int id)
 			{
-			this.x=p.x;
-			this.y=p.y;
-			this.z=p.z;
+			this.x=(short)p.x;
+			this.y=(short)p.y;
+			this.z=(short)p.z;
 			this.id=id;
 			}
 		
-		public IDPoint(int x, int y, int z, int id)
+		public IDPoint(short x, short y, short z, int id)
 			{
 			this.x=x;
 			this.y=y;
@@ -173,11 +181,11 @@ public class EvOpWatershed extends EvOpStack1
 		LinkedList<IDPoint> seeds=new LinkedList<IDPoint>();
 		int w=seedStack.getWidth();
 		int h=seedStack.getHeight();
-		for(int az=0;az<seedStack.getDepth();az++)
+		for(short az=0;az<seedStack.getDepth();az++)
 			{
 			int[] arr=seedStack.getPlane(az).getPixels(progh).convertToInt(true).getArrayInt();
-			for(int ay=0;ay<h;ay++)
-				for(int ax=0;ax<w;ax++)
+			for(short ay=0;ay<h;ay++)
+				for(short ax=0;ax<w;ax++)
 					{
 					int thisID=arr[ay*w+ax];
 					if(thisID!=0)
@@ -228,9 +236,9 @@ public class EvOpWatershed extends EvOpStack1
 //			PriPixel p=q.poll();
 			
 			//Make sure the compiler can assume the values to be static
-			int x=p.x;
-			int y=p.y;
-			int z=p.z;
+			short x=p.x;
+			short y=p.y;
+			short z=p.z;
 			int thisi=p.y*w+p.x;
 			int group=p.group;
 			
@@ -252,17 +260,17 @@ public class EvOpWatershed extends EvOpStack1
 				//Put neighbours in the queue, make sure they are within boundary
 				//int nextgen=p.generation+1;
 				if(x>0)
-					queue.add(x-1, y, z, group, inarr[z  ][(y  )*w+(x-1)]);
+					queue.add((short)(x-1), y, z, group, inarr[z  ][(y  )*w+(x-1)]);
 				if(x<w-1)
-					queue.add(x+1, y, z, group, inarr[z  ][(y  )*w+(x+1)]);
+					queue.add((short)(x+1), y, z, group, inarr[z  ][(y  )*w+(x+1)]);
 				if(y>0)
-					queue.add(x, y-1, z, group, inarr[z  ][(y-1)*w+(x  )]);
+					queue.add(x, (short)(y-1), z, group, inarr[z  ][(y-1)*w+(x  )]);
 				if(y<h-1)
-					queue.add(x, y+1, z, group, inarr[z  ][(y+1)*w+(x  )]);
+					queue.add(x, (short)(y+1), z, group, inarr[z  ][(y+1)*w+(x  )]);
 				if(z>0)
-					queue.add(x, y, z-1, group, inarr[z-1][(y)*w+(x  )]);
+					queue.add(x, y, (short)(z-1), group, inarr[z-1][(y)*w+(x  )]);
 				if(z<d-1)
-					queue.add(x, y, z+1, group, inarr[z+1][(y)*w+(x  )]);
+					queue.add(x, y, (short)(z+1), group, inarr[z+1][(y)*w+(x  )]);
 					
 				}
 			}
