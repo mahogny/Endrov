@@ -21,7 +21,7 @@ import endrov.typeImageset.AnyEvImage;
  */
 public class FlowUnitPow extends FlowUnitMathBinop
 	{
-	private static final String metaType="add";
+	private static final String metaType="pow";
 	
 	/******************************************************************************************************
 	 * Plugin declaration
