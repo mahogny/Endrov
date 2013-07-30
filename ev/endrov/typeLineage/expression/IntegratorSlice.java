@@ -24,9 +24,11 @@ import endrov.typeLineage.Lineage;
 import endrov.typeLineage.LineageExp;
 import endrov.typeLineage.expression.IntegrateExp.Integrator;
 import endrov.typeShell.Shell;
+import endrov.util.collection.EvListUtil;
 import endrov.util.collection.Tuple;
 import endrov.util.io.EvFileUtil;
 import endrov.util.math.EvDecimal;
+import endrov.util.math.EvMathUtil;
 import endrov.util.math.ImVector2d;
 import endrov.util.math.ImVector3d;
 
@@ -196,14 +198,31 @@ public abstract class IntegratorSlice implements Integrator
 		}
 	
 	/**
-	 * Stable median calculation. Relies on bucket-sorting. It should be perfectly possible to write a linear-time stable median
-	 * based on the normal linear-time median algorithm. This is needed to handle non-8bit images.
-	 * Value might be off a bit but not much (need to think of indexing), and it doesn't matter for this application
+	 * Stable median calculation. 
 	 */
-	public double calcStableMedian(double lowerFrac, double upperFrac, int[] elem, int numElem)
+	public double calcStableMedian(double lowerFrac, double upperFrac, IntArrayList list)
 		{
+/*
+		list.trimToSize();
+
+		double lowerValue=EvListUtil.findPercentileInt(list.elements(), lowerFrac);
+		double upperValue=EvListUtil.findPercentileInt(list.elements(), upperFrac);
+		
+		problem: multiples of a value. thus the mean will be skewed in direction of border with the most repeats!
+		*/
+		
+		
+		
+		 // below is the original. it Relies on bucket-sorting. It should be perfectly possible to write a linear-time stable median
+		 // based on the normal linear-time median algorithm. This is needed to handle non-8bit images.
+		 // Value might be off a bit but not much (need to think of indexing), and it doesn't matter for this application
+
+		int numbins=66000;
+		int[] elem=list.elements();
+		int numElem=list.size(); 
+		 
 		//Calculate histogram
-		int[] histogram=new int[256];
+		int[] histogram=new int[numbins];
 		//int[] elem=curBgOutside.elements();
 		//int numElem=curBgOutside.size();
 		for(int i=0;i<numElem;i++)
@@ -214,7 +233,7 @@ public abstract class IntegratorSlice implements Integrator
 		int upperIndex=(int)(numElem*upperFrac);
 		int sum=0;
 		int cnt=0;
-		for(int i=0;i<256;i++)
+		for(int i=0;i<numbins;i++)
 			{
 			int thisNum=histogram[i];
 			int take=Math.min(upperIndex,jumpElem+thisNum)-Math.max(lowerIndex, jumpElem);
@@ -226,6 +245,7 @@ public abstract class IntegratorSlice implements Integrator
 			jumpElem+=thisNum;
 			}
 		return (double)sum/cnt;
+		
 		}
 	
 	public void integrateStackDone(IntegrateExp integrator)
@@ -233,8 +253,8 @@ public abstract class IntegratorSlice implements Integrator
 		// Store background if this integrator is responsible for calculating it
 		if (updateBG)
 			{
-			double stableMedianOutside=calcStableMedian(0.4,0.6, curBgOutside.elements(), curBgOutside.size());
-			double stableMedianInside=calcStableMedian(0.4,0.6, curBgInside.elements(), curBgInside.size());
+			double stableMedianOutside=calcStableMedian(0.4,0.6, curBgOutside);
+			double stableMedianInside=calcStableMedian(0.4,0.6, curBgInside);
 			/*
 			int medianOutside=EvListUtil.findPercentileInt(curBgOutside.elements(), 0.5, curBgOutside.size());
 			int medianInside=EvListUtil.findPercentileInt(curBgInside.elements(), 0.5, curBgInside.size());
