@@ -7,6 +7,7 @@ package endrov.typeLineage.expression;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -202,21 +203,24 @@ public abstract class IntegratorSlice implements Integrator
 	 */
 	public double calcStableMedian(double lowerFrac, double upperFrac, IntArrayList list)
 		{
-/*
+		//This works for any size!
 		list.trimToSize();
-
-		double lowerValue=EvListUtil.findPercentileInt(list.elements(), lowerFrac);
-		double upperValue=EvListUtil.findPercentileInt(list.elements(), upperFrac);
+		Arrays.sort(list.elements());
 		
-		problem: multiples of a value. thus the mean will be skewed in direction of border with the most repeats!
-		*/
-		
+		int sum=0;
+		int cnt=0;
+		for(int i=(int)(lowerFrac*list.size());i<(int)(list.size()*upperFrac);i++)
+			{
+			sum+=list.get(i);
+			cnt++;
+			}
+		return (double)sum/cnt;
 		
 		
 		 // below is the original. it Relies on bucket-sorting. It should be perfectly possible to write a linear-time stable median
 		 // based on the normal linear-time median algorithm. This is needed to handle non-8bit images.
 		 // Value might be off a bit but not much (need to think of indexing), and it doesn't matter for this application
-
+/*
 		int numbins=66000;
 		int[] elem=list.elements();
 		int numElem=list.size(); 
@@ -245,7 +249,7 @@ public abstract class IntegratorSlice implements Integrator
 			jumpElem+=thisNum;
 			}
 		return (double)sum/cnt;
-		
+		*/
 		}
 	
 	public void integrateStackDone(IntegrateExp integrator)
